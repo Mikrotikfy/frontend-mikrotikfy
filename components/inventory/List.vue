@@ -21,8 +21,7 @@
                 <InventoryAddItem />
                 <InventoryAdd />
                 <InventoryWithdraw />
-                <InventoryWithdrawTemplate :template="{name: 'Internet'}" />
-                <InventoryWithdrawTemplate :template="{name: 'TV'}" />
+                <InventoryWithdrawTemplate />
                 <v-spacer />
                 <v-text-field
                   v-model="search"

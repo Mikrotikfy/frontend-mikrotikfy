@@ -7,7 +7,7 @@
       @click="modal = true"
     >
       <v-icon>mdi-export-variant</v-icon>
-      <span>Entregar {{ template.name }}</span>
+      <span>Entregar</span>
     </v-btn>
     <v-dialog
       v-model="modal"
@@ -15,11 +15,11 @@
     >
       <v-card class="elevation-0">
         <v-card-title>
-          Entregar {{ template.name }}
+          Salida de material
         </v-card-title>
         <v-card-text>
           <v-row>
-            <v-col>
+            <v-col cols="12" lg="6">
               <v-autocomplete
                 v-model="dispense.technician"
                 item-text="username"
@@ -31,13 +31,26 @@
                 hide-details
               />
             </v-col>
+            <v-col cols="12" lg="6">
+              <v-autocomplete
+                v-model="dispense.materialHistoryType"
+                item-text="name"
+                item-value="id"
+                return-object
+                :items="materialHistoryTypeList"
+                label="Razon"
+                outlined
+                dense
+                hide-details
+              />
+            </v-col>
           </v-row>
           <v-row>
             <v-col>
               <v-btn
                 class="elevation-0"
                 color="blue darken-4"
-                @click="addItem"
+                @click="addWithdrawItem"
               >
                 <v-icon>mdi-arrow-down</v-icon>
                 <span>Agregar</span>
@@ -49,17 +62,13 @@
         <v-card-text>
           <v-row>
             <v-col>
-              <p v-if="materials.length < 1" class="text-center">
+              <p v-if="withdrawList.length < 1" class="text-center">
                 Agrega un elemento para continuar
               </p>
               <InventoryTemplateItem
-                v-for="(material, index) in materials"
+                v-for="(material, index) in this.$store.state.inventory.withdrawList"
                 :key="index"
                 :index="index"
-                :material="{...material}"
-                :materials="materials"
-                :materiallist="materialList"
-                @update="updateItem"
               />
             </v-col>
           </v-row>
@@ -70,7 +79,7 @@
             text
             :loading="loading"
             :disabled="loading"
-            @click="dispenseMaterial"
+            @click="loopMaterialList"
           >
             Entregar
           </v-btn>
@@ -89,19 +98,16 @@
 <script>
 export default {
   name: 'InventoryWithdrawTemplate',
-  props: {
-    template: {
-      type: Object,
-      required: true
-    }
-  },
   data () {
     return {
       dispense: {
         operator: this.$store.state.auth.id,
-        technician: null
+        technician: null,
+        materialHistoryType: {
+          id: 4,
+          name: 'SALIDA TECNICO'
+        }
       },
-      materials: [],
       loading: false,
       modal: false
     }
@@ -121,6 +127,9 @@ export default {
     },
     materialHistoryTypeListReturn () {
       return this.$store.state.inventory.materialHistoryTypeListReturn
+    },
+    withdrawList () {
+      return this.$store.state.inventory.withdrawList
     }
   },
   mounted () {
@@ -133,7 +142,10 @@ export default {
       this.$store.dispatch('inventory/getOperatorList', { token: this.$store.state.auth.token, city: this.$route.query.city })
     },
     getMaterialList () {
-      this.$store.dispatch('inventory/getMaterialList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageSize: 1000 } })
+      this.$store.dispatch('inventory/getMaterialList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageSize: 24 } })
+    },
+    getMaterialHistory () {
+      this.$store.dispatch('inventory/getMaterialHistoryList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageCount: 1, pageSize: 24 } })
     },
     getMaterialTypes () {
       this.$store.dispatch('inventory/getMaterialTypes', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageSize: 1000 } })
@@ -141,47 +153,55 @@ export default {
     getMaterialHistoryTypeList () {
       this.$store.dispatch('inventory/getMaterialHistoryTypeList', { token: this.$store.state.auth.token, city: this.$route.query.city })
     },
+    loopMaterialList () {
+      this.withdrawList.forEach((material) => {
+        this.dispenseMaterial(material)
+      })
+    },
     async dispenseMaterial (material) {
       this.loading = !this.loading
-      if (this.materials.length < 1 || !this.dispense.technician) {
+      if (this.withdrawList.length < 1 || !this.dispense.technician) {
         this.$toast.error('Rellena todos los campos antes de continuar', { position: 'top-center' })
         this.loading = !this.loading
         return
       }
-      const currentQuantityOfSelected = material.materialquantities.filter(item => item.materialtype.name === this.dispense.materialtype.name)[0]?.quantity
-      if (currentQuantityOfSelected < this.dispense.quantity || !currentQuantityOfSelected || currentQuantityOfSelected.length < 1) {
+      const currentQuantityOfSelected = material.materialquantities.filter(item => item.materialtype.name === material.materialtype.name)[0]?.quantity
+      if (currentQuantityOfSelected < material.quantity || !currentQuantityOfSelected || currentQuantityOfSelected.length < 1) {
         this.$toast.error('No hay suficiente material para dispensar', { position: 'top-center' })
         this.loading = !this.loading
         return
       }
-      const quantity = this.dispense.material.materialquantities.filter(q => q.materialtype.name === this.dispense.materialtype.name)
-      await this.$store.dispatch('inventory/createOperationHistory', { token: this.$store.state.auth.token, city: this.$route.query.city, data: this.dispense })
-      await this.$store.dispatch('inventory/updateCurrentMaterialQuantity', {
-        quantity,
+      await this.$store.dispatch('inventory/createOperationHistory', {
         token: this.$store.state.auth.token,
         city: this.$route.query.city,
-        data: this.dispense,
+        material: {
+          ...material,
+          materialhistorytype: this.dispense.materialHistoryType,
+          technician: this.dispense.technician,
+          operator: this.dispense.operator
+        }
+      })
+      const availableQuantity = material.materialquantities.filter(q => q.materialtype.name === material.materialtype.name)
+      await this.$store.dispatch('inventory/updateCurrentMaterialQuantity', {
+        availableQuantity,
+        token: this.$store.state.auth.token,
+        city: this.$route.query.city,
+        newQuantity: material,
         action: 'add'
       })
-      await this.$store.dispatch('inventory/getMaterialHistoryList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageCount: 1, pageSize: 10 } })
-      await this.$store.dispatch('inventory/getMaterialList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageCount: 1, pageSize: 24 } })
       this.getMaterialList()
-      this.resetFields()
+      this.getMaterialHistory()
       this.loading = !this.loading
     },
-    addItem () {
-      this.materials.push({
-        id: -1,
-        name: '',
+    addWithdrawItem () {
+      this.$store.commit('inventory/addWithdrawItem', {
+        material: null,
         materialtype: {
           id: 1,
           name: 'GENERAL'
-        }
+        },
+        quantity: 0
       })
-    },
-    updateItem (data) {
-      console.log(data)
-      this.materials[data.index] = data.material
     }
   }
 }

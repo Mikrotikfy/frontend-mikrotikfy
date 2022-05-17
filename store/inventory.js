@@ -6,7 +6,8 @@ export const state = () => ({
   paginationMaterialList: {},
   paginationMaterialHistoryList: {},
   materialHistoryTypeList: [],
-  materialHistoryTypeListReturn: []
+  materialHistoryTypeListReturn: [],
+  withdrawList: []
 })
 export const mutations = {
   getOperatorList (state, operatorList) {
@@ -45,6 +46,20 @@ export const mutations = {
       state.materialHistoryTypeListReturn = materialhistorytypes.filter(item => item.name.includes('ENTRADA'))
     } catch (error) {
       throw new Error(`MATERIAL HISTORY TYPE LIST MUTATE ${error}`)
+    }
+  },
+  updateWithdrawList (state, data) {
+    try {
+      state.withdrawList[data.index] = data.material
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
+  },
+  addWithdrawItem (state, withdrawItem) {
+    try {
+      state.withdrawList.push(withdrawItem)
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
     }
   }
 }
@@ -197,13 +212,13 @@ export const actions = {
         },
         body: JSON.stringify({
           data: {
-            quantity: payload.data.quantity,
-            description: payload.data.description,
-            material: payload.data.material.id,
-            materialtype: payload.data.materialtype.id,
-            materialhistorytype: payload.data.materialhistorytype.id,
-            operator: payload.data.operator,
-            technician: payload.data.technician
+            quantity: payload.material.quantity,
+            description: payload.material.description,
+            material: payload.material.id,
+            materialtype: payload.material.materialtype.id,
+            materialhistorytype: payload.material.materialhistorytype.id,
+            operator: payload.material.operator,
+            technician: payload.material.technician
           }
         })
       })
@@ -239,9 +254,9 @@ export const actions = {
     }
   },
   async updateCurrentMaterialQuantity (_, payload) {
-    const finalQuantity = payload.action === 'add' ? payload.quantity[0].quantity - payload.data.quantity : payload.quantity[0].quantity + payload.data.quantity
+    const finalQuantity = payload.action === 'add' ? payload.availableQuantity[0].quantity - payload.newQuantity.quantity : payload.availableQuantity[0].quantity + payload.newQuantity.quantity
     try {
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}materialquantities/${payload.quantity[0].id}`, {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}materialquantities/${payload.availableQuantity[0].id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

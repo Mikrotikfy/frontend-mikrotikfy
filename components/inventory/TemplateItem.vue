@@ -3,15 +3,16 @@
     <v-row>
       <v-col cols="6" class="py-1">
         <v-select
-          v-model="materialComputed"
+          v-model="material.details"
           label="Material"
           item-text="name"
           item-value="id"
           return-object
-          :items="materiallist"
+          :items="materialList"
           outlined
           dense
           hide-details
+          @change="updateItem"
         />
       </v-col>
       <v-col cols="4" class="py-1">
@@ -22,11 +23,12 @@
           type="number"
           outlined
           dense
+          @keyup="updateItem"
         />
       </v-col>
       <v-col cols="2" class="py-1">
         <v-select
-          v-model.number="material.materialtype"
+          v-model="material.materialtype"
           label="Tipo"
           item-text="name"
           item-value="id"
@@ -34,6 +36,7 @@
           :items="materialTypes"
           outlined
           dense
+          @change="updateItem"
         />
       </v-col>
     </v-row>
@@ -44,37 +47,34 @@
 export default {
   name: 'InventoryWithdrawTemplateItem',
   props: {
-    material: {
-      type: Object,
-      required: true
-    },
-    materials: {
-      type: Array,
-      required: true
-    },
-    materiallist: {
-      type: Array,
-      required: true
-    },
     index: {
       type: Number,
       required: true
     }
   },
   data () {
-    return {}
+    return {
+      material: {
+        details: null,
+        quantity: 1,
+        materialtype: {
+          id: 1,
+          name: 'GENERAL'
+        }
+      }
+    }
   },
   computed: {
     materialTypes () {
       return this.$store.state.inventory.materialTypes
     },
-    materialComputed: {
-      get () {
-        return this.material
-      },
-      set (material, index = this.index) {
-        this.$emit('update', { index, material })
-      }
+    materialList () {
+      return this.$store.state.inventory.materialList
+    }
+  },
+  methods: {
+    updateItem ({ index = this.index, material = this.material }) {
+      this.$store.commit('inventory/updateWithdrawList', { index, material: { quantity: material.quantity, ...material.details, materialtype: { ...material.materialtype } } })
     }
   }
 }
