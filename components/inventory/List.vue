@@ -20,7 +20,6 @@
               <div class="d-flex">
                 <InventoryAddItem />
                 <InventoryAdd />
-                <InventoryWithdraw />
                 <InventoryWithdrawTemplate />
                 <v-spacer />
                 <v-text-field

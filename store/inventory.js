@@ -50,7 +50,38 @@ export const mutations = {
   },
   updateWithdrawList (state, data) {
     try {
-      state.withdrawList[data.index] = data.material
+      state.withdrawList[data.index].details = data.material.details
+      state.withdrawList[data.index].quantity = data.material.quantity
+      state.withdrawList[data.index].materialtype = data.material.materialtype
+      state.withdrawList[data.index].description = data.material.description
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
+  },
+  updateWithdrawListMaterial (state, data) {
+    try {
+      state.withdrawList[data.index].details = data.material
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
+  },
+  updateWithdrawListQuantity (state, data) {
+    try {
+      state.withdrawList[data.index].quantity = data.quantity
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
+  },
+  updateWithdrawListMaterialType (state, data) {
+    try {
+      state.withdrawList[data.index].materialtype = data.materialtype
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
+  },
+  updateWithdrawListDescription (state, data) {
+    try {
+      state.withdrawList[data.index].description = data.description
     } catch (error) {
       throw new Error(`WITHDRAW LIST MUTATE ${error}`)
     }
@@ -58,6 +89,13 @@ export const mutations = {
   addWithdrawItem (state, withdrawItem) {
     try {
       state.withdrawList.push(withdrawItem)
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
+  },
+  removeWithdrawList (state, index) {
+    try {
+      state.withdrawList.splice(index, 1)
     } catch (error) {
       throw new Error(`WITHDRAW LIST MUTATE ${error}`)
     }
@@ -270,7 +308,7 @@ export const actions = {
       })
         .then(res => res.json())
         .then((_) => {
-          this.$toast.success('OPERACION DE INVENTARIO EXITOSA, AHORA HAY ' + finalQuantity, { duration: 5000, position: 'top-center' })
+          this.$toast.success(`OPERACION DE INVENTARIO EXITOSA, AHORA HAY ${finalQuantity} ${payload.material.name}`, { duration: 5000, position: 'top-center' })
         })
     } catch (error) {
       this.$toast.error(error, { position: 'top-center' })

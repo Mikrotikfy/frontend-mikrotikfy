@@ -11,7 +11,7 @@
     </v-btn>
     <v-dialog
       v-model="modal"
-      max-width="990"
+      max-width="1090"
     >
       <v-card class="elevation-0">
         <v-card-title>
@@ -66,8 +66,8 @@
                 Agrega un elemento para continuar
               </p>
               <InventoryTemplateItem
-                v-for="(material, index) in this.$store.state.inventory.withdrawList"
-                :key="index"
+                v-for="(material, index) in withdrawList"
+                :key="material.count"
                 :index="index"
               />
             </v-col>
@@ -109,7 +109,8 @@ export default {
         }
       },
       loading: false,
-      modal: false
+      modal: false,
+      countWithdraw: 0
     }
   },
   computed: {
@@ -154,21 +155,25 @@ export default {
       this.$store.dispatch('inventory/getMaterialHistoryTypeList', { token: this.$store.state.auth.token, city: this.$route.query.city })
     },
     loopMaterialList () {
-      this.withdrawList.forEach((material) => {
-        this.dispenseMaterial(material)
-      })
-    },
-    async dispenseMaterial (material) {
-      this.loading = !this.loading
+      this.loading = true
       if (this.withdrawList.length < 1 || !this.dispense.technician) {
         this.$toast.error('Rellena todos los campos antes de continuar', { position: 'top-center' })
         this.loading = !this.loading
         return
       }
+      this.withdrawList.forEach((material) => {
+        this.dispenseMaterial(material)
+      })
+      this.loading = false
+      this.getMaterialList()
+      this.getMaterialHistory()
+      this.countWithdraw = 0
+    },
+    async dispenseMaterial (material) {
       const currentQuantityOfSelected = material.materialquantities.filter(item => item.materialtype.name === material.materialtype.name)[0]?.quantity
       if (currentQuantityOfSelected < material.quantity || !currentQuantityOfSelected || currentQuantityOfSelected.length < 1) {
-        this.$toast.error('No hay suficiente material para dispensar', { position: 'top-center' })
-        this.loading = !this.loading
+        this.$toast.error(`No hay suficiente material para dispensar ${material.name}`, { position: 'top-center' })
+        this.loading = false
         return
       }
       await this.$store.dispatch('inventory/createOperationHistory', {
@@ -183,19 +188,22 @@ export default {
       })
       const availableQuantity = material.materialquantities.filter(q => q.materialtype.name === material.materialtype.name)
       await this.$store.dispatch('inventory/updateCurrentMaterialQuantity', {
+        material,
         availableQuantity,
         token: this.$store.state.auth.token,
         city: this.$route.query.city,
         newQuantity: material,
         action: 'add'
       })
-      this.getMaterialList()
-      this.getMaterialHistory()
-      this.loading = !this.loading
     },
     addWithdrawItem () {
+      this.countWithdraw++
       this.$store.commit('inventory/addWithdrawItem', {
-        material: null,
+        count: this.countWithdraw,
+        details: {
+          id: this.countWithdraw,
+          name: null
+        },
         materialtype: {
           id: 1,
           name: 'GENERAL'

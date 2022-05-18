@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row>
-      <v-col cols="6" class="py-1">
+      <v-col cols="3" class="py-1">
         <v-select
           v-model="material.details"
           label="Material"
@@ -12,10 +12,10 @@
           outlined
           dense
           hide-details
-          @change="updateItem"
+          @change="update()"
         />
       </v-col>
-      <v-col cols="4" class="py-1">
+      <v-col cols="3" class="py-1">
         <v-text-field
           v-model.number="material.quantity"
           min="1"
@@ -23,12 +23,12 @@
           type="number"
           outlined
           dense
-          @keyup="updateItem"
+          @input="update()"
         />
       </v-col>
       <v-col cols="2" class="py-1">
         <v-select
-          v-model="material.materialtype"
+          v-model.number="material.materialtype"
           label="Tipo"
           item-text="name"
           item-value="id"
@@ -36,8 +36,26 @@
           :items="materialTypes"
           outlined
           dense
-          @change="updateItem"
+          @change="update()"
         />
+      </v-col>
+      <v-col cols="3" class="py-1">
+        <v-text-field
+          v-model.number="material.description"
+          label="Comentario (Opcional)"
+          outlined
+          dense
+          @keyup="update()"
+        />
+      </v-col>
+      <v-col cols="1" class="py-1">
+        <v-btn
+          class="elevation-0"
+          color="red darken-4"
+          @click="removeItem"
+        >
+          <v-icon>mdi-delete</v-icon>
+        </v-btn>
       </v-col>
     </v-row>
   </div>
@@ -56,11 +74,9 @@ export default {
     return {
       material: {
         details: null,
-        quantity: 1,
-        materialtype: {
-          id: 1,
-          name: 'GENERAL'
-        }
+        quantity: null,
+        materialtype: null,
+        description: null
       }
     }
   },
@@ -73,8 +89,40 @@ export default {
     }
   },
   methods: {
-    updateItem ({ index = this.index, material = this.material }) {
-      this.$store.commit('inventory/updateWithdrawList', { index, material: { quantity: material.quantity, ...material.details, materialtype: { ...material.materialtype } } })
+    update () {
+      this.$store.commit('inventory/updateWithdrawList', {
+        index: this.index,
+        material: this.material
+      })
+    },
+    // updateMaterial (material) {
+    //   this.$store.commit('inventory/updateWithdrawListMaterial', {
+    //     index: this.index,
+    //     material
+    //   })
+    // },
+    // updateQuantity (quantity) {
+    //   console.log(quantity)
+    //   this.$store.commit('inventory/updateWithdrawListQuantity', {
+    //     index: this.index,
+    //     quantity: quantity.key
+    //   })
+    // },
+    // updateMaterialType (materialtype) {
+    //   console.log(materialtype)
+    //   this.$store.commit('inventory/updateWithdrawListMaterialType', {
+    //     index: this.index,
+    //     materialtype
+    //   })
+    // },
+    // updateDescription (description) {
+    //   this.$store.commit('inventory/updateWithdrawListDescription', {
+    //     index: this.index,
+    //     description: description.key
+    //   })
+    // },
+    removeItem () {
+      this.$store.commit('inventory/removeWithdrawList', this.index)
     }
   }
 }
