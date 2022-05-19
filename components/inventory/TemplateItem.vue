@@ -8,7 +8,7 @@
           item-text="name"
           item-value="id"
           return-object
-          :items="materialList"
+          :items="materials"
           outlined
           dense
           hide-details
@@ -87,8 +87,8 @@ export default {
     materialTypes () {
       return this.$store.state.inventory.materialTypes
     },
-    materialList () {
-      return this.$store.state.inventory.materialList
+    materials () {
+      return this.$store.state.inventory.materials
     }
   },
   methods: {
@@ -98,32 +98,6 @@ export default {
         material: this.material
       })
     },
-    // updateMaterial (material) {
-    //   this.$store.commit('inventory/updateWithdrawListMaterial', {
-    //     index: this.index,
-    //     material
-    //   })
-    // },
-    // updateQuantity (quantity) {
-    //   console.log(quantity)
-    //   this.$store.commit('inventory/updateWithdrawListQuantity', {
-    //     index: this.index,
-    //     quantity: quantity.key
-    //   })
-    // },
-    // updateMaterialType (materialtype) {
-    //   console.log(materialtype)
-    //   this.$store.commit('inventory/updateWithdrawListMaterialType', {
-    //     index: this.index,
-    //     materialtype
-    //   })
-    // },
-    // updateDescription (description) {
-    //   this.$store.commit('inventory/updateWithdrawListDescription', {
-    //     index: this.index,
-    //     description: description.key
-    //   })
-    // },
     removeItem () {
       this.$store.commit('inventory/removeWithdrawList', this.index)
     }

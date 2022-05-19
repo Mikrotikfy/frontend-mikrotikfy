@@ -61,18 +61,16 @@ export default {
   },
   computed: {
     materialList () {
-      return this.$store.state.inventory.materialList
+      return this.$store.state.inventory.materials
     },
     currentCity () {
       return this.$store.state.cities.find(city => city.name === this.$route.query.city)
     }
   },
-  mounted () {
-    this.getMaterialList()
-  },
   methods: {
-    getMaterialList () {
-      this.$store.dispatch('inventory/getMaterialList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageSize: 1000 } })
+    async getMaterialList () {
+      await this.$store.dispatch('inventory/getMaterialList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageSize: 24 } })
+      await this.$store.dispatch('inventory/getMaterials', { token: this.$store.state.auth.token, city: this.$route.query.city })
     },
     async addItem () {
       this.loading = !this.loading

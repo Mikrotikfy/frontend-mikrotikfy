@@ -1,5 +1,6 @@
 export const state = () => ({
   operatorList: [],
+  materials: [],
   materialList: [],
   materialTypes: [],
   materialHistoryList: [],
@@ -15,6 +16,13 @@ export const mutations = {
       state.operatorList = operatorList
     } catch (error) {
       throw new Error(`OPERATOR LIST MUTATE ${error}`)
+    }
+  },
+  getMaterials (state, { materials }) {
+    try {
+      state.materials = materials
+    } catch (error) {
+      throw new Error(`MATERIAL LIST MUTATE ${error}`)
     }
   },
   getMaterialList (state, { materials, pagination }) {
@@ -134,6 +142,34 @@ export const actions = {
         })
     } catch (error) {
       throw new Error(`OPERATOR ACTION ${error}`)
+    }
+  },
+  async getMaterials ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      pagination: {
+        pageSize: 1000
+      },
+      populate: ['materialquantities', 'materialquantities.materialtype'],
+      sort: ['id:desc']
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}materials?${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        }
+      })
+        .then(res => res.json())
+        .then((materials) => {
+          commit('getMaterials', { materials: materials.data })
+        })
+    } catch (error) {
+      throw new Error(`MATERIALS ACTION ${error}`)
     }
   },
   async getMaterialList ({ commit }, payload) {
@@ -299,7 +335,9 @@ export const actions = {
     }
   },
   async updateCurrentMaterialQuantity (_, payload) {
+    console.log(payload)
     const finalQuantity = payload.action === 'add' ? payload.availableQuantity[0].quantity - payload.newQuantity.quantity : payload.availableQuantity[0].quantity + payload.newQuantity.quantity
+    console.log(finalQuantity)
     try {
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}materialquantities/${payload.availableQuantity[0].id}`, {
         method: 'PUT',

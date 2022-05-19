@@ -99,7 +99,7 @@ export default {
   },
   computed: {
     materialList () {
-      return this.$store.state.inventory.materialList
+      return this.$store.state.inventory.materials
     },
     materialTypes () {
       return this.$store.state.inventory.materialTypes
@@ -108,16 +108,9 @@ export default {
       return this.$store.state.cities.find(city => city.name === this.$route.query.city)
     }
   },
-  mounted () {
-    this.getMaterialList()
-    this.getMaterialTypes()
-  },
   methods: {
-    getMaterialTypes () {
-      this.$store.dispatch('inventory/getMaterialTypes', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageSize: 1000 } })
-    },
-    getMaterialList () {
-      this.$store.dispatch('inventory/getMaterialList', { token: this.$store.state.auth.token, city: this.$route.query.city, materialType: this.type, pagination: { page: 1, pageSize: 1000 } })
+    async getMaterialList () {
+      await this.$store.dispatch('inventory/getMaterialList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageSize: 24 } })
     },
     async addMaterial () {
       this.loading = !this.loading
@@ -127,14 +120,17 @@ export default {
         return
       }
       const hasQuantities = this.add.material.materialquantities.length > 0
-      const quantity = this.add.material.materialquantities.filter(q => q.materialtype.name === this.add.materialtype.name)
-      if (hasQuantities && quantity.length > 0) {
+      const availableQuantity = this.add.material.materialquantities.filter(q => q.materialtype.name === this.add.materialtype.name)
+      if (hasQuantities && availableQuantity.length > 0) {
         this.$toast.success('Cantidad actualizada... ', { duration: 1000, position: 'top-center' })
         await this.$store.dispatch('inventory/updateCurrentMaterialQuantity', {
-          quantity,
+          material: {
+            details: this.add.material
+          },
+          availableQuantity,
           token: this.$store.state.auth.token,
           city: this.$route.query.city,
-          data: this.add,
+          newQuantity: this.add,
           action: 'return'
         })
       } else {

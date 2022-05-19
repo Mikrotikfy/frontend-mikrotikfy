@@ -110,6 +110,8 @@ export default {
   mounted () {
     this.getMaterialList()
     this.getMaterialTypes()
+    this.getMaterialHistoryTypeList()
+    this.getOperatorList()
   },
   methods: {
     getMaterialTypes () {
@@ -122,6 +124,15 @@ export default {
       this.$store.dispatch('inventory/getMaterialList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: this.pagination, sort: this.sort, search: this.search }).then(() => {
         this.pagination = { ...this.$store.state.inventory.paginationMaterialList }
       })
+    },
+    getOperatorList () {
+      this.$store.dispatch('inventory/getOperatorList', { token: this.$store.state.auth.token, city: this.$route.query.city })
+    },
+    async getMaterialHistory () {
+      await this.$store.dispatch('inventory/getMaterialHistoryList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageCount: 1, pageSize: 24 } })
+    },
+    getMaterialHistoryTypeList () {
+      this.$store.dispatch('inventory/getMaterialHistoryTypeList', { token: this.$store.state.auth.token, city: this.$route.query.city })
     },
     getDate (date) {
       const dateObject = new Date(date)
