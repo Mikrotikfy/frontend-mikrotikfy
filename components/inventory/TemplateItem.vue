@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <v-col cols="3" class="py-1">
-        <v-select
+        <v-autocomplete
           v-model="material.details"
           label="Material"
           item-text="name"
