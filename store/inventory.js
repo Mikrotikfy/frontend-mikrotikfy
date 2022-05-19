@@ -6,7 +6,8 @@ export const state = () => ({
   paginationMaterialList: {},
   paginationMaterialHistoryList: {},
   materialHistoryTypeList: [],
-  materialHistoryTypeListReturn: []
+  materialHistoryTypeListReturn: [],
+  withdrawList: []
 })
 export const mutations = {
   getOperatorList (state, operatorList) {
@@ -45,6 +46,65 @@ export const mutations = {
       state.materialHistoryTypeListReturn = materialhistorytypes.filter(item => item.name.includes('ENTRADA'))
     } catch (error) {
       throw new Error(`MATERIAL HISTORY TYPE LIST MUTATE ${error}`)
+    }
+  },
+  updateWithdrawList (state, data) {
+    try {
+      state.withdrawList[data.index].details = data.material.details
+      state.withdrawList[data.index].quantity = data.material.quantity
+      state.withdrawList[data.index].materialtype = data.material.materialtype
+      state.withdrawList[data.index].description = data.material.description
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
+  },
+  updateWithdrawListMaterial (state, data) {
+    try {
+      state.withdrawList[data.index].details = data.material
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
+  },
+  updateWithdrawListQuantity (state, data) {
+    try {
+      state.withdrawList[data.index].quantity = data.quantity
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
+  },
+  updateWithdrawListMaterialType (state, data) {
+    try {
+      state.withdrawList[data.index].materialtype = data.materialtype
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
+  },
+  updateWithdrawListDescription (state, data) {
+    try {
+      state.withdrawList[data.index].description = data.description
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
+  },
+  addWithdrawItem (state, withdrawItem) {
+    try {
+      state.withdrawList.push(withdrawItem)
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
+  },
+  removeWithdrawList (state, index) {
+    try {
+      state.withdrawList.splice(index, 1)
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
+  },
+  emptyWithdrawList (state) {
+    try {
+      state.withdrawList = []
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
     }
   }
 }
@@ -197,13 +257,13 @@ export const actions = {
         },
         body: JSON.stringify({
           data: {
-            quantity: payload.data.quantity,
-            description: payload.data.description,
-            material: payload.data.material.id,
-            materialtype: payload.data.materialtype.id,
-            materialhistorytype: payload.data.materialhistorytype.id,
-            operator: payload.data.operator,
-            technician: payload.data.technician
+            quantity: payload.material.quantity,
+            description: payload.material.description.toString(),
+            material: payload.material.details.id,
+            materialtype: payload.material.materialtype.id,
+            materialhistorytype: payload.material.materialhistorytype.id,
+            operator: payload.material.operator,
+            technician: payload.material.technician
           }
         })
       })
@@ -239,9 +299,9 @@ export const actions = {
     }
   },
   async updateCurrentMaterialQuantity (_, payload) {
-    const finalQuantity = payload.action === 'add' ? payload.quantity[0].quantity - payload.data.quantity : payload.quantity[0].quantity + payload.data.quantity
+    const finalQuantity = payload.action === 'add' ? payload.availableQuantity[0].quantity - payload.newQuantity.quantity : payload.availableQuantity[0].quantity + payload.newQuantity.quantity
     try {
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}materialquantities/${payload.quantity[0].id}`, {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}materialquantities/${payload.availableQuantity[0].id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -255,7 +315,7 @@ export const actions = {
       })
         .then(res => res.json())
         .then((_) => {
-          this.$toast.success('OPERACION DE INVENTARIO EXITOSA, AHORA HAY ' + finalQuantity, { duration: 5000, position: 'top-center' })
+          this.$toast.success(`OPERACION DE INVENTARIO EXITOSA, AHORA HAY ${finalQuantity} ${payload.material.details.name}`, { duration: 5000, position: 'top-center' })
         })
     } catch (error) {
       this.$toast.error(error, { position: 'top-center' })
