@@ -142,11 +142,11 @@ export default {
     getOperatorList () {
       this.$store.dispatch('inventory/getOperatorList', { token: this.$store.state.auth.token, city: this.$route.query.city })
     },
-    getMaterialList () {
-      this.$store.dispatch('inventory/getMaterialList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageSize: 24 } })
+    async getMaterialList () {
+      await this.$store.dispatch('inventory/getMaterialList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageSize: 24 } })
     },
-    getMaterialHistory () {
-      this.$store.dispatch('inventory/getMaterialHistoryList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageCount: 1, pageSize: 24 } })
+    async getMaterialHistory () {
+      await this.$store.dispatch('inventory/getMaterialHistoryList', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageCount: 1, pageSize: 24 } })
     },
     getMaterialTypes () {
       this.$store.dispatch('inventory/getMaterialTypes', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageSize: 1000 } })
@@ -154,7 +154,7 @@ export default {
     getMaterialHistoryTypeList () {
       this.$store.dispatch('inventory/getMaterialHistoryTypeList', { token: this.$store.state.auth.token, city: this.$route.query.city })
     },
-    loopMaterialList () {
+    async loopMaterialList () {
       this.loading = true
       if (this.withdrawList.length < 1 || !this.dispense.technician) {
         this.$toast.error('Rellena todos los campos antes de continuar', { position: 'top-center' })
@@ -165,14 +165,16 @@ export default {
         this.dispenseMaterial(material)
       })
       this.loading = false
-      this.getMaterialList()
-      this.getMaterialHistory()
+      await this.getMaterialList()
+      await this.getMaterialHistory()
+      await this.$store.commit('inventory/emptyWithdrawList')
       this.countWithdraw = 0
+      this.modal = false
     },
     async dispenseMaterial (material) {
-      const currentQuantityOfSelected = material.materialquantities.filter(item => item.materialtype.name === material.materialtype.name)[0]?.quantity
+      const currentQuantityOfSelected = material.details.materialquantities.filter(item => item.materialtype.name === material.materialtype.name)[0]?.quantity
       if (currentQuantityOfSelected < material.quantity || !currentQuantityOfSelected || currentQuantityOfSelected.length < 1) {
-        this.$toast.error(`No hay suficiente material para dispensar ${material.name}`, { position: 'top-center' })
+        this.$toast.error(`No hay suficiente material para dispensar ${material.details.name}`, { position: 'top-center' })
         this.loading = false
         return
       }
@@ -186,7 +188,7 @@ export default {
           operator: this.dispense.operator
         }
       })
-      const availableQuantity = material.materialquantities.filter(q => q.materialtype.name === material.materialtype.name)
+      const availableQuantity = material.details.materialquantities.filter(q => q.materialtype.name === material.materialtype.name)
       await this.$store.dispatch('inventory/updateCurrentMaterialQuantity', {
         material,
         availableQuantity,
@@ -200,6 +202,7 @@ export default {
       this.countWithdraw++
       this.$store.commit('inventory/addWithdrawItem', {
         count: this.countWithdraw,
+        description: '',
         details: {
           id: this.countWithdraw,
           name: null

@@ -99,6 +99,13 @@ export const mutations = {
     } catch (error) {
       throw new Error(`WITHDRAW LIST MUTATE ${error}`)
     }
+  },
+  emptyWithdrawList (state) {
+    try {
+      state.withdrawList = []
+    } catch (error) {
+      throw new Error(`WITHDRAW LIST MUTATE ${error}`)
+    }
   }
 }
 export const actions = {
@@ -251,8 +258,8 @@ export const actions = {
         body: JSON.stringify({
           data: {
             quantity: payload.material.quantity,
-            description: payload.material.description,
-            material: payload.material.id,
+            description: payload.material.description.toString(),
+            material: payload.material.details.id,
             materialtype: payload.material.materialtype.id,
             materialhistorytype: payload.material.materialhistorytype.id,
             operator: payload.material.operator,
@@ -308,7 +315,7 @@ export const actions = {
       })
         .then(res => res.json())
         .then((_) => {
-          this.$toast.success(`OPERACION DE INVENTARIO EXITOSA, AHORA HAY ${finalQuantity} ${payload.material.name}`, { duration: 5000, position: 'top-center' })
+          this.$toast.success(`OPERACION DE INVENTARIO EXITOSA, AHORA HAY ${finalQuantity} ${payload.material.details.name}`, { duration: 5000, position: 'top-center' })
         })
     } catch (error) {
       this.$toast.error(error, { position: 'top-center' })

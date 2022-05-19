@@ -28,7 +28,7 @@
       </v-col>
       <v-col cols="2" class="py-1">
         <v-select
-          v-model.number="material.materialtype"
+          v-model="material.materialtype"
           label="Tipo"
           item-text="name"
           item-value="id"
@@ -75,8 +75,11 @@ export default {
       material: {
         details: null,
         quantity: null,
-        materialtype: null,
-        description: null
+        description: '',
+        materialtype: {
+          id: 1,
+          name: 'GENERAL'
+        }
       }
     }
   },
