@@ -13,7 +13,7 @@ function simpleTelegramCreate ({ client, operator, telegramBots }) {
   try {
     const bot = telegramBots.token
     const chatid = telegramBots.log
-    const message = `CREADO\n${client.code}\n${client.name}\n${client.dni}\n${client.address}\n${client.phone}\n${client.wifi_ssid}\n${client.wifi_password}\n${operator}`
+    const message = `🔵 CREADO 🔵\n${client.code}\n${client.name}\n${client.dni}\n${client.address}\n${client.phone}\n${client.wifi_ssid}\n${client.wifi_password}\n${operator}`
     const req =
       'https://api.telegram.org/bot' +
       bot +
@@ -34,7 +34,7 @@ function simpleTelegramUpdate ({ client, operator, telegramBots }) {
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.log
-  const message = `ACTUALIZADO\n${client.code}\n${client.name}\n${client.dni}\n${client.address}\n${client.neighborhood.name}\n${client.phone}\n${client.city.name}\n${client.plan.name}\n${client.wifi_ssid}\n${client.wifi_password}\n${client.technology.name}\nNAP-ONU: ${client.nap_onu_address}\nPOTENCIA: ${client.opticalPower}dBm\n${operator}\n${client.createdAt}`
+  const message = `✏️ ACTUALIZADO ✏️\n${client.code}\n${client.name}\n${client.dni}\n${client.address}\n${client.neighborhood.name}\n${client.phone}\n${client.city.name}\n${client.plan.name}\n${client.wifi_ssid}\n${client.wifi_password}\n${client.technology.name}\nNAP-ONU: ${client.nap_onu_address}\nPOTENCIA: ${client.opticalPower}dBm\n${operator}\n${client.createdAt}`
   const req =
     'https://api.telegram.org/bot' +
     bot +
@@ -54,9 +54,9 @@ function simpleTelegramUpdatePlan ({ client, operator, isRx, telegramBots }) {
   const chatid = telegramBots.binnacle
   let line1 = ''
   if (isRx) {
-    line1 = 'RECONEXIÓN'
+    line1 = '📶 RECONEXIÓN 📶'
   } else {
-    line1 = 'CAMBIO DE PLAN'
+    line1 = '🔄 CAMBIO DE PLAN 🔄'
   }
   const line2 = client.code
   const line3 = client.name
@@ -110,22 +110,23 @@ function simpleTelegramCreateTicketAdvance ({ client, ticket, status, details, o
   if (status) {
     line1 = '✅ CIERRE DE TICKET ✅'
   } else {
-    line1 = 'AVANCE DE TICKET'
+    line1 = '✴️ AVANCE DE TICKET ✴️'
   }
   const line2 = sanitizeString(client.code)
   const line3 = sanitizeString(client.name)
   const line4 = sanitizeString(client.address)
-  const line5 = sanitizeString(client.phone)
-  const line6 = sanitizeString(ticket.tickettype.name)
-  const line7 = sanitizeString(details)
-  let line8 = ''
+  const line5 = sanitizeString(client.neighborhood.name)
+  const line6 = sanitizeString(client.phone)
+  const line7 = sanitizeString(ticket.tickettype.name)
+  const line8 = sanitizeString(details)
+  let line9 = ''
   if (status) {
-    line8 = 'CASO CERRADO'
+    line9 = 'CASO CERRADO'
   } else {
-    line8 = 'CASO ACTIVO'
+    line9 = 'CASO ACTIVO'
   }
-  const line9 = operator
-  const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n\n${line8}\n${line9}`
+  const line10 = operator
+  const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n${line8}\n\n${line9}\n${line10}`
   const req =
     'https://api.telegram.org/bot' +
     bot +
