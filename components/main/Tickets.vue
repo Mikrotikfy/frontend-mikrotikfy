@@ -41,7 +41,7 @@
               label="Mostrar retiros"
               @change="refreshTickets()"
             />
-            <h3 v-if="!showClosedValue" class="mt-5">
+            <h3 v-if="!showClosedValue" class="align-self-center">
               {{ ticketList.length }}
               {{ ticketList.length === 1 ? 'Ticket activo' : 'Tickets activos' }}
             </h3>
