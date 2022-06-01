@@ -21,6 +21,13 @@ export const mutations = {
       throw new Error(`MUTATE SEARCH CLIENT${error}`)
     }
   },
+  getUsersFromDatabaseByTypeAndCity (state, clientsList) {
+    try {
+      state.clientsForOlt = clientsList
+    } catch (error) {
+      throw new Error(`MUTATE OLT CLIENT${error}`)
+    }
+  },
   // getClientTypesFromDatabase (state, clienttypesList) {
   //   try {
   //     state.clienttypes = clienttypesList
@@ -149,6 +156,41 @@ export const actions = {
         })
     } catch (error) {
       throw new Error(`ACTION ${error}`)
+    }
+  },
+  async getUsersFromDatabaseByTypeAndCity ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      filters: {
+        city: {
+          name: payload.city
+        },
+        clienttype: {
+          name: payload.clienttype
+        }
+      },
+      pagination: {
+        pageSize: payload.pagination.pageSize || 25
+      },
+      populate: ['technology', 'neighborhood']
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        }
+      })
+        .then(res => res.json())
+        .then((clients) => {
+          commit('getUsersFromDatabaseByTypeAndCity', clients.data)
+        })
+    } catch (error) {
+      throw new Error(`ACTION OLT CLIENTS ${error}`)
     }
   },
   updateFromModal ({ commit }, client) {
