@@ -1,0 +1,16 @@
+<template>
+  <v-text-field
+    v-model.number="amount"
+    type="number"
+    label="Recaudar"
+    single-line
+    hide-details
+    filled
+    rounded
+    autofocus
+    placeholder="$0.00"
+    prepend-icon="mdi-account-cash-outline"
+    color="green"
+    @keyup.enter="addAmount"
+  />
+</template>
