@@ -1,10 +1,12 @@
 <template>
   <div>
-    <p class="ml-4">
+    <p ref="clientP" class="ml-2 hideMe rounded-xl px-2">
       Usuario ID: {{ billingInfo.clientId }} {{ billingInfo.clientName }}
     </p>
     <client-only>
       <v-data-table
+        ref="billDataTable"
+        style="overflow-y:scroll;height:63vh;"
         :headers="headers"
         :items.sync="billingInfo.movements"
         :items-per-page.sync="itemsPerPage"
@@ -17,6 +19,7 @@
         hide-default-footer
         mobile-breakpoint="100"
         @page-count="pageCount = $event"
+        @current-items="$vuetify.goTo(0)"
       >
         <template v-slot:[`item.type`]="props">
           <v-chip
@@ -28,6 +31,9 @@
             {{ props.item.type }}
           </v-chip>
         </template>
+        <template v-slot:[`item.amount`]="props">
+          <span> ${{ Number(props.item.amount).toLocaleString('en') }} </span>
+        </template>
       </v-data-table>
     </client-only>
   </div>
@@ -36,7 +42,7 @@
 export default {
   data () {
     return {
-      itemsPerPage: 10,
+      itemsPerPage: 100,
       page: 1,
       pageCount: 0,
       options: {},
@@ -53,6 +59,45 @@ export default {
     billingInfo () {
       return this.$store.state.billing.billingInfo
     }
+  },
+  watch: {
+    '$store.state.billing.billingInfo': {
+      handler () {
+        this.changeClient()
+      }
+    }
+  },
+  methods: {
+    changeClient () {
+      this.$refs.clientP.classList.remove('hideMe')
+      setTimeout(() => {
+        this.$refs.clientP.classList.add('hideMe')
+      }, 100)
+    }
   }
 }
 </script>
+<style>
+.hideMe {
+    background-color: rgb(81, 135, 0);
+    -moz-animation: cssAnimation 1s ease-in 0.3s forwards;
+    /* Firefox */
+    -webkit-animation: cssAnimation 1s ease-in 0.3s forwards;
+    /* Safari and Chrome */
+    -o-animation: cssAnimation 1s ease-in 0.3s forwards;
+    /* Opera */
+    animation: cssAnimation 1s ease-in 0.3s forwards;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+}
+@keyframes cssAnimation {
+    to {
+        background-color: transparent;
+    }
+}
+@-webkit-keyframes cssAnimation {
+    to {
+        background-color: transparent;
+    }
+}
+</style>
