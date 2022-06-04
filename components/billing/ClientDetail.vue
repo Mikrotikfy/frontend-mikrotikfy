@@ -6,7 +6,7 @@
     <client-only>
       <v-data-table
         ref="billDataTable"
-        style="overflow-y:scroll;height:63vh;"
+        style="overflow-y:scroll;height:53vh;"
         :headers="headers"
         :items.sync="billingInfo.movements"
         :items-per-page.sync="itemsPerPage"
@@ -32,7 +32,13 @@
           </v-chip>
         </template>
         <template v-slot:[`item.amount`]="props">
-          <span> ${{ Number(props.item.amount).toLocaleString('en') }} </span>
+          <span :style="props.item.type === 'RECAUDO' ? 'color:salmon;' : 'color:green;'"> ${{ Number(props.item.amount).toLocaleString('es') }} </span>
+        </template>
+        <template v-slot:[`item.details`]="props">
+          <BillingDetails :billinginfo="props" />
+        </template>
+        <template v-slot:[`item.date`]="props">
+          <span>{{ props.item.date.toLocaleString('es-ES') }} </span>
         </template>
       </v-data-table>
     </client-only>
@@ -49,9 +55,10 @@ export default {
       loadingDataTable: false,
       headers: [
         { text: 'ID', value: 'id', sortable: false },
-        { text: 'Fecha', value: 'date', sortable: false },
         { text: 'Tipo de movimiento', value: 'type', sortable: false },
-        { text: 'Valor', sortable: false, value: 'amount' }
+        { text: 'Observaciones', value: 'details', sortable: false },
+        { text: 'Valor', sortable: false, value: 'amount' },
+        { text: 'Fecha', value: 'date', sortable: false }
       ]
     }
   },

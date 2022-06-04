@@ -23,11 +23,18 @@
           </v-card-text>
         </v-card>
         <v-card class="mt-5 rounded-xl">
-          <v-card-text class="d-flex">
-            <BillingClientDiscountAmount />
-            <BillingClientAddAmount class="ml-4" />
+          <v-card-text>
+            <BillingClientTotal />
           </v-card-text>
         </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="5">
+        <BillingClientDiscountAmount />
+      </v-col>
+      <v-col>
+        <BillingClientAddAmount />
       </v-col>
     </v-row>
   </v-container>

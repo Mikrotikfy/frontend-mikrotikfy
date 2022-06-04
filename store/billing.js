@@ -7,6 +7,23 @@ export const state = () => ({
   headers: []
 })
 export const mutations = {
+  addMovement (state, movement) {
+    state.billingInfo.movements.push({
+      id: state.billingInfo.movements.length + 1,
+      amount: movement.amount,
+      details: movement.details,
+      type: movement.billtype.name,
+      date: new Date()
+    })
+  },
+  addDiscountMovement (state, movement) {
+    state.billingInfo.movements.push({
+      id: state.billingInfo.movements.length + 1,
+      amount: movement.amount,
+      type: 'RECAUDO',
+      date: new Date()
+    })
+  },
   getClientsBySearch (state, clients) {
     try {
       state.clients = clients.data
@@ -30,123 +47,125 @@ export const mutations = {
           {
             id: 1,
             amount: 50000,
-            type: 'RECAUDO',
-            date: '01/01/2022'
+            type: 'FACTURACION',
+            date: new Date('Sat Jan 01 2022 12:47:26 GMT-0500')
           },
           {
             id: 2,
             amount: 50000,
-            type: 'FACTURACION',
-            date: '01/02/2022'
+            type: 'RECAUDO',
+            date: new Date('Sat Feb 01 2022 12:47:26 GMT-0500')
           },
           {
             id: 3,
             amount: 50000,
-            type: 'RECAUDO',
-            date: '01/03/2022'
+            type: 'FACTURACION',
+            date: new Date('Sat Mar 01 2022 12:47:26 GMT-0500')
           },
           {
             id: 4,
             amount: 50000,
-            type: 'FACTURACION',
-            date: '01/04/2022'
+            type: 'RECAUDO',
+            date: new Date('Sat Apr 01 2022 12:47:26 GMT-0500')
           },
           {
             id: 5,
             amount: 50000,
-            type: 'RECAUDO',
-            date: '01/05/2022'
+            type: 'FACTURACION',
+            date: new Date('Sat May 01 2022 12:47:26 GMT-0500')
           },
           {
             id: 6,
             amount: 80000,
             type: 'ROUTER NUEVO',
-            date: '01/05/2022'
+            details: 'SE LE QUEMO EL ROUTER',
+            date: new Date('Sat Jun 01 2022 12:47:26 GMT-0500')
           },
           {
             id: 7,
             amount: 20000,
+            details: 'Se traslado para la calle 4 # 5 - 76',
             type: 'TRASLADO',
-            date: '01/06/2022'
-          },
-          {
-            id: 8,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/01/2022'
-          },
-          {
-            id: 9,
-            amount: 50000,
-            type: 'FACTURACION',
-            date: '01/02/2022'
-          },
-          {
-            id: 10,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/03/2022'
-          },
-          {
-            id: 11,
-            amount: 50000,
-            type: 'FACTURACION',
-            date: '01/04/2022'
-          },
-          {
-            id: 12,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/05/2022'
-          },
-          {
-            id: 13,
-            amount: 80000,
-            type: 'ROUTER NUEVO',
-            date: '01/05/2022'
-          },
-          {
-            id: 14,
-            amount: 20000,
-            type: 'TRASLADO',
-            date: '01/06/2022'
-          },
-          {
-            id: 15,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/03/2022'
-          },
-          {
-            id: 16,
-            amount: 50000,
-            type: 'FACTURACION',
-            date: '01/04/2022'
-          },
-          {
-            id: 17,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/05/2022'
-          },
-          {
-            id: 18,
-            amount: 80000,
-            type: 'ROUTER NUEVO',
-            date: '01/05/2022'
-          },
-          {
-            id: 19,
-            amount: 20000,
-            type: 'TRASLADO',
-            date: '01/06/2022'
-          },
-          {
-            id: 20,
-            amount: 20000,
-            type: 'TRASLADO',
-            date: '01/06/2022'
+            date: new Date('Sat Jun 01 2022 12:47:26 GMT-0500')
           }
+          // {
+          //   id: 8,
+          //   amount: 50000,
+          //   type: 'RECAUDO',
+          //   date: '01/01/2022'
+          // },
+          // {
+          //   id: 9,
+          //   amount: 50000,
+          //   type: 'FACTURACION',
+          //   date: '01/02/2022'
+          // },
+          // {
+          //   id: 10,
+          //   amount: 50000,
+          //   type: 'RECAUDO',
+          //   date: '01/03/2022'
+          // },
+          // {
+          //   id: 11,
+          //   amount: 50000,
+          //   type: 'FACTURACION',
+          //   date: '01/04/2022'
+          // },
+          // {
+          //   id: 12,
+          //   amount: 50000,
+          //   type: 'RECAUDO',
+          //   date: '01/05/2022'
+          // },
+          // {
+          //   id: 13,
+          //   amount: 80000,
+          //   type: 'ROUTER NUEVO',
+          //   date: '01/05/2022'
+          // },
+          // {
+          //   id: 14,
+          //   amount: 20000,
+          //   type: 'TRASLADO',
+          //   date: '01/06/2022'
+          // },
+          // {
+          //   id: 15,
+          //   amount: 50000,
+          //   type: 'RECAUDO',
+          //   date: '01/03/2022'
+          // },
+          // {
+          //   id: 16,
+          //   amount: 50000,
+          //   type: 'FACTURACION',
+          //   date: '01/04/2022'
+          // },
+          // {
+          //   id: 17,
+          //   amount: 50000,
+          //   type: 'RECAUDO',
+          //   date: '01/05/2022'
+          // },
+          // {
+          //   id: 18,
+          //   amount: 80000,
+          //   type: 'ROUTER NUEVO',
+          //   date: '01/05/2022'
+          // },
+          // {
+          //   id: 19,
+          //   amount: 20000,
+          //   type: 'TRASLADO',
+          //   date: '01/06/2022'
+          // },
+          // {
+          //   id: 20,
+          //   amount: 20000,
+          //   type: 'TRASLADO',
+          //   date: '01/06/2022'
+          // }
         ]
       }
     } catch (error) {
@@ -155,6 +174,16 @@ export const mutations = {
   }
 }
 export const actions = {
+  addMovement ({ commit }, payload) {
+    commit('addMovement', payload)
+  },
+  addDiscountMovement ({ commit }, payload) {
+    try {
+      commit('addDiscountMovement', payload)
+    } catch (error) {
+      throw new Error(`ADD MOVEMENT ACTION ${error}`)
+    }
+  },
   getBillingInfoByClientId ({ commit }, payload) {
     try {
       commit('getBillingInfoByClientId', payload)
