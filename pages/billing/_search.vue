@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row>
       <v-col cols="5">
         <v-card class="rounded-xl">
@@ -29,11 +29,11 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-row>
-      <v-col cols="5">
+    <v-row class="mt-0">
+      <v-col cols="5" class="pt-0">
         <BillingClientDiscountAmount />
       </v-col>
-      <v-col>
+      <v-col class="pt-0">
         <BillingClientAddAmount />
       </v-col>
     </v-row>

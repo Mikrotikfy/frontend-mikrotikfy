@@ -1,12 +1,12 @@
 <template>
   <div>
     <p ref="clientP" class="ml-2 hideMe rounded-xl px-2">
-      Usuario ID: {{ billingInfo.clientId }} {{ billingInfo.clientName }}
+      Usuario: {{ billingInfo.clientId }} {{ billingInfo.clientName }}
     </p>
     <client-only>
       <v-data-table
         ref="billDataTable"
-        style="overflow-y:scroll;height:53vh;"
+        style="overflow-y:scroll;max-height:56vh;"
         :headers="headers"
         :items.sync="billingInfo.movements"
         :items-per-page.sync="itemsPerPage"

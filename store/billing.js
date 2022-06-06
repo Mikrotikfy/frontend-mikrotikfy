@@ -87,85 +87,85 @@ export const mutations = {
             details: 'Se traslado para la calle 4 # 5 - 76',
             type: 'TRASLADO',
             date: new Date('Sat Jun 01 2022 12:47:26 GMT-0500')
+          },
+          {
+            id: 8,
+            amount: 50000,
+            type: 'RECAUDO',
+            date: '01/01/2022'
+          },
+          {
+            id: 9,
+            amount: 50000,
+            type: 'FACTURACION',
+            date: '01/02/2022'
+          },
+          {
+            id: 10,
+            amount: 50000,
+            type: 'RECAUDO',
+            date: '01/03/2022'
+          },
+          {
+            id: 11,
+            amount: 50000,
+            type: 'FACTURACION',
+            date: '01/04/2022'
+          },
+          {
+            id: 12,
+            amount: 50000,
+            type: 'RECAUDO',
+            date: '01/05/2022'
+          },
+          {
+            id: 13,
+            amount: 80000,
+            type: 'ROUTER NUEVO',
+            date: '01/05/2022'
+          },
+          {
+            id: 14,
+            amount: 20000,
+            type: 'TRASLADO',
+            date: '01/06/2022'
+          },
+          {
+            id: 15,
+            amount: 50000,
+            type: 'RECAUDO',
+            date: '01/03/2022'
+          },
+          {
+            id: 16,
+            amount: 50000,
+            type: 'FACTURACION',
+            date: '01/04/2022'
+          },
+          {
+            id: 17,
+            amount: 50000,
+            type: 'RECAUDO',
+            date: '01/05/2022'
+          },
+          {
+            id: 18,
+            amount: 80000,
+            type: 'ROUTER NUEVO',
+            date: '01/05/2022'
+          },
+          {
+            id: 19,
+            amount: 20000,
+            type: 'TRASLADO',
+            date: '01/06/2022'
+          },
+          {
+            id: 20,
+            amount: 20000,
+            type: 'TRASLADO',
+            date: '01/06/2022'
           }
-          // {
-          //   id: 8,
-          //   amount: 50000,
-          //   type: 'RECAUDO',
-          //   date: '01/01/2022'
-          // },
-          // {
-          //   id: 9,
-          //   amount: 50000,
-          //   type: 'FACTURACION',
-          //   date: '01/02/2022'
-          // },
-          // {
-          //   id: 10,
-          //   amount: 50000,
-          //   type: 'RECAUDO',
-          //   date: '01/03/2022'
-          // },
-          // {
-          //   id: 11,
-          //   amount: 50000,
-          //   type: 'FACTURACION',
-          //   date: '01/04/2022'
-          // },
-          // {
-          //   id: 12,
-          //   amount: 50000,
-          //   type: 'RECAUDO',
-          //   date: '01/05/2022'
-          // },
-          // {
-          //   id: 13,
-          //   amount: 80000,
-          //   type: 'ROUTER NUEVO',
-          //   date: '01/05/2022'
-          // },
-          // {
-          //   id: 14,
-          //   amount: 20000,
-          //   type: 'TRASLADO',
-          //   date: '01/06/2022'
-          // },
-          // {
-          //   id: 15,
-          //   amount: 50000,
-          //   type: 'RECAUDO',
-          //   date: '01/03/2022'
-          // },
-          // {
-          //   id: 16,
-          //   amount: 50000,
-          //   type: 'FACTURACION',
-          //   date: '01/04/2022'
-          // },
-          // {
-          //   id: 17,
-          //   amount: 50000,
-          //   type: 'RECAUDO',
-          //   date: '01/05/2022'
-          // },
-          // {
-          //   id: 18,
-          //   amount: 80000,
-          //   type: 'ROUTER NUEVO',
-          //   date: '01/05/2022'
-          // },
-          // {
-          //   id: 19,
-          //   amount: 20000,
-          //   type: 'TRASLADO',
-          //   date: '01/06/2022'
-          // },
-          // {
-          //   id: 20,
-          //   amount: 20000,
-          //   type: 'TRASLADO',
-          //   date: '01/06/2022'
-          // }
         ]
       }
     } catch (error) {
