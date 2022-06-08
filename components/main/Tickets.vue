@@ -73,7 +73,7 @@
               no-data-text="No hay Tickets abiertos aún..."
               loading-text="Cargando información de tickets..."
               hide-default-footer
-              mobile-breakpoint="100"
+              mobile-breakpoint="600"
               @page-count="pageCount = $event"
               @click:row="showTicketInfo({ item: $event, index: ticketList.indexOf($event) })"
             >
@@ -170,122 +170,12 @@
         </div>
       </v-col>
     </v-row>
-    <v-dialog
-      v-if="!isDesktop"
-      v-model="infoModal"
-      fullscreen
-      hide-overlay
-      transition="dialog-bottom-transition"
-    >
-      <v-card>
-        <v-toolbar
-          dark
-        >
-          <v-btn
-            icon
-            dark
-            @click="infoModal = false"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-toolbar>
-        <v-card-title>
-          Información de Ticket  
-        </v-card-title>
-        <v-card-text>
-          <v-list rounded>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.tickettype ? editModalData.tickettype.name : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.code : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.name : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.address : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.neighborhood.name : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.phone : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.technology.name : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-subtitle>Detalles</v-list-item-subtitle>
-                <p>{{ editModalData ? editModalData.details : '' }}</p>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-subtitle>Reporto</v-list-item-subtitle>
-                <v-list-item-title>{{ editModalData.assiganted ? editModalData.assiganted.username : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-subtitle>Creado en</v-list-item-subtitle>
-                <v-list-item-title>{{ editModalData ? editModalData.createdAt : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content v-if="editModalData.client !== undefined">
-                <ClientStatus
-                    :block="true"
-                    :name="editModalData.client.name"
-                    :clientid="editModalData.client.id"
-                    :code="editModalData.client.code"
-                    :role="allowed_components"
-                  />
-                <CreateTicketAdvance
-                  :block="true"
-                  :editindex="editModalData.editindex"
-                  :ticketid="editModalData.id"
-                  :ticket="editModalData"
-                  :client="editModalData.client"
-                  :name="editModalData.client.name"
-                  @updateTicketStatus="updateTicketStatus($event)"
-                />
-                <TicketAdvanceHistory
-                  :block="true"
-                  :ticketid="editModalData.id"
-                  :name="editModalData.client.name"
-                />
-                <TvServiceStepper
-                  v-if="clienttype === 'TELEVISION'"
-                  :clientid="editModalData.client.id"
-                  :block="true"
-                />
-                <TicketHistory
-                  :clientid="editModalData.client.id"
-                  :name="editModalData.client.name"
-                  :block="true"
-                />
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+    <TicketDetails
+      :desktop="isDesktop"
+      :modal="infoModal"
+      :ticket="editModalData"
+      @close="closeModal()"
+    />
   </v-container>
 </template>
 
@@ -447,6 +337,9 @@ export default {
       if (currentCity !== recordedCity) {
         this.$store.dispatch('refreshTickets', { city: currentCity, limit: 50 })
       }
+    },
+    closeModal () {
+      this.infoModal = false
     }
   }
 }

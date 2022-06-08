@@ -7,11 +7,12 @@
           :block="block"
           :text="!block"
           :x-small="!block"
+          :class="block ? 'mb-2 rounded-xl elevation-0' : ''"
           :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
           v-on="on"
           @click="initComponent()"
         >
-          <v-icon>mdi-comment-text-multiple-outline</v-icon>
+          <v-icon class="mr-2">mdi-comment-text-multiple-outline</v-icon>
           <span v-if="block">
             Historial de Tickets
           </span>

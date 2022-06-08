@@ -8,10 +8,11 @@
           :text="!block"
           :x-small="!block"
           :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
+          :class="block ? 'mb-2 rounded-xl elevation-0' : ''"
           v-on="on"
           @click="initComponent"
         >
-          <v-icon>mdi-wifi-check</v-icon>
+          <v-icon class="mr-2">mdi-wifi-check</v-icon>
           <span v-if="block">
             Ver Estado
           </span>
