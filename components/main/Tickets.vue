@@ -6,7 +6,7 @@
       >
         <v-card
           fluid
-          class="rounded-xl"
+          class="rounded-xl elevation-0"
         >
           <v-card-text class="py-4">
             <v-row>
@@ -54,7 +54,7 @@
       <v-col>
         <v-card
           fluid
-          class="rounded-xl"
+          class="rounded-xl elevation-0"
         >
         <v-card-text>
           <client-only>
@@ -73,7 +73,7 @@
               no-data-text="No hay Tickets abiertos aún..."
               loading-text="Cargando información de tickets..."
               hide-default-footer
-              mobile-breakpoint="600"
+              mobile-breakpoint="100"
               @page-count="pageCount = $event"
               @click:row="showTicketInfo({ item: $event, index: ticketList.indexOf($event) })"
             >
@@ -153,9 +153,16 @@
                 </v-chip>
               </template>
               <template v-slot:[`item.createdAt`]="{ item }">
-                <span>
-                  {{ getDate(item.createdAt) }}
-                </span>
+                <v-tooltip right>
+                  <template v-slot:activator="{ on, attrs }">
+                    <span
+                      v-bind="attrs"
+                      v-on="on"
+                      class="text-bold"
+                    >{{$moment(item.createdAt).fromNow() }}</span>
+                  </template>
+                  <span>{{ getDate(item.createdAt) }}</span>
+                </v-tooltip>
               </template>
             </v-data-table>
           </client-only>
@@ -175,6 +182,9 @@
       :modal="infoModal"
       :ticket="editModalData"
       @close="closeModal()"
+    />
+    <MainFloatGadgets
+      v-if="isDesktop"
     />
   </v-container>
 </template>

@@ -53,8 +53,13 @@ export default {
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     '@nuxtjs/vuetify',
+    '@nuxtjs/moment',
     '@nuxtjs/pwa'
   ],
+  moment: {
+    defaultLocale: 'es',
+    locales: ['es']
+  },
   webpackOptimisations: {
     features: {
       // Note: just an example of keys, these are all keys and their default

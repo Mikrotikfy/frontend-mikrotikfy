@@ -7,7 +7,7 @@
     transition="dialog-bottom-transition"
   >
     <v-card>
-      <v-toolbar>
+      <v-toolbar class="transparent elevation-0" dense>
         <v-spacer />
         <v-btn
           icon
@@ -16,7 +16,7 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-card-text class="mt-5" style="display:grid;place-items:normal;height:90%;position:absolute;">
+      <v-card-text style="display:grid;place-items:normal;height:90%;position:absolute;">
         <v-chip :color="getTicketTypeColor(ticket.tickettype ? ticket.tickettype.name : '')" small>
           {{ ticket.tickettype ? ticket.tickettype.name : '' }}
         </v-chip>
@@ -31,9 +31,18 @@
         </p>
         <h4>{{ ticket ? ticket.details : '' }}</h4>
         <p class="mb-0">
-          Creado el
+          Creado
         </p>
-        <h4>{{ getDate(ticket ? ticket.createdAt : '') }}</h4>
+        <v-tooltip right>
+          <template v-slot:activator="{ on, attrs }">
+            <span
+              class="text-bold"
+              v-bind="attrs"
+              v-on="on"
+            >{{$moment(ticket.createdAt).fromNow() }}</span>
+          </template>
+          <span>{{ getDate(ticket.createdAt) }}</span>
+        </v-tooltip>
         <div v-if="ticket.client !== undefined" class="mt-10">
           <TicketTimeline
             :block="true"

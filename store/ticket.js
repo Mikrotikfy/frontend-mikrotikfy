@@ -34,8 +34,8 @@ export const mutations = {
         { text: 'Tec.', sortable: false, value: 'client.technology.name', align: ' d-none d-lg-table-cell' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', align: ' d-none d-lg-table-cell' },
         { text: 'Creado por', sortable: false, value: 'assignated.username', align: ' d-none d-lg-table-cell' },
-        { text: 'Observaciones', sortable: false, value: 'details', width: 400, align: ' d-none d-lg-table-cell' },
-        { text: 'Creado el', sortable: false, value: 'createdAt', align: ' d-none d-lg-table-cell' },
+        { text: 'Observaciones', sortable: false, value: 'details', width: 300, align: ' d-none d-lg-table-cell' },
+        { text: 'Creado', sortable: false, value: 'createdAt', align: ' d-none d-lg-table-cell' },
         { text: 'Acciones', sortable: false, value: 'actions', align: ' d-none d-lg-table-cell' }
       ]
     } else {
@@ -49,8 +49,8 @@ export const mutations = {
         { text: 'Telefono', sortable: false, value: 'client.phone', align: ' d-none d-lg-table-cell' },
         { text: 'Creado por', sortable: false, value: 'tickettype.name' },
         { text: 'Operador', sortable: false, value: 'assignated.username', align: ' d-none d-lg-table-cell' },
-        { text: 'Observaciones', sortable: false, value: 'details', width: 400, align: ' d-none d-lg-table-cell' },
-        { text: 'Creado el', sortable: false, value: 'createdAt', align: ' d-none d-lg-table-cell' },
+        { text: 'Observaciones', sortable: false, value: 'details', width: 300, align: ' d-none d-lg-table-cell' },
+        { text: 'Creado', sortable: false, value: 'createdAt', align: ' d-none d-lg-table-cell' },
         { text: 'Acciones', sortable: false, value: 'actions', align: ' d-none d-lg-table-cell' }
       ]
     }

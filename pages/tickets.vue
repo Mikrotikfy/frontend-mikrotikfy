@@ -1,6 +1,7 @@
 <template>
   <div>
     <MainTickets />
+    <MainTimeline />
   </div>
 </template>
 
