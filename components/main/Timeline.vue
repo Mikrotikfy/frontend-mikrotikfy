@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-card class="rounded-xl elevation-0">
+    <v-card class="rounded-xl elevation-0" style="background-color:rgba(16,16,16,0.3);backdrop-filter:blur(5px);">
       <v-card-text>
         <v-row>
           <h1 style="border-right: 1px solid #aeaeae;" class="text-bold pa-3 text-center align-center vertical">
@@ -33,6 +33,7 @@ export default {
   },
   mounted () {
     this.getTimeline()
+    setInterval(this.getTimeline(), 60000)
   },
   methods: {
     getTimeline () {

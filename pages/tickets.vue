@@ -1,13 +1,18 @@
 <template>
   <div>
     <MainTickets />
-    <MainTimeline />
+    <MainTimeline v-if="isDesktop" />
   </div>
 </template>
 
 <script>
 export default {
   middleware: ['defaultCity', 'authenticated'],
+  data () {
+    return {
+      isDesktop: false
+    }
+  },
   computed: {
     role () {
       return this.$store.state.auth.allowed_components
@@ -16,6 +21,9 @@ export default {
       // eslint-disable-next-line eqeqeq
       return this.$store.state.cities ? this.$store.state.cities.find(c => c.id == this.$route.query.city) : ''
     }
+  },
+  mounted () {
+    this.getResolution()
   },
   methods: {
     can (component) {
@@ -27,6 +35,14 @@ export default {
     },
     getLocalStorage () {
       this.$store.dispatch('loadLocalStorage')
+    },
+    getResolution () {
+      const res = window.innerWidth
+      if (res > 800) {
+        this.isDesktop = true
+      } else {
+        this.isDesktop = false
+      }
     }
   },
   head () {

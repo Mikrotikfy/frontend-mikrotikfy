@@ -9,7 +9,7 @@ export const mutations = {
           id: 1,
           technician: {
             id: 1,
-            name: 'Carlos'
+            name: 'carlos'
           },
           diagnostic: {
             id: 1,
@@ -23,14 +23,14 @@ export const mutations = {
             active: false,
             date: null
           },
-          start: '2020-01-01T00:00:00.000Z',
+          start: '2022-06-15T15:09:40.000Z',
           end: '2020-01-01T00:00:00.000Z'
         },
         {
-          id: 1,
+          id: 2,
           technician: {
-            id: 1,
-            name: 'Norberto'
+            id: 2,
+            name: 'norberto'
           },
           diagnostic: {
             id: 1,
@@ -44,14 +44,14 @@ export const mutations = {
             active: true,
             date: null
           },
-          start: '2020-01-01T00:00:00.000Z',
+          start: '2022-06-15T08:50:00.000Z',
           end: '2020-01-01T00:00:00.000Z'
         },
         {
-          id: 1,
+          id: 3,
           technician: {
-            id: 1,
-            name: 'Wilmar'
+            id: 3,
+            name: 'wilmar'
           },
           diagnostic: {
             id: 1,
@@ -65,14 +65,14 @@ export const mutations = {
             active: false,
             date: null
           },
-          start: '2020-01-01T00:00:00.000Z',
+          start: '2022-06-15T07:00:00.000Z',
           end: '2020-01-01T00:00:00.000Z'
         },
         {
-          id: 1,
+          id: 4,
           technician: {
-            id: 1,
-            name: 'Mincho'
+            id: 4,
+            name: 'mincho'
           },
           diagnostic: {
             id: 1,
@@ -86,7 +86,7 @@ export const mutations = {
             active: false,
             date: null
           },
-          start: '2020-01-01T00:00:00.000Z',
+          start: '2022-06-15T08:30:00.000Z',
           end: '2020-01-01T00:00:00.000Z'
         }
       ]

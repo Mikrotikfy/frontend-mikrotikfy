@@ -1,17 +1,28 @@
 <template>
   <div class="parent mt-2">
     <span class="text-bold text-center text-h6">
-      {{ timelineItem.technician.name }}
+      {{ ucfirst(timelineItem.technician.name) }}
     </span>
     <span>
       <v-progress-linear
-        v-model="complete"
-        :color="getColor()"
+        :value="complete"
+        :buffer-value="complete"
+        :color="getColor(timelineItem.diagnostic.active ? timelineItem.diagnostic.type : timelineItem.solution.type)"
+        class="rounded-xl"
+        stream
         height="25"
       />
     </span>
     <span class="text-bold text-center text-subtitle">
-      {{ timelineItem.diagnostic.ended ? timelineItem.solution.type : timelineItem.diagnostic.type }}
+      {{ timelineItem.diagnostic.active ? timelineItem.diagnostic.type : timelineItem.solution.type }}
+    </span>
+    <span class="d-flex justify-center">
+      <v-chip :color="getChipColor(timelineItem.diagnostic.active ? 'diagnostic' : timelineItem.solution.active ? 'solution' : 'complete')">
+        {{ timelineItem.diagnostic.active ? 'DIAGNOSTICANDO' : timelineItem.solution.active ? 'SOLUCIONANDO' : 'COMPLETADO' }}
+      </v-chip>
+    </span>
+    <span class="text-bold text-center text-h6">
+      {{ $moment(timelineItem.start).fromNow() }}
     </span>
   </div>
 </template>
@@ -47,6 +58,19 @@ export default {
           this.complete = 100
           return 'green'
       }
+    },
+    getChipColor (type) {
+      console.log(type)
+      if (type === 'diagnostic') {
+        return 'red'
+      } else if (type === 'solution') {
+        return 'orange'
+      } else {
+        return 'green'
+      }
+    },
+    ucfirst (string) {
+      return string.charAt(0).toUpperCase() + string.slice(1)
     }
   }
 }
@@ -54,7 +78,7 @@ export default {
 <style>
 .parent {
   display: grid;
-  grid-template-columns: 2fr 12fr 3fr;
+  grid-template-columns: 2fr 12fr 3fr 3fr 3fr;
   grid-template-rows: 1fr;
   grid-column-gap: 10px;
   grid-row-gap: 0px;

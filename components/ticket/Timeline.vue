@@ -269,10 +269,8 @@ export default {
     initComponent () {
       this.dialog = true
       if (localStorage.getItem(this.clientid)) {
-        console.log('update')
         this.getStorageContext()
       } else {
-        console.log('reset')
         this.resetLocalContext()
       }
     },
