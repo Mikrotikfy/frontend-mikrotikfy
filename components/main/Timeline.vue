@@ -2,11 +2,11 @@
   <v-container fluid>
     <v-card class="rounded-xl elevation-0" style="background-color:rgba(16,16,16,0.3);backdrop-filter:blur(5px);">
       <v-card-text>
-        <v-row>
+        <v-row class="align-center">
           <h1 style="border-right: 1px solid #aeaeae;" class="text-bold pa-3 text-center align-center vertical">
             Timeline
           </h1>
-          <v-container class="mx-0 px-0" style="width:95%;">
+          <v-container class="mx-0 px-0 align-center" style="width:95%;">
             <TimelineItem
               v-for="item in timeline"
               :key="item.id"
