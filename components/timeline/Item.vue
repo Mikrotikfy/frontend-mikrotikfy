@@ -1,13 +1,13 @@
 <template>
-  <div v-if="getHoursFromDate(timelineItem.end) < 12" class="parent mt-2 align-center">
+  <div class="parent mt-2 align-center">
     <span class="text-bold text-center text-h6">
-      {{ ucfirst(timelineItem.technician.name) }}
+      {{ ucfirst(timelineItem.technician.username) }}
     </span>
     <span>
       <v-progress-linear
         :value="complete"
         :buffer-value="complete"
-        :color="getColor(timelineItem.ticketdiagnostic.active ? timelineItem.ticketdiagnostic.diagnostictype.name : timelineItem.ticketsolution.solutiontype.name)"
+        :color="getColor(timelineItem.e6 === 1 ? timelineItem.ticketdiagnostic.diagnostictype.name : timelineItem.ticketsolution.solutiontype.name)"
         class="rounded-xl"
         stream
         height="25"
@@ -20,19 +20,19 @@
           v-bind="attrs"
           v-on="on"
         >
-          {{ timelineItem.ticketdiagnostic.active ? timelineItem.ticketdiagnostic.diagnostictype.name : timelineItem.ticketsolution.solutiontype.name }}
+          {{ timelineItem.e6 === 1 ? timelineItem.ticketdiagnostic.diagnostictype.name : timelineItem.ticketsolution.solutiontype.name }}
           {{ timelineItem.ticketdiagnostic.details ? '*' : '' }}
         </span>
       </template>
-      <span>{{ timelineItem.ticketdiagnostic.active ? timelineItem.ticketdiagnostic.diagnosticdetails :  timelineItem.ticketsolution.solutiondetails }}</span>
+      <span>{{ timelineItem.e6 === 1 ? timelineItem.ticketdiagnostic.diagnosticdetails : timelineItem.ticketsolution.solutiondetails }}</span>
     </v-tooltip>
     <span class="d-flex justify-center">
-      <span :style="`color:${getChipColor(timelineItem.ticketdiagnostic.active ? 'ticketdiagnostic' : timelineItem.ticketsolution.active ? 'ticketsolution' : 'complete')}`">
-        {{ timelineItem.ticketdiagnostic.active ? 'DIAGNOSTICANDO' : timelineItem.ticketsolution.active ? 'SOLUCIONANDO' : 'COMPLETADO' }}
+      <span :style="`color:${getChipColor(timelineItem.e6 === 1 ? 'ticketdiagnostic' : timelineItem.e6 === 2 ? 'ticketsolution' : 'complete')}`">
+        {{ timelineItem.e6 === 1 ? 'DIAGNOSTICANDO' : timelineItem.e6 === 2 ? 'SOLUCIONANDO' : 'COMPLETADO' }}
       </span>
     </span>
     <span class="text-bold text-center text-h6">
-      {{ timelineItem.ticketdiagnostic.active ? 'Iniciado ' : timelineItem.ticketsolution.active ? 'Iniciado ' : 'Solucionado ' }}{{ $moment(timelineItem.end).fromNow() }}
+      {{ timelineItem.e6 === 1 ? 'Iniciado ' : timelineItem.e6 === 2 ? 'Iniciado ' : 'Solucionado ' }}{{ $moment(timelineItem.end).fromNow() }}
     </span>
   </div>
 </template>
@@ -52,12 +52,7 @@ export default {
   },
   methods: {
     getColor () {
-      const stage = this.timelineItem.ticketdiagnostic.active
-        ? 1
-        : this.timelineItem.ticketsolution.active
-          ? 2
-          : 3
-      switch (stage) {
+      switch (this.timelineItem.e6) {
         case 1:
           this.complete = 10
           return 'red'

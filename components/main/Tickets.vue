@@ -118,6 +118,13 @@
               </template>
               <template v-if="isDesktop" v-slot:[`item.actions`]="props">
                 <div class="nowspace">
+                  <TicketTimeline
+                    :name="props.item.client.name"
+                    :clientid="props.item.client.id"
+                    :ticketid="props.item.id"
+                    :code="props.item.client.code"
+                    @endService="closeModal"
+                  />
                   <TicketHistory
                     :clientid="props.item.client.id"
                     :name="props.item.client.name"

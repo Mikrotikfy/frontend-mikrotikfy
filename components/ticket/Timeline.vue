@@ -22,7 +22,7 @@
     </v-tooltip>
     <v-dialog
       v-model="dialog"
-      fullscreen
+      :fullscreen="block"
       hide-overlay
       transition="dialog-bottom-transition"
     >
@@ -61,7 +61,7 @@
               class="mt-5 rounded-xl elevation-0"
               block
               color="green darken-3"
-              @click="initService"
+              @click="newTimeline"
             >
               Iniciar Servicio
             </v-btn>
@@ -82,7 +82,7 @@
 
           <v-stepper-content step="2">
             <v-select
-              v-model="diagnostic"
+              v-model="timeline.diagnostic"
               :items="diagnosticItems"
               label="Posible razon"
               filled
@@ -90,7 +90,7 @@
               item-value="id"
             />
             <v-textarea
-              v-model="diagnosticDescription"
+              v-model="timeline.diagnosticdetails"
               label="Detalles adicionales (Opcional)"
               filled
             />
@@ -127,7 +127,7 @@
 
           <v-stepper-content step="3">
             <v-select
-              v-model="solution"
+              v-model="timeline.solution"
               :items="solutionItems"
               label="Solucion para el cliente"
               filled
@@ -135,7 +135,7 @@
               item-value="id"
             />
             <v-textarea
-              v-model="solutionDescription"
+              v-model="timeline.solutiondetails"
               label="Detalles adicionales (Opcional)"
               filled
             />
@@ -155,6 +155,25 @@
             >
               Finalizar Servicio
             </v-btn>
+          </v-stepper-content>
+
+          <v-stepper-step
+            :complete="e6 > 4"
+            step="3"
+            editable
+          >
+            Finalizado
+            <v-icon>mdi-flag-checkered</v-icon>
+            <small
+              v-if="initSolution"
+              class="green--text"
+            >Servicio terminado</small>
+          </v-stepper-step>
+
+          <v-stepper-content step="4">
+            <span>
+              Servicio finalizado el: <v-chip small>{{ timeline.end }}</v-chip>
+            </span>
           </v-stepper-content>
         </v-stepper>
       </v-card>
@@ -201,16 +220,18 @@ export default {
     return {
       clientContextId: null,
       e6: 1,
+      timeline: {
+        diagnostic: null,
+        diagnosticdetails: '',
+        solution: null,
+        solutiondetails: '',
+        start: null,
+        end: null,
+        technician: null
+      },
       dialog: false,
       initDiagnostic: false,
-      diagnostic: null,
-      diagnosticDescription: '',
       initSolution: false,
-      solution: null,
-      solutionDescription: '',
-      start: null,
-      end: null,
-      technician: null,
       solutionItems: [
         {
           id: 1,
@@ -274,44 +295,53 @@ export default {
         this.resetLocalContext()
       }
     },
-    initService () {
-      this.setStorageContext()
+    newTimeline () {
+      this.timeline.start = new Date().toISOString()
+      this.$store.dispatch('timeline/newTimeline', {
+        clientid: this.clientid,
+        ticketid: this.ticketid,
+        city: this.$route.query.city,
+        technician: this.$store.state.auth,
+        start: this.timeline.start
+      })
       this.initDiagnostic = true
       this.e6 = 2
+      this.setStorageContext()
     },
     updateDiagnostic () {
-      if (this.diagnostic === null) {
+      if (this.ticketdiagnostic === null) {
         this.$toast.error('Selecciona un diagnostico antes de continuar.', { duration: 4000, position: 'top-center' })
         return
       }
       this.setStorageContext()
       this.$toast.success('Avance enviado correctamente', { duration: 4000, position: 'top-center' })
-      this.diagnostic = null
+      this.ticketdiagnostic = null
       this.diagnosticDescription = ''
     },
     endDiagnostic () {
-      if (this.diagnostic === null) {
+      if (this.ticketdiagnostic === null) {
         this.$toast.error('Selecciona un diagnostico antes de continuar.', { duration: 4000, position: 'top-center' })
         return
       }
+      this.e6 = 3
+      this.initDiagnostic = false
+      this.initSolution = true
       this.setStorageContext()
       this.updateDiagnostic()
       this.$toast.success('Diagnostico finalizado correctamente', { duration: 4000, position: 'top-center' })
-      this.initDiagnostic = false
-      this.initSolution = true
-      this.e6 = 3
     },
     updateSolution () {
       this.setStorageContext()
       this.$toast.success('Avance de solucion enviado correctamente', { duration: 4000, position: 'top-center' })
     },
     endService () {
-      // const end = new Date()
+      const end = new Date().toISOString()
+      this.timeline.end = end
       this.initSolution = false
-      this.e6 = 1
+      this.e6 = 4
       this.$toast.success('Servicio Finalizado Correctamente', { duration: 4000, position: 'top-center' })
-      localStorage.removeItem(this.clientid)
       this.$emit('endService')
+      localStorage.removeItem(this.clientid)
       this.dialog = false
     },
     getDate (date) {
@@ -320,19 +350,19 @@ export default {
       return humanDateFormat
     },
     getStorageContext () {
-      const context = localStorage.getItem(this.clientid)
+      const context = JSON.parse(localStorage.getItem(this.clientid))
       if (context) {
-        this.clientContextId = JSON.parse(context).id
-        this.e6 = JSON.parse(context).e6
-        this.diagnostic = JSON.parse(context).diagnostic
-        this.diagnosticDescription = JSON.parse(context).diagnosticDescription
-        this.solution = JSON.parse(context).solution
-        this.solutionDescription = JSON.parse(context).solutionDescription
-        this.initDiagnostic = JSON.parse(context).initDiagnostic
-        this.initSolution = JSON.parse(context).initSolution
-        this.start = JSON.parse(context).start
-        this.end = JSON.parse(context).end
-        this.technician = JSON.parse(context).technician
+        this.clientContextId = context.id
+        this.e6 = context.e6
+        this.ticketdiagnostic = context.ticketdiagnostic
+        this.diagnosticDescription = context.diagnosticDescription
+        this.ticketsolution = context.ticketsolution
+        this.solutionDescription = context.solutionDescription
+        this.initDiagnostic = context.initDiagnostic
+        this.initSolution = context.initSolution
+        this.start = context.start
+        this.end = context.end
+        this.technician = context.technician
       } else {
         this.$toast.error('No hay contexto para el servicio. Reporta esto a Nico', { position: 'top-center' })
         this.resetLocalContext()
@@ -343,22 +373,22 @@ export default {
         clientid: this.clientid,
         ticketid: this.ticketid,
         e6: this.e6,
-        diagnostic: this.diagnostic,
+        ticketdiagnostic: this.diagnostic,
         diagnosticDescription: this.diagnosticDescription,
-        solution: this.solution,
+        ticketsolution: this.solution,
         solutionDescription: this.solutionDescription,
         initDiagnostic: this.initDiagnostic,
         initSolution: this.initSolution,
-        start: new Date(),
+        start: this.start,
         end: null,
         technician: this.$store.state.auth.id
       }))
     },
     resetLocalContext () {
       this.e6 = 1
-      this.diagnostic = null
+      this.ticketdiagnostic = null
       this.diagnosticDescription = ''
-      this.solution = null
+      this.ticketsolution = null
       this.solutionDescription = ''
       this.initDiagnostic = false
       this.initSolution = false
