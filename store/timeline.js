@@ -2,40 +2,11 @@ export const state = () => ({
   timeline: []
 })
 export const mutations = {
-  getTimeline (state, _) {
+  getTimeline (state, timeline) {
     try {
-      state.timeline = [
-        {
-          id: 1,
-          e6: 1,
-          technician: {
-            id: 1,
-            username: 'carlos'
-          },
-          ticketdiagnostic: {
-            id: 1,
-            diagnostictype: {
-              id: 1,
-              name: 'ROUTER BLOQUEADO'
-            },
-            diagnosticdetails: 'Se realiza visita a cliente donde s evidencia router blqueado. Se reinicia para mejorar la conectivida.d Se cambia la contraseña del weifi y sijdfsafoisejfsoijfeoif',
-            date: '2020-01-01T00:00:00.000Z'
-          },
-          ticketsolution: {
-            id: 1,
-            solutiontype: {
-              id: 1,
-              name: 'REINICIO DE ROUTER'
-            },
-            solutiondetails: 'XDDDDDDDDDDDDDDDDDD',
-            date: null
-          },
-          start: '2022-06-17T15:09:40.000Z',
-          end: '2022-06-18T15:08:00.000Z'
-        }
-      ]
+      state.timeline = timeline.data
     } catch (error) {
-      throw new Error(`PLAN MUTATE ${error}`)
+      throw new Error(`TIMELINE MUTATE ${error}`)
     }
   },
   newTimeline (state, data) {
@@ -63,7 +34,7 @@ export const mutations = {
         end: null
       })
     } catch (error) {
-      throw new Error(`PLAN MUTATE ${error}`)
+      throw new Error(`TIMELINE MUTATE ${error}`)
     }
   }
 }
@@ -72,14 +43,36 @@ export const actions = {
     try {
       commit('newTimeline', { clientid, ticketid, city, technician, start })
     } catch (error) {
-      throw new Error(`PLAN ACTION ${error}`)
+      throw new Error(`TIMELINE ACTION ${error}`)
     }
   },
-  getTimeline ({ commit }, { city, token }) {
+  async getTimeline ({ commit }, { cityName, token }) {
     try {
-      commit('getTimeline')
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          city: {
+            name: cityName
+          }
+        },
+        populate: ['technician', 'client', 'client.neighborhood', 'client.technology', 'ticket', 'ticket.tickettype', 'ticket.assignated', 'ticket.ticketdetails', 'ticketdiagnostic', 'ticketdiagnostic.diagnostictype', 'ticketsolution', 'ticketsolution.solutiontype', 'city']
+      },
+      {
+        encodeValuesOnly: true
+      })
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}timelines?${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then((timeline) => {
+          commit('getTimeline', timeline)
+        })
     } catch (error) {
-      throw new Error(`PLAN ACTION ${error}`)
+      throw new Error(`TIMELINE ACTION ${error}`)
     }
   }
 }
