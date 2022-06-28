@@ -1,7 +1,7 @@
 <template>
   <div>
-    <MainTickets />
-    <MainTimeline v-if="isDesktop" />
+    <!-- <MainTickets /> -->
+    <MainTimeline />
   </div>
 </template>
 
@@ -9,9 +9,7 @@
 export default {
   middleware: ['defaultCity', 'authenticated'],
   data () {
-    return {
-      isDesktop: false
-    }
+    return {}
   },
   computed: {
     role () {
@@ -22,27 +20,9 @@ export default {
       return this.$store.state.cities ? this.$store.state.cities.find(c => c.id == this.$route.query.city) : ''
     }
   },
-  mounted () {
-    this.getResolution()
-  },
   methods: {
-    can (component) {
-      // eslint-disable-next-line camelcase
-      const allowed_components = this.role
-      // eslint-disable-next-line camelcase
-      const current_component = component
-      return allowed_components.includes(current_component)
-    },
     getLocalStorage () {
       this.$store.dispatch('loadLocalStorage')
-    },
-    getResolution () {
-      const res = window.innerWidth
-      if (res > 800) {
-        this.isDesktop = true
-      } else {
-        this.isDesktop = false
-      }
     }
   },
   head () {

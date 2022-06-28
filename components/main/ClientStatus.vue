@@ -6,13 +6,12 @@
           v-bind="attrs"
           :block="block"
           :text="!block"
-          :x-small="!block"
           :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
-          :class="block ? 'mb-2 rounded-xl elevation-0' : ''"
+          :class="block ? 'mb-2 rounded-xl elevation-0 text-center justify-center' : ''"
           v-on="on"
           @click="initComponent"
         >
-          <v-icon class="mr-2">mdi-wifi-check</v-icon>
+          <v-icon :class="block ? 'mr-2' : ''">mdi-wifi-check</v-icon>
           <span v-if="block">
             Ver Estado
           </span>

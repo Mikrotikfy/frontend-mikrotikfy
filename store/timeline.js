@@ -2,9 +2,9 @@ export const state = () => ({
   timeline: []
 })
 export const mutations = {
-  getTimeline (state, timeline) {
+  getTickets (state, tickets) {
     try {
-      state.timeline = timeline.data
+      state.timeline = tickets.data
     } catch (error) {
       throw new Error(`TIMELINE MUTATE ${error}`)
     }
@@ -46,21 +46,75 @@ export const actions = {
       throw new Error(`TIMELINE ACTION ${error}`)
     }
   },
-  async getTimeline ({ commit }, { cityName, token }) {
+  async getTickets ({ commit }, { city, token, active, clienttype, retired }) {
+    let filters = null
+    if (retired) {
+      filters = {
+        city: {
+          name: {
+            $eq: city
+          }
+        },
+        active: {
+          $eq: !active
+        },
+        tickettype: {
+          name: {
+            $eq: 'RETIRO'
+          }
+        },
+        clienttype: {
+          name: {
+            $eq: clienttype
+          }
+        }
+      }
+    } else {
+      filters = {
+        city: {
+          name: {
+            $eq: city
+          }
+        },
+        active: {
+          $eq: !active
+        },
+        tickettype: {
+          name: {
+            $ne: 'RETIRO'
+          }
+        },
+        clienttype: {
+          name: {
+            $eq: clienttype
+          }
+        }
+      }
+    }
     try {
       const qs = require('qs')
       const query = qs.stringify({
-        filters: {
-          city: {
-            name: cityName
-          }
-        },
-        populate: ['technician', 'client', 'client.neighborhood', 'client.technology', 'ticket', 'ticket.tickettype', 'ticket.assignated', 'ticket.ticketdetails', 'ticketdiagnostic', 'ticketdiagnostic.diagnostictype', 'ticketsolution', 'ticketsolution.solutiontype', 'city']
+        filters,
+        populate: [
+          'client',
+          'client.neighborhood',
+          'client.technology',
+          'tickettype',
+          'assignated',
+          'ticketdetails',
+          'ticketdetails.operator',
+          'timeline',
+          'timeline.technician',
+          'timeline.ticketdiagnostic',
+          'timeline.ticketdiagnostic.diagnostictype',
+          'timeline.ticketsolution',
+          'timeline.ticketsolution.solutiontype'
+        ]
       },
       {
         encodeValuesOnly: true
       })
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}timelines?${query}`, {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets?${query}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -68,8 +122,9 @@ export const actions = {
         }
       })
         .then(res => res.json())
-        .then((timeline) => {
-          commit('getTimeline', timeline)
+        .then((tickets) => {
+          console.log(tickets)
+          commit('getTickets', tickets)
         })
     } catch (error) {
       throw new Error(`TIMELINE ACTION ${error}`)

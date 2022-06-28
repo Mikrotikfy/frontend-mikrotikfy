@@ -104,7 +104,7 @@
                   </template>
                 </v-edit-dialog>
               </template>
-              <template v-if="!isDesktop" v-slot:expanded-item="{ headers, item }">
+              <template v-if="!$store.state.isDesktop" v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length">
                   <span class="grey--text">Avance:</span> {{ item.details ? item.details : 'no hay' }}
                 </td>
@@ -116,7 +116,7 @@
               <template v-slot:[`item.client.code`]="props">
                 <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`">{{props.item.client.code}}</nuxt-link>
               </template>
-              <template v-if="isDesktop" v-slot:[`item.actions`]="props">
+              <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="props">
                 <div class="nowspace">
                   <TicketTimeline
                     :name="props.item.client.name"
@@ -185,13 +185,12 @@
       </v-col>
     </v-row>
     <TicketDetails
-      :desktop="isDesktop"
       :modal="infoModal"
       :ticket="editModalData"
       @close="closeModal()"
     />
     <MainFloatGadgets
-      v-if="isDesktop"
+      v-if="$store.state.isDesktop"
     />
   </v-container>
 </template>
@@ -225,7 +224,6 @@ export default {
       showClosedValue: false,
       showRetired: false,
       refreshLoading: false,
-      isDesktop: false,
       editModalData: {},
       infoModal: false,
       States: [{ name: 'Abierto', value: true }, { name: 'Cerrado', value: false }],
@@ -259,7 +257,6 @@ export default {
     }
   },
   mounted () {
-    this.getResolution()
     this.refreshTickets()
     this.getTickettypes()
   },
@@ -331,16 +328,6 @@ export default {
         return 'Escalado a Oficina'
       } else {
         return 'Cerrado'
-      }
-    },
-    getResolution () {
-      const res = window.innerWidth
-      if (res > 800) {
-        const clientRes = true
-        this.isDesktop = clientRes
-      } else {
-        const clientRes = false
-        this.isDesktop = clientRes
       }
     },
     showTicketInfo (event) {

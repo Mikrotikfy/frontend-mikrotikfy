@@ -6,10 +6,10 @@
     <v-navigation-drawer
       v-model="drawer"
       app
-      :permanent="!isMobile"
-      :expand-on-hover="!isMobile"
-      :mini-variant="!isMobile"
-      :bottom="isMobile"
+      :permanent="isDesktop"
+      :expand-on-hover="isDesktop"
+      :mini-variant="isDesktop"
+      :bottom="!isDesktop"
     >
       <v-list>
         <v-list-item
@@ -38,7 +38,7 @@
       dense
       class="elevation-0 transparent"
     >
-      <v-app-bar-nav-icon v-if="isMobile" @click.stop="drawer = !drawer" />
+      <v-app-bar-nav-icon v-if="!$store.state.isDesktop" @click.stop="drawer = !drawer" />
       <v-btn
         v-for="clienttype in $store.state.auth.clienttypes"
         :key="clienttype.name"
@@ -49,10 +49,10 @@
         small
         :to="`${$route.path}?city=${$route.query.city}&clienttype=${clienttype.name}`"
       >
-        <v-icon :class="isMobile ? '' : 'mr-2'">
+        <v-icon :class="!$store.state.isDesktop ? '' : 'mr-2'">
           {{ clienttype.icon }}
         </v-icon>
-        {{ isMobile ? null : clienttype.name }}
+        {{ !$store.state.isDesktop ? null : clienttype.name }}
       </v-btn>
       <v-spacer />
       <v-switch
@@ -84,7 +84,7 @@
           :color="city.color"
           :to="`${$route.path}?city=${city.name}&clienttype=${$route.query.clienttype}`"
         >
-          {{ isMobile ? city.name.charAt(0) : city.name }}
+          {{ !$store.state.isDesktop ? city.name.charAt(0) : city.name }}
         </v-btn>
       </div>
       <v-tooltip bottom>
@@ -133,7 +133,7 @@ export default {
   middleware: ['defaultCity', 'authenticated'],
   data () {
     return {
-      isMobile: false,
+      isDesktop: false,
       light: null,
       hasPendingChanges: false,
       drawer: false,
@@ -163,7 +163,6 @@ export default {
     this.getLocalStorage()
     this.comprobeDateToSetChristmasTheme()
     this.loadThemeFromVuetifyThemeManager()
-    this.isMobileScreen()
   },
   methods: {
     testAuthToken () {
@@ -217,13 +216,14 @@ export default {
         this.bg = 'cbg.jpg'
       }
     },
-    isMobileScreen () {
+    isDesktopScreen () {
       const res = document.body.clientWidth
-      if (res < 800) {
-        this.isMobile = true
+      if (res < 960) {
+        this.isDesktop = true
       } else {
-        this.isMobile = false
+        this.isDesktop = false
       }
+      this.$store.commit('isDesktop', this.isDesktop)
     },
     logout (params) {
       Cookie.remove('auth')

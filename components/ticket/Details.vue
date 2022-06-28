@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-    v-if="!desktop"
+    v-if="!$store.state.isDesktop"
     v-model="modal"
     fullscreen
     hide-overlay
@@ -90,10 +90,6 @@
 <script>
 export default {
   props: {
-    desktop: {
-      type: Boolean,
-      default: false
-    },
     modal: {
       type: Boolean,
       default: false

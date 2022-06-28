@@ -19,7 +19,7 @@
       </template>
       <span>Editar Cliente</span>
     </v-tooltip>
-    <v-dialog v-if="dialogEdit" v-model="dialogEdit" max-width="1100px" :retain-focus="false" :fullscreen="getResolution()">
+    <v-dialog v-if="dialogEdit" v-model="dialogEdit" max-width="1100px" :retain-focus="false" :fullscreen="!$store.state.isDesktop">
       <v-card>
         <v-card-title>
           <v-toolbar
@@ -450,16 +450,6 @@ export default {
       const dateObject = new Date(date)
       const humanDateFormat = dateObject.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric' })
       return humanDateFormat
-    },
-    getResolution () {
-      const res = document.body.clientWidth
-      if (res < 800) {
-        const isMobile = true
-        return isMobile
-      } else {
-        const isMobile = false
-        return isMobile
-      }
     }
   }
 }

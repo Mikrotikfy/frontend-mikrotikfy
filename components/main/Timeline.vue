@@ -1,18 +1,14 @@
 <template>
   <v-container fluid>
     <v-card class="elevation-0 transparent">
-      <v-card-text class="transparent">
-        <v-row class="align-center">
-          <h1 style="border-right: 1px solid #aeaeae;" class="text-bold pa-3 text-center align-center vertical">
-            Timeline
-          </h1>
-          <v-container class="rounded-xl ml-2 px-0 align-center" style="background-color:rgba(16,16,16,0.3);backdrop-filter:blur(5px);width:95%;">
-            <TimelineItem
-              v-for="item in timeline"
-              :key="item.id"
-              :timeline-item="item"
-            />
-          </v-container>
+      <v-card-text class="transparent px-0 mx-0">
+        <v-row class="mx-0 px-0 align-center">
+          <TimelineItem
+            v-for="item in timeline"
+            :key="item.id"
+            :editindex="timeline.indexOf(item)"
+            :timeline-item="{...item, index}"
+          />
         </v-row>
       </v-card-text>
     </v-card>
@@ -23,7 +19,7 @@ export default {
   name: 'Timeline',
   data () {
     return {
-      //
+      infoModal: false
     }
   },
   computed: {
@@ -36,10 +32,16 @@ export default {
   },
   methods: {
     getTimeline () {
-      this.$store.dispatch('timeline/getTimeline', {
+      this.$store.dispatch('timeline/getTickets', {
         city: this.$route.query.city,
-        token: this.$store.state.auth.token
+        token: this.$store.state.auth.token,
+        clienttype: this.$route.query.clienttype,
+        active: false,
+        retired: false
       })
+    },
+    closeModal () {
+      this.infoModal = false
     }
   }
 }

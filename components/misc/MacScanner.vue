@@ -7,7 +7,7 @@
       <v-icon>mdi-barcode-scan</v-icon>
       Escanear MAC
     </v-btn>
-    <v-dialog v-model="dialogMacScanner" eager max-width="1100px" :retain-focus="false" :fullscreen="getResolution()">
+    <v-dialog v-model="dialogMacScanner" eager max-width="1100px" :retain-focus="false" :fullscreen="!$store.state.isDesktop">
       <v-card>
         <v-card-text>
           <v-btn @click="initCamera()">
@@ -60,16 +60,6 @@ export default {
         this.$emit('detectedmac', e.codeResult.code)
         this.dialogMacScanner = false
       })
-    },
-    getResolution () {
-      const res = document.body.clientWidth
-      if (res < 800) {
-        const isMobile = true
-        return isMobile
-      } else {
-        const isMobile = false
-        return isMobile
-      }
     }
   }
 }

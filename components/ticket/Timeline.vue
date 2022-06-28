@@ -6,7 +6,6 @@
           v-bind="attrs"
           :block="block"
           :text="!block"
-          :x-small="!block"
           :color="$vuetify.theme.dark && !block ? 'white' : 'green darken-3'"
           :class="block ? 'mb-2 rounded-xl elevation-0' : ''"
           v-on="on"

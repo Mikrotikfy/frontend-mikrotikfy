@@ -11,10 +11,14 @@ export const state = () => {
     devicebrands: null,
     neighborhoods: null,
     activeClients: null,
-    activeClientsList: null
+    activeClientsList: null,
+    isDesktop: null
   }
 }
 export const mutations = {
+  isDesktop (state, isDesktop) {
+    state.isDesktop = isDesktop
+  },
   setAuth (state, auth) {
     state.auth = auth
   },
