@@ -46,7 +46,7 @@ export const actions = {
       throw new Error(`TIMELINE ACTION ${error}`)
     }
   },
-  async getTickets ({ commit }, { city, token, active, clienttype, retired }) {
+  async getTickets ({ commit }, { city, token, active, clienttype, retired, sort }) {
     let filters = null
     if (retired) {
       filters = {
@@ -109,7 +109,8 @@ export const actions = {
           'timeline.ticketdiagnostic.diagnostictype',
           'timeline.ticketsolution',
           'timeline.ticketsolution.solutiontype'
-        ]
+        ],
+        sort: sort !== '' ? sort : 'id:desc'
       },
       {
         encodeValuesOnly: true
@@ -123,7 +124,6 @@ export const actions = {
       })
         .then(res => res.json())
         .then((tickets) => {
-          console.log(tickets)
           commit('getTickets', tickets)
         })
     } catch (error) {

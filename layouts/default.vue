@@ -6,10 +6,10 @@
     <v-navigation-drawer
       v-model="drawer"
       app
-      :permanent="isDesktop"
-      :expand-on-hover="isDesktop"
-      :mini-variant="isDesktop"
-      :bottom="!isDesktop"
+      :permanent="$store.state.isDesktop"
+      :expand-on-hover="$store.state.isDesktop"
+      :mini-variant="$store.state.isDesktop"
+      :bottom="!$store.state.isDesktop"
     >
       <v-list>
         <v-list-item
@@ -158,11 +158,16 @@ export default {
       return this.$store.state.auth.menu
     }
   },
+  destroyed () {
+    window.removeEventListener('resize', this.isDesktopScreen)
+  },
   mounted () {
+    window.addEventListener('resize', this.isDesktopScreen)
     this.testAuthToken()
     this.getLocalStorage()
     this.comprobeDateToSetChristmasTheme()
     this.loadThemeFromVuetifyThemeManager()
+    this.isDesktopScreen()
   },
   methods: {
     testAuthToken () {
@@ -219,9 +224,9 @@ export default {
     isDesktopScreen () {
       const res = document.body.clientWidth
       if (res < 960) {
-        this.isDesktop = true
-      } else {
         this.isDesktop = false
+      } else {
+        this.isDesktop = true
       }
       this.$store.commit('isDesktop', this.isDesktop)
     },

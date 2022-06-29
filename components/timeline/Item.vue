@@ -5,21 +5,21 @@
     @click="infoModal = true"
   >
     <div class="parent-ticket text-center justify-center align-center py-2" :style="timelineItem.timeline ? 'border-bottom: 1px solid #adadad' : ''">
-      <v-chip small :color="`${getColorStatus(timelineItem.active, timelineItem.answered, timelineItem.escalated, timelineItem.escalatedoffice)}`" class="white--text text-center justify-center">
+      <v-chip small :color="`${getColorStatus(timelineItem.active, timelineItem.answered, timelineItem.escalated, timelineItem.escalatedoffice)}`" class="white--text text-center justify-center ml-lg-2">
         {{ getState(timelineItem.active, timelineItem.answered, timelineItem.escalated, timelineItem.escalatedoffice) }}
       </v-chip>
       <span class="d-none d-xs-none d-md-block d-lg-block">{{ timelineItem.client.code }}</span>
       <span class="d-none d-xs-none d-md-block d-lg-block">{{ timelineItem.client.name }}</span>
       <span>{{ timelineItem.client.address }}</span>
-      <span class="font-weight-bold">{{ timelineItem.client.neighborhood.name }}</span>
+      <span class="font-weight-bold" style="cursor:pointer;" @click="sortByNeighborhood">{{ timelineItem.client.neighborhood.name }}</span>
       <span class="d-none d-xs-none d-md-block d-lg-block">{{ timelineItem.client.phone }}</span>
       <span class="d-none d-xs-none d-md-block d-lg-block">{{ timelineItem.client.technology.name }}</span>
       <span class="d-none d-xs-none d-md-block d-lg-block">{{ timelineItem.tickettype.name }}</span>
-      <span class="d-none d-xs-none d-md-block d-lg-block">{{ $moment(timelineItem.createdAt).fromNow() }}</span>
+      <span class="d-none d-xs-none d-md-block d-lg-block">Creado {{ $moment(timelineItem.createdAt).fromNow() }}</span>
       <span class="px-2 d-none d-xs-none d-sm-none d-md-block d-lg-block">
         <v-btn-toggle
           v-model="toggle"
-          class="rounded-xl"
+          class="rounded-xl transparent"
         >
           <TicketTimeline
             :name="timelineItem.client.name"
@@ -113,6 +113,9 @@ export default {
     }
   },
   methods: {
+    sortByNeighborhood () {
+      this.$emit('sortByNeighborhood')
+    },
     getColor () {
       switch (this.timelineItem.timeline.e6) {
         case 1:
@@ -183,7 +186,7 @@ export default {
 <style>
 .parent-ticket {
   display: grid;
-  grid-template-columns: 1fr 3fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 2fr 4fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr;
   grid-template-rows: 1fr;
   grid-column-gap: 10px;
   grid-row-gap: 0px;
