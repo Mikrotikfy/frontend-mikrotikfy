@@ -1,6 +1,6 @@
 <template>
   <div
-    style="background-color:rgba(16,16,16,0.3);backdrop-filter:blur(5px);width:100%;"
+    style="background-color:rgba(52,52,52,0.3);backdrop-filter:blur(5px);width:100%;"
     class="mb-5 rounded-xl"
     @click="infoModal = true"
   >
