@@ -1,5 +1,5 @@
 export const state = () => ({
-  lastIpModel: {},
+  lastIpModel: null,
   currentClientHasStaticIp: false
 })
 export const mutations = {
@@ -19,6 +19,23 @@ export const mutations = {
   }
 }
 export const actions = {
+  saveIpModel ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}staticips`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: payload.data
+        })
+      })
+        .then((ipmodel) => {
+          resolve(ipmodel)
+        })
+    })
+  },
   async clientHasModel ({ commit }, payload) {
     try {
       const qs = require('qs')

@@ -36,7 +36,7 @@
           </v-card-text>
           <v-card-text v-else>
             <IpmodelEditModel v-if="$store.state.ipmodel.currentClientHasStaticIp" />
-            <IpmodelCreateModel v-else :init="modal" />
+            <IpmodelCreateModel v-else :init="modal" :client="client" @closeModal="closemodal" />
           </v-card-text>
         </div>
         <v-card-actions>
@@ -74,19 +74,24 @@ export default {
     itemsPerPage: 10,
     devices: []
   }),
+  mounted () {
+    this.$store.dispatch('ipmodel/getLast', {
+      city: this.$route.query.city,
+      token: this.$store.state.auth.token
+    })
+  },
   methods: {
     initComponent () {
       this.modal = true
       this.loading = false
-      this.$store.dispatch('ipmodel/getLast', {
-        city: this.$route.query.city,
-        token: this.$store.state.auth.token
-      })
       this.$store.dispatch('ipmodel/clientHasModel', {
         clientId: this.client.id,
         city: this.$route.query.city,
         token: this.$store.state.auth.token
       })
+    },
+    closemodal () {
+      this.modal = false
     },
     getDate (date) {
       const dateObject = new Date(date)
