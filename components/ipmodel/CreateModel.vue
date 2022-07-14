@@ -84,7 +84,7 @@ export default {
       newModel: {
         cidr: '',
         mask: '',
-        netowork: '',
+        network: '',
         gateway: '',
         host: '',
         broadcast: ''
@@ -111,22 +111,30 @@ export default {
         },
         token: this.$store.state.auth.token
       }).then((response) => {
-        console.log(response)
         if (response.status === 200) {
           this.newModelBtn = true
           this.saveBtn = false
-          this.newModel = {
-            cidr: '',
-            mask: '',
-            netowork: '',
-            gateway: '',
-            host: '',
-            broadcast: ''
-          }
           this.$store.dispatch('ipmodel/getLast', {
             city: this.$route.query.city,
             token: this.$store.state.auth.token
           })
+          this.$store.dispatch('ipmodel/sendIpModelToMikrotik', {
+            token: this.$store.state.auth.token,
+            data: {
+              ...this.newModel,
+              city: this.$store.state.auth.cities.find(city => city.name === this.$route.query.city).id,
+              client: this.client,
+              technician: this.$store.state.auth.id
+            }
+          })
+          this.newModel = {
+            cidr: '',
+            mask: '',
+            network: '',
+            gateway: '',
+            host: '',
+            broadcast: ''
+          }
           this.$emit('closeModal')
         }
       })

@@ -36,6 +36,18 @@ export const actions = {
         })
     })
   },
+  sendIpModelToMikrotik ({ commit }, payload) {
+    fetch(`${this.$config.API_STRAPI_ENDPOINT}ipmodelcreate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${payload.token}`
+      },
+      body: JSON.stringify({
+        data: payload.data
+      })
+    })
+  },
   async clientHasModel ({ commit }, payload) {
     try {
       const qs = require('qs')
