@@ -219,6 +219,10 @@
                       :name="item.name"
                       :clientid="item.id"
                     />
+                    <MainIpModel
+                      v-if="clienttype.name === 'INTERNET' && $isAdmin()"
+                      :client="item"
+                    />
                     <EditForm
                       :client="item"
                       :index="clients.indexOf(item)"

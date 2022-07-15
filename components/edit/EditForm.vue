@@ -254,24 +254,27 @@
                     item-text="name"
                     item-value="id"
                     mandatory
-                    label="Identificar con:"
+                    label="Identificar con"
                     outlined
                     dense
                     hide-details
                   />
                 </v-col>
-                <!-- <v-col>
-                  <v-text-field
-                    :value="item.operator.username"
-                    label="Creado por"
-                    required
+                <v-col>
+                  <v-select
+                    v-if="clienttype.name === 'INTERNET'"
+                    v-model="editClient.ipmodel"
+                    :disabled="!$isAdmin()"
+                    :items="ipmodelItems"
+                    item-text="name"
+                    item-value="id"
+                    mandatory
+                    label="Tipo de IP para cliente"
                     outlined
                     dense
-                    readonly
-                    disabled
                     hide-details
                   />
-                </v-col> -->
+                </v-col>
               </v-row>
               <!-- <div v-if="can('EditFormComment')">
                 <v-textarea
@@ -331,7 +334,9 @@ export default {
       addDevice: false,
       device: {},
       valid: false,
-      editClient: {},
+      editClient: {
+        ipmodel: 0
+      },
       pref_mac: '',
       dir1: '',
       dir2: '',
@@ -357,6 +362,10 @@ export default {
       idwith: [
         { id: 0, name: 'Cedula' },
         { id: 1, name: 'Codigo' }
+      ],
+      ipmodelItems: [
+        { id: 0, name: 'PPPoE' },
+        { id: 1, name: 'IP ESTATICA' }
       ],
       valid_mac: [
         value => !!value || 'Debes especificar la Mac',
