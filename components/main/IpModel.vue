@@ -35,7 +35,7 @@
             <p>Habilita el cliente como IP ESTATICA para acceder a su configuracion en este menu</p>
           </v-card-text>
           <v-card-text v-else>
-            <IpmodelEditModel v-if="$store.state.ipmodel.currentClientHasStaticIp" />
+            <IpmodelEditModel v-if="$store.state.ipmodel.currentClientHasStaticIp" :client="client" />
             <IpmodelCreateModel v-else :init="modal" :client="client" @closeModal="closemodal" />
           </v-card-text>
         </div>

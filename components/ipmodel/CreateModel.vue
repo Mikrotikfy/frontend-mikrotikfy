@@ -11,6 +11,19 @@
           @keyup="newModelBtn = false, saveBtn = true"
         />
       </v-col>
+      <v-col>
+        <v-select
+          v-model="newModel.vlan"
+          label="VLAN"
+          filled
+          item-text="name"
+          item-value="vlan"
+          return-object
+          :items="vlans"
+          :success="newModel.vlan !== null"
+          :error="newModel.vlan === null"
+        />
+      </v-col>
     </v-row>
     <v-row>
       <v-col>
@@ -83,6 +96,7 @@ export default {
     return {
       newModel: {
         cidr: '',
+        vlan: null,
         mask: '',
         network: '',
         gateway: '',
@@ -96,12 +110,28 @@ export default {
       saveBtn: true
     }
   },
+  computed: {
+    vlans () {
+      return this.$store.state.vlans.vlans
+    }
+  },
   mounted () {
     this.custom = false
     this.generateNewCIDR()
+    this.getVlans()
   },
   methods: {
+    getVlans () {
+      this.$store.dispatch('vlans/getVlans', {
+        city: this.$route.query.city,
+        token: this.$store.state.auth.token
+      })
+    },
     saveIpModel () {
+      if (!this.newModel.vlan) {
+        this.$toast.error('Debes especificar la VLAN', { position: 'top-center' })
+        return
+      }
       this.$store.dispatch('ipmodel/saveIpModel', {
         data: {
           ...this.newModel,

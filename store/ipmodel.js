@@ -19,7 +19,51 @@ export const mutations = {
   }
 }
 export const actions = {
+  getIpModel ({ commit }, payload) {
+    try {
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          city: {
+            name: payload.city
+          },
+          client: payload.clientId
+        }
+      },
+      {
+        encodeValuesOnly: true
+      })
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}staticips?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((client) => {
+            console.log(client)
+            resolve(client.data[0])
+          })
+      })
+    } catch (error) {
+      throw new Error(`IP MODEL ACTION ${error}`)
+    }
+  },
   saveIpModel ({ commit }, payload) {
+    fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.data.client}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${payload.token}`
+      },
+      body: JSON.stringify({
+        data: {
+          vlan: payload.data.vlan.id
+        }
+      })
+    })
     return new Promise((resolve, reject) => {
       fetch(`${this.$config.API_STRAPI_ENDPOINT}staticips`, {
         method: 'POST',
