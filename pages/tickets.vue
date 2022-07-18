@@ -1,6 +1,7 @@
 <template>
   <div>
     <MainTickets />
+    <MainPendingClients />
   </div>
 </template>
 

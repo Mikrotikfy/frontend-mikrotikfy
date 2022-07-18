@@ -80,6 +80,46 @@ export const mutations = {
   }
 }
 export const actions = {
+  getPendingClients ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      const qs = require('qs')
+      const query = qs.stringify({
+        populate: [
+          'neighborhood',
+          'plan',
+          'technology'
+        ],
+        filters: {
+          active: false,
+          city: {
+            name: payload.city
+          },
+          clienttype: {
+            name: payload.clienttype
+          }
+        },
+        sort: ['code:desc']
+      },
+      {
+        encodeValuesOnly: true
+      })
+      try {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((clients) => {
+            resolve(clients.data)
+          })
+      } catch (error) {
+        throw new Error(`ACTION ${error}`)
+      }
+    })
+  },
   async clearClientsFromDatatable ({ commit }) {
     try {
       await commit('clearClientsFromDatatable', true)
