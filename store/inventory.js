@@ -335,9 +335,7 @@ export const actions = {
     }
   },
   async updateCurrentMaterialQuantity (_, payload) {
-    console.log(payload)
     const finalQuantity = payload.action === 'add' ? payload.availableQuantity[0].quantity - payload.newQuantity.quantity : payload.availableQuantity[0].quantity + payload.newQuantity.quantity
-    console.log(finalQuantity)
     try {
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}materialquantities/${payload.availableQuantity[0].id}`, {
         method: 'PUT',

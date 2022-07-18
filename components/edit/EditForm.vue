@@ -84,40 +84,40 @@
                 @input="editClient.name = $event.toUpperCase()"
               />
               <v-row>
-                <v-col cols="6" lg="3" md="3">
+                <v-col cols="6" lg="6" md="6">
                   <v-text-field
-                    :value="editClient.address ? editClient.address.toUpperCase() : ''"
-                    :disabled="!(!$isAdmin() || !$isBiller())"
+                    :value="editClient.addresses.length > 0 ? editClient.addresses[editClient.addresses.length - 1].address : editClient.address"
+                    disabled
                     label="Direccion"
                     outlined
                     dense
                     hide-details
-                    @input="editClient.address = $event.toUpperCase()"
                   />
                 </v-col>
-                <v-col cols="6" lg="3" md="3">
-                  <v-autocomplete
-                    v-model="editClient.neighborhood"
-                    :disabled="!(!$isAdmin() || !$isBiller())"
-                    item-text="name"
-                    item-value="id"
-                    :items="neighborhoods"
-                    return-object
+                <v-col cols="6" lg="6" md="6" class="d-flex">
+                  <v-text-field
+                    :value="editClient.addresses.length > 0 ? editClient.addresses[editClient.addresses.length - 1].neighborhood.name : editClient.neighborhood.name"
+                    disabled
+                    class="mr-3"
                     label="Barrio"
                     outlined
                     dense
                     hide-details
                   />
+                  <CreateAddress :client="editClient" @updateClient="emitupdateClient" />
+                  <MiscAddresses v-if="editClient.addresses.length > 0" :client="editClient" />
                 </v-col>
-                <v-col cols="6" lg="3" md="3">
+              </v-row>
+              <v-row v-if="clienttype.name === 'INTERNET'">
+                <v-col cols="12" lg="3" md="3">
                   <v-select
-                    v-model="editClient.city"
+                    v-model="editClient.plan"
+                    :disabled="!(!$isAdmin() || !$isBiller())"
                     item-text="name"
                     item-value="id"
-                    :items="cities"
+                    :items="plans"
                     return-object
-                    label="Ciudad"
-                    disabled
+                    label="Plan"
                     outlined
                     dense
                     hide-details
@@ -134,23 +134,7 @@
                     hide-details
                   />
                 </v-col>
-              </v-row>
-              <v-row v-if="clienttype.name === 'INTERNET'">
-                <v-col cols="12" lg="4" md="4">
-                  <v-select
-                    v-model="editClient.plan"
-                    :disabled="!(!$isAdmin() || !$isBiller())"
-                    item-text="name"
-                    item-value="id"
-                    :items="plans"
-                    return-object
-                    label="Plan"
-                    outlined
-                    dense
-                    hide-details
-                  />
-                </v-col>
-                <v-col cols="6" lg="4" md="4">
+                <v-col cols="6" lg="3" md="3">
                   <v-text-field
                     v-model="editClient.wifi_ssid"
                     :disabled="!$isAdmin()"
@@ -161,7 +145,7 @@
                     hide-details
                   />
                 </v-col>
-                <v-col cols="6" lg="4" md="4">
+                <v-col cols="6" lg="3" md="3">
                   <v-text-field
                     v-model="editClient.wifi_password"
                     :disabled="!$isAdmin()"
@@ -172,11 +156,6 @@
                     dense
                     hide-details
                   />
-                </v-col>
-              </v-row>
-              <v-row v-if="clienttype.name === 'INTERNET'">
-                <v-col>
-                  <CreateDevice :clientid="editClient.id" />
                 </v-col>
               </v-row>
               <v-row>
@@ -451,6 +430,9 @@ export default {
       this.$simpleTelegramUpdate({ client: this.client, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
       this.loading = false
       this.dialogEdit = false
+    },
+    emitupdateClient () {
+      this.$emit('updateSuccess')
     },
     genAddress () {
       this.Client.address = `${this.dir1} ${this.dir2} ${this.dir3} ${this.dir4}`
