@@ -51,7 +51,7 @@
             <v-row class="mb-2">
               <v-col cols="6">
                 <v-text-field
-                  v-model="client.address"
+                  :value="client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].address : client.address"
                   label="#"
                   outlined
                   dense
@@ -61,7 +61,7 @@
               </v-col>
               <v-col cols="6">
                 <v-autocomplete
-                  v-model="client.neighborhood"
+                  :value="client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].neighborhood : client.neighborhood"
                   item-text="name"
                   item-value="id"
                   :items="neighborhoods"
@@ -314,6 +314,12 @@ export default {
         })
       }).then((input) => {
         if (input.status === 200) {
+          this.$store.dispatch('address/addAddress', {
+            client: this.client,
+            address: `${this.cx.dir1} ${this.cx.dir2} ${this.cx.dir3} ${this.cx.dir4}`,
+            neighborhood: this.cx.neighborhood,
+            token: this.$store.state.auth.token
+          })
           this.modal = false
           this.loading = false
           this.$simpleTelegramCreateTicket({ client: this.client, tickettype: this.ticketPayload.type.name, details: this.ticketPayload.details, neighborhood: this.client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })

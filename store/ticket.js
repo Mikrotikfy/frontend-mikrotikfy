@@ -115,6 +115,8 @@ export const actions = {
         filters,
         populate: [
           'client',
+          'client.addresses',
+          'client.addresses.neighborhood',
           'client.neighborhood',
           'client.technology',
           'client.plan',
