@@ -43,7 +43,6 @@ export const actions = {
         })
           .then(res => res.json())
           .then((client) => {
-            console.log(client)
             resolve(client.data[0])
           })
       })

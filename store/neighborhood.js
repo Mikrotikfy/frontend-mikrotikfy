@@ -32,5 +32,33 @@ export const actions = {
     } catch (error) {
       throw new Error(`NEIGHBORHOOD ACTION ${error}`)
     }
+  },
+  getAll ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      pagination: {
+        pageSize: 1000
+      }
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}neighborhoods?${query}`, {
+          type: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((neighborhoods) => {
+            resolve(neighborhoods.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`GETALL NEIGHBORHOOD ACTION ${error}`)
+    }
   }
 }
