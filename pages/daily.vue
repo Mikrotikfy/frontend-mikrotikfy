@@ -1,6 +1,6 @@
 <template>
   <div>
-    <MainTickets />
+    <MainPendingClients />
   </div>
 </template>
 
@@ -8,29 +8,19 @@
 export default {
   middleware: ['defaultCity', 'authenticated'],
   computed: {
-    role () {
-      return this.$store.state.auth.allowed_components
-    },
     currentCity () {
       // eslint-disable-next-line eqeqeq
       return this.$store.state.cities ? this.$store.state.cities.find(c => c.id == this.$route.query.city) : ''
     }
   },
   methods: {
-    can (component) {
-      // eslint-disable-next-line camelcase
-      const allowed_components = this.role
-      // eslint-disable-next-line camelcase
-      const current_component = component
-      return allowed_components.includes(current_component)
-    },
     getLocalStorage () {
       this.$store.dispatch('loadLocalStorage')
     }
   },
   head () {
     return {
-      title: 'Tickets API ARNOP',
+      title: 'Diario API ARNOP',
       meta: [
         { hid: 'language', name: 'language', content: 'es' },
         { hid: 'audience', name: 'audience', content: 'all' },

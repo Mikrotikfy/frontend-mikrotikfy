@@ -33,12 +33,13 @@
         <v-icon>mdi-close</v-icon>
       </v-btn>
       <v-spacer />
-      <v-select
+      <v-autocomplete
         v-model="technician"
         :items="technicians"
         item-text="username"
         item-value="id"
         return-object
+        multiple
         label="Tecnico"
         dense
         class="mr-4 mt-4"
@@ -47,9 +48,9 @@
     </v-toolbar>
       <v-card class="printme">
         <v-card-text>
-          <v-container fluid>
+          <v-container>
             <v-row>
-              <v-col style="border: 1px solid grey;" class="align-center justify-center">
+              <v-col style="border: 1px solid grey;" class="align-center justify-center printme">
                 <MainLogoDark />
               </v-col>
               <v-col style="border: 1px solid grey;" class="d-flex align-center justify-center">
@@ -58,10 +59,17 @@
               <v-col style="border: 1px solid grey;" class="d-flex align-center justify-center">
                 <v-row>
                   <v-col class="text-center">
-                    <h2>Fecha: {{ getDate(new Date()) }}</h2>
+                    <h3>Fecha: {{ getDate(new Date()) }}</h3>
                   </v-col>
-                  <v-col class="justify-center align-center d-flex">
-                    <h2>Tecnico: {{ technician ? technician.username : ''  }}</h2>
+                  <v-col class="justify-center align-center d-flex mr-2">
+                    <h3> {{ technician ? technician.length > 1 ? 'Tecnicos:' : 'Tecnico:' : ''}} </h3>
+                    <h3
+                      v-for="(tech, index) in technician"
+                      :key="tech.id"
+                      class="ml-2"
+                    >
+                      {{ technician.length > 1 ? index > 0 ? '/' : '' : '' }} {{ tech.username.charAt(0).toUpperCase() + tech.username.slice(1) }}
+                    </h3>
                   </v-col>
                 </v-row>
               </v-col>
@@ -73,7 +81,7 @@
                 class="parent"
               >
                 <span class="item">CX</span>
-                <span>{{ client.technology ? client.technology.name : '' }}</span>
+                <span :style="`color:${client.technology ? 'grey' : '#c9c9c9'}`">{{ client.technology ? client.technology.name : 'Tecnol.' }}</span>
                 <span  style="color:#c9c9c9;">CANT. FIBRA</span>
                 <span>{{ client.code }}</span>
                 <span>{{ client.plan.name }}</span>
@@ -141,7 +149,7 @@ export default {
 .parent {
   display: grid;
   width: 100%;
-  grid-template-columns: 1fr 1fr 1fr 2fr 2fr 1fr 1fr 3fr 3fr 3fr 3fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 2fr 1fr 1fr 4fr 4fr 4fr 4fr;
   grid-gap: 0px;
 }
 .parent > span {

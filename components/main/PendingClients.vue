@@ -28,7 +28,7 @@
               </v-tooltip>
               <h3 class="align-self-center">
                 {{ clients.length }}
-                {{ clients.length === 1 ? 'Cliente pendiente' : 'Clientes pendientes' }}
+                {{ clients.length === 1 ? 'Conexiones pendiente' : 'Conexiones pendientes' }}
               </h3>
               <v-spacer />
               <MiscPrint :clients="selected" class="printme" />
