@@ -5,6 +5,7 @@
   >
     <v-navigation-drawer
       v-model="drawer"
+      class="no-printme"
       app
       :permanent="!isMobile"
       :expand-on-hover="!isMobile"
@@ -36,7 +37,7 @@
     <v-app-bar
       app
       dense
-      class="elevation-0 transparent"
+      class="elevation-0 transparent no-printme"
     >
       <v-app-bar-nav-icon v-if="isMobile" @click.stop="drawer = !drawer" />
       <v-btn
@@ -118,7 +119,7 @@
       inset
       absolute
       style="font-size:11px;"
-      class="text-center justify-center"
+      class="text-center justify-center no-printme"
     >
       <span
         class="text-center"
@@ -269,5 +270,13 @@ body {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: rgb(41, 41, 41)
+}
+@media print {
+  .no-printme {
+    display: none !important;
+  }
+  .printme {
+    display: block;
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="no-printme">
     <v-row>
       <v-col
         cols="12"
@@ -466,4 +466,12 @@ export default {
   a {
     text-decoration: none;
   }
+  @media print {
+  .no-printme {
+    display: none !important;
+  }
+  .printme {
+    display: block;
+  }
+}
 </style>

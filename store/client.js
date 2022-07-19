@@ -87,7 +87,8 @@ export const actions = {
         populate: [
           'neighborhood',
           'plan',
-          'technology'
+          'technology',
+          'addresses'
         ],
         filters: {
           active: false,

@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="no-printme">
     <v-row>
       <v-col>
         <v-card
@@ -31,7 +31,7 @@
                 {{ clients.length === 1 ? 'Cliente pendiente' : 'Clientes pendientes' }}
               </h3>
               <v-spacer />
-              <MiscPrint :clients="selected" />
+              <MiscPrint :clients="selected" class="printme" />
             </v-row>
           </v-card-text>
         </v-card>
@@ -120,3 +120,13 @@ export default {
   }
 }
 </script>
+<style>
+@media print {
+  .no-printme {
+    display: none !important;
+  }
+  .printme {
+    display: block;
+  }
+}
+</style>
