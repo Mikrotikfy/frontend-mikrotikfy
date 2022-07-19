@@ -314,12 +314,14 @@ export default {
         })
       }).then((input) => {
         if (input.status === 200) {
-          this.$store.dispatch('address/addAddress', {
-            client: this.client,
-            address: `${this.cx.dir1} ${this.cx.dir2} ${this.cx.dir3} ${this.cx.dir4}`,
-            neighborhood: this.cx.neighborhood,
-            token: this.$store.state.auth.token
-          })
+          if (this.ticketPayload.type.name === 'TRASLADO') {
+            this.$store.dispatch('address/addAddress', {
+              client: this.client,
+              address: `${this.cx.dir1} ${this.cx.dir2} ${this.cx.dir3} ${this.cx.dir4}`,
+              neighborhood: this.cx.neighborhood,
+              token: this.$store.state.auth.token
+            })
+          }
           this.modal = false
           this.loading = false
           this.$simpleTelegramCreateTicket({ client: this.client, tickettype: this.ticketPayload.type.name, details: this.ticketPayload.details, neighborhood: this.client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
