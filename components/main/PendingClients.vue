@@ -31,22 +31,7 @@
                 {{ clients.length === 1 ? 'Cliente pendiente' : 'Clientes pendientes' }}
               </h3>
               <v-spacer />
-              <v-tooltip top>
-                <!-- eslint-disable -->
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    v-bind="attrs"
-                    class="my-4 mx-4"
-                    color="white black--text"
-                    dark
-                    rounded
-                    v-on="on"
-                  >
-                    <v-icon>mdi-printer</v-icon>
-                    </v-btn>
-                  </template>
-                <span>Imprimir Lista</span>
-              </v-tooltip>
+              <MiscPrint :clients="selected" />
             </v-row>
           </v-card-text>
         </v-card>
