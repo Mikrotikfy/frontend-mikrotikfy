@@ -73,7 +73,7 @@
                 class="parent"
               >
                 <span class="item">CX</span>
-                <span>{{ client.technology.name }}</span>
+                <span>{{ client.technology ? client.technology.name : '' }}</span>
                 <span  style="color:#c9c9c9;">CANT. FIBRA</span>
                 <span>{{ client.code }}</span>
                 <span>{{ client.plan.name }}</span>
