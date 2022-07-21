@@ -1,6 +1,7 @@
 <template>
   <div>
-    <MainTickets />
+    <DailyPendingClients />
+    <DailyPendingTraslates />
   </div>
 </template>
 
@@ -9,7 +10,7 @@ export default {
   middleware: ['defaultCity', 'authenticated'],
   head () {
     return {
-      title: 'Tickets API ARNOP'
+      title: 'Diario API ARNOP'
     }
   }
 }

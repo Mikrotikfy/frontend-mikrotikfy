@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="no-printme">
     <v-row>
       <v-col
         cols="12"
@@ -45,6 +45,10 @@
               {{ ticketList.length }}
               {{ ticketList.length === 1 ? 'Ticket activo' : 'Tickets activos' }}
             </h3>
+            <v-spacer />
+            <MiscPrintTicket
+              v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue)  ? true : false"
+              :tickets="selected" />
             </v-row>
           </v-card-text>
         </v-card>
@@ -59,6 +63,8 @@
         <v-card-text>
           <client-only>
             <v-data-table
+              v-model="selected"
+              :show-select="$store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller' ? true : false"
               :key="key"
               :headers="headers"
               :items="ticketList"
@@ -315,8 +321,6 @@ export default {
       pageCount: 0,
       itemsPerPage: 10,
       search: '',
-      cityName: '',
-      cityColor: '',
       alertBox: false,
       dialog: false,
       dialogEdit: false,
@@ -327,10 +331,9 @@ export default {
       isDesktop: false,
       editModalData: {},
       infoModal: false,
-      States: [{ name: 'Abierto', value: true }, { name: 'Cerrado', value: false }],
-      allowed_components: [],
       expanded: [],
-      singleExpand: true
+      singleExpand: true,
+      selected: []
     }
   },
   computed: {
@@ -466,4 +469,12 @@ export default {
   a {
     text-decoration: none;
   }
+  @media print {
+  .no-printme {
+    display: none !important;
+  }
+  .printme {
+    display: block;
+  }
+}
 </style>
