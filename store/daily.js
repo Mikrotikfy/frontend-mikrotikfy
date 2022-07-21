@@ -20,7 +20,8 @@ export const actions = {
           'client.neighborhood',
           'client.plan',
           'client.technology',
-          'client.addresses'
+          'client.addresses',
+          'client.addresses.neighborhood'
         ],
         filters: {
           active: true,
@@ -50,6 +51,7 @@ export const actions = {
           .then(res => res.json())
           .then((tickets) => {
             const clients = tickets.data.map((ticket) => {
+              ticket.client.ticketid = ticket.id
               return ticket.client
             })
             resolve(clients)
@@ -67,7 +69,8 @@ export const actions = {
           'neighborhood',
           'plan',
           'technology',
-          'addresses'
+          'addresses',
+          'addresses.neighborhood'
         ],
         filters: {
           active: false,
