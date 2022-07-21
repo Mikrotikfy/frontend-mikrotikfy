@@ -1,0 +1,161 @@
+export const state = () => ({
+  headers: [],
+  traslateheaders: []
+})
+export const mutations = {
+  getHeadersByClientType (state, payload) {
+    state.headers = payload
+  },
+  getTraslateHeadersByClientType (state, payload) {
+    state.traslateheaders = payload
+  }
+}
+export const actions = {
+  getPendingTraslates ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      const qs = require('qs')
+      const query = qs.stringify({
+        populate: [
+          'client',
+          'client.neighborhood',
+          'client.plan',
+          'client.technology',
+          'client.addresses'
+        ],
+        filters: {
+          active: true,
+          tickettype: {
+            name: 'TRASLADO'
+          },
+          city: {
+            name: payload.city
+          },
+          clienttype: {
+            name: payload.clienttype
+          }
+        },
+        sort: ['createdAt:desc']
+      },
+      {
+        encodeValuesOnly: true
+      })
+      try {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((tickets) => {
+            const clients = tickets.data.map((ticket) => {
+              return ticket.client
+            })
+            resolve(clients)
+          })
+      } catch (error) {
+        throw new Error(`ACTION ${error}`)
+      }
+    })
+  },
+  getPendingClients ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      const qs = require('qs')
+      const query = qs.stringify({
+        populate: [
+          'neighborhood',
+          'plan',
+          'technology',
+          'addresses'
+        ],
+        filters: {
+          active: false,
+          city: {
+            name: payload.city
+          },
+          clienttype: {
+            name: payload.clienttype
+          }
+        },
+        sort: ['code:desc']
+      },
+      {
+        encodeValuesOnly: true
+      })
+      try {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((clients) => {
+            resolve(clients.data)
+          })
+      } catch (error) {
+        throw new Error(`ACTION ${error}`)
+      }
+    })
+  },
+  getHeadersByClientType ({ commit }, { city, clienttype }) {
+    const internet = [
+      { text: 'Codigo', value: 'code', sortable: false },
+      { text: 'Nombre', value: 'name', sortable: false },
+      { text: 'Cedula', value: 'dni', sortable: false },
+      { text: 'Direccion', sortable: false, value: 'address' },
+      { text: 'Barrio', value: 'neighborhood.name', sortable: false },
+      { text: 'Telefono', sortable: false, value: 'phone' },
+      { text: 'Plan', value: 'plan.name', sortable: false },
+      { text: 'Tecnologia', value: 'technology.name', sortable: false },
+      { text: '', value: 'actions', sortable: false }
+    ]
+    const television = [
+      { text: 'Codigo', value: 'code', sortable: false },
+      { text: 'Nombre', value: 'name', sortable: false },
+      { text: 'Cedula', value: 'dni', sortable: false },
+      { text: 'Direccion', sortable: false, value: 'address' },
+      { text: 'Estado', sortable: false, value: 'active' },
+      { text: 'Barrio', value: 'neighborhood.name', sortable: false },
+      { text: 'Telefono', sortable: false, value: 'phone' },
+      { text: '', value: 'actions', sortable: false }
+    ]
+
+    if (clienttype === 'INTERNET') {
+      commit('getHeadersByClientType', internet)
+    } else if (clienttype === 'TELEVISION') {
+      commit('getHeadersByClientType', television)
+    }
+  },
+  getTraslateHeadersByClientType ({ commit }, { city, clienttype }) {
+    const internet = [
+      { text: 'Codigo', value: 'code', sortable: false },
+      { text: 'Nombre', value: 'name', sortable: false },
+      { text: 'Cedula', value: 'dni', sortable: false },
+      { text: 'Direccion', sortable: false, value: 'address' },
+      { text: 'Barrio', value: 'neighborhood.name', sortable: false },
+      { text: 'Telefono', sortable: false, value: 'phone' },
+      { text: 'Plan', value: 'plan.name', sortable: false },
+      { text: 'Tecnologia', value: 'technology.name', sortable: false },
+      { text: '', value: 'actions', sortable: false }
+    ]
+    const television = [
+      { text: 'Codigo', value: 'code', sortable: false },
+      { text: 'Nombre', value: 'name', sortable: false },
+      { text: 'Cedula', value: 'dni', sortable: false },
+      { text: 'Direccion', sortable: false, value: 'address' },
+      { text: 'Estado', sortable: false, value: 'active' },
+      { text: 'Barrio', value: 'neighborhood.name', sortable: false },
+      { text: 'Telefono', sortable: false, value: 'phone' },
+      { text: '', value: 'actions', sortable: false }
+    ]
+
+    if (clienttype === 'INTERNET') {
+      commit('getTraslateHeadersByClientType', internet)
+    } else if (clienttype === 'TELEVISION') {
+      commit('getTraslateHeadersByClientType', television)
+    }
+  }
+}

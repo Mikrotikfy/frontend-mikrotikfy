@@ -20,6 +20,7 @@
                     :disabled="loading"
                     :loading="loading"
                     v-on="on"
+                    @click="getPendingTraslates()"
                   >
                     <v-icon>mdi-reload</v-icon>
                     </v-btn>
@@ -27,11 +28,11 @@
                 <span>Refrescar Lista</span>
               </v-tooltip>
               <h3 class="align-self-center">
-                {{ clients.length }}
-                {{ clients.length === 1 ? 'Conexiones pendiente' : 'Conexiones pendientes' }}
+                {{ tickets.length }}
+                {{ tickets.length === 1 ? 'Traslado pendiente' : 'Traslados pendientes' }}
               </h3>
               <v-spacer />
-              <MiscPrint :clients="selected" class="printme" />
+              <MiscPrint :clients="selected" :type="'tr'" class="printme" />
             </v-row>
           </v-card-text>
         </v-card>
@@ -49,13 +50,14 @@
             <v-data-table
               v-model="selected"
               :headers="headers"
-              :items="clients"
+              :items="tickets"
               :items-per-page="itemsPerPage"
               :page.sync="page"
               :loading="loading"
               sort-by="createdAt"
               calculate-widths
               sort-desc
+              dense
               show-select
               no-data-text="No hay clientes pendientes por instalacion aún..."
               loading-text="Cargando información de clientes..."
@@ -69,7 +71,7 @@
     </v-row>
     <v-row>
       <v-col>
-        <div class="text-center pt-2">
+        <div class="text-center pt-1">
           <v-pagination v-model="page" :length="pageCount" />
         </div>
       </v-col>
@@ -80,33 +82,34 @@
 export default {
   data () {
     return {
-      clients: [],
+      tickets: [],
       selected: [],
       loading: true,
       error: null,
       itemsPerPage: 5,
       page: 1,
-      pageCount: 1,
-      headers: [
-        { text: 'Codigo', value: 'code', sortable: false },
-        { text: 'Nombre', value: 'name', sortable: false },
-        { text: 'Cedula', value: 'dni', sortable: false },
-        { text: 'Direccion', sortable: false, value: 'address' },
-        { text: 'Barrio', value: 'neighborhood.name', sortable: false },
-        { text: 'Telefono', sortable: false, value: 'phone' },
-        { text: 'Plan', value: 'plan.name', sortable: false },
-        { text: 'Tecnologia', value: 'technology.name', sortable: false },
-        { text: '', value: 'actions', sortable: false }
-      ]
+      pageCount: 1
+    }
+  },
+  computed: {
+    headers () {
+      return this.$store.state.daily.traslateheaders
+    }
+  },
+  watch: {
+    $route () {
+      this.getPendingTraslates()
+      this.getTraslateHeadersByClientType()
     }
   },
   mounted () {
-    this.getPendingClients()
+    this.getPendingTraslates()
+    this.getTraslateHeadersByClientType()
   },
   methods: {
-    async getPendingClients () {
+    async getPendingTraslates () {
       this.loading = true
-      this.clients = await this.$store.dispatch('client/getPendingClients', {
+      this.tickets = await this.$store.dispatch('daily/getPendingTraslates', {
         token: this.$store.state.auth.token,
         city: this.$route.query.city,
         clienttype: this.$route.query.clienttype
@@ -116,6 +119,11 @@ export default {
           this.loading = false
         })
       this.loading = false
+    },
+    getTraslateHeadersByClientType () {
+      this.$store.dispatch('daily/getTraslateHeadersByClientType', {
+        clienttype: this.$route.query.clienttype
+      })
     }
   }
 }

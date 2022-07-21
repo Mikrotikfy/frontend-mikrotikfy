@@ -54,7 +54,7 @@
                 <MainLogoDark />
               </v-col>
               <v-col style="border: 1px solid grey;" class="d-flex align-center justify-center">
-                <h2 class="printme">Agenda Tecnica Internet</h2>
+                <h2 class="printme">Mantenimiento Internet</h2>
               </v-col>
               <v-col style="border: 1px solid grey;" class="d-flex align-center justify-center">
                 <v-row>
@@ -76,19 +76,16 @@
             </v-row>
             <v-row class="mt-5">
               <div
-                v-for="client in clients"
-                :key="client.id"
+                v-for="item in tickets"
+                :key="item.client.id"
                 class="parent"
               >
-                <span class="item">{{type === 'cx' ? 'CX' : 'TR'}}</span>
-                <span :style="`color:${client.technology ? 'grey' : '#c9c9c9'}`">{{ client.technology ? client.technology.name : 'Tecnol.' }}</span>
-                <span  style="color:#c9c9c9;">CANT. FIBRA</span>
-                <span>{{ client.code }}</span>
-                <span>{{ client.plan.name }}</span>
-                <span  style="color:#c9c9c9;">P NAP</span>
-                <span  style="color:#c9c9c9;"># CUP.</span>
-                <span>{{ client.name }}</span>
-                <span>{{ client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].address : client.address }}</span>
+                <span class="item">RV</span>
+                <span>{{ item.client.code }}</span>
+                <span><strong>{{ item.tickettype.name }}</strong></span>
+                <span>{{ item.client.name }}</span>
+                <span>{{ item.client.addresses.length > 0 ? item.client.addresses[item.client.addresses.length - 1].address : item.client.address }}</span>
+                <span>{{ item.client.phone }}</span>
                 <span style="color:#c9c9c9;">OBSERVACIONES</span>
                 <span style="color:#c9c9c9;">FIRMA CLIENTE</span>
               </div>
@@ -102,13 +99,9 @@
 <script>
 export default {
   props: {
-    clients: {
+    tickets: {
       type: Array,
       default: () => []
-    },
-    type: {
-      type: String,
-      default: ''
     }
   },
   data () {
@@ -121,7 +114,7 @@ export default {
   methods: {
     async initComponent () {
       await this.getTechnicians()
-      if (this.clients.length > 0) {
+      if (this.tickets.length > 0) {
         this.$vuetify.theme.dark = false
         this.modal = true
       } else {
@@ -153,7 +146,7 @@ export default {
 .parent {
   display: grid;
   width: 100%;
-  grid-template-columns: 1fr 1fr 1fr 1fr 2fr 1fr 1fr 4fr 4fr 4fr 4fr;
+  grid-template-columns: 1fr 1fr 2fr 4fr 4fr 2fr 4fr 4fr;
   grid-gap: 0px;
 }
 .parent > span {
