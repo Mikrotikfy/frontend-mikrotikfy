@@ -49,6 +49,7 @@
           <client-only>
             <v-data-table
               v-model="selected"
+              item-key="ticketid"
               :headers="headers"
               :items="tickets"
               :items-per-page="itemsPerPage"

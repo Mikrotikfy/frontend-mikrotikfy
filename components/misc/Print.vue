@@ -50,18 +50,18 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col style="border: 1px solid grey;" class="align-center justify-center printme">
+              <v-col cols="2" style="border: 1px solid grey;" class="align-center justify-center printme">
                 <MainLogoDark />
               </v-col>
-              <v-col style="border: 1px solid grey;" class="d-flex align-center justify-center">
+              <v-col cols="5" style="border: 1px solid grey;background-color:#bfffff;" class="d-flex align-center justify-center">
                 <h2 class="printme">Agenda Tecnica Internet</h2>
               </v-col>
-              <v-col style="border: 1px solid grey;" class="d-flex align-center justify-center">
+              <v-col cols="5" style="border: 1px solid grey;" class="d-flex align-center justify-center">
                 <v-row>
-                  <v-col class="text-center">
+                  <v-col cols="5" class="text-center" style="border-right: 1px solid grey;">
                     <h3>Fecha: {{ getDate(new Date()) }}</h3>
                   </v-col>
-                  <v-col class="justify-center align-center d-flex mr-2">
+                  <v-col cols="7" class="justify-center align-center d-flex">
                     <h3> {{ technician ? technician.length > 1 ? 'Tecnicos:' : 'Tecnico:' : ''}} </h3>
                     <h3
                       v-for="(tech, index) in technician"
@@ -88,11 +88,27 @@
                 <span  style="color:#c9c9c9;">P NAP</span>
                 <span  style="color:#c9c9c9;"># CUP.</span>
                 <span>{{ client.name }}</span>
-                <span>{{ client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].address : client.address }}</span>
+                <span v-if="type === 'cx'" style="display:grid;">
+                  {{ client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].address : client.address }}
+                  {{ client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].neighborhood.name : client.neighborhood.name }}
+                </span>
+                <span v-else style="display:grid;">
+                  <v-row>
+                    DX:
+                    {{ client.addresses.length > 1 ? client.addresses[client.addresses.length - 2].address : 'No aplica en base de datos' }}
+                    {{ client.addresses.length > 1 ? client.addresses[client.addresses.length - 2].neighborhood.name : '' }}
+                  </v-row>
+                  <v-row>
+                    CX:
+                    {{ client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].address : client.address }}
+                    {{ client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].neighborhood.name : client.neighborhood.name }}
+                  </v-row>
+                </span>
                 <span style="color:#c9c9c9;">OBSERVACIONES</span>
                 <span style="color:#c9c9c9;">FIRMA CLIENTE</span>
               </div>
             </v-row>
+            <v-row class="mt-3 justify-center" style="border: 1px solid grey;">Agenda generada por {{$store.state.auth.username.charAt(0).toUpperCase() + $store.state.auth.username.slice(1)}} el {{ getDate(new Date()) }} - Tabla autogenerada por la API</v-row>
           </v-container>
         </v-card-text>
       </v-card>
@@ -141,7 +157,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 @media print {
   .no-printme {
     display: none !important;
