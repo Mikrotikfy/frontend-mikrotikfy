@@ -47,7 +47,7 @@
             </h3>
             <v-spacer />
             <MiscPrintTicket
-              v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue)  ? true : false"
+              v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop  ? true : false"
               :tickets="selected" />
             </v-row>
           </v-card-text>
@@ -64,7 +64,7 @@
           <client-only>
             <v-data-table
               v-model="selected"
-              :show-select="$store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller' ? true : false"
+              :show-select="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop ? true : false"
               :key="key"
               :headers="headers"
               :items="ticketList"
@@ -110,7 +110,7 @@
                   </template>
                 </v-edit-dialog>
               </template>
-              <template v-if="!isDesktop" v-slot:expanded-item="{ headers, item }">
+              <template v-if="!$store.state.isDesktop" v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length">
                   <span class="grey--text">Avance:</span> {{ item.details ? item.details : 'no hay' }}
                 </td>
@@ -128,7 +128,7 @@
               <template v-slot:[`item.client.code`]="props">
                 <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`">{{props.item.client.code}}</nuxt-link>
               </template>
-              <template v-if="isDesktop" v-slot:[`item.actions`]="props">
+              <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="props">
                 <div class="nowspace">
                   <TicketHistory
                     :clientid="props.item.client.id"

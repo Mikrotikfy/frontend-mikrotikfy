@@ -7,11 +7,19 @@
       v-model="drawer"
       class="no-printme"
       app
-      :permanent="!isMobile"
-      :expand-on-hover="!isMobile"
-      :mini-variant="!isMobile"
-      :bottom="isMobile"
+      :permanent="$store.state.isDesktop"
+      :expand-on-hover="$store.state.isDesktop"
+      :mini-variant="$store.state.isDesktop"
+      :bottom="!$store.state.isDesktop"
     >
+      <v-switch
+        v-if="!$store.state.isDesktop"
+        v-model="light"
+        :prepend-icon="light ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent'"
+        inset
+        class="my-2 ml-5"
+        @change="changeTheme()"
+      />
       <v-list>
         <v-list-item
           v-for="(item, i) in menu"
@@ -39,7 +47,7 @@
       dense
       class="elevation-0 transparent no-printme"
     >
-      <v-app-bar-nav-icon v-if="isMobile" @click.stop="drawer = !drawer" />
+      <v-app-bar-nav-icon v-if="!$store.state.isDesktop" @click.stop="drawer = !drawer" />
       <v-btn
         v-for="clienttype in $store.state.auth.clienttypes"
         :key="clienttype.name"
@@ -50,13 +58,14 @@
         small
         :to="`${$route.path}?city=${$route.query.city}&clienttype=${clienttype.name}`"
       >
-        <v-icon :class="isMobile ? '' : 'mr-2'">
+        <v-icon :class="!$store.state.isDesktop ? '' : 'mr-2'">
           {{ clienttype.icon }}
         </v-icon>
-        {{ isMobile ? null : clienttype.name }}
+        {{ !$store.state.isDesktop ? null : clienttype.name }}
       </v-btn>
       <v-spacer />
       <v-switch
+        v-if="$store.state.isDesktop"
         v-model="light"
         :prepend-icon="light ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent'"
         inset
@@ -85,7 +94,7 @@
           :color="city.color"
           :to="`${$route.path}?city=${city.name}&clienttype=${$route.query.clienttype}`"
         >
-          {{ isMobile ? city.name.charAt(0) : city.name }}
+          {{ !$store.state.isDesktop ? city.name.charAt(0) : city.name }}
         </v-btn>
       </div>
       <v-tooltip bottom>
@@ -134,7 +143,6 @@ export default {
   middleware: ['defaultCity', 'authenticated'],
   data () {
     return {
-      isMobile: false,
       light: null,
       hasPendingChanges: false,
       drawer: false,
@@ -159,12 +167,16 @@ export default {
       return this.$store.state.auth.menu
     }
   },
+  destroyed () {
+    window.removeEventListener('resize', this.isDesktopScreen)
+  },
   mounted () {
+    window.addEventListener('resize', this.isDesktopScreen)
     this.testAuthToken()
     this.getLocalStorage()
     this.comprobeDateToSetChristmasTheme()
     this.loadThemeFromVuetifyThemeManager()
-    this.isMobileScreen()
+    this.isDesktopScreen()
   },
   methods: {
     testAuthToken () {
@@ -218,13 +230,14 @@ export default {
         this.bg = 'cbg.jpg'
       }
     },
-    isMobileScreen () {
+    isDesktopScreen () {
       const res = document.body.clientWidth
-      if (res < 800) {
-        this.isMobile = true
+      if (res < 960) {
+        this.isDesktop = false
       } else {
-        this.isMobile = false
+        this.isDesktop = true
       }
+      this.$store.commit('isDesktop', this.isDesktop)
     },
     logout (params) {
       Cookie.remove('auth')
