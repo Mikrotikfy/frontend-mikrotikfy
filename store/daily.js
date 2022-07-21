@@ -51,6 +51,7 @@ export const actions = {
           .then(res => res.json())
           .then((tickets) => {
             const clients = tickets.data.map((ticket) => {
+              ticket.client.ticketCreatedAt = ticket.createdAt
               ticket.client.ticketid = ticket.id
               return ticket.client
             })
@@ -112,7 +113,7 @@ export const actions = {
       { text: 'Barrio', value: 'neighborhood.name', sortable: false },
       { text: 'Telefono', sortable: false, value: 'phone' },
       { text: 'Plan', value: 'plan.name', sortable: false },
-      { text: 'Tecnologia', value: 'technology.name', sortable: false },
+      { text: 'Pendiente desde', value: 'createdAt', sortable: false },
       { text: '', value: 'actions', sortable: false }
     ]
     const television = [
@@ -123,6 +124,7 @@ export const actions = {
       { text: 'Estado', sortable: false, value: 'active' },
       { text: 'Barrio', value: 'neighborhood.name', sortable: false },
       { text: 'Telefono', sortable: false, value: 'phone' },
+      { text: 'Pendiente desde', value: 'createdAt', sortable: false },
       { text: '', value: 'actions', sortable: false }
     ]
 
@@ -142,6 +144,7 @@ export const actions = {
       { text: 'Telefono', sortable: false, value: 'phone' },
       { text: 'Plan', value: 'plan.name', sortable: false },
       { text: 'Tecnologia', value: 'technology.name', sortable: false },
+      { text: 'Pendiente desde', value: 'createdAt', sortable: false },
       { text: '', value: 'actions', sortable: false }
     ]
     const television = [
@@ -152,6 +155,7 @@ export const actions = {
       { text: 'Estado', sortable: false, value: 'active' },
       { text: 'Barrio', value: 'neighborhood.name', sortable: false },
       { text: 'Telefono', sortable: false, value: 'phone' },
+      { text: 'Pendiente desde', value: 'createdAt', sortable: false },
       { text: '', value: 'actions', sortable: false }
     ]
 

@@ -27,10 +27,10 @@
                   </template>
                 <span>Refrescar Lista</span>
               </v-tooltip>
-              <h3 class="align-self-center">
+              <h2 class="align-self-center">
                 {{ clients.length }}
                 {{ clients.length === 1 ? 'Conexiones pendiente' : 'Conexiones pendientes' }}
-              </h3>
+              </h2>
               <v-spacer />
               <MiscPrint :clients="selected" :type="'cx'" class="printme" />
             </v-row>
@@ -64,7 +64,19 @@
               hide-default-footer
               mobile-breakpoint="100"
               @page-count="pageCount = $event"
-            />
+            >
+              <template v-slot:[`item.address`]="{ item }">
+                  {{ item.addresses.length > 0 ? item.addresses[item.addresses.length -1].address : item.address }}
+              </template>
+              <template v-slot:[`item.neighborhood.name`]="{ item }">
+                  {{ item.addresses.length > 0 ? item.addresses[item.addresses.length -1].neighborhood.name : item.neighborhood.name }}
+              </template>
+            <template v-slot:[`item.createdAt`]="{ item }">
+                <span>
+                  {{ getDate(item.createdAt) }}
+                </span>
+              </template>
+            </v-data-table>
           </client-only>
         </v-card>
       </v-col>
@@ -124,6 +136,11 @@ export default {
       this.$store.dispatch('daily/getHeadersByClientType', {
         clienttype: this.$route.query.clienttype
       })
+    },
+    getDate (date) {
+      const dateObject = new Date(date)
+      const humanDateFormat = dateObject.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+      return humanDateFormat
     }
   }
 }

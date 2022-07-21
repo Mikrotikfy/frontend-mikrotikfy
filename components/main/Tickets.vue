@@ -223,12 +223,12 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.address : '' }}</v-list-item-title>
+                <v-list-item-title>{{ editModalData.client ? editModalData.client.addresses.length > 0 ? editModalData.client.addresses[editModalData.client.addresses.length - 1].address : editModalData.client.address : '' }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.neighborhood.name : '' }}</v-list-item-title>
+                <v-list-item-title>{{ editModalData.client ? editModalData.client.addresses.length > 0 ? editModalData.client.addresses[editModalData.client.addresses.length - 1].neighborhood.name : editModalData.client.neighborhood.name : '' }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item>
