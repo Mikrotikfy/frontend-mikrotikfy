@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mt-5 rounded-xl">
+  <v-card class="mt-2 rounded-xl">
     <v-card-text class="d-flex">
       <v-text-field
         v-model.number="amount"
@@ -10,7 +10,7 @@
         filled
         rounded
         autofocus
-        placeholder="$0.00"
+        placeholder="Recaudar $0.00"
         prepend-icon="mdi-account-cash-outline"
         color="green"
         @keyup.enter="addDiscountMovement"

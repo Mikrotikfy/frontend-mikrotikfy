@@ -1,5 +1,5 @@
 <template>
-  <p> {{ formattedMessage }} </p>
+  <span> {{ formattedMessage }} </span>
 </template>
 <script>
 const meses = [

@@ -6,13 +6,14 @@
     <client-only>
       <v-data-table
         ref="billDataTable"
-        style="overflow-y:scroll;max-height:56vh;"
         :headers="headers"
         :items.sync="billingInfo.movements"
         :items-per-page.sync="itemsPerPage"
         :page.sync="page"
         :options.sync="options"
         :loading="loadingDataTable"
+        sort-by="id"
+        sort-desc
         no-data-text="Realiza una busqueda para iniciar..."
         loading-text="Cargando información de clientes..."
         dense
@@ -85,6 +86,18 @@ export default {
 }
 </script>
 <style>
+td {
+  background-color: rgb(81, 135, 0);
+    -moz-animation: cssAnimation 1s ease-in 0.3s forwards;
+    /* Firefox */
+    -webkit-animation: cssAnimation 1s ease-in 0.3s forwards;
+    /* Safari and Chrome */
+    -o-animation: cssAnimation 1s ease-in 0.3s forwards;
+    /* Opera */
+    animation: cssAnimation 1s ease-in 0.3s forwards;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+}
 .hideMe {
     background-color: rgb(81, 135, 0);
     -moz-animation: cssAnimation 1s ease-in 0.3s forwards;

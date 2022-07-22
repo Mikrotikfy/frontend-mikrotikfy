@@ -1,10 +1,10 @@
 <template>
-  <v-card class="mt-5 rounded-xl">
+  <v-card class="mt-2 rounded-xl">
     <v-card-text class="d-flex">
       <v-text-field
         v-model.number="amount"
         type="number"
-        label="Generar Cobro"
+        label="Generar Cobro $0.00"
         single-line
         hide-details
         filled
@@ -48,7 +48,7 @@
 export default {
   data () {
     return {
-      amount: 0,
+      amount: null,
       details: null,
       billtype: {
         id: 1,
@@ -86,7 +86,7 @@ export default {
         client: this.$store.state.billing.billingInfo.clientId,
         billtype: this.billtype
       })
-      this.amount = 0
+      this.amount = null
       this.details = null
     }
   }
