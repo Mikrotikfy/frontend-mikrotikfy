@@ -4,13 +4,13 @@
       <v-text-field
         v-model.number="amount"
         type="number"
-        label="Recaudar $0.00"
+        :label="selected.length > 0 ? `Recaudar a ${selected[0].type}` : 'Recaudar $0.00'"
         single-line
         hide-details
         filled
         rounded
         autofocus
-        placeholder="Recaudar $0.00"
+        :placeholder="selected.length > 0 ? `Recaudar a ${selected[0].type}` : 'Recaudar $0.00'"
         prepend-icon="mdi-account-cash-outline"
         color="green"
         @keyup.enter="addDiscountMovement"
@@ -23,6 +23,11 @@ export default {
   data () {
     return {
       amount: null
+    }
+  },
+  computed: {
+    selected () {
+      return this.$store.state.billing.selected
     }
   },
   methods: {

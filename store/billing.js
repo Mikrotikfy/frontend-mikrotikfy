@@ -4,9 +4,13 @@ export const state = () => ({
     clientId: null,
     movements: []
   },
-  headers: []
+  headers: [],
+  selected: []
 })
 export const mutations = {
+  setSelected (state, selected) {
+    state.selected = selected
+  },
   addMovement (state, movement) {
     state.billingInfo.movements.push({
       id: state.billingInfo.movements.length + 1,

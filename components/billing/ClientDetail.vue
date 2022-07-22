@@ -1,11 +1,12 @@
 <template>
   <div>
-    <p ref="clientP" class="ml-2 hideMe rounded-xl px-2">
+    <span ref="clientP" class="ml-2 hideMe rounded-xl px-2">
       Usuario: {{ billingInfo.clientId }} {{ billingInfo.clientName }}
-    </p>
+    </span>
     <client-only>
       <v-data-table
         ref="billDataTable"
+        v-model="selected"
         :headers="headers"
         :items.sync="billingInfo.movements"
         :items-per-page.sync="itemsPerPage"
@@ -14,6 +15,8 @@
         :loading="loadingDataTable"
         sort-by="id"
         sort-desc
+        show-select
+        single-select
         no-data-text="Realiza una busqueda para iniciar..."
         loading-text="Cargando información de clientes..."
         dense
@@ -41,6 +44,9 @@
         <template v-slot:[`item.date`]="props">
           <span>{{ props.item.date.toLocaleString('es-ES') }} </span>
         </template>
+        <template v-slot:[`item.actions`]="props">
+          <BillingCancelBill :bill="props.item" />
+        </template>
       </v-data-table>
     </client-only>
   </div>
@@ -49,6 +55,7 @@
 export default {
   data () {
     return {
+      selected: [],
       itemsPerPage: 100,
       page: 1,
       pageCount: 0,
@@ -59,7 +66,8 @@ export default {
         { text: 'Tipo de movimiento', value: 'type', sortable: false },
         { text: 'Observaciones', value: 'details', sortable: false },
         { text: 'Valor', sortable: false, value: 'amount' },
-        { text: 'Fecha', value: 'date', sortable: false }
+        { text: 'Fecha', value: 'date', sortable: false },
+        { text: 'Acciones', value: 'actions', sortable: false }
       ]
     }
   },
@@ -73,6 +81,9 @@ export default {
       handler () {
         this.changeClient()
       }
+    },
+    selected () {
+      this.$store.commit('billing/setSelected', this.selected)
     }
   },
   methods: {
