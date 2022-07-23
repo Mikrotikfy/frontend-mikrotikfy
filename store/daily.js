@@ -1,6 +1,8 @@
 export const state = () => ({
   headers: [],
-  traslateheaders: []
+  traslateheaders: [],
+  selectedcx: [],
+  selectedtr: []
 })
 export const mutations = {
   getHeadersByClientType (state, payload) {
@@ -8,6 +10,12 @@ export const mutations = {
   },
   getTraslateHeadersByClientType (state, payload) {
     state.traslateheaders = payload
+  },
+  setSelectedCx (state, payload) {
+    state.selectedcx = payload
+  },
+  setSelectedTr (state, payload) {
+    state.selectedtr = payload
   }
 }
 export const actions = {

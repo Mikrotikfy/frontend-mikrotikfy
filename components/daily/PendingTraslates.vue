@@ -32,7 +32,7 @@
                 {{ tickets.length === 1 ? 'Traslado pendiente' : 'Traslados pendientes' }}
               </h2>
               <v-spacer />
-              <MiscPrint :clients="selected" :type="'tr'" class="printme" />
+              <MiscPrint :type="'tr'" class="printme" />
             </v-row>
           </v-card-text>
         </v-card>
@@ -113,6 +113,9 @@ export default {
     $route () {
       this.getPendingTraslates()
       this.getTraslateHeadersByClientType()
+    },
+    selected () {
+      this.$store.commit('daily/setSelectedTr', this.selected)
     }
   },
   mounted () {

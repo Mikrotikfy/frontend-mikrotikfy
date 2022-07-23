@@ -32,7 +32,7 @@
                 {{ clients.length === 1 ? 'Conexiones pendiente' : 'Conexiones pendientes' }}
               </h2>
               <v-spacer />
-              <MiscPrint :clients="selected" :type="'cx'" class="printme" />
+              <MiscPrint :type="'cx'" class="printme" />
             </v-row>
           </v-card-text>
         </v-card>
@@ -112,6 +112,9 @@ export default {
     $route () {
       this.getPendingClients()
       this.getHeadersByClientType()
+    },
+    selected () {
+      this.$store.commit('daily/setSelectedCx', this.selected)
     }
   },
   mounted () {

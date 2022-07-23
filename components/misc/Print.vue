@@ -54,15 +54,15 @@
                 <MainLogoDark />
               </v-col>
               <v-col cols="5" style="border: 1px solid grey;background-color:#bfffff;" class="d-flex align-center justify-center">
-                <h2 class="printme">Agenda Tecnica Internet</h2>
+                <h2 class="printme">Servicio Técnico Internet</h2>
               </v-col>
               <v-col cols="5" style="border: 1px solid grey;" class="d-flex align-center justify-center">
                 <v-row>
                   <v-col cols="5" class="text-center" style="border-right: 1px solid grey;">
-                    <h3>Fecha: {{ getDate(new Date()) }}</h3>
+                    <h3>{{ getDate(new Date()) }}</h3>
                   </v-col>
                   <v-col cols="7" class="justify-center align-center d-flex">
-                    <h3> {{ technician ? technician.length > 1 ? 'Tecnicos:' : 'Tecnico:' : ''}} </h3>
+                    <h3> {{ technician.length > 0 ? technician.length > 1 ? 'Tecnicos:' : 'Tecnico:' : 'Tecnico/s _________________________'}} </h3>
                     <h3
                       v-for="(tech, index) in technician"
                       :key="tech.id"
@@ -76,11 +76,11 @@
             </v-row>
             <v-row class="mt-5">
               <div
-                v-for="client in clients"
+                v-for="client in $store.state.daily.selectedcx"
                 :key="client.id"
                 class="parent"
               >
-                <span class="item">{{type === 'cx' ? 'CX' : 'TR'}}</span>
+                <span class="item">CX</span>
                 <span :style="`color:${client.technology ? 'grey' : '#c9c9c9'}`">{{ client.technology ? client.technology.name : 'Tecnol.' }}</span>
                 <span  style="color:#c9c9c9;">CANT. FIBRA</span>
                 <span>{{ client.code }}</span>
@@ -88,11 +88,27 @@
                 <span  style="color:#c9c9c9;">P NAP</span>
                 <span  style="color:#c9c9c9;"># CUP.</span>
                 <span>{{ client.name }}</span>
-                <span v-if="type === 'cx'" style="display:grid;">
+                <span style="display:grid;">
                   {{ client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].address : client.address }}
                   {{ client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].neighborhood.name : client.neighborhood.name }}
                 </span>
-                <span v-else style="display:grid;">
+                <span style="color:#c9c9c9;">OBSERVACIONES</span>
+                <span style="color:#c9c9c9;">FIRMA CLIENTE</span>
+              </div>
+              <div
+                v-for="client in $store.state.daily.selectedtr"
+                :key="client.id"
+                class="parent"
+              >
+                <span class="item">TR</span>
+                <span :style="`color:${client.technology ? 'grey' : '#c9c9c9'}`">{{ client.technology ? client.technology.name : 'Tecnol.' }}</span>
+                <span  style="color:#c9c9c9;">CANT. FIBRA</span>
+                <span>{{ client.code }}</span>
+                <span>{{ client.plan.name }}</span>
+                <span  style="color:#c9c9c9;">P NAP</span>
+                <span  style="color:#c9c9c9;"># CUP.</span>
+                <span>{{ client.name }}</span>
+                <span style="display:grid;">
                   <v-row>
                     DX:
                     {{ client.addresses.length > 1 ? client.addresses[client.addresses.length - 2].address : 'No aplica en base de datos' }}
@@ -118,10 +134,6 @@
 <script>
 export default {
   props: {
-    clients: {
-      type: Array,
-      default: () => []
-    },
     type: {
       type: String,
       default: ''
@@ -130,14 +142,14 @@ export default {
   data () {
     return {
       modal: false,
-      technician: null,
+      technician: [],
       technicians: []
     }
   },
   methods: {
     async initComponent () {
       await this.getTechnicians()
-      if (this.clients.length > 0) {
+      if (this.$store.state.daily.selectedcx.length > 0 || this.$store.state.daily.selectedtr.length > 0) {
         this.$vuetify.theme.dark = false
         this.modal = true
       } else {
@@ -151,7 +163,7 @@ export default {
     },
     getDate (date) {
       const dateObject = new Date(date)
-      const humanDateFormat = dateObject.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric' })
+      const humanDateFormat = dateObject.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
       return humanDateFormat
     }
   }
