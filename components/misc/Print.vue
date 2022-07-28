@@ -89,8 +89,8 @@
                 <span  style="color:#c9c9c9;"># CUP.</span>
                 <span>{{ client.name }}</span>
                 <span style="display:grid;">
-                  {{ client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].address : client.address }}
-                  {{ client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].neighborhood.name : client.neighborhood.name }}
+                  {{ client.addresses.length > 0 ? client.addresses.at(-1).address : client.address }}
+                  {{ client.addresses.length > 0 ? client.addresses.at(-1).neighborhood.name : client.neighborhood.name }}
                 </span>
                 <span style="color:#c9c9c9;">OBSERVACIONES</span>
                 <span style="color:#c9c9c9;">FIRMA CLIENTE</span>
@@ -111,13 +111,13 @@
                 <span style="display:grid;">
                   <v-row>
                     DX:
-                    {{ client.addresses.length > 1 ? client.addresses[client.addresses.length - 2].address : 'No aplica en base de datos' }}
-                    {{ client.addresses.length > 1 ? client.addresses[client.addresses.length - 2].neighborhood.name : '' }}
+                    {{ client.addresses.length > 1 ? client.addresses.at(-1).address : 'No aplica en base de datos' }}
+                    {{ client.addresses.length > 1 ? client.addresses.at(-1).neighborhood.name : '' }}
                   </v-row>
                   <v-row>
                     CX:
-                    {{ client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].address : client.address }}
-                    {{ client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].neighborhood.name : client.neighborhood.name }}
+                    {{ client.addresses.length > 0 ? client.addresses.at(-1).address : client.address }}
+                    {{ client.addresses.length > 0 ? client.addresses.at(-1).neighborhood.name : client.neighborhood.name }}
                   </v-row>
                 </span>
                 <span style="color:#c9c9c9;">OBSERVACIONES</span>

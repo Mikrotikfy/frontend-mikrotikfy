@@ -51,7 +51,7 @@
             <v-row class="mb-2">
               <v-col cols="6">
                 <v-text-field
-                  :value="client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].address : client.address"
+                  :value="client.addresses.length > 0 ? client.addresses.at(-1).address : client.address"
                   label="#"
                   outlined
                   dense
@@ -61,7 +61,7 @@
               </v-col>
               <v-col cols="6">
                 <v-autocomplete
-                  :value="client.addresses.length > 0 ? client.addresses[client.addresses.length - 1].neighborhood : client.neighborhood"
+                  :value="client.addresses.length > 0 ? client.addresses.at(-1).neighborhood : client.neighborhood"
                   item-text="name"
                   item-value="id"
                   :items="neighborhoods"

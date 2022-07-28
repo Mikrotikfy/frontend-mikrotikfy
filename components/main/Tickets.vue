@@ -120,10 +120,10 @@
                 <span v-else>{{props.item.client.name}}</span>
               </template>
               <template v-slot:[`item.client.address`]="{ item }">
-                  {{ item.client.addresses.length > 0 ? item.client.addresses[item.client.addresses.length -1].address : item.client.address }}
+                  {{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).address : item.client.address }}
               </template>
               <template v-slot:[`item.client.neighborhood.name`]="{ item }">
-                  {{ item.client.addresses.length > 0 ? item.client.addresses[item.client.addresses.length -1].neighborhood.name : item.client.neighborhood.name }}
+                  {{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).neighborhood.name : item.client.neighborhood.name }}
               </template>
               <template v-slot:[`item.client.code`]="props">
                 <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`">{{props.item.client.code}}</nuxt-link>
@@ -223,12 +223,12 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.addresses.length > 0 ? editModalData.client.addresses[editModalData.client.addresses.length - 1].address : editModalData.client.address : '' }}</v-list-item-title>
+                <v-list-item-title>{{ editModalData.client ? editModalData.client.addresses.length > 0 ? editModalData.client.addresses.at(-1).address : editModalData.client.address : '' }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.addresses.length > 0 ? editModalData.client.addresses[editModalData.client.addresses.length - 1].neighborhood.name : editModalData.client.neighborhood.name : '' }}</v-list-item-title>
+                <v-list-item-title>{{ editModalData.client ? editModalData.client.addresses.length > 0 ? editModalData.client.addresses.at(-1).neighborhood.name : editModalData.client.neighborhood.name : '' }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item>

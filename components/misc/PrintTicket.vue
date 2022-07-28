@@ -85,8 +85,8 @@
                 <span><strong>{{ item.tickettype.name }}</strong></span>
                 <span>{{ item.client.name }}</span>
                 <span>
-                  {{ item.client.addresses.length > 0 ? item.client.addresses[item.client.addresses.length - 1].address : item.client.address }}
-                  {{ item.client.addresses.length > 0 ? item.client.addresses[item.client.addresses.length - 1].neighborhood.name : item.client.neighborhood.name }}
+                  {{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).address : item.client.address }}
+                  {{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).neighborhood.name : item.client.neighborhood.name }}
                 </span>
                 <span>{{ item.client.phone }}</span>
                 <span style="color:#c9c9c9;">OBSERVACIONES</span>

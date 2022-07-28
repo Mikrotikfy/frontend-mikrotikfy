@@ -86,7 +86,7 @@
               <v-row>
                 <v-col cols="6" lg="6" md="6">
                   <v-text-field
-                    :value="editClient.addresses.length > 0 ? editClient.addresses[editClient.addresses.length - 1].address : editClient.address"
+                    :value="editClient.addresses.length > 0 ? editClient.addresses.at(-1).address : editClient.address"
                     disabled
                     label="Direccion"
                     outlined
@@ -96,7 +96,7 @@
                 </v-col>
                 <v-col cols="6" lg="6" md="6" class="d-flex">
                   <v-text-field
-                    :value="editClient.addresses.length > 0 ? editClient.addresses[editClient.addresses.length - 1].neighborhood.name : editClient.neighborhood.name"
+                    :value="editClient.addresses.length > 0 ? editClient.addresses.at(-1).neighborhood.name : editClient.neighborhood.name"
                     disabled
                     class="mr-3"
                     label="Barrio"

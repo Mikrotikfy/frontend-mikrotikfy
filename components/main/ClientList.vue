@@ -126,10 +126,10 @@
                   </span>
                 </template>
                 <template v-slot:[`item.address`]="{ item }">
-                  {{ item.addresses.length > 0 ? item.addresses[item.addresses.length -1].address : item.address }}
+                  {{ item.addresses.length > 0 ? item.addresses.at(-1).address : item.address }}
                 </template>
                 <template v-slot:[`item.neighborhood.name`]="{ item }">
-                  {{ item.addresses.length > 0 ? item.addresses[item.addresses.length -1].neighborhood.name : item.neighborhood.name }}
+                  {{ item.addresses.length > 0 ? item.addresses.at(-1).neighborhood.name : item.neighborhood.name }}
                 </template>
                 <template v-slot:[`item.technology.name`]="{ item }">
                   <v-chip small class="white black--text">
