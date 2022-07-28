@@ -86,7 +86,8 @@
                   </div>
                 </template>
                 <template v-if="clienttype.name === 'INTERNET'" v-slot:[`item.plan.name`]="props">
-                  <v-edit-dialog
+                  <MainClientControl :client="props.item" />
+                  <!-- <v-edit-dialog
                     ref="dialog"
                     :return-value.sync="props.item.plan"
                     large
@@ -115,7 +116,7 @@
                         @change="updatePlanFromModal(props.item.id, $event, clients.map(function(x) {return x.id; }).indexOf(props.item.id))"
                       />
                     </template>
-                  </v-edit-dialog>
+                  </v-edit-dialog> -->
                 </template>
                 <template v-slot:[`item.code`]="{ item }">
                   <span v-if="clienttype.name === 'INTERNET'" :class="item.status === 'green' ? 'online-text' : 'offline-text'">
