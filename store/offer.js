@@ -1,6 +1,8 @@
 export const state = () => ({
   offerHistory: [],
   debtHistory: [],
+  newDebtHistory: [],
+  lastDebtMovement: null,
   offers: []
 })
 export const mutations = {
@@ -17,9 +19,72 @@ export const mutations = {
     } catch (error) {
       throw new Error(`DEBT HISTORY MUTATE ${error}`)
     }
+  },
+  getLastDebtMovement (state, debtmovement) {
+    try {
+      state.lastDebtMovement = debtmovement
+    } catch (error) {
+      throw new Error(`LAST DEBT MOVEMENT MUTATE ${error}`)
+    }
+  },
+  setNewDebt (state, offer) {
+    try {
+      state.debtHistory.push(offer)
+      state.newDebtHistory.push(offer)
+    } catch (error) {
+      throw new Error(`NEW OFFER MUTATE ${error}`)
+    }
   }
 }
 export const actions = {
+  setNewOffer ({ commit }, payload) {
+    try {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}offermovements`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            client: payload.client.id,
+            offer: payload.offer.id,
+            technician: payload.technician.id
+          }
+        })
+      })
+        .then(res => res.json())
+        .then((debtmovements) => {
+          commit('setNewDebt', debtmovements.data)
+        })
+    } catch (error) {
+      throw new Error(`OFFER HISTORY ACTION ${error}`)
+    }
+  },
+  setNewDebt ({ commit }, payload) {
+    try {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}debtmovements`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            client: payload.client.id,
+            isindebt: payload.isindebt,
+            technician: payload.technician.id
+          }
+        })
+      })
+        .then(res => res.json())
+        .then((debtmovements) => {
+          commit('setNewDebt', debtmovements.data)
+        })
+    } catch (error) {
+      throw new Error(`OFFER HISTORY ACTION ${error}`)
+    }
+  },
   getOffers ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {
@@ -54,7 +119,7 @@ export const actions = {
         filters: {
           client: payload.client.id
         },
-        populate: ['client', 'offer'],
+        populate: ['client', 'offer', 'technician'],
         sort: 'createdAt:desc'
       },
       {
@@ -82,7 +147,7 @@ export const actions = {
         filters: {
           client: payload.client.id
         },
-        populate: ['client', 'offer'],
+        populate: ['client', 'offer', 'technician'],
         sort: 'createdAt:desc'
       },
       {
@@ -101,6 +166,34 @@ export const actions = {
         })
     } catch (error) {
       throw new Error(`DEBT HISTORY ACTION ${error}`)
+    }
+  },
+  getLastDebtMovement ({ commit }, payload) {
+    try {
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          client: payload.client.id
+        },
+        populate: ['offer', 'plan'],
+        sort: 'createdAt:desc'
+      },
+      {
+        encodeValuesOnly: true
+      })
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}debtmovements?${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        }
+      })
+        .then(res => res.json())
+        .then((debtmovements) => {
+          commit('getLastDebtMovement', debtmovements.data[0])
+        })
+    } catch (error) {
+      throw new Error(`LAST DEBT HISTORY ACTION ${error}`)
     }
   }
 }
