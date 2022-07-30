@@ -20,6 +20,7 @@
     <v-dialog
       v-model="modal"
       width="90%"
+      style="min-height: 500px;"
     >
       <v-toolbar>
         <v-btn

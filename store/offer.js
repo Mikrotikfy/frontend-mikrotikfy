@@ -3,6 +3,7 @@ export const state = () => ({
   debtHistory: [],
   newDebtHistory: [],
   lastDebtMovement: null,
+  lastOfferMovement: null,
   offers: []
 })
 export const mutations = {
@@ -58,7 +59,7 @@ export const actions = {
           commit('setNewDebt', debtmovements.data)
         })
     } catch (error) {
-      throw new Error(`OFFER HISTORY ACTION ${error}`)
+      throw new Error(`SET OFFER ACTION ${error}`)
     }
   },
   setNewDebt ({ commit }, payload) {
@@ -194,6 +195,36 @@ export const actions = {
         })
     } catch (error) {
       throw new Error(`LAST DEBT HISTORY ACTION ${error}`)
+    }
+  },
+  getLastOfferMovement ({ commit }, payload) {
+    try {
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          client: payload.client.id
+        },
+        populate: ['client', 'offer', 'technician'],
+        sort: 'createdAt:desc'
+      },
+      {
+        encodeValuesOnly: true
+      })
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}offermovements?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((offermovements) => {
+            resolve(offermovements.data[0].offer)
+          })
+      })
+    } catch (error) {
+      throw new Error(`LAST OFFER HISTORY ACTION ${error}`)
     }
   }
 }

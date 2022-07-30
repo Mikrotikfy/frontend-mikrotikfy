@@ -1,21 +1,19 @@
 <template>
-  <div>
+  <div style="width:90%;">
     <h2 class="text-center mb-2">
       Asignar Tarifa
     </h2>
-    <v-list>
-      <v-list-item-group active-class="border" mandatory>
-        <v-list-item
-          v-for="(offer, i) in offers"
-          :key="i"
-          @click="confirm(offer)"
-        >
-          <v-list-item-content>
-            <v-list-item-title v-text="offer.name" />
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list>
+    <v-autocomplete
+      v-model="selected"
+      :items="offers"
+      label="Tarifa"
+      item-text="name"
+      item-value="id"
+      return-object
+      outlined
+      filled
+      @change="confirm()"
+    />
     <v-dialog
       v-model="dialog"
       transition="dialog-bottom-transition"
@@ -60,13 +58,14 @@ export default {
   },
   data () {
     return {
-      selected: null,
       offers: [],
+      selected: null,
       dialog: false
     }
   },
   mounted () {
     this.getOffers()
+    this.getLastOfferMovement()
   },
   methods: {
     setNewOffer () {
@@ -79,8 +78,13 @@ export default {
       })
       this.dialog = false
     },
-    confirm (e) {
-      this.selected = e
+    async getLastOfferMovement () {
+      this.selected = await this.$store.dispatch('offer/getLastOfferMovement', {
+        token: this.$store.state.auth.token,
+        client: this.client
+      })
+    },
+    confirm () {
       this.dialog = true
     },
     async getOffers () {

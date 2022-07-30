@@ -3,16 +3,31 @@
     <v-card-title class="justify-center">
       Historial de Movimientos
     </v-card-title>
-    <v-card-text style="display:grid;place-items:center;max-height:400px;overflow-y:scroll;">
-      <v-chip
-        v-for="(debt, index) in debtHistory"
-        :key="index"
-        rounded
-        :color="debt.isindebt ? 'red' : 'green darken-3'"
-        class="mb-2"
+    <v-card-text style="display:grid;place-items:center;">
+      <v-data-table
+        :items="debtHistory"
+        :headers="headers"
+        :page.sync="page"
+        :items-per-page="itemsPerPage"
+        hide-default-footer
+        @page-count="pageCount = $event"
       >
-        {{ debt.isindebt ? 'EN MORA' : 'AL DIA' }} - {{ getDate(debt.createdAt) }} - {{ debt.technician ? debt.technician.username : '' }}
-      </v-chip>
+        <template v-slot:[`item.isindebt`]="props">
+          <v-chip
+            rounded
+            :color="props.item.isindebt ? 'red' : 'green darken-3'"
+          >
+            {{ props.item.isindebt ? 'EN MORA' : 'AL DIA' }}
+          </v-chip>
+        </template>
+        <template v-slot:[`item.createdAt`]="props">
+          {{ getDate(props.item.createdAt) }}
+        </template>
+      </v-data-table>
+      <v-pagination
+        v-model="page"
+        :length="pageCount"
+      />
     </v-card-text>
   </v-card>
 </template>
@@ -20,7 +35,16 @@
 export default {
   name: 'DebtHistory',
   data () {
-    return {}
+    return {
+      page: 1,
+      itemsPerPage: 10,
+      pageCount: 0,
+      headers: [
+        { text: 'Nombre', value: 'isindebt', sortable: false },
+        { text: 'Fecha', value: 'createdAt' },
+        { text: 'Operador', value: 'technician.username', sortable: false }
+      ]
+    }
   },
   computed: {
     debtHistory () {

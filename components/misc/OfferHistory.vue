@@ -4,14 +4,22 @@
       Historial de tarifas
     </v-card-title>
     <v-card-text style="display:grid;place-items:center;">
-      <v-chip
-        v-for="(offer, index) in offerHistory"
-        :key="index"
-        rounded
-        class="mb-2"
+      <v-data-table
+        :items="offerHistory"
+        :headers="headers"
+        :page.sync="page"
+        :items-per-page="itemsPerPage"
+        hide-default-footer
+        @page-count="pageCount = $event"
       >
-        {{ offer.offer.name }} - {{ getDate(offer.createdAt) }} - {{ offer.technician ? offer.technician.username : '' }}
-      </v-chip>
+        <template v-slot:[`item.createdAt`]="props">
+          {{ getDate(props.item.createdAt) }}
+        </template>
+      </v-data-table>
+      <v-pagination
+        v-model="page"
+        :length="pageCount"
+      />
     </v-card-text>
   </v-card>
 </template>
@@ -19,7 +27,16 @@
 export default {
   name: 'MiscOfferHistory',
   data () {
-    return {}
+    return {
+      page: 1,
+      itemsPerPage: 10,
+      pageCount: 0,
+      headers: [
+        { text: 'Nombre', value: 'offer.name', sortable: false },
+        { text: 'Fecha', value: 'createdAt' },
+        { text: 'Operador', value: 'technician.username', sortable: false }
+      ]
+    }
   },
   computed: {
     offerHistory () {
