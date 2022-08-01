@@ -204,6 +204,7 @@
                 </template>
                 <template v-slot:[`item.actions`]="{ item }">
                   <div style="white-space:nowrap">
+                    <MiscInfoSell v-if="$isAdmin() || $isBiller()" :client="item" />
                     <CreateTicket
                       :client="item"
                       :assignated="$store.state.auth.id"

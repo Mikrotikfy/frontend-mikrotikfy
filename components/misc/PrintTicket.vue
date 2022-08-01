@@ -62,7 +62,7 @@
                     <h3>Fecha: {{ getDate(new Date()) }}</h3>
                   </v-col>
                   <v-col cols="7" class="justify-center align-center d-flex">
-                    <h3> {{ technician ? technician.length > 1 ? 'Tecnicos:' : 'Tecnico:' : ''}} </h3>
+                    <h3> {{ technician ? technician.length > 1 ? 'Tecnicos:' : 'Tecnico:' : 'Tecnico/s ____________________'}} </h3>
                     <h3
                       v-for="(tech, index) in technician"
                       :key="tech.id"
@@ -89,6 +89,35 @@
                   {{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).neighborhood.name : item.client.neighborhood.name }}
                 </span>
                 <span>{{ item.client.phone }}</span>
+                <span style="color:#c9c9c9;">OBSERVACIONES</span>
+                <span style="color:#c9c9c9;">FIRMA CLIENTE</span>
+              </div>
+              <div
+                v-if="tickets.length <= 4"
+                class="parent"
+              >
+                <span class="item">RV</span>
+                <span style="color:#c9c9c9;">Código</span>
+                <span style="color:#c9c9c9;"><strong>Tipo de ticket</strong></span>
+                <span style="color:#c9c9c9;">Nombre</span>
+                <span style="color:#c9c9c9;">
+                  Direccion
+                </span>
+                <span style="color:#c9c9c9;">Telefono</span>
+                <span style="color:#c9c9c9;">OBSERVACIONES</span>
+                <span style="color:#c9c9c9;">FIRMA CLIENTE</span>
+              </div>
+              <div
+                class="parent"
+              >
+                <span class="item">RV</span>
+                <span style="color:#c9c9c9;">Código</span>
+                <span style="color:#c9c9c9;"><strong>Tipo de ticket</strong></span>
+                <span style="color:#c9c9c9;">Nombre</span>
+                <span style="color:#c9c9c9;">
+                  Direccion
+                </span>
+                <span style="color:#c9c9c9;">Telefono</span>
                 <span style="color:#c9c9c9;">OBSERVACIONES</span>
                 <span style="color:#c9c9c9;">FIRMA CLIENTE</span>
               </div>

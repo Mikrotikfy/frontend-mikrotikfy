@@ -62,7 +62,7 @@
                     <h3>{{ getDate(new Date()) }}</h3>
                   </v-col>
                   <v-col cols="7" class="justify-center align-center d-flex">
-                    <h3> {{ technician.length > 0 ? technician.length > 1 ? 'Tecnicos:' : 'Tecnico:' : 'Tecnico/s _________________________'}} </h3>
+                    <h3> {{ technician.length > 0 ? technician.length > 1 ? 'Tecnicos:' : 'Tecnico:' : 'Tecnico/s ___________________'}} </h3>
                     <h3
                       v-for="(tech, index) in technician"
                       :key="tech.id"
@@ -85,13 +85,12 @@
                 <span  style="color:#c9c9c9;">CANT. FIBRA</span>
                 <span>{{ client.code }}</span>
                 <span>{{ client.plan.name }}</span>
-                <span  style="color:#c9c9c9;">P NAP</span>
-                <span  style="color:#c9c9c9;"># CUP.</span>
                 <span>{{ client.name }}</span>
                 <span style="display:grid;">
                   {{ client.addresses.length > 0 ? client.addresses.at(-1).address : client.address }}
                   {{ client.addresses.length > 0 ? client.addresses.at(-1).neighborhood.name : client.neighborhood.name }}
                 </span>
+                <span>{{ client.phone }}</span>
                 <span style="color:#c9c9c9;">OBSERVACIONES</span>
                 <span style="color:#c9c9c9;">FIRMA CLIENTE</span>
               </div>
@@ -105,8 +104,6 @@
                 <span  style="color:#c9c9c9;">CANT. FIBRA</span>
                 <span>{{ client.code }}</span>
                 <span>{{ client.plan.name }}</span>
-                <span  style="color:#c9c9c9;">P NAP</span>
-                <span  style="color:#c9c9c9;"># CUP.</span>
                 <span>{{ client.name }}</span>
                 <span style="display:grid;">
                   <v-row>
@@ -120,6 +117,35 @@
                     {{ client.addresses.length > 0 ? client.addresses.at(-1).neighborhood.name : client.neighborhood.name }}
                   </v-row>
                 </span>
+                <span>{{ client.phone }}</span>
+                <span style="color:#c9c9c9;">OBSERVACIONES</span>
+                <span style="color:#c9c9c9;">FIRMA CLIENTE</span>
+              </div>
+              <div v-if="($store.state.daily.selectedtr.length + $store.state.daily.selectedcx.length) <= 4" class="parent">
+                <span style="color:#c9c9c9">CX/TR</span>
+                <span style="color:#c9c9c9">Tecnología</span>
+                <span style="color:#c9c9c9;">CANT. FIBRA</span>
+                <span style="color:#c9c9c9;">CODIGO</span>
+                <span style="color:#c9c9c9;">PLAN</span>
+                <span style="color:#c9c9c9;">NOMBRE</span>
+                <span style="color:#c9c9c9;">
+                  DIRECCION
+                </span>
+                <span style="color:#c9c9c9;">TELEFONO</span>
+                <span style="color:#c9c9c9;">OBSERVACIONES</span>
+                <span style="color:#c9c9c9;">FIRMA CLIENTE</span>
+              </div>
+              <div class="parent">
+                <span style="color:#c9c9c9">CX/TR</span>
+                <span style="color:#c9c9c9">Tecnología</span>
+                <span style="color:#c9c9c9;">CANT. FIBRA</span>
+                <span style="color:#c9c9c9;">CODIGO</span>
+                <span style="color:#c9c9c9;">PLAN</span>
+                <span style="color:#c9c9c9;">NOMBRE</span>
+                <span style="color:#c9c9c9;">
+                  DIRECCION
+                </span>
+                <span style="color:#c9c9c9;">TELEFONO</span>
                 <span style="color:#c9c9c9;">OBSERVACIONES</span>
                 <span style="color:#c9c9c9;">FIRMA CLIENTE</span>
               </div>
@@ -181,7 +207,7 @@ export default {
 .parent {
   display: grid;
   width: 100%;
-  grid-template-columns: 1fr 1fr 1fr 1fr 2fr 1fr 1fr 4fr 4fr 4fr 4fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 2fr 4fr 4fr 2fr 4fr 4fr;
   grid-gap: 0px;
 }
 .parent > span {
