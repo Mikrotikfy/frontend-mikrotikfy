@@ -1,5 +1,5 @@
 <template>
-  <div v-if="this.$store.state.offer.lastDebtMovement" class="mb-5" style="display:grid;place-items:center;">
+  <div v-if="isInDebt !== null" class="mb-5" style="display:grid;place-items:center;">
     <v-alert text dense :type="isRetired ? 'error' : isInDebt ? 'error' : 'success'">
       El Cliente esta {{ isRetired ? 'RETIRADO' : isInDebt ? 'EN MORA' : 'AL DIA' }}
     </v-alert>
@@ -29,25 +29,53 @@ export default {
   },
   data () {
     return {
+      isInDebt: null,
+      isRetired: null,
       offers: []
     }
   },
-  computed: {
-    isInDebt () {
-      return this.$store.state.offer.lastDebtMovement ? this.$store.state.offer.lastDebtMovement.isindebt : null
-    },
-    isRetired () {
-      return this.$store.state.offer.lastDebtMovement ? this.$store.state.offer.lastDebtMovement.isretired : null
-    }
+  mounted () {
+    this.getLastDebtMovement()
   },
   methods: {
-    setNewDebt () {
-      this.$store.dispatch('offer/setNewDebt', {
+    async setNewDebt () {
+      await this.$store.dispatch('offer/setNewDebt', {
         token: this.$store.state.auth.token,
         isindebt: !this.isInDebt,
         client: this.client,
         technician: this.$store.state.auth
+      }).then(() => {
+        this.getLastDebtMovement()
       })
+    },
+    async getLastDebtMovement () {
+      const res = await this.$store.dispatch('offer/getLastDebtMovement', {
+        client: this.client,
+        token: this.$store.state.auth.token
+      })
+      if (res) {
+        this.isInDebt = res.isindebt
+        this.isRetired = res.isretired
+      } else {
+        await this.$store.dispatch('offer/setNewDebt', {
+          token: this.$store.state.auth.token,
+          isindebt: this.isInDebtByPlan(this.client.plan),
+          client: this.client,
+          technician: this.$store.state.auth
+        })
+        await this.$store.dispatch('offer/getDebtHistory', {
+          client: this.client,
+          token: this.$store.state.auth.token
+        })
+        this.getLastDebtMovement()
+      }
+    },
+    isInDebtByPlan (plan) {
+      if (plan.name === 'RETIRADO' || plan.name === 'EN MORA') {
+        return true
+      } else {
+        return false
+      }
     },
     getState (plan) {
       if (plan === 'EN MORA') {

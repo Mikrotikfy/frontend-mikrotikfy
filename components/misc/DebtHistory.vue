@@ -40,9 +40,9 @@ export default {
       itemsPerPage: 10,
       pageCount: 0,
       headers: [
-        { text: 'Nombre', value: 'isindebt', sortable: false },
-        { text: 'Fecha', value: 'createdAt' },
-        { text: 'Operador', value: 'technician.username', sortable: false }
+        { text: 'Estado', value: 'isindebt', sortable: false },
+        { text: 'Fecha de movimiento', value: 'createdAt' },
+        { text: 'Quien lo hizo', value: 'technician.username', sortable: false }
       ]
     }
   },

@@ -6,12 +6,12 @@
           v-bind="attrs"
           small
           rounded
-          :color="$vuetify.theme.dark ? $store.state.offer.lastDebtMovement ? $store.state.offer.lastDebtMovement.isindebt ? 'red' : 'green darken-4' : 'white black--text' : 'primary'"
+          :color="$vuetify.theme.dark ? lastDebtMovement ? lastDebtMovement.isindebt ? 'red' : 'green darken-4' : 'white black--text' : 'primary'"
           v-on="on"
           @click="initComponent()"
         >
           <span>
-            {{ $store.state.offer.lastDebtMovement ? $store.state.offer.lastDebtMovement.isindebt ? 'EN MORA' : 'AL DIA' : 'Control de Usuario' }}
+            {{ lastDebtMovement ? lastDebtMovement.isindebt ? 'EN MORA' : 'AL DIA' : 'Control de Usuario' }}
           </span>
         </v-btn>
       </template>
@@ -43,7 +43,7 @@
             <div style="display:grid;place-items:center;">
               <h2 class="mb-5">{{ client.name }}</h2>
               <MainClientControlDebt :client="client" />
-              <MainClientControlOffer :client="client" />
+              <MainClientControlOffer v-if="$isAdmin()" :client="client" />
             </div>
           </v-col>
           <v-col cols="4" class="px-0" style="border-left:1px solid grey;">
@@ -65,17 +65,23 @@ export default {
   },
   data () {
     return {
+      lastDebtMovement: null,
       modal: false,
       message: 'Hello Vue!'
     }
   },
   watch: {
-    '$store.state.offer.newDebtHistory' () {
+    async '$store.state.offer.newDebtHistory' () {
       this.getData()
+      this.lastDebtMovement = await this.$store.dispatch('offer/getLastDebtMovement', {
+        token: this.$store.state.auth.token,
+        client: this.client
+      })
+      this.modal = false
     }
   },
-  mounted () {
-    this.$store.dispatch('offer/getLastDebtMovement', {
+  async mounted () {
+    this.lastDebtMovement = await this.$store.dispatch('offer/getLastDebtMovement', {
       token: this.$store.state.auth.token,
       client: this.client
     })
@@ -93,10 +99,6 @@ export default {
       this.$store.dispatch('offer/getDebtHistory', {
         client: this.client,
         token: this.$store.state.auth.token
-      })
-      this.$store.dispatch('offer/getLastDebtMovement', {
-        token: this.$store.state.auth.token,
-        client: this.client
       })
     }
   }

@@ -56,6 +56,7 @@ export const actions = {
       })
         .then(res => res.json())
         .then((debtmovements) => {
+          this.$toast.info('Operacion de cambio de tarifa realizada con éxito.', { duration: 4000, position: 'top-center' })
           commit('setNewDebt', debtmovements.data)
         })
     } catch (error) {
@@ -64,24 +65,28 @@ export const actions = {
   },
   setNewDebt ({ commit }, payload) {
     try {
-      fetch(`${this.$config.API_STRAPI_ENDPOINT}debtmovements`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${payload.token}`
-        },
-        body: JSON.stringify({
-          data: {
-            client: payload.client.id,
-            isindebt: payload.isindebt,
-            technician: payload.technician.id
-          }
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}debtmovements`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              client: payload.client.id,
+              isindebt: payload.isindebt,
+              technician: payload.technician.id
+            }
+          })
         })
+          .then(res => res.json())
+          .then((debtmovements) => {
+            commit('setNewDebt', debtmovements.data)
+            this.$toast.info('Operacion de control de usuario realizada con éxito.', { duration: 4000, position: 'top-center' })
+            resolve(true)
+          })
       })
-        .then(res => res.json())
-        .then((debtmovements) => {
-          commit('setNewDebt', debtmovements.data)
-        })
     } catch (error) {
       throw new Error(`OFFER HISTORY ACTION ${error}`)
     }
@@ -182,17 +187,23 @@ export const actions = {
       {
         encodeValuesOnly: true
       })
-      fetch(`${this.$config.API_STRAPI_ENDPOINT}debtmovements?${query}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${payload.token}`
-        }
-      })
-        .then(res => res.json())
-        .then((debtmovements) => {
-          commit('getLastDebtMovement', debtmovements.data[0])
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}debtmovements?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
         })
+          .then(res => res.json())
+          .then((debtmovements) => {
+            if (debtmovements.data.length > 0) {
+              resolve(debtmovements.data[0])
+            } else {
+              resolve(null)
+            }
+          })
+      })
     } catch (error) {
       throw new Error(`LAST DEBT HISTORY ACTION ${error}`)
     }
@@ -220,7 +231,41 @@ export const actions = {
         })
           .then(res => res.json())
           .then((offermovements) => {
-            resolve(offermovements.data[0].offer)
+            if (offermovements.data.length > 0) {
+              resolve(offermovements.data[0].offer)
+            } else {
+              resolve(null)
+            }
+          })
+      })
+    } catch (error) {
+      throw new Error(`LAST OFFER HISTORY ACTION ${error}`)
+    }
+  },
+  getOfferByPlanId ({ commit }, payload) {
+    try {
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          plan: payload.client.plan.id
+        },
+        populate: ['plan'],
+        sort: 'createdAt:desc'
+      },
+      {
+        encodeValuesOnly: true
+      })
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}offers?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((offers) => {
+            resolve(offers.data[0])
           })
       })
     } catch (error) {

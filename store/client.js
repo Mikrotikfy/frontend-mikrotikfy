@@ -341,7 +341,7 @@ export const actions = {
       { text: 'Direccion', sortable: false, value: 'address' },
       { text: 'Barrio', value: 'neighborhood.name', sortable: false },
       { text: 'Telefono', sortable: false, value: 'phone' },
-      { text: 'Plan', value: 'plan.name', sortable: false },
+      { text: 'Tarifa', value: 'plan.name', sortable: false },
       { text: 'Tecnologia', value: 'technology.name', sortable: false },
       { text: 'Tipo', value: 'newModel', sortable: false },
       { text: 'Activo', value: 'active', sortable: false },

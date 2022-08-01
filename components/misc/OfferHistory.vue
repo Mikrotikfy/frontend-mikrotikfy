@@ -32,9 +32,9 @@ export default {
       itemsPerPage: 10,
       pageCount: 0,
       headers: [
-        { text: 'Nombre', value: 'offer.name', sortable: false },
-        { text: 'Fecha', value: 'createdAt' },
-        { text: 'Operador', value: 'technician.username', sortable: false }
+        { text: 'Tarifa Asignada', value: 'offer.name', sortable: false },
+        { text: 'Fecha de asignacion', value: 'createdAt' },
+        { text: 'Quien lo hizo', value: 'technician.username', sortable: false }
       ]
     }
   },

@@ -63,9 +63,9 @@ export default {
       dialog: false
     }
   },
-  mounted () {
-    this.getOffers()
-    this.getLastOfferMovement()
+  async mounted () {
+    await this.getOffers()
+    await this.getLastOfferMovement()
   },
   methods: {
     setNewOffer () {
@@ -79,7 +79,19 @@ export default {
       this.dialog = false
     },
     async getLastOfferMovement () {
-      this.selected = await this.$store.dispatch('offer/getLastOfferMovement', {
+      const res = await this.$store.dispatch('offer/getLastOfferMovement', {
+        token: this.$store.state.auth.token,
+        client: this.client
+      })
+      if (res) {
+        this.selected = res
+      } else {
+        await this.getOfferByPlanId()
+        this.setNewOffer()
+      }
+    },
+    async getOfferByPlanId () {
+      this.selected = await this.$store.dispatch('offer/getOfferByPlanId', {
         token: this.$store.state.auth.token,
         client: this.client
       })
