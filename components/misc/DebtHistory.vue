@@ -15,9 +15,9 @@
         <template v-slot:[`item.isindebt`]="props">
           <v-chip
             rounded
-            :color="props.item.isindebt ? 'red' : 'green darken-3'"
+            :color="props.item.isindebt ? props.item.isretired ? 'yellow darken-4' : 'red' : 'green darken-3'"
           >
-            {{ props.item.isindebt ? 'EN MORA' : 'AL DIA' }}
+            {{ props.item.isindebt ? props.item.isretired ? 'RETIRADO' : 'EN MORA' : 'AL DIA' }}
           </v-chip>
         </template>
         <template v-slot:[`item.createdAt`]="props">

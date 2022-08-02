@@ -77,7 +77,6 @@ export default {
         token: this.$store.state.auth.token,
         client: this.client
       })
-      this.modal = false
     }
   },
   async mounted () {

@@ -1,21 +1,21 @@
 <template>
-  <div v-if="isInDebt !== null" class="mb-5" style="display:grid;place-items:center;">
-    <v-alert text dense :type="isRetired ? 'error' : isInDebt ? 'error' : 'success'">
-      El Cliente esta {{ isRetired ? 'RETIRADO' : isInDebt ? 'EN MORA' : 'AL DIA' }}
-    </v-alert>
-    <v-btn :color="isRetired ? 'green darken-4' : isInDebt ? 'green darken-4' : 'red'" x-large rounded @click="setNewDebt">
-      <v-icon>{{ isRetired ? 'mdi-check-all' : isInDebt ? 'mdi-check-all' : 'mdi-cancel' }}</v-icon>
-      {{ isRetired ? 'RECONECTAR' : isInDebt ? 'RECONECTAR' : 'CORTAR' }}
-    </v-btn>
-  </div>
-  <div v-else class="mb-5" style="display:grid;place-items:center;">
-    <v-alert text dense :type="isRetired ? 'error' : isInDebt ? 'error' : 'success'">
-      El Cliente esta {{ getState(client.plan.name) }}
-    </v-alert>
-    <v-btn x-large rounded @click="setNewDebt">
-      <v-icon>mdi-check-all</v-icon>
-      INICIALIZAR
-    </v-btn>
+  <div>
+    <div v-if="isInDebt !== null" class="mb-5" style="display:grid;place-items:center;">
+      <v-alert text dense :type="isRetired ? 'warning' : isInDebt ? 'error' : 'success'">
+        El Cliente esta {{ isRetired ? 'RETIRADO' : isInDebt ? 'EN MORA' : 'AL DIA' }}
+      </v-alert>
+      <v-btn :color="isRetired ? 'blue darken-4' : isInDebt ? 'green darken-4' : 'red'" x-large rounded @click="setNewDebt">
+        <v-icon>{{ isRetired ? 'mdi-check-all' : isInDebt ? 'mdi-check-all' : 'mdi-cancel' }}</v-icon>
+        {{ isRetired ? 'REACTIVAR' : isInDebt ? 'RECONECTAR' : 'CORTAR' }}
+      </v-btn>
+      <span v-if="!isInDebt && !isRetired" class="text-subtitle-2 grey--text lighten-2 mt-2">Para retirar el cliente es necesario antes cortarlo</span>
+    </div>
+    <div v-if="isInDebt && !isRetired" class="mb-5" style="display:grid;place-items:center;">
+      <v-btn color="yellow darken-4" x-large rounded @click="setRetired">
+        <v-icon>mdi-cancel</v-icon>
+        {{ isRetired ? 'REACTIVAR' : 'RETIRAR' }}
+      </v-btn>
+    </div>
   </div>
 </template>
 <script>
@@ -34,6 +34,11 @@ export default {
       offers: []
     }
   },
+  computed: {
+    telegramBots () {
+      return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
+    }
+  },
   mounted () {
     this.getLastDebtMovement()
   },
@@ -42,10 +47,24 @@ export default {
       await this.$store.dispatch('offer/setNewDebt', {
         token: this.$store.state.auth.token,
         isindebt: !this.isInDebt,
+        isretired: this.isRetired ? !this.isRetired : this.isRetired,
+        client: this.client,
+        technician: this.$store.state.auth
+      }).then(() => {
+        this.$simpleTelegramUpdateDebt({ client: this.client, operator: this.$store.state.auth.username, isInDebt: !this.isInDebt, isRetired: this.isRetired, telegramBots: this.telegramBots })
+        this.getLastDebtMovement()
+      })
+    },
+    async setRetired () {
+      await this.$store.dispatch('offer/setNewDebt', {
+        token: this.$store.state.auth.token,
+        isindebt: this.isInDebt,
+        isretired: !this.isRetired,
         client: this.client,
         technician: this.$store.state.auth
       }).then(() => {
         this.getLastDebtMovement()
+        this.$simpleTelegramUpdateDebt({ client: this.client, operator: this.$store.state.auth.username, isInDebt: this.isInDebt, isRetired: !this.isRetired, telegramBots: this.telegramBots })
       })
     },
     async getLastDebtMovement () {

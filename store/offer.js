@@ -76,6 +76,7 @@ export const actions = {
             data: {
               client: payload.client.id,
               isindebt: payload.isindebt,
+              isretired: payload.isretired,
               technician: payload.technician.id
             }
           })

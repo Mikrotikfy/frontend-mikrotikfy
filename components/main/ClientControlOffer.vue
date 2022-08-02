@@ -27,7 +27,7 @@
           <h3>Estas a punto de asignar una tarifa a este cliente.</h3>
         </v-card-text>
         <v-card-text>
-          <strong class="green--text darken-4">{{ selected ? selected.name : 'Ninguna seleccionada'}}</strong>
+          <strong class="green--text darken-4">{{ selected ? selected.name : 'Ninguna seleccionada' }}</strong>
         </v-card-text>
         <v-card-actions>
           <v-btn
@@ -63,6 +63,11 @@ export default {
       dialog: false
     }
   },
+  computed: {
+    telegramBots () {
+      return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
+    }
+  },
   async mounted () {
     await this.getOffers()
     await this.getLastOfferMovement()
@@ -76,6 +81,7 @@ export default {
         offer,
         technician: this.$store.state.auth
       })
+      this.$simpleTelegramUpdateOffer({ client: this.client, operator: this.$store.state.auth.username, offer, telegramBots: this.telegramBots })
       this.dialog = false
     },
     async getLastOfferMovement () {

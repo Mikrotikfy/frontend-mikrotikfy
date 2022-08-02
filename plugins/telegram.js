@@ -6,6 +6,8 @@ export default (_, inject) => {
   inject('simpleTelegramCreateTicketAdvance', input => simpleTelegramCreateTicketAdvance(input))
   inject('simpleTelegramCreateRequest', input => simpleTelegramCreateRequest(input))
   inject('simpleTelegramAdminCreate', input => simpleTelegramAdminCreate(input))
+  inject('simpleTelegramUpdateOffer', input => simpleTelegramUpdateOffer(input))
+  inject('simpleTelegramUpdateDebt', input => simpleTelegramUpdateDebt(input))
 }
 
 function simpleTelegramCreate ({ client, operator, telegramBots }) {
@@ -70,6 +72,58 @@ function simpleTelegramUpdatePlan ({ client, operator, isRx, telegramBots }) {
     chatid +
     '&text=' +
     encodeURIComponent(sanitizeString(message))
+  fetch(req)
+    .catch(function (err) {
+      return err
+    })
+};
+
+function simpleTelegramUpdateOffer ({ client, operator, offer, telegramBots }) {
+  const fetch = require('node-fetch')
+  const bot = telegramBots.token
+  const chatid = telegramBots.binnacle
+  const line0 = '📝 CAMBIO DE TARIFA 📝'
+  const line1 = sanitizeString(offer.name)
+  const line2 = client.code
+  const line3 = sanitizeString(client.name)
+  const line4 = operator
+  const message = `${line0}\n${line1}\n${line2}\n${line3}\n${line4}`
+  const req =
+    'https://api.telegram.org/bot' +
+    bot +
+    '/sendMessage?chat_id=' +
+    chatid +
+    '&text=' +
+    encodeURIComponent(message)
+  fetch(req)
+    .catch(function (err) {
+      return err
+    })
+};
+
+function simpleTelegramUpdateDebt ({ client, operator, isInDebt, isRetired, telegramBots }) {
+  const fetch = require('node-fetch')
+  const bot = telegramBots.token
+  const chatid = telegramBots.binnacle
+  let line1 = ''
+  if (isInDebt && !isRetired) {
+    line1 = '🔴 DX POR MORA 🔴'
+  } else if (isInDebt && isRetired) {
+    line1 = '✴️ RETIRO ✴️'
+  } else {
+    line1 = '📶 RECONEXIÓN 📶'
+  }
+  const line2 = client.code
+  const line3 = sanitizeString(client.name)
+  const line4 = operator
+  const message = `${line1}\n${line2}\n${line3}\n${line4}`
+  const req =
+    'https://api.telegram.org/bot' +
+    bot +
+    '/sendMessage?chat_id=' +
+    chatid +
+    '&text=' +
+    encodeURIComponent(message)
   fetch(req)
     .catch(function (err) {
       return err
