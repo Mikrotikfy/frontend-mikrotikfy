@@ -372,6 +372,9 @@ export default {
     $route () {
       this.getClientBySearch()
     },
+    '$store.state.offer.newOfferHistory' () {
+      this.getClientBySearch()
+    },
     'pagination.page': {
       handler () {
         this.getClientBySearch()

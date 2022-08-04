@@ -2,6 +2,7 @@ export const state = () => ({
   offerHistory: [],
   debtHistory: [],
   newDebtHistory: [],
+  newOfferHistory: [],
   lastDebtMovement: null,
   lastOfferMovement: null,
   offers: []
@@ -28,6 +29,13 @@ export const mutations = {
       throw new Error(`LAST DEBT MOVEMENT MUTATE ${error}`)
     }
   },
+  setNewOffer (state, offer) {
+    try {
+      state.newOfferHistory.push(offer)
+    } catch (error) {
+      throw new Error(`NEW OFFER MUTATE ${error}`)
+    }
+  },
   setNewDebt (state, offer) {
     try {
       state.debtHistory.push(offer)
@@ -40,6 +48,18 @@ export const mutations = {
 export const actions = {
   setNewOffer ({ commit }, payload) {
     try {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            offer: payload.offer.id
+          }
+        })
+      })
       fetch(`${this.$config.API_STRAPI_ENDPOINT}offermovements`, {
         method: 'POST',
         headers: {
@@ -57,7 +77,7 @@ export const actions = {
         .then(res => res.json())
         .then((debtmovements) => {
           this.$toast.info('Operacion de cambio de tarifa realizada con éxito.', { duration: 4000, position: 'top-center' })
-          commit('setNewDebt', debtmovements.data)
+          commit('setNewOffer', debtmovements.data)
         })
     } catch (error) {
       throw new Error(`SET OFFER ACTION ${error}`)

@@ -32,7 +32,7 @@
       </v-toolbar>
       <v-card>
         <v-card-title class="justify-center">
-          Centro de Control de Usuario
+          Centro de Control de Usuario | {{ client.name }}
         </v-card-title>
         <v-divider />
         <div class="mt-2 d-flex">
@@ -41,7 +41,6 @@
           </v-col>
           <v-col cols="4" class="px-0">
             <div style="display:grid;place-items:center;">
-              <h2 class="mb-5">{{ client.name }}</h2>
               <MainClientControlDebt :client="client" />
               <MainClientControlOffer v-if="$isAdmin()" :client="client" />
             </div>

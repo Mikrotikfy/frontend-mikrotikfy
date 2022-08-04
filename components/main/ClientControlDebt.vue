@@ -1,10 +1,10 @@
 <template>
   <div>
     <div v-if="isInDebt !== null" class="mb-5" style="display:grid;place-items:center;">
-      <v-alert text dense :type="isRetired ? 'warning' : isInDebt ? 'error' : 'success'">
+      <v-alert text prominent :type="isRetired ? 'warning' : isInDebt ? 'error' : 'success'">
         El Cliente esta {{ isRetired ? 'RETIRADO' : isInDebt ? 'EN MORA' : 'AL DIA' }}
       </v-alert>
-      <v-btn :color="isRetired ? 'blue darken-4' : isInDebt ? 'green darken-4' : 'red'" x-large rounded @click="setNewDebt">
+      <v-btn :color="isRetired ? 'green darken-4' : isInDebt ? 'blue darken-4' : 'red'" x-large rounded @click="setNewDebt">
         <v-icon>{{ isRetired ? 'mdi-check-all' : isInDebt ? 'mdi-check-all' : 'mdi-cancel' }}</v-icon>
         {{ isRetired ? 'REACTIVAR' : isInDebt ? 'RECONECTAR' : 'CORTAR' }}
       </v-btn>
@@ -53,6 +53,12 @@ export default {
       }).then(() => {
         this.$simpleTelegramUpdateDebt({ client: this.client, operator: this.$store.state.auth.username, isInDebt: !this.isInDebt, isRetired: this.isRetired, telegramBots: this.telegramBots })
         this.getLastDebtMovement()
+        this.$store.dispatch('client/setPlanFromModal', {
+          clientId: this.client.id,
+          newPlan: !this.isInDebt === true ? 7 : this.client.offer.plan.id,
+          operator: this.$store.state.auth.id,
+          token: this.$store.state.auth.token
+        })
       })
     },
     async setRetired () {
@@ -63,8 +69,14 @@ export default {
         client: this.client,
         technician: this.$store.state.auth
       }).then(() => {
-        this.getLastDebtMovement()
         this.$simpleTelegramUpdateDebt({ client: this.client, operator: this.$store.state.auth.username, isInDebt: this.isInDebt, isRetired: !this.isRetired, telegramBots: this.telegramBots })
+        this.getLastDebtMovement()
+        this.$store.dispatch('client/setPlanFromModal', {
+          clientId: this.client.id,
+          newPlan: !this.isRetired === true ? 8 : this.client.offer.plan.id,
+          operator: this.$store.state.auth.id,
+          token: this.$store.state.auth.token
+        })
       })
     },
     async getLastDebtMovement () {

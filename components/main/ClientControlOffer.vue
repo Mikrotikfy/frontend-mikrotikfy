@@ -81,6 +81,12 @@ export default {
         offer,
         technician: this.$store.state.auth
       })
+      this.$store.dispatch('client/setPlanFromModal', {
+        clientId: this.client.id,
+        newPlan: this.selected.plan.id,
+        operator: this.$store.state.auth.id,
+        token: this.$store.state.auth.token
+      })
       this.$simpleTelegramUpdateOffer({ client: this.client, operator: this.$store.state.auth.username, offer, telegramBots: this.telegramBots })
       this.dialog = false
     },

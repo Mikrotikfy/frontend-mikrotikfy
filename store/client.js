@@ -211,7 +211,7 @@ export const actions = {
         body: JSON.stringify({
           data: {
             id: payload.clientId,
-            plan: payload.newPlan.id,
+            plan: payload.newPlan,
             isRx: payload.isRx,
             operator: payload.operator
           }
