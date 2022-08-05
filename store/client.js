@@ -77,6 +77,13 @@ export const mutations = {
     } catch (error) {
       throw new Error(`GET HEADERS BY CLIENT TYPE MUTATE ${error}`)
     }
+  },
+  setPlanFromModal (state, payload) {
+    try {
+      state.clients[payload.clientIndex].offer.plan = payload.newPlan
+    } catch (error) {
+      throw new Error(`SET PLAN FROM MODAL MUTATE ${error}`)
+    }
   }
 }
 export const actions = {
@@ -200,7 +207,7 @@ export const actions = {
       throw new Error(`MUTATE ${error}`)
     }
   },
-  async setPlanFromModal (_, payload) {
+  async setPlanFromModal ({ commit }, payload) {
     try {
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}editclientplan`, {
         method: 'POST',
@@ -218,6 +225,9 @@ export const actions = {
         })
       }).then((input) => {
         if (input.status === 200) {
+          if (payload.isOfferChange) {
+            commit('setPlanFromModal', payload)
+          }
           this.$toast.info('Plan actualizado actualizado con exito', { duration: 4000, position: 'top-center' })
           return true
         }
@@ -341,7 +351,7 @@ export const actions = {
       { text: 'Direccion', sortable: false, value: 'address' },
       { text: 'Barrio', value: 'neighborhood.name', sortable: false },
       { text: 'Telefono', sortable: false, value: 'phone' },
-      { text: 'Plan', value: 'plan.name', sortable: false },
+      { text: 'Tarifa', value: 'plan.name', sortable: false },
       { text: 'Tecnologia', value: 'technology.name', sortable: false },
       { text: 'Tipo', value: 'newModel', sortable: false },
       { text: 'Activo', value: 'active', sortable: false },
