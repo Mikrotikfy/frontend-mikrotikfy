@@ -86,37 +86,7 @@
                   </div>
                 </template>
                 <template v-if="clienttype.name === 'INTERNET'" v-slot:[`item.plan.name`]="props">
-                  <MainClientControl :client="props.item" />
-                  <!-- <v-edit-dialog
-                    ref="dialog"
-                    :return-value.sync="props.item.plan"
-                    large
-                    cancel-text="Cancelar"
-                    save-text="Guardar"
-                    @save="savePlanFromModal(props.item.id, props.item.plan, isRx, $store.state.auth.username, props.item)"
-                    @cancel="cancel()"
-                  >
-                    <v-chip small :class=" props.item.plan.name === 'EN MORA' || props.item.plan.name === 'RETIRADO' ? 'red darken-4' : 'white black--text'">
-                      {{ props.item.plan.name }}
-                    </v-chip>
-                    <template v-slot:input>
-                      <v-checkbox
-                        v-model="isRx"
-                        label="Es reconexion?"
-                      />
-                      <v-select
-                        :value="props.item.plan"
-                        item-text="name"
-                        item-value="id"
-                        :items="plans"
-                        return-object
-                        single-line
-                        label="Plan"
-                        dense
-                        @change="updatePlanFromModal(props.item.id, $event, clients.map(function(x) {return x.id; }).indexOf(props.item.id))"
-                      />
-                    </template>
-                  </v-edit-dialog> -->
+                  <MainClientControl :client="props.item" :index="clients.map(function(x) {return x.id; }).indexOf(props.item.id)" />
                 </template>
                 <template v-slot:[`item.code`]="{ item }">
                   <span v-if="clienttype.name === 'INTERNET'" :class="item.status === 'green' ? 'online-text' : 'offline-text'">
@@ -372,9 +342,6 @@ export default {
     $route () {
       this.getClientBySearch()
     },
-    '$store.state.offer.newOfferHistory' () {
-      this.getClientBySearch()
-    },
     'pagination.page': {
       handler () {
         this.getClientBySearch()
@@ -434,20 +401,6 @@ export default {
         await this.$store.dispatch('client/calculateClientStatus', this.activeClientsList)
       }
     },
-    async savePlanFromModal (clientId, newPlan, isRx, operator, client) {
-      // set plan by callback after the update
-      this.loadingDataTable = true
-      await this.$store.dispatch('client/setPlanFromModal', { clientId, newPlan, isRx, operator, token: this.$store.state.auth.token })
-      this.$simpleTelegramUpdatePlan({ client, operator, isRx, telegramBots: this.telegramBots })
-      this.loadingDataTable = false
-    },
-    async saveActiveFromModal (clientid, dxreason, active, index) {
-      await this.$store.dispatch('client/setActiveFromModal', { clientid, dxreason, active, index, token: this.$store.state.auth.token })
-      this.dxreason = null
-    },
-    updatePlanFromModal (clientid, newPlan, index) {
-      this.$store.dispatch('client/updateFromModal', { clientid, newPlan, index })
-    },
     cancel () {
       return true
     },
@@ -477,9 +430,6 @@ export default {
       } else {
         this.$store.dispatch('client/adminCreate', { client, index, token: this.$store.state.auth.token, operator: this.$store.state.auth.username })
       }
-    },
-    updateStatusFromModal (active, index) {
-      this.$store.commit('client/setActiveFromModal', { active, index })
     },
     async getHeadersByClientType () {
       const city = this.$route.query.city

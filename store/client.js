@@ -77,6 +77,13 @@ export const mutations = {
     } catch (error) {
       throw new Error(`GET HEADERS BY CLIENT TYPE MUTATE ${error}`)
     }
+  },
+  setPlanFromModal (state, payload) {
+    try {
+      state.clients[payload.clientIndex].offer.plan = payload.newPlan
+    } catch (error) {
+      throw new Error(`SET PLAN FROM MODAL MUTATE ${error}`)
+    }
   }
 }
 export const actions = {
@@ -200,7 +207,7 @@ export const actions = {
       throw new Error(`MUTATE ${error}`)
     }
   },
-  async setPlanFromModal (_, payload) {
+  async setPlanFromModal ({ commit }, payload) {
     try {
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}editclientplan`, {
         method: 'POST',
@@ -211,13 +218,16 @@ export const actions = {
         body: JSON.stringify({
           data: {
             id: payload.clientId,
-            plan: payload.newPlan,
+            plan: payload.newPlan.id,
             isRx: payload.isRx,
             operator: payload.operator
           }
         })
       }).then((input) => {
         if (input.status === 200) {
+          if (payload.isOfferChange) {
+            commit('setPlanFromModal', payload)
+          }
           this.$toast.info('Plan actualizado actualizado con exito', { duration: 4000, position: 'top-center' })
           return true
         }

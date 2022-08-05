@@ -31,7 +31,7 @@ export const mutations = {
   },
   setNewOffer (state, offer) {
     try {
-      state.newOfferHistory.push(offer)
+      state.newDebtHistory.push(offer)
     } catch (error) {
       throw new Error(`NEW OFFER MUTATE ${error}`)
     }

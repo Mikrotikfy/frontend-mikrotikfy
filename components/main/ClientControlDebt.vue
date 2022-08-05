@@ -25,6 +25,10 @@ export default {
     client: {
       type: Object,
       required: true
+    },
+    index: {
+      type: Number,
+      required: true
     }
   },
   data () {
@@ -55,7 +59,9 @@ export default {
         this.getLastDebtMovement()
         this.$store.dispatch('client/setPlanFromModal', {
           clientId: this.client.id,
-          newPlan: !this.isInDebt === true ? 7 : this.client.offer.plan.id,
+          clientIndex: this.index,
+          isOfferChange: false,
+          newPlan: !this.isInDebt === true ? { id: 7 } : this.client.offer.plan,
           operator: this.$store.state.auth.id,
           token: this.$store.state.auth.token
         })
@@ -73,7 +79,9 @@ export default {
         this.getLastDebtMovement()
         this.$store.dispatch('client/setPlanFromModal', {
           clientId: this.client.id,
-          newPlan: !this.isRetired === true ? 8 : this.client.offer.plan.id,
+          clientIndex: this.index,
+          isOfferChange: false,
+          newPlan: !this.isRetired === true ? { id: 8 } : this.client.offer.plan,
           operator: this.$store.state.auth.id,
           token: this.$store.state.auth.token
         })

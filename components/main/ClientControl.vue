@@ -11,7 +11,7 @@
           @click="initComponent()"
         >
           <span>
-            {{ lastDebtMovement ? lastDebtMovement.isindebt ? 'EN MORA' : 'AL DIA' : 'Control de Usuario' }}
+            {{ lastDebtMovement ? lastDebtMovement.isretired ? 'RETIRADO' : lastDebtMovement.isindebt ? 'EN MORA' : 'AL DIA' : 'Control de Usuario' }}
           </span>
         </v-btn>
       </template>
@@ -41,8 +41,8 @@
           </v-col>
           <v-col cols="4" class="px-0">
             <div style="display:grid;place-items:center;">
-              <MainClientControlDebt :client="client" />
-              <MainClientControlOffer v-if="$isAdmin()" :client="client" />
+              <MainClientControlDebt :client="client" :index="index" />
+              <MainClientControlOffer v-if="$isAdmin()" :client="client" :index="index" />
             </div>
           </v-col>
           <v-col cols="4" class="px-0" style="border-left:1px solid grey;">
@@ -60,13 +60,16 @@ export default {
     client: {
       type: Object,
       required: true
+    },
+    index: {
+      type: Number,
+      required: true
     }
   },
   data () {
     return {
       lastDebtMovement: null,
-      modal: false,
-      message: 'Hello Vue!'
+      modal: false
     }
   },
   watch: {
