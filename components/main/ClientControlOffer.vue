@@ -98,7 +98,6 @@ export default {
         offer,
         technician: this.$store.state.auth
       })
-      this.$simpleTelegramUpdateOffer({ client: this.client, operator: this.$store.state.auth.username, offer, telegramBots: this.telegramBots })
       this.dialog = false
     },
     async getLastOfferMovement () {
@@ -135,6 +134,7 @@ export default {
         operator: this.$store.state.auth.id,
         token: this.$store.state.auth.token
       })
+      this.$simpleTelegramUpdateOffer({ client: this.client, operator: this.$store.state.auth.username, offer: this.selected, telegramBots: this.telegramBots })
     },
     async getOfferByPlanId () {
       this.selected = await this.$store.dispatch('offer/getOfferByPlanId', {
