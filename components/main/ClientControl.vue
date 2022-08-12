@@ -20,6 +20,7 @@
     <v-dialog
       v-model="modal"
       width="90%"
+      :fullscreen="!$store.state.isDesktop"
       style="min-height: 500px;"
     >
       <v-toolbar>
@@ -35,20 +36,20 @@
           Centro de Control de Usuario | {{ client.name }}
         </v-card-title>
         <v-divider />
-        <div class="mt-2 d-flex">
-          <v-col cols="4" class="px-0" style="border-right:1px solid grey;">
+        <v-row class="mt-2">
+          <v-col cols="12" md="4" class="px-0 order-md-first order-lg-first" style="border-right:1px solid grey;">
             <MiscOfferHistory />
           </v-col>
-          <v-col cols="4" class="px-0">
+          <v-col cols="12" md="4" class="px-0 order-first">
             <div style="display:grid;place-items:center;">
               <MainClientControlDebt :client="client" :index="index" />
               <MainClientControlOffer v-if="$isAdmin()" :client="client" :index="index" />
             </div>
           </v-col>
-          <v-col cols="4" class="px-0" style="border-left:1px solid grey;">
+          <v-col cols="12" md="4" class="px-0" style="border-left:1px solid grey;">
             <MiscDebtHistory />
           </v-col>
-        </div>
+        </v-row>
       </v-card>
     </v-dialog>
   </span>

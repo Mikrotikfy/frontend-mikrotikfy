@@ -95,6 +95,7 @@ export const actions = {
           body: JSON.stringify({
             data: {
               client: payload.client.id,
+              comment: payload.comment,
               isindebt: payload.isindebt,
               isretired: payload.isretired,
               technician: payload.technician.id

@@ -123,7 +123,7 @@
               </div>
               <div v-if="($store.state.daily.selectedtr.length + $store.state.daily.selectedcx.length) <= 4" class="parent">
                 <span style="color:#c9c9c9">CX/TR</span>
-                <span style="color:#c9c9c9">Tecnología</span>
+                <span style="color:#c9c9c9">Tecnol.</span>
                 <span style="color:#c9c9c9;">CANT. FIBRA</span>
                 <span style="color:#c9c9c9;">CODIGO</span>
                 <span style="color:#c9c9c9;">PLAN</span>
@@ -137,7 +137,7 @@
               </div>
               <div class="parent">
                 <span style="color:#c9c9c9">CX/TR</span>
-                <span style="color:#c9c9c9">Tecnología</span>
+                <span style="color:#c9c9c9">Tecnol.</span>
                 <span style="color:#c9c9c9;">CANT. FIBRA</span>
                 <span style="color:#c9c9c9;">CODIGO</span>
                 <span style="color:#c9c9c9;">PLAN</span>

@@ -42,7 +42,8 @@ export default {
       headers: [
         { text: 'Estado', value: 'isindebt', sortable: false },
         { text: 'Fecha de movimiento', value: 'createdAt' },
-        { text: 'Quien lo hizo', value: 'technician.username', sortable: false }
+        { text: 'Quien lo hizo', value: 'technician.username', sortable: false },
+        { text: 'Detalles', value: 'comment', sortable: false }
       ]
     }
   },

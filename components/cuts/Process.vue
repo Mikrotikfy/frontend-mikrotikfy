@@ -96,6 +96,7 @@ export default {
           isretired: false,
           isBulkDx: true,
           client,
+          comment: 'CORTE MORA EN LOTE',
           technician: this.$store.state.auth
         }).then(async () => {
           this.$simpleTelegramUpdateDebt({ client, operator: this.$store.state.auth.username, isInDebt: true, isRetired: false, telegramBots: this.telegramBots })
