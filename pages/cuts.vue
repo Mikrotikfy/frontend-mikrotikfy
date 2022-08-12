@@ -97,6 +97,11 @@ export default {
       this.$store.commit('cuts/setCodes', codeArray)
       this.e1 = '2'
     }
+  },
+  head () {
+    return {
+      title: 'Cortes ' + this.$route.query.city
+    }
   }
 }
 </script>
