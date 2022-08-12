@@ -131,10 +131,6 @@
                       </template>
                       <span>Activar Cliente</span>
                     </v-tooltip>
-                    <MiscActivationRequest
-                      :item="props.item"
-                      :index="clients.indexOf(props.item)"
-                    />
                   </div>
                 </template>
                 <template v-else v-slot:[`item.active`]="props">
