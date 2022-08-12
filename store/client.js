@@ -80,7 +80,9 @@ export const mutations = {
   },
   setPlanFromModal (state, payload) {
     try {
-      state.clients[payload.clientIndex].offer.plan = payload.newPlan
+      if (payload.clientIndex !== null) {
+        state.clients[payload.clientIndex].offer.plan = payload.newPlan
+      }
     } catch (error) {
       throw new Error(`SET PLAN FROM MODAL MUTATE ${error}`)
     }
@@ -207,34 +209,39 @@ export const actions = {
       throw new Error(`MUTATE ${error}`)
     }
   },
-  async setPlanFromModal ({ commit }, payload) {
+  setPlanFromModal ({ commit }, payload) {
     try {
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}editclientplan`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${payload.token}`
-        },
-        body: JSON.stringify({
-          data: {
-            id: payload.clientId,
-            plan: payload.newPlan.id,
-            isRx: payload.isRx,
-            operator: payload.operator
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}editclientplan`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              id: payload.clientId,
+              plan: payload.newPlan.id,
+              isRx: payload.isRx,
+              kick: payload.kick,
+              operator: payload.operator
+            }
+          })
+        }).then((input) => {
+          if (input.status === 200) {
+            if (payload.isOfferChange) {
+              commit('setPlanFromModal', payload)
+            }
+            this.$toast.info('Plan actualizado actualizado con exito', { duration: 4000, position: 'top-center' })
+            resolve(true)
+          } else {
+            resolve(false)
           }
+        }).catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error(error)
+          throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
         })
-      }).then((input) => {
-        if (input.status === 200) {
-          if (payload.isOfferChange) {
-            commit('setPlanFromModal', payload)
-          }
-          this.$toast.info('Plan actualizado actualizado con exito', { duration: 4000, position: 'top-center' })
-          return true
-        }
-      }).catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error(error)
-        throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
       })
     } catch (error) {
       throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
