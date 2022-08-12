@@ -104,7 +104,9 @@ export const actions = {
           .then(res => res.json())
           .then((debtmovements) => {
             commit('setNewDebt', debtmovements.data)
-            this.$toast.info('Operacion de control de usuario realizada con éxito.', { duration: 4000, position: 'top-center' })
+            if (!payload.isBulkDx) {
+              this.$toast.info('Operacion de control de usuario realizada con éxito.', { duration: 4000, position: 'top-center' })
+            }
             resolve(true)
           })
       })

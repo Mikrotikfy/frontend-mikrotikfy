@@ -85,21 +85,26 @@ export default {
   methods: {
     async makeCuts () {
       this.inprocess = true
+      this.$store.commit('cuts/loading', true)
+      this.$store.commit('cuts/resetcuts')
+
       for (let i = 0; i < this.validClients.length; i++) {
         const client = this.validClients[i]
         await this.$store.dispatch('offer/setNewDebt', {
           token: this.$store.state.auth.token,
           isindebt: true,
           isretired: false,
+          isBulkDx: true,
           client,
           technician: this.$store.state.auth
-        }).then(() => {
+        }).then(async () => {
           this.$simpleTelegramUpdateDebt({ client, operator: this.$store.state.auth.username, isInDebt: true, isRetired: false, telegramBots: this.telegramBots })
-          this.$store.dispatch('client/setPlanFromModal', {
+          await this.$store.dispatch('client/setPlanFromModal', {
             clientId: client.id,
             clientIndex: null,
             isOfferChange: false,
             kick: this.kick,
+            isBulkDx: true,
             newPlan: { id: 7 },
             operator: this.$store.state.auth.id,
             token: this.$store.state.auth.token
@@ -116,6 +121,7 @@ export default {
           })
         })
       }
+      this.$store.commit('cuts/loading', false)
     },
     getcolor (item) {
       if (item.success) {

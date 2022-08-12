@@ -232,7 +232,9 @@ export const actions = {
             if (payload.isOfferChange) {
               commit('setPlanFromModal', payload)
             }
-            this.$toast.info('Plan actualizado actualizado con exito', { duration: 4000, position: 'top-center' })
+            if (!payload.isBulkDx) {
+              this.$toast.info('Plan actualizado actualizado con exito', { duration: 4000, position: 'top-center' })
+            }
             resolve(true)
           } else {
             resolve(false)

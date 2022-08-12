@@ -1,7 +1,5 @@
 export const state = () => ({
-  ready: [
-    '13500'
-  ],
+  ready: [],
   clients: [],
   validClients: [],
   cuts: [],
