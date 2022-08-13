@@ -130,6 +130,7 @@ export default {
         clientId: this.client.id,
         clientIndex: this.index,
         isOfferChange: true,
+        kick: true,
         newPlan: this.selected.plan,
         operator: this.$store.state.auth.id,
         token: this.$store.state.auth.token
