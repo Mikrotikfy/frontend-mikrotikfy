@@ -43,7 +43,7 @@
           <v-col cols="12" md="4" class="px-0 order-first">
             <div style="display:grid;place-items:center;">
               <MainClientControlDebt :client="client" :index="index" />
-              <MainClientControlOffer v-if="$isAdmin()" :client="client" :index="index" />
+              <MainClientControlOffer :client="client" :index="index" />
             </div>
           </v-col>
           <v-col cols="12" md="4" class="px-0" style="border-left:1px solid grey;">

@@ -6,7 +6,7 @@
     <v-autocomplete
       v-model="selected"
       :items="offers"
-      :disabled="isretired"
+      :disabled="isretired || !$isAdmin()"
       :error="isretired"
       :error-messages="isretired ? ['El cliente debe estar activo antes de modificar su tarifa.'] : []"
       label="Tarifa"
