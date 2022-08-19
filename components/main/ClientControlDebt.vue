@@ -62,7 +62,7 @@ export default {
           clientIndex: this.index,
           isOfferChange: false,
           kick: true,
-          newPlan: !this.isInDebt === true ? { id: 7 } : this.client.offer.plan,
+          newPlan: !this.isInDebt === true ? { id: 7 } : this.client.offer,
           operator: this.$store.state.auth.id,
           token: this.$store.state.auth.token
         })
@@ -83,7 +83,7 @@ export default {
           clientIndex: this.index,
           isOfferChange: false,
           kick: true,
-          newPlan: !this.isRetired === true ? { id: 8 } : this.client.offer.plan,
+          newPlan: !this.isRetired === true ? { id: 8 } : this.client.offer,
           operator: this.$store.state.auth.id,
           token: this.$store.state.auth.token
         })

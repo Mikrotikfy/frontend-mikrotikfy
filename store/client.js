@@ -81,7 +81,7 @@ export const mutations = {
   setPlanFromModal (state, payload) {
     try {
       if (payload.clientIndex !== null) {
-        state.clients[payload.clientIndex].offer.plan = payload.newPlan
+        state.clients[payload.clientIndex].offer = payload.newPlan
       }
     } catch (error) {
       throw new Error(`SET PLAN FROM MODAL MUTATE ${error}`)
