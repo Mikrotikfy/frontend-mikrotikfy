@@ -4,7 +4,12 @@
       <v-alert text prominent :type="isRetired ? 'warning' : isInDebt ? 'error' : 'success'">
         El Cliente esta {{ isRetired ? 'RETIRADO' : isInDebt ? 'EN MORA' : 'AL DIA' }}
       </v-alert>
-      <v-btn :color="isRetired ? 'green darken-4' : isInDebt ? 'blue darken-4' : 'red'" x-large rounded @click="setNewDebt">
+      <v-btn
+        :color="isRetired ? 'green darken-4' : isInDebt ? 'blue darken-4' : 'red'"
+        :disabled="$store.state.offer.offerHistory < 1 ? true : false"
+        x-large
+        rounded
+        @click="setNewDebt">
         <v-icon>{{ isRetired ? 'mdi-check-all' : isInDebt ? 'mdi-check-all' : 'mdi-cancel' }}</v-icon>
         {{ isRetired ? 'REACTIVAR' : isInDebt ? 'RECONECTAR' : 'CORTAR' }}
       </v-btn>
@@ -62,7 +67,7 @@ export default {
           clientIndex: this.index,
           isOfferChange: false,
           kick: true,
-          newPlan: !this.isInDebt === true ? { id: 7 } : this.client.offer,
+          newPlan: !this.isInDebt === true ? { id: 7 } : this.$store.state.offer.offerHistory[0].offer.plan,
           operator: this.$store.state.auth.id,
           token: this.$store.state.auth.token
         })
@@ -83,7 +88,7 @@ export default {
           clientIndex: this.index,
           isOfferChange: false,
           kick: true,
-          newPlan: !this.isRetired === true ? { id: 8 } : this.client.offer,
+          newPlan: !this.isRetired === true ? { id: 8 } : this.$store.state.offer.offerHistory[0].offer.plan,
           operator: this.$store.state.auth.id,
           token: this.$store.state.auth.token
         })
