@@ -116,7 +116,7 @@
                 </td>
               </template>
               <template v-if="clienttype === 'INTERNET'" v-slot:[`item.client.name`]="props">
-                <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA <span class="text-decoration-line-through">{{props.item.client.name}}</span></span>
+                <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA O RETIRADO <span class="text-decoration-line-through">{{props.item.client.name}}</span></span>
                 <span v-else>{{props.item.client.name}}</span>
               </template>
               <template v-slot:[`item.client.address`]="{ item }">
@@ -367,7 +367,7 @@ export default {
   },
   methods: {
     testPlanDx (client) {
-      return client.plan?.name === 'EN MORA' || client.plan?.name === 'RETIRADO'
+      return client.debtmovements.at(-1)?.isindebt || client.debtmovements?.at(-1)?.isretired
     },
     updateTickettypeFromModal (id, tickettype, index) {
       this.$store.commit('ticket/updateTickettype', { id, tickettype, index })

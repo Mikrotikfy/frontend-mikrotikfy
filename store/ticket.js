@@ -120,6 +120,7 @@ export const actions = {
           'client.neighborhood',
           'client.technology',
           'client.plan',
+          'client.debtmovements',
           'city',
           'tickettype',
           'clienttype',
