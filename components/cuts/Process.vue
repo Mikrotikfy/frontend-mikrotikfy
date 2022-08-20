@@ -86,8 +86,21 @@ export default {
   },
   watch: {},
   methods: {
+    getMonthName () {
+      const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+      ]
+
+      const d = new Date()
+      return monthNames[d.getMonth()]
+    },
     async makeCuts () {
       this.inprocess = true
+      await this.$store.dispatch('cuts/addBillingPeriod', {
+        city: this.city,
+        token: this.$store.state.auth.token,
+        name: this.getMonthName()
+      })
       this.$store.commit('cuts/loading', true)
       this.$store.commit('cuts/resetcuts')
 

@@ -108,7 +108,10 @@ export const actions = {
             $gte: payload.billingPeriod.createdAt
           }
         },
-        populate: ['client', 'client.neighborhood'],
+        populate: ['client', 'client.neighborhood', 'client.debtmovements'],
+        pagination: {
+          pageSize: 1000
+        },
         sort: 'createdAt:desc'
       },
       {
@@ -124,12 +127,45 @@ export const actions = {
         })
           .then(res => res.json())
           .then((debtmovements) => {
-            commit('getBillingPeriodMovements', debtmovements.data)
-            resolve(debtmovements.data)
+            const movements = []
+            debtmovements.data.map((movement) => {
+              if (movement.client.debtmovements.at(-1).isindebt) {
+                movements.push(movement)
+                return movement
+              }
+            })
+            commit('getBillingPeriodMovements', movements)
+            resolve(movements)
           })
       })
     } catch (error) {
       throw new Error(`LAST DEBT HISTORY ACTION ${error}`)
+    }
+  },
+  addBillingPeriod ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}billingperiods`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              name: payload.name,
+              city: payload.city
+            }
+          })
+        })
+          .then(res => res.json())
+          .then((billingperiod) => {
+            this.$toast.info('Periodo de corte actualizado.', { duration: 4000, position: 'top-center' })
+            resolve(billingperiod)
+          })
+      })
+    } catch (error) {
+      throw new Error(`ADD BILLING PERIOD ACTION ${error}`)
     }
   },
   prepareClients ({ commit }, payload) {
