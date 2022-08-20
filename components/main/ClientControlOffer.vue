@@ -98,6 +98,12 @@ export default {
         offer,
         technician: this.$store.state.auth
       })
+      this.$store.dispatch('client/setAuxPlan', {
+        token: this.$store.state.auth.token,
+        clientId: this.client.id,
+        plan: offer.plan,
+        index: this.index
+      })
       this.dialog = false
     },
     async getLastOfferMovement () {

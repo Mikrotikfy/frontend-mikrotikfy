@@ -86,6 +86,13 @@ export const mutations = {
     } catch (error) {
       throw new Error(`SET PLAN FROM MODAL MUTATE ${error}`)
     }
+  },
+  setAuxPlan (state, payload) {
+    try {
+      state.clients[payload.index].plan = payload.plan
+    } catch (error) {
+      throw new Error(`SET AUX PLAN MUTATE ${error}`)
+    }
   }
 }
 export const actions = {
@@ -207,6 +214,31 @@ export const actions = {
       commit('updateFromModal', client)
     } catch (error) {
       throw new Error(`MUTATE ${error}`)
+    }
+  },
+  setAuxPlan ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.clientId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              plan: payload.plan.id
+            }
+          })
+        })
+          .then(res => res.json())
+          .then((client) => {
+            commit('setAuxPlan', { client: client.data, index: payload.index, plan: payload.plan })
+            resolve(client)
+          })
+      })
+    } catch (error) {
+      throw new Error(`ACTION AUX PLAN SET ${error}`)
     }
   },
   setPlanFromModal ({ commit }, payload) {

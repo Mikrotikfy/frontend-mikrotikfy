@@ -239,7 +239,7 @@ export const actions = {
         filters: {
           client: payload.client.id
         },
-        populate: ['client', 'offer', 'technician'],
+        populate: ['client', 'offer', 'offer.plan', 'technician'],
         sort: 'createdAt:desc'
       },
       {
