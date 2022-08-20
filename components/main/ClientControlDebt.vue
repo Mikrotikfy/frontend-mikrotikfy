@@ -46,6 +46,9 @@ export default {
   computed: {
     telegramBots () {
       return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
+    },
+    city () {
+      return this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
     }
   },
   mounted () {
@@ -55,6 +58,7 @@ export default {
     async setNewDebt () {
       await this.$store.dispatch('offer/setNewDebt', {
         token: this.$store.state.auth.token,
+        city: this.city,
         isindebt: !this.isInDebt,
         isretired: this.isRetired ? !this.isRetired : this.isRetired,
         client: this.client,
@@ -76,6 +80,7 @@ export default {
     async setRetired () {
       await this.$store.dispatch('offer/setNewDebt', {
         token: this.$store.state.auth.token,
+        city: this.city,
         isindebt: this.isInDebt,
         isretired: !this.isRetired,
         client: this.client,
@@ -105,6 +110,7 @@ export default {
       } else {
         await this.$store.dispatch('offer/setNewDebt', {
           token: this.$store.state.auth.token,
+          city: this.city,
           isindebt: this.isInDebtByPlan(this.client.plan),
           client: this.client,
           technician: this.$store.state.auth

@@ -7,7 +7,9 @@ export const state = () => ({
   inprocess: false,
   loading: false,
   kick: false,
-  errors: 0
+  errors: 0,
+  billingPeriod: null,
+  billingPeriodMovements: []
 })
 export const mutations = {
   setCodes (state, codes) {
@@ -45,9 +47,91 @@ export const mutations = {
   },
   kick (state, kick) {
     state.kick = kick
+  },
+  getBillingPeriod (state, billingPeriod) {
+    state.billingPeriod = billingPeriod
+  },
+  getBillingPeriodMovements (state, billingPeriodMovements) {
+    state.billingPeriodMovements = billingPeriodMovements
   }
 }
 export const actions = {
+  getBillingPeriod ({ commit }, payload) {
+    try {
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          city: {
+            name: payload.city
+          }
+        },
+        sort: 'createdAt:desc'
+      },
+      {
+        encodeValuesOnly: true
+      })
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}billingperiods?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((billingperiod) => {
+            if (billingperiod.data.length > 0) {
+              resolve(billingperiod)
+              commit('getBillingPeriod', billingperiod.data[0])
+            } else {
+              commit('getBillingPeriod', { name: 'default', createdAt: Date.now() })
+              resolve({ name: 'default', createdAt: Date.now() })
+            }
+          })
+      })
+    } catch (error) {
+      throw new Error(`LAST DEBT HISTORY ACTION ${error}`)
+    }
+  },
+  getBillingPeriodMovements ({ commit }, payload) {
+    try {
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          isindebt: true,
+          client: {
+            city: {
+              name: payload.city
+            }
+          },
+          createdAt: {
+            $gte: payload.billingPeriod.createdAt
+          }
+        },
+        populate: ['client', 'client.neighborhood'],
+        sort: 'createdAt:desc'
+      },
+      {
+        encodeValuesOnly: true
+      })
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}debtmovements?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((debtmovements) => {
+            commit('getBillingPeriodMovements', debtmovements.data)
+            resolve(debtmovements.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`LAST DEBT HISTORY ACTION ${error}`)
+    }
+  },
   prepareClients ({ commit }, payload) {
     try {
       const qs = require('qs')

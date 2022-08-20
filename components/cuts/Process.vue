@@ -79,6 +79,9 @@ export default {
     },
     telegramBots () {
       return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
+    },
+    city () {
+      return this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
     }
   },
   watch: {},
@@ -92,6 +95,7 @@ export default {
         const client = this.validClients[i]
         await this.$store.dispatch('offer/setNewDebt', {
           token: this.$store.state.auth.token,
+          city: this.city,
           isindebt: true,
           isretired: false,
           isBulkDx: true,
