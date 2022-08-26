@@ -1,120 +1,115 @@
 <template>
-  <div v-if="!done">
-    <Logo />
-    <v-row justify="center">
-      <v-col lg="6" md="6" sm="12" xs="12">
-        <v-card>
-          <v-card-title> Solicitar Cambio de Clave Wi-Fi </v-card-title>
+  <v-container v-if="!done">
+    <v-row>
+      <v-col class="d-flex justify-center">
+        <v-card width="900">
+          <v-card-title class="justify-center">
+            <div class="c" style="width:100%;display:grid;place-items:center;">
+              <div style="width:300px;">
+                <MainLogo />
+              </div>
+            </div>
+            Solicitar cambio de clave Wi-Fi
+          </v-card-title>
           <v-card-text>
-            El plazo para que el cambio se haga efectivo es de 12 a 72 horas
-            luego de solicitar el cambio mediante este formulario. Recuerda
-            verificar tu contraseña nueva antes de enviar la solicitud.
+            <span class="text-subtitle-1">
+              El plazo para realizar el cambio de clave es de 1 a 2 dias habiles. Se recomienda no compartir la contraseña con nadie ajeno a la vivienda para evitar afectación en la experiencia de navegacion.
+            </span>
           </v-card-text>
           <v-card-text>
-            <v-alert
-              v-if="error"
-              dense
-              outlined
-              type="error"
-            >
-              {{ errorMessage }}
-            </v-alert>
             <v-stepper v-model="e1">
               <v-stepper-header>
-                <v-stepper-step :complete="e1 > 1" step="1">
-                  Identidad de Red
+                <v-stepper-step
+                  :complete="e1 > 1"
+                  step="1"
+                >
+                  Usuario
                 </v-stepper-step>
 
                 <v-divider />
 
-                <v-stepper-step :complete="e1 > 2" step="2">
-                  Nombre del ttular
+                <v-stepper-step
+                  :complete="e1 > 2"
+                  step="2"
+                >
+                  Validación
                 </v-stepper-step>
 
                 <v-divider />
 
-                <v-stepper-step :complete="e1 > 2" step="3">
-                  Direccion de residencia
-                </v-stepper-step>
-
-                <v-divider />
-
-                <v-stepper-step step="4">
-                  Nueva Clave
+                <v-stepper-step step="3">
+                  Confirmación
                 </v-stepper-step>
               </v-stepper-header>
+
               <v-stepper-items>
                 <v-stepper-content step="1">
-                  <v-card>
-                    <v-col
-                      align-self="center"
-                    >
-                      <v-text-field
-                        v-model="user_dni"
-                        autofocus
-                        type="number"
-                        required
-                        :rules="valid_dni"
-                        label="Cedula o NIT del TITULAR de la red"
-                        hide-details
-                        outlined
-                      />
-                    </v-col>
-                  </v-card>
-                  <v-btn class="mt-4" color="primary" @click="testDni()">
+                  <v-text-field
+                    v-model="dni"
+                    outlined
+                    :rules="valid_dni"
+                    label="Numero de Cedula o NIT del titular"
+                    class="mt-2"
+                  />
+                  <v-btn
+                    color="primary"
+                    @click="processDni"
+                  >
                     Continuar
                   </v-btn>
+
+                  <v-btn href="https://arnoproducciones.com">
+                    Cancelar
+                  </v-btn>
                 </v-stepper-content>
+
                 <v-stepper-content step="2">
-                  <v-card>
-                    <v-col
-                      align-self="center"
+                  <v-card v-if="foundClient.length > 0" class="my-3">
+                    <v-card-title>
+                      Lineas encontradas: ({{ foundClient.length }}) <span class="text-subtitle-1 ml-2 green darken-3 rounded-xl px-2">(Selecciona una linea para cambiar la clave)</span>
+                    </v-card-title>
+                    <v-card-text
+                      v-for="client in foundClient"
+                      :key="client.id"
                     >
-                      <v-text-field
-                        v-model="user_old_password"
-                        label="Nombre del titular del servicio"
-                        hint="Obligatorio"
-                        persistent-hint
-                        outlined
-                      />
-                    </v-col>
+                      <div class="parent">
+                        <span>{{ client.name }}</span>
+                        <span>{{ client.addresses ? client.addresses.langth > 0 ? client.addresses.at(-1).address + ' ' + client.addresses.at(-1).neighborhood.name : client.address : client.address}}</span>
+                        <span class="rounded-xl px-2 text-h6 text-weigth-bold">{{ client.city.name }}</span>
+                        <span>
+                          <v-btn
+                            v-if="!client.hasPendingPasswordChange"
+                            color="primary"
+                            class="rounded-xl elevation-0"
+                            :disabled="client.hasPendingPasswordChange"
+                            @click="processSelect(client)"
+                          >
+                            ¡Quiero cambiar esta!
+                          </v-btn>
+                          <span
+                            v-else
+                            class="text-center align-center justify-center red--text lighted-2"
+                          >
+                            Ya existe una peticion de cambio para esta linea. Debes esperar que se haga efectiva antes de pedir otra.
+                          </span>
+                        </span>
+                      </div>
+                    </v-card-text>
                   </v-card>
-                  <v-btn class="mt-4" color="primary" @click="testName()">
-                    Continuar
-                  </v-btn>
-                  <v-btn class="mt-4" color="grey" @click="e1 = 1">
-                    Volver y Corregir
+                  <v-btn text @click="backTo('1')">
+                    Regresar y corregir
                   </v-btn>
                 </v-stepper-content>
+
                 <v-stepper-content step="3">
-                  <v-card>
-                    <v-col
-                      align-self="center"
-                    >
-                      <v-text-field
-                        v-model="user_address"
-                        label="Ingresa dirección de residencia"
-                        hint="Es la dirección donde esta instalado el servicio al que deseas actualizar la contraseña."
-                        persistent-hint
-                        outlined
-                      />
-                    </v-col>
-                  </v-card>
-                  <v-btn class="mt-4" color="primary" @click="testAddress()">
-                    Continuar
-                  </v-btn>
-                  <v-btn class="mt-4" color="grey" @click="e1 = 2">
-                    Volver y Corregir
-                  </v-btn>
-                </v-stepper-content>
-                <v-stepper-content step="4">
-                  <v-card>
-                    <v-col
-                      align-self="center"
-                    >
+                  <v-card v-if="e1 === '3'" class="my-4">
+                    <v-card-title>
+                      Se ha seleccionado la linea de {{ selected.city.name }} en la dirección {{ selected.addresses ? selected.addresses.length > 0 ? selected.addresses.at(-1).address + ' ' + selected.addresses.at(-1).neighborhood.name : selected.address : selected.address }}
+                    </v-card-title>
+                    <v-card-text>
                       <v-form v-model="valid" lazy-validation>
                         <v-text-field
-                          v-model="user_new_password"
+                          v-model="new_password"
                           :rules="valid_new_password"
                           label="Ingresa la nueva clave que deseas"
                           :hide-details="hideHint"
@@ -122,13 +117,18 @@
                           @keyup="hideHint = false"
                         />
                       </v-form>
-                    </v-col>
+                    </v-card-text>
                   </v-card>
-                  <v-btn class="mt-4" color="green darken-4" @click="openConfirm()">
-                    Confirmar y Enviar
+
+                  <v-btn
+                    color="primary"
+                    @click="openConfirm()"
+                  >
+                    Continuar
                   </v-btn>
-                  <v-btn class="mt-4" color="grey" @click="e1 = 1">
-                    Volver y Corregir
+
+                  <v-btn text @click="backTo('2')">
+                    Regresar y corregir
                   </v-btn>
                 </v-stepper-content>
               </v-stepper-items>
@@ -143,13 +143,13 @@
     >
       <v-card>
         <v-card-title>
-          ¿Estas seguro de continuar?
+          ¿Deseas continuar?
         </v-card-title>
 
         <v-card-text>
-          Antes de continuar, verifica cuidadosamente la nueva contraseña que quieres.
+          Verifica que sea correcta la nueva contraseña que elegiste.
           <p class="mt-4">
-            <strong style="font-size:2rem;color:green;">{{ user_new_password }}</strong>
+            <strong style="font-size:2rem;color:green;">{{ new_password }}</strong>
           </p>
         </v-card-text>
 
@@ -158,7 +158,6 @@
         <v-card-actions>
           <v-btn
             color="primary"
-            text
             @click.once="sendRequest()"
           >
             Confirmar y Enviar
@@ -166,14 +165,14 @@
           <v-btn
             color="grey"
             text
-            @click="dialog = false"
+            @click="confirmation = false"
           >
             Volver y Corregir
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </div>
+  </v-container>
   <div v-else>
     <v-row
       justify="center"
@@ -210,26 +209,19 @@
     </v-row>
   </div>
 </template>
-
 <script>
-import Logo from '../components/main/Logo'
 export default {
-  name: 'ChangePassword',
+  name: 'NewPasswordChanger',
   layout: 'outuser',
-  components: {
-    Logo
-  },
   data () {
     return {
-      title: 'Solicitar cambio de clave Wi-Fi',
+      e1: '1',
+      dni: null,
       done: false,
-      e1: 1,
+      selected: null,
       confirmation: false,
-      user_dni: '',
-      user_old_password: '',
-      user_new_password: '',
-      user_address: '',
-      clientid: null,
+      new_password: null,
+      valid: false,
       valid_dni: [
         value => !!value || 'Este campo no puede estar vacío'
       ],
@@ -242,86 +234,28 @@ export default {
         }
       ],
       hideHint: true,
-      error: false,
-      errorMessage: '',
-      valid: false
+      headers: [
+        { text: 'Nombre', value: 'name' },
+        { text: 'Direccion', value: 'address' }
+      ]
+    }
+  },
+  computed: {
+    foundClient () {
+      return this.$store.state.password.foundClient
     }
   },
   methods: {
-    async testDni () {
-      this.error = false
-      if (this.user_dni.length > 0) {
-        const qs = require('qs')
-        const query = qs.stringify({
-          filters: {
-            dni: this.user_dni,
-            active: true
+    sendRequest () {
+      if (this.valid) {
+        this.$store.dispatch('password/createTicketForPasswordChange', {
+          selected: this.selected,
+          new_password: this.new_password
+        }).then((res) => {
+          if (res.status === 200) {
+            this.done = true
           }
-        },
-        {
-          encodeValuesOnly: true
         })
-        await fetch(`${this.$config.API_STRAPI_ENDPOINT}passwordchanges?${query}`)
-          .then(res => res.json())
-          .then((passwordchanges) => {
-            if (passwordchanges.data.length > 0) {
-              this.error = true
-              this.errorMessage = 'Ya existe un proceso activo para el cambio de tu clave. Será realizado hasta 3 días hábiles luego de tu solicitud.'
-            } else {
-              this.testClient()
-            }
-          })
-      } else {
-        this.error = true
-        this.errorMessage = 'No puedes dejar este campo en blanco.'
-      }
-    },
-    async testClient () {
-      this.error = false
-      if (this.user_dni.length > 0) {
-        const qs = require('qs')
-        const query = qs.stringify({
-          filters: {
-            dni: this.user_dni
-          },
-          populate: ['city']
-        },
-        {
-          encodeValuesOnly: true
-        })
-        await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`)
-          .then(res => res.json())
-          .then((clients) => {
-            if (clients.data.length < 1) {
-              this.error = true
-              this.errorMessage = 'La CEDULA no se encuentra en nuestro sistema. Ingresa la cedula del titular o comunicate con nosotros nuevamente dando el siguiente codigo de error (CEDULA NO ENCONTRADA).'
-            } else {
-              this.clientid = clients.data[0].id
-              this.error = false
-              this.e1 = 2
-            }
-          })
-      } else {
-        this.error = true
-        this.errorMessage = 'No puedes dejar este campo en blanco.'
-      }
-    },
-    testName () {
-      if (this.user_old_password) {
-        this.error = false
-        this.e1 = 3
-      } else {
-        this.error = true
-        this.errorMessage = 'No puedes dejar este campo en blanco.'
-      }
-    },
-    testAddress () {
-      if (this.user_address) {
-        this.error = false
-        this.e1 = 4
-      } else {
-        this.error = true
-        this.errorMessage = 'No puedes dejar este campo en blanco.'
       }
     },
     openConfirm () {
@@ -329,62 +263,57 @@ export default {
         this.confirmation = true
       }
     },
-    async sendRequest () {
-      if (this.valid) {
-        await fetch(`${this.$config.API_STRAPI_ENDPOINT}passwordchanges`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            data: {
-              active: true,
-              dni: this.user_dni,
-              client: this.clientid,
-              old_password: this.user_old_password,
-              new_password: this.user_new_password,
-              address: this.user_address
-            }
-          })
-        }).then((input) => {
-          if (input.status === 200) {
-            this.done = true
-          } else {
-            this.error = true
-            this.errorMessage = 'Se ha producido un error, intentalo mas tarde o contacta nuevamente con la empresa al 310 343 25 99.'
-            this.isSubmitting = false
-          }
-        }).catch((error) => {
-          // eslint-disable-next-line no-console
-          console.error(error)
-        })
+    backTo (e1) {
+      this.e1 = e1
+      this.selected = null
+    },
+    processSelect (client) {
+      this.selected = client
+      this.e1 = '3'
+    },
+    processDni () {
+      if (this.dni === null || this.dni === '') {
+        this.$toast.error('Debe especificar la cedula o Nit para continuar.', { duration: 5000, position: 'top-center' })
       }
-    }
-  },
-  head () {
-    return {
-      title: this.title,
-      meta: [
-        { hid: 'language', name: 'language', content: 'es' },
-        { hid: 'audience', name: 'audience', content: 'all' },
-        { hid: 'rating', name: 'rating', content: 'general' },
-        { hid: 'distribution', name: 'distribution', content: 'global' },
-        { hid: 'document-type', name: 'document-type', content: 'Public' },
-        { hid: 'MSSmartTagsPreventParsing', name: 'MSSmartTagsPreventParsing', content: 'true' },
-        { hid: 'robots', name: 'robots', content: 'all' },
-        { hid: 'robots', name: 'robots', content: 'all, index, follow' },
-        { hid: 'googlebot', name: 'googlebot', content: 'all, index, follow' },
-        { hid: 'yahoo-slurp', name: 'yahoo-slurp', content: 'all, index, follow' },
-        { hid: 'msnbot', name: 'msnbot', content: 'index, follow' },
-        { hid: 'googlebot-image', name: 'googlebot-image', content: 'all' },
-        { hid: 'title', name: 'title', content: this.title },
-        { hid: 'og:title', property: 'og:title', content: this.title },
-        { hid: 'og:description', property: 'og:description', content: 'ARNOProducciones - Base de datos interactiva' },
-        { hid: 'author', name: 'author', content: 'Nicolas Echeverry' }
-      ]
+      this.$store.dispatch('password/searchClientByDni', {
+        dni: this.dni
+      }).then((res) => {
+        if (res.length > 0) {
+          for (let i = 0; i < res.length; i++) {
+            res[i].tickets.map((ticket) => {
+              if (ticket.tickettype?.name === 'CAMBIO DE CONTRASEÑA' && ticket.active) {
+                res[i].hasPendingPasswordChange = true
+                return ticket
+              } else {
+                res[i].hasPendingPasswordChange = false
+                return ticket
+              }
+            })
+            this.e1 = 2
+          }
+        } else {
+          this.$toast.error('No se ha encontrado ningun usuario con esta informacion. Comunicate al 310 343 25 99 en Mariquita y al 350 810 59 49 en Fresno', { position: 'top-center' })
+        }
+      })
     }
   }
 }
 </script>
-
-<style></style>
+<style scoped>
+  .parent {
+    padding:10px;
+    background-color: rgb(37, 37, 37);
+    display: grid;
+    place-items:center;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 10px;
+  }
+  @media only screen and (max-width: 963px) {
+    .parent {
+      display: flex;
+      flex-direction: column;
+      background-color: rgb(37, 37, 37);
+      padding:10px;
+    }
+  }
+</style>
