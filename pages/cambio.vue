@@ -296,6 +296,11 @@ export default {
         }
       })
     }
+  },
+  head () {
+    return {
+      title: 'Solicita cambio de tu clave WiFi'
+    }
   }
 }
 </script>
