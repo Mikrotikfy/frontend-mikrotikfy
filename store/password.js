@@ -46,7 +46,10 @@ export const actions = {
     const qs = require('qs')
     const query = qs.stringify({
       filters: {
-        dni: payload.dni
+        dni: payload.dni,
+        clienttype: {
+          name: 'INTERNET'
+        }
       },
       populate: ['city', 'addresses', 'tickets', 'tickets.tickettype']
     },
