@@ -14,7 +14,7 @@
         :options.sync="options"
         :loading="loadingDataTable"
         sort-by="id"
-        sort-desc
+        sort-asc
         show-select
         single-select
         no-data-text="Realiza una busqueda para iniciar..."

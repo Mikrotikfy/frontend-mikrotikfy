@@ -29,9 +29,9 @@ export default {
       return this.billinginfo.item.details
         ? this.billinginfo.item.details
         : this.billinginfo.item.type === 'RECAUDO'
-          ? `RECAUDO MES ${meses[new Date(this.billinginfo.item.date).getMonth()].toUpperCase()}`
+          ? `RECAUDO MES ${meses[new Date(this.billinginfo.item.date).getMonth()].toUpperCase()} ${this.$store.state.billing.showArchive ? 'ARCHIVADO' : ''}`
           : this.billinginfo.item.type === 'FACTURACION'
-            ? `FACTURA MES ${meses[new Date(this.billinginfo.item.date).getMonth()].toUpperCase()}`
+            ? `FACTURA MES ${meses[new Date(this.billinginfo.item.date).getMonth()].toUpperCase()} ${this.$store.state.billing.showArchive ? 'ARCHIVADO' : ''}`
             : ''
     }
   }

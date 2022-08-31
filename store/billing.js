@@ -5,9 +5,13 @@ export const state = () => ({
     movements: []
   },
   headers: [],
-  selected: []
+  selected: [],
+  showArchive: false
 })
 export const mutations = {
+  toggleArchive (state, _) {
+    state.showArchive = !state.showArchive
+  },
   setSelected (state, selected) {
     state.selected = selected
   },
@@ -44,7 +48,7 @@ export const mutations = {
   },
   getBillingInfoByClientId (state, billingInfo) {
     try {
-      state.billingInfo = {
+      const data = {
         clientId: billingInfo.clientid,
         clientName: billingInfo.clientname,
         movements: [
@@ -52,126 +56,28 @@ export const mutations = {
             id: 1,
             amount: 50000,
             type: 'FACTURACION',
+            active: false,
             date: new Date('Sat Jan 01 2022 12:47:26 GMT-0500')
           },
           {
             id: 2,
             amount: 50000,
-            type: 'RECAUDO',
-            date: new Date('Sat Feb 01 2022 12:47:26 GMT-0500')
+            type: 'FACTURACION',
+            active: true,
+            date: new Date('Sat Feb 16 2022 12:47:26 GMT-0500')
           },
           {
             id: 3,
             amount: 50000,
-            type: 'FACTURACION',
-            date: new Date('Sat Mar 01 2022 12:47:26 GMT-0500')
-          },
-          {
-            id: 4,
-            amount: 50000,
             type: 'RECAUDO',
-            date: new Date('Sat Apr 01 2022 12:47:26 GMT-0500')
-          },
-          {
-            id: 5,
-            amount: 50000,
-            type: 'FACTURACION',
-            date: new Date('Sat May 01 2022 12:47:26 GMT-0500')
-          },
-          {
-            id: 6,
-            amount: 80000,
-            type: 'ROUTER NUEVO',
-            details: 'SE LE QUEMO EL ROUTER',
-            date: new Date('Sat Jun 01 2022 12:47:26 GMT-0500')
-          },
-          {
-            id: 7,
-            amount: 20000,
-            details: 'Se traslado para la calle 4 # 5 - 76',
-            type: 'TRASLADO',
-            date: new Date('Sat Jun 01 2022 12:47:26 GMT-0500')
-          },
-          {
-            id: 8,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/01/2022'
-          },
-          {
-            id: 9,
-            amount: 50000,
-            type: 'FACTURACION',
-            date: '01/02/2022'
-          },
-          {
-            id: 10,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/03/2022'
-          },
-          {
-            id: 11,
-            amount: 50000,
-            type: 'FACTURACION',
-            date: '01/04/2022'
-          },
-          {
-            id: 12,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/05/2022'
-          },
-          {
-            id: 13,
-            amount: 80000,
-            type: 'ROUTER NUEVO',
-            date: '01/05/2022'
-          },
-          {
-            id: 14,
-            amount: 20000,
-            type: 'TRASLADO',
-            date: '01/06/2022'
-          },
-          {
-            id: 15,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/03/2022'
-          },
-          {
-            id: 16,
-            amount: 50000,
-            type: 'FACTURACION',
-            date: '01/04/2022'
-          },
-          {
-            id: 17,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/05/2022'
-          },
-          {
-            id: 18,
-            amount: 80000,
-            type: 'ROUTER NUEVO',
-            date: '01/05/2022'
-          },
-          {
-            id: 19,
-            amount: 20000,
-            type: 'TRASLADO',
-            date: '01/06/2022'
-          },
-          {
-            id: 20,
-            amount: 20000,
-            type: 'TRASLADO',
-            date: '01/06/2022'
+            active: true,
+            date: new Date('Sat Feb 26 2022 12:47:26 GMT-0500')
           }
         ]
       }
+      const filtered = data.movements.filter(item => billingInfo.showArchive ? item.active === false : item.active === true)
+      data.movements = filtered
+      state.billingInfo = data
     } catch (error) {
       throw new Error(`GET BILLING INFO BY CLIENT ID MUTATE ${error}`)
     }
