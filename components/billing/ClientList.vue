@@ -63,7 +63,11 @@ export default {
       }
     },
     showBillingInfo (item) {
-      console.log(item.id)
+      this.$store.dispatch('billing/getBillingInfoByClientId', {
+        clientid: item.id,
+        clientname: item.name,
+        token: this.$store.state.auth.token
+      })
     }
   }
 }
