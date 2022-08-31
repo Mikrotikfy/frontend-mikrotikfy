@@ -27,6 +27,7 @@
           :to="`${item.url}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
           router
           exact
+          active-class="blue--text lighten-2"
         >
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
