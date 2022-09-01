@@ -408,6 +408,8 @@ export default {
         return 'orange darken-2'
       } else if (tickettype === 'INTERMITENCIA') {
         return 'orange darken-4'
+      } else if (tickettype === 'CONEXION NUEVA') {
+        return 'green darken-2'
       } else {
         return 'primary'
       }
