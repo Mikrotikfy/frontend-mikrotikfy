@@ -111,6 +111,7 @@
             v-model="Client.neighborhood"
             item-text="name"
             item-value="id"
+            return-object
             :items="neighborhoods"
             label="Barrio"
             outlined
@@ -418,24 +419,24 @@ export default {
           Authorization: `Bearer ${this.$store.state.auth.token}`
         },
         body: JSON.stringify({
-          data: { ...this.Client, operator: this.$store.state.auth.id, operator_role: this.role, clienttype: [this.clienttype.id] }
+          data: { ...this.Client, neighborhood: this.Client.neighborhood.id, operator: this.$store.state.auth.id, operator_role: this.role, clienttype: [this.clienttype.id] }
         })
-      }).then((input) => {
-        if (input.status === 200) {
+      })
+        .then(res => res.json())
+        .then((client) => {
           this.$emit('createClientDialog', false)
           this.$emit('createClientSnack', true)
+          this.$store.dispatch('client/createTicketForNewClient', {
+            city: this.Client.city,
+            client: client.data,
+            neighborhood: this.Client.neighborhood,
+            token: this.$store.state.auth.token
+          })
           this.$simpleTelegramCreate({ client: this.Client, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
-        } else {
-          this.alertBox = true
-          this.alertBoxColor = 'red darken-4'
-          this.createdMessage = 'Error al crear el cliente. Reporta esto al gestor web'
-          this.isSubmitting = false
-          throw new Error('Error creating serie')
-        }
-      }).catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error(error)
-      })
+        }).catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error(error)
+        })
     },
     genAddress () {
       this.Client.address = `${this.dir1} ${this.dir2} ${this.dir3} ${this.dir4}`

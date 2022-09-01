@@ -128,6 +128,9 @@
               <template v-slot:[`item.client.code`]="props">
                 <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`">{{props.item.client.code}}</nuxt-link>
               </template>
+              <template v-slot:[`item.client.technology.name`]="props">
+                {{ props.item.client.technology !== null ? props.item.client.technology.name : 'No reg.' }}
+              </template>
               <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="props">
                 <div class="nowspace">
                   <TicketHistory

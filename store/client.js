@@ -96,6 +96,47 @@ export const mutations = {
   }
 }
 export const actions = {
+  createTicketForNewClient ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              active: true,
+              escalated: false,
+              answered: false,
+              city: payload.city,
+              client: payload.client.id,
+              tickettype: 35,
+              assignated: 22,
+              clienttype: 1,
+              details: `
+                CX: ${payload.client.address} ${payload.neighborhood.name}
+              `
+            }
+          })
+        }).then((input) => {
+          if (input.status === 200) {
+            this.$toast.info('Orden de instalacion creada', { duration: 4000, position: 'top-center' })
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        }).catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error(error)
+          throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
+        })
+      })
+    } catch (error) {
+      throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
+    }
+  },
   async clearClientsFromDatatable ({ commit }) {
     try {
       await commit('clearClientsFromDatatable', true)
