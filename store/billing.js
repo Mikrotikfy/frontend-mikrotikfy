@@ -63,6 +63,7 @@ export const mutations = {
             id: 2,
             amount: 50000,
             type: 'FACTURACION',
+            billingMonth: 2,
             active: true,
             date: new Date('Sat Feb 16 2022 12:47:26 GMT-0500')
           },
@@ -70,6 +71,7 @@ export const mutations = {
             id: 3,
             amount: 50000,
             type: 'RECAUDO',
+            billingMonth: 2,
             active: true,
             date: new Date('Sat Feb 26 2022 12:47:26 GMT-0500')
           }
