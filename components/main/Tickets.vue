@@ -241,7 +241,7 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.technology.name : '' }}</v-list-item-title>
+                <v-list-item-title>{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item>
@@ -269,7 +269,7 @@
                     :name="editModalData.client.name"
                     :clientid="editModalData.client.id"
                     :code="editModalData.client.code"
-                    :role="allowed_components"
+                    :role="this.$store.state.auth.allowed_components"
                   />
                 <CreateTicketAdvance
                   :block="true"

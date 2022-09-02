@@ -112,7 +112,7 @@ export const actions = {
               answered: false,
               city: payload.city,
               client: payload.client.id,
-              tickettype: 35,
+              tickettype: 36,
               assignated: 22,
               clienttype: 1,
               details: `
