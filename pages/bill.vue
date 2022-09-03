@@ -1,5 +1,8 @@
 <template>
-  <v-card light>
-    <BillingBillTemplate />
-  </v-card>
+  <BillingBillTemplate />
 </template>
+<script>
+export default {
+  layout: 'print'
+}
+</script>
