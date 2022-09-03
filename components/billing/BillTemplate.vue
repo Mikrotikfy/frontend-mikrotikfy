@@ -179,6 +179,10 @@
     float:right;
     border-radius: 0 10px 0 10px;
   }
+  .output {
+    width:1125px;
+    height:1500px;
+  }
   @media print {
   .output {
     -ms-transform: rotate(-90deg);
