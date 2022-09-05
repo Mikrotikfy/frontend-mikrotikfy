@@ -21,19 +21,18 @@
       <div class="client-parent">
         <div class="client-parent-sub">
           <div>
-            <h4>NICOLAS ECHEVERRY</h4>
-            <h4>CARRERA 11A # 2 - 43 GALAN</h4>
-            <h4>INTERNET ILIMITADO PERSONAL S20</h4>
-            <h4>MES DE SEPTIEMBRE</h4>
+            <h5>USUARIO: NICOLAS ECHEVERRY</h5>
+            <h5>DIRECCION: CARRERA 11A # 2 - 43 GALAN</h5>
+            <h5>PLAN: INTERNET ILIMITADO PERSONAL S20</h5>
+            <h5>FACTURA: MES DE SEPTIEMBRE</h5>
           </div>
           <div>
-            <h4>C.C. / NIT: 1110601254</h4>
-            <h3 class="important-info">
+            <h4 class="important-info">
               VENCIMIENTO: 16 SEPTIEMBRE 2022
-            </h3>
-            <h3 class="important-info">
+            </h4>
+            <h4 class="important-info">
               SUSPENSION: 18 SEPTIEMBRE 2022
-            </h3>
+            </h4>
           </div>
         </div>
         <div>
@@ -62,6 +61,8 @@
         <div class="sub-parent-resume" style="border-radius:0px 0px 10px 10px;">
           <h3>MENSUALIDAD SEPTIEMBRE</h3>
           <h4>INTERNET ILIMITADO PERSONAL S20</h4>
+          <h4>INTERNET ILIMITADO FAMILIAR M50</h4>
+          <h4>INTERNET ILIMITADO PRO L100</h4>
         </div>
       </div>
     </v-container>
@@ -94,6 +95,39 @@
           <h4>Telefono: 310 343 25 99</h4>
         </div>
       </div>
+      <div />
+    </v-container>
+    <v-container class="parent-sub-info">
+      <div class="client-parent-sub2 pa-2">
+        <div>
+          <h5>USUARIO: NICOLAS ECHEVERRY</h5>
+          <h5>DIRECCION: CARRERA 11A # 2 - 43 GALAN</h5>
+          <h5>PLAN: INTERNET ILIMITADO PERSONAL S20</h5>
+          <h5>FACTURA: MES DE SEPTIEMBRE</h5>
+        </div>
+        <div>
+          <h4 class="important-info">
+            VENCIMIENTO: 16 SEPTIEMBRE 2022
+          </h4>
+          <h4 class="important-info">
+            SUSPENSION: 18 SEPTIEMBRE 2022
+          </h4>
+        </div>
+      </div>
+      <div>
+        <div class="sub-parent-company" style="border-radius:10px 10px 0px 0px;">
+          ARNOPRODUCCIONES
+        </div>
+        <div class="sub-parent-company" style="border-radius:0px 0px 10px 10px;">
+          <h4>Pagina web: www.arnoproducciones.com</h4>
+          <h4>Ciudad: Mariquita, Tolima 732020</h4>
+          <h4>WhatsApp: 310 343 25 99</h4>
+          <h4>Horarios Lun - Vie: 8:00 a.m. - 12:00 m, 2:00 p.m. - 6:00 p.m.</h4>
+          <h4>Horarios Sab: 8:00 a.m. - 3:00 p.m. jornada continua</h4>
+        </div>
+      </div>
+    </v-container>
+    <v-container class="parent-company-footer">
       <div>
         <v-img
           src="/barcode.jpg"
@@ -105,6 +139,21 @@
   </v-card>
 </template>
 <style scoped>
+  .client-parent-sub2 {
+    display: grid;
+    border:1px solid black;border-radius:10px;
+    border-radius: 10px;
+  }
+  .parent-sub-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 10px;
+  }
+  .parent-company-footer {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-gap: 10px;
+  }
   .parent-payment{
     display: grid;
     grid-template-columns: 50% 50%;
@@ -175,13 +224,13 @@
     font-weight: bold;
     padding: 5px;
     right:12px;
-    font-size:1.5rem;
+    font-size:1.2rem;
     float:right;
     border-radius: 0 10px 0 10px;
   }
   .output {
     width:1125px;
-    height:1500px;
+    height:1200px;
   }
   @media print {
   .output {
