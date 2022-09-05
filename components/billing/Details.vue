@@ -3,6 +3,7 @@
 </template>
 <script>
 const meses = [
+  '',
   'Enero',
   'Febrero',
   'Marzo',
@@ -29,9 +30,9 @@ export default {
       return this.billinginfo.item.details
         ? this.billinginfo.item.details
         : this.billinginfo.item.type === 'RECAUDO'
-          ? `RECAUDO MES ${meses[new Date(this.billinginfo.item.date).getMonth()].toUpperCase()} ${this.$store.state.billing.showArchive ? 'ARCHIVADO' : ''}`
+          ? `RECAUDO MES ${meses[this.billinginfo.item.billingMonth].toUpperCase()} ${this.$store.state.billing.showArchive ? 'ARCHIVADO' : ''}`
           : this.billinginfo.item.type === 'FACTURACION'
-            ? `FACTURA MES ${meses[new Date(this.billinginfo.item.date).getMonth()].toUpperCase()} ${this.$store.state.billing.showArchive ? 'ARCHIVADO' : ''}`
+            ? `FACTURA MES ${meses[this.billinginfo.item.billingMonth].toUpperCase()} ${this.$store.state.billing.showArchive ? 'ARCHIVADO' : ''}`
             : ''
     }
   }

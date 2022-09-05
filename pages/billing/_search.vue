@@ -21,14 +21,12 @@
             <BillingToggleArchive />
             <BillingPrintMovement />
           </v-card-title>
-          <v-card-text>
+          <v-card-text style="height:80%;">
             <BillingClientDetail />
           </v-card-text>
-        </v-card>
-        <v-card class="mt-2 rounded-xl d-flex align-center">
-          <v-card-text>
+          <v-card-actions style="position: absolute;bottom: 0;border-top:grey solid 1px;width:100%;" class="d-flex pl-6">
             <BillingClientTotal />
-          </v-card-text>
+          </v-card-actions>
         </v-card>
         <BillingClientDiscountAmount />
         <BillingClientAddAmount />

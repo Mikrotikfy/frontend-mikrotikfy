@@ -4,8 +4,10 @@ export const state = () => ({
     clientId: null,
     movements: []
   },
+  total: 0,
   headers: [],
   selected: [],
+  resetSelected: 0,
   showArchive: false
 })
 export const mutations = {
@@ -14,6 +16,13 @@ export const mutations = {
   },
   setSelected (state, selected) {
     state.selected = selected
+  },
+  resetSelected (state) {
+    state.selected = []
+    state.resetSelected++
+  },
+  setTotal (state, total) {
+    state.total = total
   },
   addMovement (state, movement) {
     state.billingInfo.movements.push({
@@ -28,6 +37,8 @@ export const mutations = {
     state.billingInfo.movements.push({
       id: state.billingInfo.movements.length + 1,
       amount: movement.amount,
+      for: movement.for,
+      billingMonth: movement.billingMonth,
       type: 'RECAUDO',
       date: new Date()
     })
@@ -56,24 +67,17 @@ export const mutations = {
             id: 1,
             amount: 50000,
             type: 'FACTURACION',
-            active: false,
-            date: new Date('Sat Jan 01 2022 12:47:26 GMT-0500')
+            billingMonth: 2,
+            active: true,
+            date: new Date('Sat Jan 25 2022 12:47:26 GMT-0500')
           },
           {
             id: 2,
             amount: 50000,
             type: 'FACTURACION',
-            billingMonth: 2,
+            billingMonth: 3,
             active: true,
-            date: new Date('Sat Feb 16 2022 12:47:26 GMT-0500')
-          },
-          {
-            id: 3,
-            amount: 50000,
-            type: 'RECAUDO',
-            billingMonth: 2,
-            active: true,
-            date: new Date('Sat Feb 26 2022 12:47:26 GMT-0500')
+            date: new Date('Sat Feb 25 2022 12:47:26 GMT-0500')
           }
         ]
       }

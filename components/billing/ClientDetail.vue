@@ -80,6 +80,12 @@ export default {
     '$store.state.billing.billingInfo': {
       handler () {
         this.changeClient()
+        this.selectLastBill()
+      }
+    },
+    '$store.state.billing.resetSelected': {
+      handler () {
+        this.selected = []
       }
     },
     selected () {
@@ -92,6 +98,12 @@ export default {
       setTimeout(() => {
         this.$refs.clientP.classList.add('hideMe')
       }, 100)
+    },
+    selectLastBill () {
+      this.selected = []
+      const bill = this.billingInfo.movements.filter(item => item.type === 'FACTURACION' && item.active)
+      console.log(bill, typeof bill)
+      this.selected.push(bill[0])
     }
   }
 }

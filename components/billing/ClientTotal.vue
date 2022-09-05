@@ -24,6 +24,11 @@ export default {
           : total + item.amount
       }, 0)
     }
+  },
+  watch: {
+    totalamount () {
+      this.$store.commit('billing/setTotal', this.totalamount)
+    }
   }
 }
 </script>
