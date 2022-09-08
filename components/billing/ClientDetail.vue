@@ -24,14 +24,14 @@
         @page-count="pageCount = $event"
         @current-items="$vuetify.goTo(0)"
       >
-        <template v-slot:[`item.type`]="props">
+        <template v-slot:[`item.name`]="props">
           <v-chip
             :color="props.item.type == 'RECAUDO' ? 'green' : props.item.type == 'FACTURACION' ? 'orange' : 'red'"
             text
             small
             label
           >
-            {{ props.item.type }}
+            {{ props.item.name }}
           </v-chip>
         </template>
         <template v-slot:[`item.amount`]="props">
@@ -44,8 +44,8 @@
           <span>{{ props.item.date.toLocaleString('es-ES') }} </span>
         </template>
         <template v-slot:[`item.actions`]="props">
-          <span class="d-flex">
-            <BillingPayBill v-if="!props.item.pay && selected.length < 2" :bill="props.item" class="mr-2" />
+          <span class="d-flex justify-end">
+            <BillingPayBill v-if="!props.item.pay && selected.length < 2 && props.item.type === 'FACTURACION'" :bill="props.item" class="mr-2" />
             <BillingCancelBill :bill="props.item" />
           </span>
         </template>
@@ -65,8 +65,8 @@ export default {
       loadingDataTable: false,
       headers: [
         { text: 'ID', value: 'id', sortable: false },
-        { text: 'Tipo de movimiento', value: 'type', sortable: false },
-        { text: 'Observaciones', value: 'details', sortable: false },
+        { text: 'Tipo de movimiento', value: 'name', sortable: false },
+        { text: 'Periodo', value: 'details', sortable: false },
         { text: 'Valor', sortable: false, value: 'amount' },
         { text: 'Fecha', value: 'date', sortable: false },
         { text: 'Acciones', value: 'actions', sortable: false }

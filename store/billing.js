@@ -66,21 +66,14 @@ export const mutations = {
         movements: [
           {
             id: 1,
+            name: 'FACTURA PENDIENTE',
             amount: 50000,
+            debt: 50000,
             type: 'FACTURACION',
             billingMonth: 2,
             active: true,
             pay: false,
             date: new Date('Sat Jan 25 2022 12:47:26 GMT-0500')
-          },
-          {
-            id: 2,
-            amount: 50000,
-            type: 'FACTURACION',
-            billingMonth: 3,
-            active: true,
-            pay: false,
-            date: new Date('Sat Feb 25 2022 12:47:26 GMT-0500')
           }
         ]
       }

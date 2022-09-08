@@ -29,6 +29,7 @@
             label="Abono parcial de"
             required
             :rules="!billingInfo.payBill.isComplete ? [v => !!v || 'Este campo es requerido'] : []"
+            @keyup.enter="addAmount"
           />
           <v-text-field
             v-model="billingInfo.payBill.details"
@@ -91,7 +92,7 @@ export default {
         this.error = true
         return
       }
-      if (!this.bill.amount || !this.billingInfo.payBill.amount) {
+      if ((!this.bill.amount || !this.billingInfo.payBill.amount) && !this.billingInfo.payBill.isComplete) {
         this.$toast.error('Debe ingresar un valor', { duration: 2000 })
         return
       }
