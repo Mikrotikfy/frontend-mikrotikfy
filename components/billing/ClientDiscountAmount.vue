@@ -48,16 +48,18 @@ export default {
         this.$toast.error('Debe ingresar un valor', { duration: 2000 })
         return
       }
-      if (this.$store.state.billing.billingInfo.clientId > 0) {
-        this.$store.dispatch('billing/addDiscountMovement', {
-          amount: this.amount,
-          for: this.selected.length > 0 ? this.selected[0].id : null,
-          billingMonth: this.selected[0].billingMonth,
-          client: this.$store.state.billing.billingInfo.clientId
-        })
-        this.$store.commit('billing/resetSelected')
-        this.amount = null
+      for (const item of this.selected) {
+        if (this.$store.state.billing.billingInfo.clientId > 0) {
+          this.$store.dispatch('billing/addDiscountMovement', {
+            amount: this.amount,
+            for: this.selected.length > 0 ? item.id : null,
+            billingMonth: item.billingMonth,
+            client: this.$store.state.billing.billingInfo.clientId
+          })
+        }
       }
+      this.$store.commit('billing/resetSelected')
+      this.amount = null
     }
   }
 }

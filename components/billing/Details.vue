@@ -27,13 +27,11 @@ export default {
   },
   computed: {
     formattedMessage () {
-      return this.billinginfo.item.details
-        ? this.billinginfo.item.details
-        : this.billinginfo.item.type === 'RECAUDO'
-          ? `RECAUDO MES ${meses[this.billinginfo.item.billingMonth].toUpperCase()} ${this.$store.state.billing.showArchive ? 'ARCHIVADO' : ''}`
-          : this.billinginfo.item.type === 'FACTURACION'
-            ? `FACTURA MES ${meses[this.billinginfo.item.billingMonth].toUpperCase()} ${this.$store.state.billing.showArchive ? 'ARCHIVADO' : ''}`
-            : ''
+      return this.billinginfo.item.type === 'RECAUDO'
+        ? `RECAUDO MES ${meses[this.billinginfo.item.billingMonth].toUpperCase()} ${this.$store.state.billing.showArchive ? 'ARCHIVADO' : ''} ${this.billinginfo.item.details ? this.billinginfo.item.details : ''}`
+        : this.billinginfo.item.type === 'FACTURACION'
+          ? `FACTURA MES ${meses[this.billinginfo.item.billingMonth].toUpperCase()} ${this.$store.state.billing.showArchive ? 'ARCHIVADO' : ''} ${this.billinginfo.item.details ? this.billinginfo.item.details : ''}`
+          : ''
     }
   }
 }

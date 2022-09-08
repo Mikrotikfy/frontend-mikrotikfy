@@ -2,7 +2,7 @@
   <div>
     <v-btn
       x-small
-      color="yellow darken-4"
+      color="red darken-4"
       elevation="0"
       @click="dialog = true"
     >

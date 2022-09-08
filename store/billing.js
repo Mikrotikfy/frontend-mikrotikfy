@@ -39,6 +39,7 @@ export const mutations = {
       amount: movement.amount,
       for: movement.for,
       billingMonth: movement.billingMonth,
+      details: movement.details,
       type: 'RECAUDO',
       date: new Date()
     })
@@ -69,6 +70,7 @@ export const mutations = {
             type: 'FACTURACION',
             billingMonth: 2,
             active: true,
+            pay: false,
             date: new Date('Sat Jan 25 2022 12:47:26 GMT-0500')
           },
           {
@@ -77,6 +79,7 @@ export const mutations = {
             type: 'FACTURACION',
             billingMonth: 3,
             active: true,
+            pay: false,
             date: new Date('Sat Feb 25 2022 12:47:26 GMT-0500')
           }
         ]
@@ -90,6 +93,8 @@ export const mutations = {
   }
 }
 export const actions = {
+  setPay (state, payload) {
+  },
   addMovement ({ commit }, payload) {
     commit('addMovement', payload)
   },

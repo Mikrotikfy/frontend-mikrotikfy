@@ -16,7 +16,6 @@
         sort-by="id"
         sort-asc
         show-select
-        single-select
         no-data-text="Realiza una busqueda para iniciar..."
         loading-text="Cargando información de clientes..."
         dense
@@ -45,7 +44,10 @@
           <span>{{ props.item.date.toLocaleString('es-ES') }} </span>
         </template>
         <template v-slot:[`item.actions`]="props">
-          <BillingCancelBill :bill="props.item" />
+          <span class="d-flex">
+            <BillingPayBill v-if="!props.item.pay && selected.length < 2" :bill="props.item" class="mr-2" />
+            <BillingCancelBill :bill="props.item" />
+          </span>
         </template>
       </v-data-table>
     </client-only>
