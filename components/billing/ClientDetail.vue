@@ -8,7 +8,7 @@
         ref="billDataTable"
         v-model="selected"
         :headers="headers"
-        :items.sync="billingInfo.movements"
+        :items.sync="billingInfo.bills"
         :items-per-page.sync="itemsPerPage"
         :page.sync="page"
         :options.sync="options"
@@ -24,28 +24,43 @@
         @page-count="pageCount = $event"
         @current-items="$vuetify.goTo(0)"
       >
-        <template v-slot:[`item.name`]="props">
+        <template v-slot:[`item.type.name`]="props">
           <v-chip
-            :color="props.item.type == 'RECAUDO' ? 'green' : props.item.type == 'FACTURACION' ? 'orange' : 'red'"
+            :color="caculateDebt(props.item.type.price, props.item.deposits) > 0 ? 'orange' : 'green'"
             text
             small
             label
           >
-            {{ props.item.name }}
+            {{ props.item.type.name }}
           </v-chip>
         </template>
-        <template v-slot:[`item.amount`]="props">
-          <span :style="props.item.type === 'RECAUDO' ? 'color:salmon;' : 'color:green;'"> ${{ Number(props.item.amount).toLocaleString('es') }} </span>
+        <template v-slot:[`item.type.price`]="props">
+          <strong> ${{ Number(props.item.type.price).toLocaleString('es') }} </strong>
+        </template>
+        <template v-slot:[`item.debt`]="props">
+          <strong class="text-h5"> ${{ Number(caculateDebt(props.item.type.price, props.item.deposits)).toLocaleString('es') }} </strong>
         </template>
         <template v-slot:[`item.details`]="props">
           <BillingDetails :billinginfo="props" />
         </template>
-        <template v-slot:[`item.date`]="props">
-          <span>{{ props.item.date.toLocaleString('es-ES') }} </span>
+        <template v-slot:[`item.createdAt`]="props">
+          <span>{{ props.item.createdAt.toLocaleString('es-ES', {
+            month: 'long',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          }) }} </span>
         </template>
         <template v-slot:[`item.actions`]="props">
-          <span class="d-flex justify-end">
-            <BillingPayBill v-if="!props.item.pay && selected.length < 2 && props.item.type === 'FACTURACION'" :bill="props.item" class="mr-2" />
+          <span class="d-flex justify-end" :data-index="props.index">
+            <BillingPayBill
+              v-if="!props.item.pay && selected.length < 2"
+              :bill="props.item"
+              :index="props.index"
+              :debt="caculateDebt(props.item.type.price, props.item.deposits)"
+              class="mr-2"
+            />
+            <BillingDepositHistory v-if="props.item.type === 'FACTURACION'" :bill="props.item" class="mr-2" />
             <BillingCancelBill :bill="props.item" />
           </span>
         </template>
@@ -65,11 +80,11 @@ export default {
       loadingDataTable: false,
       headers: [
         { text: 'ID', value: 'id', sortable: false },
-        { text: 'Tipo de movimiento', value: 'name', sortable: false },
-        { text: 'Periodo', value: 'details', sortable: false },
-        { text: 'Valor', sortable: false, value: 'amount' },
-        { text: 'Fecha', value: 'date', sortable: false },
-        { text: 'Acciones', value: 'actions', sortable: false }
+        { text: 'Tipo de movimiento', value: 'type.name', sortable: false },
+        { text: 'Detalles', value: 'details', sortable: false },
+        { text: 'Saldo Pendiente', sortable: false, value: 'debt' },
+        { text: 'Fecha', value: 'createdAt', sortable: false },
+        { text: 'Acciones', value: 'actions', sortable: false, class: 'text-right' }
       ]
     }
   },
@@ -103,9 +118,11 @@ export default {
     },
     selectLastBill () {
       this.selected = []
-      const bill = this.billingInfo.movements.filter(item => item.type === 'FACTURACION' && item.active)
-      console.log(bill, typeof bill)
+      const bill = this.billingInfo.bills.filter(item => item.active)
       this.selected.push(bill[0])
+    },
+    caculateDebt (price, deposits) {
+      return price - deposits.reduce((total, curr) => { return total + curr.amount }, 0)
     }
   }
 }

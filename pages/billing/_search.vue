@@ -1,7 +1,7 @@
 <template>
   <v-container fluid style="height:90vh; max-height:95vh;">
     <v-row>
-      <v-col cols="5">
+      <v-col cols="4">
         <v-card class="rounded-xl">
           <v-card-title>
             <v-icon>mdi-account-circle</v-icon>
@@ -13,7 +13,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col cols="7" class="parent">
+      <v-col cols="8" class="parent">
         <v-card class="rounded-xl" style="overflow-y:scroll;">
           <v-card-title>
             <span :class="this.$store.state.billing.showArchive ? 'headline ml-4 red darken-4 rounded-xl px-2' : 'headline ml-4'">{{ this.$store.state.billing.showArchive ? 'ARCHIVO DE CUENTA' : 'Movimiento de Cuenta'}}</span>
@@ -28,7 +28,6 @@
             <BillingClientTotal />
           </v-card-actions>
         </v-card>
-        <BillingClientDiscountAmount />
         <BillingClientAddAmount />
       </v-col>
     </v-row>
@@ -36,6 +35,10 @@
 </template>
 <script>
 export default {
+  name: 'BillingSearch',
+  mounted () {
+    this.$store.commit('billing/getCurrentMonth')
+  },
   head () {
     return {
       title: 'Estado de Cuenta'

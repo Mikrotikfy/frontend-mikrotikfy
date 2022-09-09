@@ -56,6 +56,14 @@ export default {
     bill: {
       type: Object,
       required: true
+    },
+    index: {
+      type: Number,
+      required: true
+    },
+    debt: {
+      type: Number,
+      required: true
     }
   },
   data () {
@@ -70,42 +78,42 @@ export default {
       }
     }
   },
-  computed: {
-    total () {
-      return this.$store.state.billing.total
-    }
-  },
   methods: {
     init () {
-      if (this.total < 1) {
+      if (this.debt < 1) {
         this.$toast.info('No hay nada para recarudar. el usuario esta al dia', { duration: 2000 })
         return
       }
       this.dialog = true
+      this.billingInfo.payBill.isComplete = true
+      this.billingInfo.payBill.amount = null
+      this.billingInfo.payBill.details = null
       setTimeout(() => {
         this.$refs.cbtn.$el.focus()
       })
     },
     addAmount () {
-      if (this.billingInfo.payBill.amount > this.total || this.bill.amount > this.total) {
-        this.$toast.error('El valor a recaudar no puede ser mayor al saldo total', { duration: 2000 })
+      if (this.billingInfo.payBill.amount > this.debt || this.bill.amount > this.debt) {
+        this.$toast.error('El valor a recaudar no puede ser mayor al saldo', { duration: 2000 })
         this.error = true
         return
       }
-      if ((!this.bill.amount || !this.billingInfo.payBill.amount) && !this.billingInfo.payBill.isComplete) {
+      if ((!this.debt || !this.billingInfo.payBill.amount) && !this.billingInfo.payBill.isComplete) {
         this.$toast.error('Debe ingresar un valor', { duration: 2000 })
         return
       }
-      this.$store.dispatch('billing/addDiscountMovement', {
-        amount: this.billingInfo.payBill.isComplete ? this.bill.amount : this.billingInfo.payBill.amount,
-        for: this.bill.id,
+      this.$store.dispatch('billing/addDeposit', {
+        index: this.index,
+        client: this.$store.state.billing.billingInfo.clientId,
+        amount: this.billingInfo.payBill.isComplete ? this.debt : this.billingInfo.payBill.amount,
         billingMonth: this.bill.billingMonth,
         details: this.billingInfo.payBill.details,
-        client: this.$store.state.billing.billingInfo.clientId
+        createdAt: Date.now()
       })
-      this.$store.dispatch('billing/setPay', {
-        id: this.bill.id,
-        pay: true
+      this.$store.dispatch('billing/editBill', {
+        index: this.index,
+        payed: this.billingInfo.payBill.isComplete ? true : this.billingInfo.payBill.amount === this.debt,
+        details: this.billingInfo.payBill.details
       })
       this.$store.commit('billing/resetSelected')
       this.amount = null

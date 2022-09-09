@@ -2,15 +2,33 @@ export const state = () => ({
   clients: [],
   billingInfo: {
     clientId: null,
-    movements: []
+    bills: []
   },
   total: 0,
+  month: null,
   headers: [],
   selected: [],
   resetSelected: 0,
   showArchive: false
 })
 export const mutations = {
+  editBill (state, payload) {
+    state.billingInfo.bills[payload.index].payed = payload.payed
+    state.billingInfo.bills[payload.index].details = payload.details
+  },
+  addDeposit (state, payload) {
+    state.billingInfo.bills[payload.index].deposits.push({
+      id: 3,
+      amount: payload.amount,
+      details: payload.details,
+      createdAt: payload.createdAt
+    })
+  },
+  getCurrentMonth (state) {
+    const date = new Date()
+    const month = date.getMonth() + 1
+    state.month = month
+  },
   toggleArchive (state, _) {
     state.showArchive = !state.showArchive
   },
@@ -63,22 +81,53 @@ export const mutations = {
       const data = {
         clientId: billingInfo.clientid,
         clientName: billingInfo.clientname,
-        movements: [
-          {
+        bills: [
+          { // ESTO ES UNA FACTURA
             id: 1,
-            name: 'FACTURA PENDIENTE',
-            amount: 50000,
-            debt: 50000,
-            type: 'FACTURACION',
-            billingMonth: 2,
             active: true,
-            pay: false,
-            date: new Date('Sat Jan 25 2022 12:47:26 GMT-0500')
+            payed: false,
+            createdAt: new Date('Sat Jan 25 2022 12:47:26 GMT-0500'),
+            details: 'FEBRERO',
+            type: { // ESTE ES EL TIPO DE MOVIMIENTO
+              id: 1,
+              name: 'MENSUALIDAD', // tipos de movimiento son: 'MENSUALIDAD', 'COBRO ROUTER', 'TRASLADO', 'DESCUENTO', ETC...
+              billingMonth: 2,
+              price: 50000
+            },
+            deposits: [ // ESTOS SON LOS ABONOS
+              {
+                id: 1,
+                amount: 10000,
+                details: 'Pago de factura',
+                date: new Date('Sat Jan 26 2022 12:47:26 GMT-0500')
+              },
+              {
+                id: 2,
+                amount: 10000,
+                details: 'Pago de factura',
+                date: new Date('Sat Jan 27 2022 12:47:26 GMT-0500')
+              }
+            ]
+          },
+          { // ESTO ES UNA FACTURA
+            id: 2,
+            active: true,
+            payed: false,
+            createdAt: new Date('Sat Jan 25 2022 12:47:26 GMT-0500'),
+            details: '',
+            type: { // ESTE ES EL TIPO DE MOVIMIENTO
+              id: 1,
+              name: 'CAMBIO ROUTER', // tipos de movimiento son: 'MENSUALIDAD', 'COBRO ROUTER', 'TRASLADO', 'DESCUENTO', ETC...
+              billingMonth: null,
+              price: 80000
+            },
+            deposits: [ // ESTOS SON LOS ABONOS
+            ]
           }
         ]
       }
-      const filtered = data.movements.filter(item => billingInfo.showArchive ? item.active === false : item.active === true)
-      data.movements = filtered
+      const filtered = data.bills.filter(item => billingInfo.showArchive ? item.active === false : item.active === true)
+      data.bills = filtered
       state.billingInfo = data
     } catch (error) {
       throw new Error(`GET BILLING INFO BY CLIENT ID MUTATE ${error}`)
@@ -86,10 +135,14 @@ export const mutations = {
   }
 }
 export const actions = {
-  setPay (state, payload) {
-  },
   addMovement ({ commit }, payload) {
     commit('addMovement', payload)
+  },
+  addDeposit ({ commit }, payload) {
+    commit('addDeposit', payload)
+  },
+  editBill ({ commit }, payload) {
+    commit('editBill', payload)
   },
   addDiscountMovement ({ commit }, payload) {
     try {

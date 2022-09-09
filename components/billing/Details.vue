@@ -4,18 +4,18 @@
 <script>
 const meses = [
   '',
-  'Enero',
-  'Febrero',
-  'Marzo',
-  'Abril',
-  'Mayo',
-  'Junio',
-  'Julio',
-  'Agosto',
-  'Septiembre',
-  'Octubre',
-  'Noviembre',
-  'Diciembre'
+  'ENERO',
+  'FEBRERO',
+  'MARZO',
+  'ABRIL',
+  'MAYO',
+  'JUNIO',
+  'JULIO',
+  'AGOSTO',
+  'SEPTIEMBRE',
+  'OCTUBRE',
+  'NOVIEMBRE',
+  'DICIEMBRE'
 ]
 export default {
   props: {
@@ -27,11 +27,7 @@ export default {
   },
   computed: {
     formattedMessage () {
-      return this.billinginfo.item.type === 'RECAUDO'
-        ? `${meses[this.billinginfo.item.billingMonth].toUpperCase()} ${this.$store.state.billing.showArchive ? 'ARCHIVADO' : ''} ${this.billinginfo.item.details ? this.billinginfo.item.details : ''}`
-        : this.billinginfo.item.type === 'FACTURACION'
-          ? `${meses[this.billinginfo.item.billingMonth].toUpperCase()} ${this.$store.state.billing.showArchive ? 'ARCHIVADO' : ''} ${this.billinginfo.item.details ? this.billinginfo.item.details : ''}`
-          : ''
+      return this.billinginfo.item.type.billingMonth ? meses[this.billinginfo.item.type.billingMonth] : this.billinginfo.item.details
     }
   }
 }
