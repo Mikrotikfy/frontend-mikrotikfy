@@ -28,6 +28,7 @@
             <BillingClientTotal />
           </v-card-actions>
         </v-card>
+        <BillingClientDiscountAmount v-if="selected.length > 1" />
         <BillingClientAddAmount />
       </v-col>
     </v-row>
@@ -36,6 +37,11 @@
 <script>
 export default {
   name: 'BillingSearch',
+  computed: {
+    selected () {
+      return this.$store.state.billing.selected
+    }
+  },
   mounted () {
     this.$store.commit('billing/getCurrentMonth')
   },
