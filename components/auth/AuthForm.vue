@@ -174,7 +174,7 @@ export default {
       this.loginSuccessful = true
       const qs = require('qs')
       const query = qs.stringify({
-        populate: ['role', 'cities', 'clienttypes', 'menus']
+        populate: ['role', 'cities', 'cities.mikrotiks', 'clienttypes', 'menus']
       },
       {
         encodeValuesOnly: true
@@ -190,10 +190,18 @@ export default {
         .then(async (userResponse) => {
           const userData = userResponse
           const userCities = userResponse.cities.map((city) => {
+            console.log(city)
             return {
               id: city.id,
               name: city.name,
-              color: city.color
+              color: city.color,
+              mikrotiks: city.mikrotiks.map((mikrotik) => {
+                return {
+                  id: mikrotik.id,
+                  name: mikrotik.name,
+                  ip: mikrotik.ip
+                }
+              })
             }
           })
           const userClienttypes = userResponse.clienttypes.map((clienttype) => {
