@@ -71,7 +71,7 @@ export default {
   methods: {
     getLogs () {
       this.parts = []
-      for (let i = 0; i < this.city.mikrotiks.length; i++) { //CAMBIA EL FOR ADENTRO DEL SETINTERNAL
+      for (let i = 0; i < this.city.mikrotiks.length; i++) { // CAMBIA EL FOR ADENTRO DEL SETINTERNAL
         setInterval(async () => {
           const res = await fetch(`https://log.arnoproducciones.com/${this.city.mikrotiks[i].ip}-pppoe,ppp,info.log`)
           const text = await res.text()
