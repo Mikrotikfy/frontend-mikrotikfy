@@ -190,7 +190,6 @@ export default {
         .then(async (userResponse) => {
           const userData = userResponse
           const userCities = userResponse.cities.map((city) => {
-            console.log(city)
             return {
               id: city.id,
               name: city.name,

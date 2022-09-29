@@ -174,6 +174,7 @@
                 </template>
                 <template v-slot:[`item.actions`]="{ item }">
                   <div style="white-space:nowrap">
+                    <MainTramits :client="item" />
                     <MiscInfoSell v-if="$isAdmin() || $isBiller()" :client="item" />
                     <CreateTicket
                       :client="item"

@@ -11,43 +11,30 @@
           v-on="on"
           @click="initComponent()"
         >
-          <v-icon>mdi-account-details-outline</v-icon>
+          <v-icon>mdi-file-account-outline</v-icon>
           <span v-if="block">
-            Postventa
+            Tramites Electronicos
           </span>
         </v-btn>
       </template>
-      <span>Postventa</span>
+      <span>Tramites Electronicos</span>
     </v-tooltip>
     <v-dialog
       v-model="modal"
       max-width="990"
     >
-      <v-card>
+      <v-card
+        :loading="loading"
+      >
         <v-card-title class="headline">
-          Información Postventa
+          Tramites electronicos
         </v-card-title>
         <v-card-text>
-          ¡Te damos la bienvenida a ARNOProducciones!<br>
-          Ahora cuentas con un servicio de {{ client.plan ? client.plan.name : client.offer.plan.name }} para que puedas navegar de forma ilimitada.
-          <br><br>
-          Recuerda que puedes comunicarte al 310 343 25 99 por llamada o Whatsapp donde podrás agendar servicio técnico, despejar dudas o realizar peticiones los 7 días de la semana en horario de oficina. Si, ¡Incluso los domingos o festivos!.
-          <br><br>
-          Para cambiar tu contraseña WiFi puedes usar el siguiente enlace https://api.arnoproducciones.com/cambio
-          <br><br>
-          Recuerda seguir las instrucciones en caso de tormenta eléctrica y no manipular el equipo o sus conexiones para evitar interrupciones del servicio.
-          <br><br>
-          Porque ya somos parte de tu hogar
+          <v-checkbox
+            v-model="client.electronicbill"
+            label="Factura Electronica"
+          />
         </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            text
-            @click="modal = false"
-          >
-            Cerrar
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </span>
@@ -55,11 +42,11 @@
 
 <script>
 export default {
-  name: 'Devices',
+  name: 'Tramits',
   props: {
     client: {
       type: Object,
-      default: () => ({})
+      default: () => {}
     },
     block: {
       type: Boolean,
@@ -67,11 +54,25 @@ export default {
     }
   },
   data: () => ({
-    modal: false
+    modal: false,
+    loading: true,
+    page: 1,
+    pageCount: 0,
+    itemsPerPage: 10
   }),
   methods: {
+    updateDeviceList (device) {
+      this.devices.push({
+        mac_address: device.device.data.mac_address,
+        details: device.device.data.details,
+        devicebrand: device.devicebrand,
+        createdAt: device.device.data.createdAt
+      })
+      this.$toast.success('Dispositivo creado correctamente', { duration: 4000, position: 'top-center' })
+    },
     initComponent () {
       this.modal = true
+      this.loading = false
     },
     getDate (date) {
       const dateObject = new Date(date)

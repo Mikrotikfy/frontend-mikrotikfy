@@ -109,21 +109,7 @@
                 </v-col>
               </v-row>
               <v-row v-if="clienttype.name === 'INTERNET'">
-                <v-col cols="12" lg="3" md="3">
-                  <v-select
-                    v-model="editClient.plan"
-                    :disabled="!(!$isAdmin() || !$isBiller())"
-                    item-text="name"
-                    item-value="id"
-                    :items="plans"
-                    return-object
-                    label="Plan"
-                    outlined
-                    dense
-                    hide-details
-                  />
-                </v-col>
-                <v-col cols="6" lg="3" md="3">
+                <v-col cols="12" lg="4" md="4">
                   <v-text-field
                     v-model="editClient.phone"
                     :disabled="!(!$isAdmin() || !$isBiller())"
@@ -134,7 +120,7 @@
                     hide-details
                   />
                 </v-col>
-                <v-col cols="6" lg="3" md="3">
+                <v-col cols="6" lg="4" md="4">
                   <v-text-field
                     v-model="editClient.wifi_ssid"
                     :disabled="!$isAdmin()"
@@ -145,7 +131,7 @@
                     hide-details
                   />
                 </v-col>
-                <v-col cols="6" lg="3" md="3">
+                <v-col cols="6" lg="4" md="4">
                   <v-text-field
                     v-model="editClient.wifi_password"
                     :disabled="!$isAdmin()"
@@ -196,6 +182,21 @@
                     dense
                     type="number"
                     hide-details
+                  />
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    v-if="clienttype.name === 'INTERNET'"
+                    v-model="editClient.email"
+                    :disabled="!(!$isAdmin() || !$isBiller())"
+                    :type="!(!$isAdmin() || !$isBiller()) ? 'password' : 'text'"
+                    :rules="email"
+                    label="Correo Electronico"
+                    outlined
+                    dense
+                    hide-details="auto"
                   />
                 </v-col>
               </v-row>
@@ -316,6 +317,10 @@ export default {
       editClient: {
         ipmodel: 0
       },
+      email: [
+        v => !!v || 'El correo es requerido',
+        v => /\S+@\S+\.\S+/.test(v) || 'El correo no es valido'
+      ],
       pref_mac: '',
       dir1: '',
       dir2: '',
@@ -398,32 +403,6 @@ export default {
     async updateClient (client, index) {
       this.loading = true
       const operator = this.$store.state.auth.id
-      if (this.addDevice) {
-        await fetch(`${this.$config.API_STRAPI_ENDPOINT}devices`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.$store.state.auth.token}`
-          },
-          body: JSON.stringify({
-            data: { mac_address: this.device.mac_address, devicebrand: this.device.devicebrand.id, clients: [this.editClient.id] }
-          })
-        }).then((input) => {
-          if (input.status === 200) {
-            Promise.resolve(input.json())
-              .then((device) => {
-                this.$store.dispatch('client/updateClientDevices', { device, index })
-                this.$emit('updateSuccess')
-                this.device = {}
-              })
-          } else {
-            throw new Error('Error updating client')
-          }
-        }).catch((error) => {
-          // eslint-disable-next-line no-console
-          console.error(error)
-        })
-      }
       await this.$store.dispatch('client/updateClient', { client, index, operator, token: this.$store.state.auth.token })
       await this.$store.dispatch('client/updateClientCommentOnMikrotik', { client, token: this.$store.state.auth.token })
       this.$emit('updateSuccess')
