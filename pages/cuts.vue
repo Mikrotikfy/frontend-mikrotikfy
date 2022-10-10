@@ -3,7 +3,7 @@
     <v-container class="justify-center d-flex">
       <v-card width="90%">
         <v-card-title class="text-center justify-center">
-          <span class="headline">Gestión de Tarifas Masivamente</span>
+          <span class="headline">Gestión de Tarifas Masivamente {{$route.query.city}}</span>
         </v-card-title>
         <v-card-text>
           <v-stepper v-model="e1">
@@ -35,7 +35,20 @@
 
             <v-stepper-items>
               <v-stepper-content step="1">
+                <v-checkbox
+                  v-model="usePlan"
+                  label="Seleccion segun plan"
+                />
+                <v-select
+                  v-if="usePlan"
+                  v-model="plan"
+                  :items="plans"
+                  label="Plan"
+                  item-text="name"
+                  item-value="id"
+                />
                 <v-textarea
+                  v-else
                   v-model="codes"
                   outlined
                   class="mt-2"
@@ -45,6 +58,7 @@
 
                 <v-btn
                   color="primary"
+                  :disabled="usePlan && !plan"
                   @click="confirmCodes"
                 >
                   Continuar
@@ -52,11 +66,11 @@
               </v-stepper-content>
 
               <v-stepper-content step="2">
-                <CutsControls />
-                <CutsReadyList :e1="e1" />
-
+                <CutsControls v-if="$store.state.cuts.type === 'normal'" />
+                <CutsReadyList v-if="$store.state.cuts.type === 'normal'" :e1="e1" />
+                <CutsPlanPreparation v-if="$store.state.cuts.type === 'plan'" />
                 <v-btn
-                  v-if="$store.state.cuts.clients.length > 0 && !loading"
+                  v-if="($store.state.cuts.clients.length > 0 || $store.state.cuts.clientsByPlan.length > 0) && !loading"
                   color="primary"
                   class="mt-5"
                   :loading="loading"
@@ -67,7 +81,8 @@
               </v-stepper-content>
 
               <v-stepper-content step="3">
-                <CutsProcess />
+                <CutsProcess v-if="$store.state.cuts.type === 'normal'" />
+                <CutsPlanOperation v-if="$store.state.cuts.type === 'plan'" />
               </v-stepper-content>
             </v-stepper-items>
           </v-stepper>
@@ -85,21 +100,42 @@
 export default {
   data () {
     return {
+      usePlan: false,
       codes: null,
+      plan: null,
       e1: '1'
     }
   },
   computed: {
     loading () {
       return this.$store.state.cuts.loading
+    },
+    plans () {
+      return this.$store.state.cuts.plans
     }
   },
+  mounted () {
+    this.$store.dispatch('cuts/getPlans', {
+      token: this.$store.state.auth.token
+    })
+  },
   methods: {
-    confirmCodes () {
-      if (this.codes === null) {
+    async confirmCodes () {
+      if (this.codes === null && !this.usePlan) {
         this.$toast.error('Ingrese los codigos antes de continuar')
         return
       }
+      if (this.plan && this.usePlan) {
+        this.$store.commit('cuts/setType', 'plan')
+        await this.$store.dispatch('cuts/getClientsByPlan', {
+          plan: this.plan,
+          city: this.$route.query.city,
+          token: this.$store.state.auth.token
+        })
+        this.e1 = '2'
+        return
+      }
+      this.$store.commit('cuts/setType', 'normal')
       const codeArray = this.codes.trim().split('\n')
       this.$store.commit('cuts/setCodes', codeArray)
       this.e1 = '2'
