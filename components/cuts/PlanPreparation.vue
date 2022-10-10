@@ -11,6 +11,7 @@
           label="Tarifas Disponibles"
           item-text="name"
           item-value="id"
+          return-object
         />
       </v-form>
     </v-card-text>
