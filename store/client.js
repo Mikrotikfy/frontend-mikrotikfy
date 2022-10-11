@@ -274,7 +274,9 @@ export const actions = {
         })
           .then(res => res.json())
           .then((client) => {
-            commit('setAuxPlan', { client: client.data, index: payload.index, plan: payload.plan })
+            if (payload.index) {
+              commit('setAuxPlan', { client: client.data, index: payload.index, plan: payload.plan })
+            }
             resolve(client)
           })
       })

@@ -32,7 +32,7 @@ export default {
           {
             messages: [
               {
-                to: '573114944111',
+                to: '573192941553',
                 channel: 'whatsapp',
                 template: {
                   templateName: 'internet_account',
