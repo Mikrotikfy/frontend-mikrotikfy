@@ -404,6 +404,27 @@ export const actions = {
       throw new Error(`UPDATE USER ACTION ${error}`)
     })
   },
+  updateClientPhone ({ commit }, { phone, client, token }) {
+    // eslint-disable-next-line no-unreachable
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${client.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          data: { phone }
+        })
+      }).then((input) => {
+        resolve(input)
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error(error)
+        throw new Error(`UPDATE USER ACTION ${error}`)
+      })
+    })
+  },
   async updateClientCommentOnMikrotik (_, { client, token }) {
     await fetch(`${this.$config.API_STRAPI_ENDPOINT}clientcomment`, {
       method: 'POST',
