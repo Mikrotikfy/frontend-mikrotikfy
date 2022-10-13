@@ -357,8 +357,18 @@ export default {
     } else {
       this.resetsearchfn()
     }
+    document.onkeydown = function (e) {
+      if (e.key === 'o' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault()
+
+        this.redirectToBilling()
+      }
+    }.bind(this)
   },
   methods: {
+    redirectToBilling () {
+      this.$router.push({ path: `/billing/${this.$route.params.search}`, query: { city: this.$route.query.city, clienttype: this.$route.query.clienttype } })
+    },
     itemRowBackground (item) {
       if (this.$vuetify.theme.dark) {
         if (item.status === 'red') {

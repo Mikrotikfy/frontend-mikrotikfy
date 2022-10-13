@@ -46,20 +46,28 @@ export default {
     this.loadingDataTable = false
   },
   methods: {
+    testForSingleClient () {
+      if (this.$store.state.billing.clients.length === 1) {
+        this.showBillingInfo(this.$store.state.billing.clients[0])
+      } else {
+        this.$store.commit('billing/setBillingInfo', {})
+      }
+    },
     getHeadersByClientType () {
       this.loadingDataTable = true
       this.$store.dispatch('billing/getHeadersByClientType', { clienttype: this.$route.query.clienttype }).then(() => {
         this.loadingDataTable = false
       })
     },
-    getClientsBySearch () {
+    async getClientsBySearch () {
       if (this.search) {
-        this.$store.dispatch('billing/getClientsBySearch', {
+        await this.$store.dispatch('billing/getClientsBySearch', {
           search: this.search,
           city: this.$route.query.city,
           clienttype: this.$route.query.clienttype,
           token: this.$store.state.auth.token
         })
+        this.testForSingleClient()
       }
     },
     showBillingInfo (item) {

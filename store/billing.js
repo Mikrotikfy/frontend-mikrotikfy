@@ -8,6 +8,9 @@ export const state = () => ({
   selected: []
 })
 export const mutations = {
+  setBillingInfo (state, billingInfo) {
+    state.billingInfo = billingInfo
+  },
   setSelected (state, selected) {
     state.selected = selected
   },

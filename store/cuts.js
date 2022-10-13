@@ -73,7 +73,6 @@ export const mutations = {
 }
 export const actions = {
   getClientsByPlan ({ commit }, payload) {
-    console.log(payload)
     try {
       const qs = require('qs')
       const query = qs.stringify({
