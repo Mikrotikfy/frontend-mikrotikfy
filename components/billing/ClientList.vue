@@ -24,7 +24,8 @@ export default {
       page: 1,
       pageCount: 0,
       options: {},
-      loadingDataTable: false
+      loadingDataTable: false,
+      selected: []
     }
   },
   computed: {
@@ -36,6 +37,11 @@ export default {
     },
     search () {
       return this.$route.params.search
+    }
+  },
+  watch: {
+    '$store.state.billing.showArchive' () {
+      this.showBillingInfo(this.selected)
     }
   },
   mounted () {
@@ -71,9 +77,11 @@ export default {
       }
     },
     showBillingInfo (item) {
+      this.selected = item
       this.$store.dispatch('billing/getBillingInfoByClientId', {
         clientid: item.id,
         clientname: item.name,
+        showArchive: this.$store.state.billing.showArchive,
         token: this.$store.state.auth.token
       })
     }

@@ -2,11 +2,11 @@
   <div>
     <v-btn
       x-small
-      color="red darken-4"
+      color="blue darken-4"
       elevation="0"
       @click="dialog = true"
     >
-      Anular
+      Historial
       <v-icon>mdi-history</v-icon>
     </v-btn>
     <v-dialog
@@ -15,19 +15,19 @@
     >
       <v-card>
         <v-card-title>
-          <span class="headline">Anular Factura</span>
+          <span class="headline">Abonos realizados</span>
         </v-card-title>
         <v-card-text>
-          <v-text-field
-            v-model="billingInfo.cancelBill.reason"
-            label="Motivo"
-            required
-            :rules="[v => !!v || 'Este campo es requerido']"
-          />
+          <p
+            v-for="item in bill.deposits"
+            :key="item.id"
+          >
+            {{ item.amount }} - {{ item.details }} - {{ item.date }}
+          </p>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="red darken-1">
-            Anular
+          <v-btn>
+            Cerrar
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -44,12 +44,7 @@ export default {
   },
   data () {
     return {
-      dialog: false,
-      billingInfo: {
-        cancelBill: {
-          reason: ''
-        }
-      }
+      dialog: false
     }
   }
 }

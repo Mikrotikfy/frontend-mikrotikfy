@@ -2,17 +2,48 @@ export const state = () => ({
   clients: [],
   billingInfo: {
     clientId: null,
-    movements: []
+    bills: []
   },
+  total: 0,
+  month: null,
   headers: [],
-  selected: []
+  selected: [],
+  resetSelected: 0,
+  showArchive: false
 })
 export const mutations = {
+  editBill (state, payload) {
+    state.billingInfo.bills[payload.index].payed = payload.payed
+    state.billingInfo.bills[payload.index].details = payload.details
+  },
+  addDeposit (state, payload) {
+    state.billingInfo.bills[payload.index].deposits.push({
+      id: 3,
+      amount: payload.amount,
+      details: payload.details,
+      createdAt: payload.createdAt
+    })
+  },
+  getCurrentMonth (state) {
+    const date = new Date()
+    const month = date.getMonth() + 1
+    state.month = month
+  },
+  toggleArchive (state, _) {
+    state.showArchive = !state.showArchive
+  },
   setBillingInfo (state, billingInfo) {
     state.billingInfo = billingInfo
   },
   setSelected (state, selected) {
     state.selected = selected
+  },
+  resetSelected (state) {
+    state.selected = []
+    state.resetSelected++
+  },
+  setTotal (state, total) {
+    state.total = total
   },
   addMovement (state, movement) {
     state.billingInfo.movements.push({
@@ -27,6 +58,9 @@ export const mutations = {
     state.billingInfo.movements.push({
       id: state.billingInfo.movements.length + 1,
       amount: movement.amount,
+      for: movement.for,
+      billingMonth: movement.billingMonth,
+      details: movement.details,
       type: 'RECAUDO',
       date: new Date()
     })
@@ -47,134 +81,57 @@ export const mutations = {
   },
   getBillingInfoByClientId (state, billingInfo) {
     try {
-      state.billingInfo = {
+      const data = {
         clientId: billingInfo.clientid,
         clientName: billingInfo.clientname,
-        movements: [
-          {
+        bills: [
+          { // ESTO ES UNA FACTURA
             id: 1,
-            amount: 50000,
-            type: 'FACTURACION',
-            date: new Date('Sat Jan 01 2022 12:47:26 GMT-0500')
+            active: true,
+            payed: false,
+            createdAt: new Date('Sat Jan 25 2022 12:47:26 GMT-0500'),
+            details: 'FEBRERO',
+            type: { // ESTE ES EL TIPO DE MOVIMIENTO
+              id: 1,
+              name: 'MENSUALIDAD', // tipos de movimiento son: 'MENSUALIDAD', 'COBRO ROUTER', 'TRASLADO', 'DESCUENTO', ETC...
+              billingMonth: 2,
+              price: 50000
+            },
+            deposits: [ // ESTOS SON LOS ABONOS
+              {
+                id: 1,
+                amount: 10000,
+                details: 'Pago de factura',
+                date: new Date('Sat Jan 26 2022 12:47:26 GMT-0500')
+              },
+              {
+                id: 2,
+                amount: 10000,
+                details: 'Pago de factura',
+                date: new Date('Sat Jan 27 2022 12:47:26 GMT-0500')
+              }
+            ]
           },
-          {
+          { // ESTO ES UNA FACTURA
             id: 2,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: new Date('Sat Feb 01 2022 12:47:26 GMT-0500')
-          },
-          {
-            id: 3,
-            amount: 50000,
-            type: 'FACTURACION',
-            date: new Date('Sat Mar 01 2022 12:47:26 GMT-0500')
-          },
-          {
-            id: 4,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: new Date('Sat Apr 01 2022 12:47:26 GMT-0500')
-          },
-          {
-            id: 5,
-            amount: 50000,
-            type: 'FACTURACION',
-            date: new Date('Sat May 01 2022 12:47:26 GMT-0500')
-          },
-          {
-            id: 6,
-            amount: 80000,
-            type: 'ROUTER NUEVO',
-            details: 'SE LE QUEMO EL ROUTER',
-            date: new Date('Sat Jun 01 2022 12:47:26 GMT-0500')
-          },
-          {
-            id: 7,
-            amount: 20000,
-            details: 'Se traslado para la calle 4 # 5 - 76',
-            type: 'TRASLADO',
-            date: new Date('Sat Jun 01 2022 12:47:26 GMT-0500')
-          },
-          {
-            id: 8,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/01/2022'
-          },
-          {
-            id: 9,
-            amount: 50000,
-            type: 'FACTURACION',
-            date: '01/02/2022'
-          },
-          {
-            id: 10,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/03/2022'
-          },
-          {
-            id: 11,
-            amount: 50000,
-            type: 'FACTURACION',
-            date: '01/04/2022'
-          },
-          {
-            id: 12,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/05/2022'
-          },
-          {
-            id: 13,
-            amount: 80000,
-            type: 'ROUTER NUEVO',
-            date: '01/05/2022'
-          },
-          {
-            id: 14,
-            amount: 20000,
-            type: 'TRASLADO',
-            date: '01/06/2022'
-          },
-          {
-            id: 15,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/03/2022'
-          },
-          {
-            id: 16,
-            amount: 50000,
-            type: 'FACTURACION',
-            date: '01/04/2022'
-          },
-          {
-            id: 17,
-            amount: 50000,
-            type: 'RECAUDO',
-            date: '01/05/2022'
-          },
-          {
-            id: 18,
-            amount: 80000,
-            type: 'ROUTER NUEVO',
-            date: '01/05/2022'
-          },
-          {
-            id: 19,
-            amount: 20000,
-            type: 'TRASLADO',
-            date: '01/06/2022'
-          },
-          {
-            id: 20,
-            amount: 20000,
-            type: 'TRASLADO',
-            date: '01/06/2022'
+            active: true,
+            payed: false,
+            createdAt: new Date('Sat Jan 25 2022 12:47:26 GMT-0500'),
+            details: '',
+            type: { // ESTE ES EL TIPO DE MOVIMIENTO
+              id: 1,
+              name: 'CAMBIO ROUTER', // tipos de movimiento son: 'MENSUALIDAD', 'COBRO ROUTER', 'TRASLADO', 'DESCUENTO', ETC...
+              billingMonth: null,
+              price: 80000
+            },
+            deposits: [ // ESTOS SON LOS ABONOS
+            ]
           }
         ]
       }
+      const filtered = data.bills.filter(item => billingInfo.showArchive ? item.active === false : item.active === true)
+      data.bills = filtered
+      state.billingInfo = data
     } catch (error) {
       throw new Error(`GET BILLING INFO BY CLIENT ID MUTATE ${error}`)
     }
@@ -183,6 +140,12 @@ export const mutations = {
 export const actions = {
   addMovement ({ commit }, payload) {
     commit('addMovement', payload)
+  },
+  addDeposit ({ commit }, payload) {
+    commit('addDeposit', payload)
+  },
+  editBill ({ commit }, payload) {
+    commit('editBill', payload)
   },
   addDiscountMovement ({ commit }, payload) {
     try {

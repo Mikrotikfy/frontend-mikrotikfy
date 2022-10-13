@@ -14,15 +14,20 @@ export default {
   },
   computed: {
     totalamount () {
-      return this.$store.state.billing.billingInfo?.movements?.reduce((total, item) => {
-        return item.type === 'RECAUDO'
-          ? total > 0
-            ? total - item.acount < 1
-              ? 0
-              : total - item.amount
-            : total
-          : total + item.amount
+      return this.$store.state.billing.billingInfo?.bills?.reduce((total, item) => {
+        if (item.payed) {
+          return total
+        } else {
+          return (total + item.type.price) - (item.deposits.reduce((total, curr) => {
+            return total + curr.amount
+          }, 0))
+        }
       }, 0)
+    }
+  },
+  watch: {
+    totalamount () {
+      this.$store.commit('billing/setTotal', this.totalamount)
     }
   }
 }
