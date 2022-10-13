@@ -1,6 +1,8 @@
 export const state = () => ({
   ready: [],
   clients: [],
+  clientsByPlan: [],
+  plans: [],
   validClients: [],
   cuts: [],
   cutErrors: [],
@@ -8,10 +10,18 @@ export const state = () => ({
   loading: false,
   kick: false,
   errors: 0,
+  type: null,
+  offerForBulkProcess: null,
   billingPeriod: null,
   billingPeriodMovements: []
 })
 export const mutations = {
+  setOfferForBulkProcess (state, offer) {
+    state.offerForBulkProcess = offer
+  },
+  setType (state, type) {
+    state.type = type
+  },
   setCodes (state, codes) {
     state.ready = codes
   },
@@ -53,9 +63,61 @@ export const mutations = {
   },
   getBillingPeriodMovements (state, billingPeriodMovements) {
     state.billingPeriodMovements = billingPeriodMovements
+  },
+  getPlans (state, plans) {
+    state.plans = plans
+  },
+  getClientsByPlan (state, clients) {
+    state.clientsByPlan = clients
   }
 }
 export const actions = {
+  getClientsByPlan ({ commit }, payload) {
+    try {
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          $and: [
+            { plan: payload.plan },
+            { city: { name: payload.city } }
+          ]
+        },
+        pagination: {
+          pageSize: 10000
+        },
+        sort: 'createdAt:desc'
+      },
+      {
+        encodeValuesOnly: true
+      })
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        }
+      })
+        .then(res => res.json())
+        .then((clients) => {
+          commit('getClientsByPlan', clients.data)
+        })
+    } catch (error) {
+      throw new Error(`LAST DEBT HISTORY ACTION ${error}`)
+    }
+  },
+  getPlans ({ commit }, payload) {
+    fetch(`${this.$config.API_STRAPI_ENDPOINT}plans`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${payload.token}`
+      }
+    })
+      .then(res => res.json())
+      .then((plans) => {
+        commit('getPlans', plans.data)
+      })
+  },
   getBillingPeriod ({ commit }, payload) {
     try {
       const qs = require('qs')

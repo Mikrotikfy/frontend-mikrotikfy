@@ -89,6 +89,9 @@
                   <MainClientControl :client="props.item" :index="clients.map(function(x) {return x.id; }).indexOf(props.item.id)" />
                 </template>
                 <template v-slot:[`item.code`]="{ item }">
+                  <svg height="13" width="20">
+                    <circle cx="10" cy="8" r="5" :fill="item.status === 'green' ? 'green' : 'red'" />
+                  </svg>
                   <span v-if="clienttype.name === 'INTERNET'" :class="item.status === 'green' ? 'online-text' : 'offline-text'">
                     {{ item.code }}
                   </span>
@@ -171,6 +174,7 @@
                 </template>
                 <template v-slot:[`item.actions`]="{ item }">
                   <div style="white-space:nowrap">
+                    <!-- <MainTramits :client="item" /> -->
                     <MiscInfoSell v-if="$isAdmin() || $isBiller()" :client="item" />
                     <CreateTicket
                       :client="item"
@@ -353,8 +357,18 @@ export default {
     } else {
       this.resetsearchfn()
     }
+    document.onkeydown = function (e) {
+      if (e.key === 'o' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault()
+
+        this.redirectToBilling()
+      }
+    }.bind(this)
   },
   methods: {
+    redirectToBilling () {
+      this.$router.push({ path: `/billing/${this.$route.params.search}`, query: { city: this.$route.query.city, clienttype: this.$route.query.clienttype } })
+    },
     itemRowBackground (item) {
       if (this.$vuetify.theme.dark) {
         if (item.status === 'red') {
@@ -459,10 +473,12 @@ export default {
   background-color: #291f1f;
 }
 .offline-text {
-  color: #ff254e;
+  font-weight: bold;
+  font-size:1rem;
 }
 .online-text {
-  color:#3be03b;
+  font-weight: bold;
+  font-size:1rem;
 }
 .online {
   background-color: #1f291f;

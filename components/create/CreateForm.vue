@@ -111,6 +111,7 @@
             v-model="Client.neighborhood"
             item-text="name"
             item-value="id"
+            return-object
             :items="neighborhoods"
             label="Barrio"
             outlined
@@ -145,11 +146,11 @@
         </v-col>
         <v-col v-if="clienttype.name === 'INTERNET'">
           <v-select
-            v-model="Client.plan"
+            v-model="Client.offer"
             item-text="name"
             item-value="id"
-            :items="plans"
-            label="Plan"
+            :items="offers"
+            label="Oferta"
             outlined
             dense
             hide-details
@@ -178,54 +179,20 @@
           />
         </v-col>
       </v-row>
-      <!-- <v-row>
-        <v-col>
-          <v-select
-            v-model="Client.technology"
-            item-text="name"
-            item-value="id"
-            :items="technologies"
-            label="Tecnología"
-            outlined
-            dense
-            hide-details
-            return-object
-          />
-        </v-col>
+      <v-row>
         <v-col>
           <v-text-field
-            v-model="Client.mac_address"
-            label="Mac Equipo"
+            ref="email"
+            v-model="Client.email"
+            label="Correo Electronico"
             required
+            :rules="email"
             outlined
             dense
-            hide-details
+            hide-details="auto"
           />
         </v-col>
-      </v-row> -->
-      <!-- <v-row>
-        <v-col>
-          <v-text-field
-            :value="Client.nap_onu_address.toUpperCase()"
-            label="Direccion NAP/ONU"
-            outlined
-            dense
-            hide-details
-            @input="Client.nap_onu_address = $event.toUpperCase()"
-          />
-        </v-col>
-        <v-col>
-          <v-text-field
-            :value="Client.opticalPower ? Client.opticalPower.toUpperCase() : ''"
-            label="Potencia Óptica (Solo numeros)"
-            outlined
-            dense
-            type="number"
-            hide-details
-            @input="Client.opticalPower = $event.toUpperCase()"
-          />
-        </v-col>
-      </v-row> -->
+      </v-row>
       <v-row v-if="clienttype.name === 'INTERNET'">
         <v-col>
           <v-select
@@ -285,6 +252,7 @@ export default {
   data: () => {
     return {
       valid: false,
+      offers: null,
       Client: {
         code: '',
         name: '',
@@ -294,10 +262,13 @@ export default {
         city: '',
         phone: '',
         plan: null,
+        offer: null,
         wifi_ssid: '',
         wifi_password: '',
         mac_address: '',
         comment: '',
+        email: null,
+        electronicbill: true,
         newModel: 1,
         nap_onu_address: '',
         opticalPower: '',
@@ -324,6 +295,10 @@ export default {
       alertBoxColor: '',
       createdMessage: '',
       isSubmitting: false,
+      email: [
+        v => !!v || 'El correo es requerido',
+        v => /\S+@\S+\.\S+/.test(v) || 'El correo no es valido'
+      ],
       idwith: [
         { id: 0, name: 'Cedula' },
         { id: 1, name: 'Codigo' }
@@ -349,6 +324,9 @@ export default {
     cities () {
       return this.$store.state.cities
     },
+    city () {
+      return this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
+    },
     plans () {
       return this.$store.state.plans
     },
@@ -370,8 +348,26 @@ export default {
       const city = this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
       this.Client.city = city.id
     }
+    this.getOffers()
   },
   methods: {
+    async createDebtMovement (clientId) {
+      await this.$store.dispatch('offer/setNewDebt', {
+        token: this.$store.state.auth.token,
+        city: this.city,
+        isindebt: false,
+        client: clientId,
+        technician: this.$store.state.auth
+      })
+    },
+    async createOfferMovement (clientId, offer) {
+      await this.$store.dispatch('offer/setNewOffer', {
+        token: this.$store.state.auth.token,
+        client: clientId,
+        offer: { id: offer },
+        technician: this.$store.state.auth
+      })
+    },
     async testCodeForDuplicated (code) {
       const qs = require('qs')
       const query = qs.stringify({
@@ -411,6 +407,10 @@ export default {
         })
     },
     async createClient () {
+      if (this.Client.code === '' || this.Client.name === '' || this.Client.dni === '' || this.Client.neighborhood === null || this.Client.city === '' || this.Client.phone === '' || this.Client.email === null) {
+        this.$toast.error('Por favor, complete todos los campos.')
+        return
+      }
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients`, {
         method: 'POST',
         headers: {
@@ -418,27 +418,34 @@ export default {
           Authorization: `Bearer ${this.$store.state.auth.token}`
         },
         body: JSON.stringify({
-          data: { ...this.Client, operator: this.$store.state.auth.id, operator_role: this.role, clienttype: [this.clienttype.id] }
+          data: { ...this.Client, neighborhood: this.Client.neighborhood.id, operator: this.$store.state.auth.id, operator_role: this.role, clienttype: [this.clienttype.id] }
         })
-      }).then((input) => {
-        if (input.status === 200) {
+      })
+        .then(res => res.json())
+        .then((client) => {
           this.$emit('createClientDialog', false)
           this.$emit('createClientSnack', true)
+          this.createOfferMovement(client.data, this.Client.offer)
+          this.createDebtMovement(client.data)
+          this.$store.dispatch('client/createTicketForNewClient', {
+            city: this.Client.city,
+            client: client.data,
+            neighborhood: this.Client.neighborhood,
+            token: this.$store.state.auth.token
+          })
           this.$simpleTelegramCreate({ client: this.Client, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
-        } else {
-          this.alertBox = true
-          this.alertBoxColor = 'red darken-4'
-          this.createdMessage = 'Error al crear el cliente. Reporta esto al gestor web'
-          this.isSubmitting = false
-          throw new Error('Error creating serie')
-        }
-      }).catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error(error)
-      })
+        }).catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error(error)
+        })
     },
     genAddress () {
       this.Client.address = `${this.dir1} ${this.dir2} ${this.dir3} ${this.dir4}`
+    },
+    async getOffers () {
+      this.offers = await this.$store.dispatch('offer/getOffers', {
+        token: this.$store.state.auth.token
+      })
     },
     calculateSsid () {
       const name = this.Client.name.split(' ')

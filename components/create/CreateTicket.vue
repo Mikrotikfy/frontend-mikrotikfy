@@ -39,7 +39,7 @@
               :items="tickettypes"
               item-text="name"
               item-value="id"
-              label="Problema"
+              label="Describe el caso"
               outlined
               return-object
               :error="errors.type"
@@ -136,6 +136,19 @@
                 />
               </v-col>
             </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="phoneUpdate"
+                  label="Actualizar celular (Opcional)"
+                  outlined
+                  dense
+                  hide-details
+                  :rules="phoneUpdate ? phoneRules : []"
+                  prepend-icon="mdi-cellphone"
+                />
+              </v-col>
+            </v-row>
           </v-card-text>
           <v-card-text>
             <v-text-field
@@ -203,6 +216,7 @@ export default {
     modal: false,
     loading: false,
     alertBox: false,
+    phoneUpdate: null,
     alertBoxColor: '',
     createdMessage: '',
     errors: {
@@ -216,6 +230,12 @@ export default {
       city: '',
       assignated: ''
     },
+    phoneRules: [
+      (value) => {
+        const pattern = /^[0-9]+$/
+        return pattern.test(value) || 'El celular solo puede contener numeros'
+      }
+    ],
     cx: {
       neighborhood: {},
       dir1: '',
@@ -276,6 +296,20 @@ export default {
     },
     async createTicket () {
       this.loading = true
+      if (this.phoneUpdate) {
+        const phone = this.phoneUpdate
+        const res = await this.$store.dispatch('client/updateClientPhone', {
+          token: this.$store.state.auth.token,
+          client: this.client,
+          phone
+        })
+        if (res.status === 200) {
+          this.$toast.info('El celular del cliente ha sido actualizado', { duration: 5000 })
+          this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search: this.$route.params.search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: { page: 1, pageSize: 500 } })
+        } else {
+          this.$toast.error('Ha ocurrido un error al actualizar el celular del cliente')
+        }
+      }
       if (this.ticketPayload.type.name === 'TRASLADO') {
         this.ticketPayload.details = `DX: ${this.client.address} ${this.client.neighborhood.name} \n CX: ${this.cx.finalAddress}`
       }

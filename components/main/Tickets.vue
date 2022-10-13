@@ -128,6 +128,9 @@
               <template v-slot:[`item.client.code`]="props">
                 <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`">{{props.item.client.code}}</nuxt-link>
               </template>
+              <template v-slot:[`item.client.technology.name`]="props">
+                {{ props.item.client.technology !== null ? props.item.client.technology.name : 'No reg.' }}
+              </template>
               <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="props">
                 <div class="nowspace">
                   <TicketHistory
@@ -238,7 +241,7 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.technology.name : '' }}</v-list-item-title>
+                <v-list-item-title>{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item>
@@ -266,7 +269,7 @@
                     :name="editModalData.client.name"
                     :clientid="editModalData.client.id"
                     :code="editModalData.client.code"
-                    :role="allowed_components"
+                    :role="this.$store.state.auth.allowed_components"
                   />
                 <CreateTicketAdvance
                   :block="true"
@@ -405,6 +408,8 @@ export default {
         return 'orange darken-2'
       } else if (tickettype === 'INTERMITENCIA') {
         return 'orange darken-4'
+      } else if (tickettype === 'CONEXION NUEVA') {
+        return 'green darken-2'
       } else {
         return 'primary'
       }

@@ -1,9 +1,9 @@
 <template>
-  <v-app
-    :style="'background-color:rgb(255,255,255);'"
-  >
+  <v-app>
     <v-main>
-      <nuxt />
+      <v-container fluid>
+        <nuxt />
+      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -12,3 +12,8 @@
 export default {
 }
 </script>
+<style scoped>
+  body, .theme--dark.v-application {
+    background-color: #fff;
+  }
+</style>

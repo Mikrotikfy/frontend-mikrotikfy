@@ -2,7 +2,9 @@
   <div>
     <v-card>
       <v-card-title>
-        Clientes en cola: <strong class="ml-2"> {{ this.$store.state.cuts.ready.length }} </strong> <span v-if="$store.state.cuts.errors > 0" class="ml-2"> No encontrados: {{ $store.state.cuts.errors }} </span>
+        Clientes en cola:
+        <strong v-if="$store.state.cuts.ready.length > 0" class="ml-2"> {{ this.$store.state.cuts.ready.length }} </strong>
+        <span v-if="$store.state.cuts.errors > 0" class="ml-2"> No encontrados: {{ $store.state.cuts.errors }} </span>
         <v-spacer />
         <v-checkbox
           v-model="kick"

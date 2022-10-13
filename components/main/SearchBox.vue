@@ -57,6 +57,14 @@ export default {
       return this.$store.state.cities ? this.$store.state.cities.find(c => c.id == this.$route.query.city) : ''
     }
   },
+  mounted () {
+    this.searchClientInput = this.$route.params.search
+    console.log(this.$refs.searchClient)
+    setTimeout(() => {
+      this.$refs.searchClient.$refs.input.select()
+      this.$refs.searchClient.$refs.input.focus()
+    }, 200)
+  },
   methods: {
     getClientBySearch () {
       if (this.searchClientInput) {

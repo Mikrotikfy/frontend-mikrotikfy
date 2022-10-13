@@ -96,6 +96,47 @@ export const mutations = {
   }
 }
 export const actions = {
+  createTicketForNewClient ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              active: true,
+              escalated: false,
+              answered: false,
+              city: payload.city,
+              client: payload.client.id,
+              tickettype: 36,
+              assignated: 22,
+              clienttype: 1,
+              details: `
+                CX: ${payload.client.address} ${payload.neighborhood.name}
+              `
+            }
+          })
+        }).then((input) => {
+          if (input.status === 200) {
+            this.$toast.info('Orden de instalacion creada', { duration: 4000, position: 'top-center' })
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        }).catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error(error)
+          throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
+        })
+      })
+    } catch (error) {
+      throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
+    }
+  },
   async clearClientsFromDatatable ({ commit }) {
     try {
       await commit('clearClientsFromDatatable', true)
@@ -233,7 +274,9 @@ export const actions = {
         })
           .then(res => res.json())
           .then((client) => {
-            commit('setAuxPlan', { client: client.data, index: payload.index, plan: payload.plan })
+            if (payload.index) {
+              commit('setAuxPlan', { client: client.data, index: payload.index, plan: payload.plan })
+            }
             resolve(client)
           })
       })
@@ -359,6 +402,27 @@ export const actions = {
       // eslint-disable-next-line no-console
       console.error(error)
       throw new Error(`UPDATE USER ACTION ${error}`)
+    })
+  },
+  updateClientPhone ({ commit }, { phone, client, token }) {
+    // eslint-disable-next-line no-unreachable
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${client.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          data: { phone }
+        })
+      }).then((input) => {
+        resolve(input)
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error(error)
+        throw new Error(`UPDATE USER ACTION ${error}`)
+      })
     })
   },
   async updateClientCommentOnMikrotik (_, { client, token }) {

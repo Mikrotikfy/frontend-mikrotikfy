@@ -32,6 +32,9 @@ export const mutations = {
   toggleArchive (state, _) {
     state.showArchive = !state.showArchive
   },
+  setBillingInfo (state, billingInfo) {
+    state.billingInfo = billingInfo
+  },
   setSelected (state, selected) {
     state.selected = selected
   },

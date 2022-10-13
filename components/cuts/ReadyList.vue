@@ -13,7 +13,7 @@
     <v-card-text v-else>
       <v-data-table
         :headers="headers"
-        :items="clients"
+        :items="clients ? clients : clientsByPlan"
         :loading="loading"
         :item-class="getcolor"
       />
@@ -47,6 +47,9 @@ export default {
     },
     clients () {
       return this.$store.state.cuts.clients
+    },
+    clientsByPlan () {
+      return this.$store.state.cuts.clientsByPlan
     },
     loading () {
       return this.$store.state.cuts.loading
