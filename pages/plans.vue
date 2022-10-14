@@ -7,6 +7,7 @@
     </v-btn>
   </div>
 </template>
+  <!-- eslint-disable quote-props -->
 <script>
 export default {
   data () {
@@ -22,28 +23,45 @@ export default {
       })
     },
     sendTest () {
-      fetch('https://platform.clickatell.com/v1/message', {
+      fetch('https://graph.facebook.com/v14.0/100480202798133/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'e4owbqK9TWWnlNcI68psjQ=='
+          Authorization: 'Bearer EAALYQ6KEsR8BAMRx44zA1iltcdX76HXE1ejOSh2EZAatLtNq6Syx1aN2TZCiXGIWdWYMLkUjSttsYpWiw9wuRWpvrwFqClRLqrKdY4flSgeoqdglrYoDjTOueO9r6leLHi13rXasvwN7JoZB4kLlpwZAdeg4FkDZBlRkZCkIUW6tfnR6jTFIGQrY3a2kjlWCTkZAR3YSGHoZBgZDZD'
         },
         body: JSON.stringify(
           {
-            messages: [
-              {
-                to: '573192941553',
-                channel: 'whatsapp',
-                template: {
-                  templateName: 'internet_account',
-                  body: {
-                    parameters: {
-                      1: '15 de octubre'
+            messaging_product: 'whatsapp',
+            to: '573125090684',
+            type: 'template',
+            template: {
+              'name': 'internet_account_dynamic',
+              'language': {
+                'code': 'es'
+              },
+              'components': [
+                {
+                  'type': 'body',
+                  'parameters': [
+                    {
+                      'type': 'text',
+                      'text': '15 de octubre'
                     }
-                  }
+                  ]
+                },
+                {
+                  'type': 'button',
+                  'sub_type': 'url',
+                  'index': '0',
+                  'parameters': [
+                    {
+                      'type': 'text',
+                      'text': '1110601254'
+                    }
+                  ]
                 }
-              }
-            ]
+              ]
+            }
           }
         )
       })
