@@ -14,7 +14,7 @@
       </v-col>
       <v-col cols="8" class="pl-0">
         <v-card style="border-radius:0px 20px 20px 0px;height:100%;backgroud-color:rgba(0,0,0,0.5);backdrop-filter:blur(5px);" class="elevation-0">
-          <v-card-text style="height:100%;">
+          <v-card-text style="height:100%;" class="pa-1">
             <ChatdeskChat />
           </v-card-text>
         </v-card>
