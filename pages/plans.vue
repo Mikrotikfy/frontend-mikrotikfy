@@ -27,12 +27,12 @@ export default {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer EAALYQ6KEsR8BAMRx44zA1iltcdX76HXE1ejOSh2EZAatLtNq6Syx1aN2TZCiXGIWdWYMLkUjSttsYpWiw9wuRWpvrwFqClRLqrKdY4flSgeoqdglrYoDjTOueO9r6leLHi13rXasvwN7JoZB4kLlpwZAdeg4FkDZBlRkZCkIUW6tfnR6jTFIGQrY3a2kjlWCTkZAR3YSGHoZBgZDZD'
+          Authorization: 'Bearer EAALYQ6KEsR8BANjdnm4WPd7KKpHyWYghZBiaqMPXP80WcTnRSgrnA6rhYzKiUN2h9HHR6JJUy5BX1lDnnzAXFDLZBvAqcsIMGkFLDpJ4kUZAnZCo44W0iiRa2r8AUPjaZARaCIQ2qZCzV2hCUHIEcifk4uMmnisInbJNWmx1vYyjeYLox6LRUdne1ZByjhNi7rHCEpCYmZAfegZDZD'
         },
         body: JSON.stringify(
           {
             messaging_product: 'whatsapp',
-            to: '573125090684',
+            to: '573024493001',
             type: 'template',
             template: {
               'name': 'internet_account_dynamic',
