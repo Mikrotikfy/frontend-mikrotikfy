@@ -27,7 +27,7 @@ export default {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer EAALYQ6KEsR8BANjdnm4WPd7KKpHyWYghZBiaqMPXP80WcTnRSgrnA6rhYzKiUN2h9HHR6JJUy5BX1lDnnzAXFDLZBvAqcsIMGkFLDpJ4kUZAnZCo44W0iiRa2r8AUPjaZARaCIQ2qZCzV2hCUHIEcifk4uMmnisInbJNWmx1vYyjeYLox6LRUdne1ZByjhNi7rHCEpCYmZAfegZDZD'
+          Authorization: `Bearer ${this.$config.META_TOKEN}`
         },
         body: JSON.stringify(
           {
