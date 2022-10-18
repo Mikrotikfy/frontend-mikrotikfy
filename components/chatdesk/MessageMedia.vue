@@ -36,7 +36,7 @@ export default {
       await fetch(`https://graph.facebook.com/v14.0/${this.payload.entry[0].changes[0].value.messages[0].image.id}`, {
         method: 'GET',
         headers: {
-          Authorization: 'Bearer EAALYQ6KEsR8BAEK7fbgKZB0QGrCEc4A3Etex3Cl0DoZCThZBhDZAAWKYNBaFZCOnZAsTVDs0UXoiRHU60p5r0DkFsVFn2PFiU2wxoUXmDtmMRmCt5HtlVDYefgiozHZBL2O00GnjfCuQhm9yySoL9804JdCQDbYn0GimvA2IjEKzgfZAPZAHx3Q2ZCeleDtGuzwItZAf4vOpKHJkQZDZD'
+          Authorization: `Bearer ${this.$config.META_TOKEN}`
         }
       })
         .then(response => response.json())
@@ -47,7 +47,7 @@ export default {
               method: 'GET',
               headers: {
                 'Access-Control-Allow-Origin': '*',
-                Authorization: 'Bearer EAALYQ6KEsR8BAEK7fbgKZB0QGrCEc4A3Etex3Cl0DoZCThZBhDZAAWKYNBaFZCOnZAsTVDs0UXoiRHU60p5r0DkFsVFn2PFiU2wxoUXmDtmMRmCt5HtlVDYefgiozHZBL2O00GnjfCuQhm9yySoL9804JdCQDbYn0GimvA2IjEKzgfZAPZAHx3Q2ZCeleDtGuzwItZAf4vOpKHJkQZDZD'
+                Authorization: `Bearer ${this.$config.META_TOKEN}`
               }
             })
               .then((data) => {
