@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-list-item
+      v-if="$route.query.phone"
       :key="item.title"
       class="pa-0"
     >

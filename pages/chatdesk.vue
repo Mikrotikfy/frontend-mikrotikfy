@@ -22,6 +22,16 @@
     </span>
   </v-container>
 </template>
+<script>
+export default {
+  name: 'Chatdesk',
+  head () {
+    return {
+      title: this.$route.query.phone ? `Chat de ${this.$route.query.phone}` : 'Escritorio ARNOProducciones'
+    }
+  }
+}
+</script>
 <style scoped>
 .parent {
   display: grid;
