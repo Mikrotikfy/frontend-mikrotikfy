@@ -1,8 +1,34 @@
 <template>
   <span
-    class="ma-2 green darken-4 rounded-xl pa-2 text-subtitle-1"
-    style="width:fit-content;max-width:50%;overflow-wrap:break-word;"
+    class="ma-2 green darken-4 rounded-lg pa-2 text-subtitle-1"
+    style="height:fit-content;width:fit-content;max-width:50%;overflow-wrap:break-word;position:relative;"
   >
-    Mensaje de la parsona que te escribe lorem i susns dhhsjjh aslkjsajhasdhaskljasjhasaskjdas as as asdkj asdjkaskjhaskjdaskas kasdkjasdkh asdasdkjaskj
+    <ChatdeskMessageText
+      v-if="payload.entry[0].changes[0].value.messages[0].type === 'text'"
+      :payload="payload"
+    />
+    <ChatdeskMessageMedia
+      v-if="payload.entry[0].changes[0].value.messages[0].type === 'image' || payload.entry[0].changes[0].value.messages[0].type === 'video'"
+      :payload="payload"
+    />
+    <ChatdeskMessageContact
+      v-if="payload.entry[0].changes[0].value.messages[0].type === 'contacts'"
+      :payload="payload"
+    />
+    <ChatdeskMessageReaction
+      v-if="payload.entry[0].changes[0].value.messages[0].type === 'reaction'"
+      :payload="payload"
+    />
   </span>
 </template>
+<script>
+export default {
+  name: 'ChatdeskThirdPartyBubble',
+  props: {
+    payload: {
+      type: Object,
+      required: true
+    }
+  }
+}
+</script>
