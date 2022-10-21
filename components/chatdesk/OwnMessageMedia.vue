@@ -4,7 +4,8 @@
       <v-img
         :src="payload.image.link"
         width="500px"
-        height="500px"
+        height="auto"
+        cover
       />
     </span>
     <span class="text-caption" style="right:10px;bottom:0;position:absolute;">

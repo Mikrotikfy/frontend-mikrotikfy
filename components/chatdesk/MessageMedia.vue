@@ -3,8 +3,9 @@
     <span class="px-2 mb-3 mr-8">
       <v-img
         :src="imgBlob"
-        width="500px"
-        height="500px"
+        max-width="500px"
+        height="auto"
+        cover
       />
     </span>
     <span class="text-caption" style="right:10px;bottom:0;position:absolute;">
