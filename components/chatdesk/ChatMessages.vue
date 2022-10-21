@@ -6,7 +6,13 @@
       :payload="message.payload"
       class="partner-message"
     />
-    <ChatdeskOwnBubble class="own-message" />
+    <ChatdeskOwnBubble
+      v-for="message in ownWhatsappMessages"
+      :key="message.id"
+      :payload="message.payload"
+      :createdat="message.createdAt"
+      class="own-message"
+    />
   </div>
 </template>
 <script>
@@ -17,6 +23,9 @@ export default {
   computed: {
     whatsappMessages () {
       return this.$store.state.whatsapp.whatsappMessages
+    },
+    ownWhatsappMessages () {
+      return this.$store.state.whatsapp.ownWhatsappMessages
     }
   }
 }

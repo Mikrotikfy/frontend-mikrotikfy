@@ -1,17 +1,47 @@
 <template>
-  <div
-    class="ma-2 grey darken-3 text-right rounded-xl pa-2 text-subtitle-1"
-    style="width:fit-content;max-width:50%;overflow-wrap:break-word;postion:relative;"
+  <span
+    class="ma-2 grey darken-3 rounded-lg pa-2 text-subtitle-1"
+    style="height:fit-content;width:fit-content;max-width:50%;overflow-wrap:break-word;position:relative;"
   >
-    <span>
-      Mensaje de la parsona que te escribe lorem i susns dhhsjjh aslkjsajhasdhaskljasjhasaskjdas as as asdkj asdjkaskjhaskjdaskas kasdkjasdkh asdasdkjaskj
-    </span>
-    <span class="message-time" style="position:absolute;left:10px;bottom:2px;margin-top:5px;">12:34 p.m.</span>
-  </div>
+    <ChatdeskOwnMessageText
+      v-if="payload.type === 'text'"
+      :payload="payload"
+      :createdat="createdat"
+    />
+    <ChatdeskOwnMessageReaction
+      v-if="payload.type === 'reaction'"
+      :payload="payload"
+      :createdat="createdat"
+    />
+    <ChatdeskOwnMessageMedia
+      v-if="payload.type === 'image'"
+      :payload="payload"
+      :createdat="createdat"
+    />
+  </span>
 </template>
-<style scoped>
-.message-time {
-  font-size: 0.9rem;
-  color: #fff;
+<script>
+export default {
+  name: 'ChatdeskOwnBubble',
+  props: {
+    payload: {
+      type: Object,
+      required: true
+    },
+    createdat: {
+      type: String,
+      required: true
+    }
+  },
+  data () {
+    return {
+    }
+  },
+  methods: {
+    getDateFromUnixTime (unixTime) {
+      const date = new Date(unixTime * 1000)
+      return `${date.getHours()}:${date.getMinutes()}`
+    }
+  }
 }
-</style>
+</script>

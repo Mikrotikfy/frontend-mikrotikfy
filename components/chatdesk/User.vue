@@ -48,13 +48,24 @@ export default {
         this.openChat(this.whatsappContacts.find(f))
       }
     },
-    openChat (item) {
-      this.$router.push({ path: `/chatdesk?phone=${item.phone}&city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}` })
+    getWhatsappMessages (item) {
       this.$store.dispatch('whatsapp/getWhatsappMessages', {
         phone: item.phone,
         city: this.$route.query.city,
         token: this.$store.state.auth.token
       })
+    },
+    getOwnWhatsappMessages (item) {
+      this.$store.dispatch('whatsapp/getOwnWhatsappMessages', {
+        phone: item.phone,
+        city: this.$route.query.city,
+        token: this.$store.state.auth.token
+      })
+    },
+    openChat (item) {
+      this.$router.push({ path: `/chatdesk?phone=${item.phone}&city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}` })
+      this.getWhatsappMessages(item)
+      this.getOwnWhatsappMessages(item)
     }
   }
 }

@@ -38,10 +38,8 @@ export default {
         token: this.$store.state.auth.token
       })
       if (mediaInDatabase.length > 0) {
-        console.info('media exists in database')
         this.imgBlob = `${this.$config.CDN_STRAPI_ENDPOINT}${mediaInDatabase[0].url}`
       } else {
-        console.info('media does not exists in database. Downloading...')
         const media = await this.$store.dispatch('whatsapp/getImgByMediaId', {
           id: this.payload.entry[0].changes[0].value.messages[0].image.id,
           token: this.$store.state.auth.token

@@ -1,6 +1,7 @@
 export const state = () => ({
   whatsappContacts: [],
-  whatsappMessages: []
+  whatsappMessages: [],
+  ownWhatsappMessages: []
 })
 export const mutations = {
   getWhatsappContacts (state, whatsappContacts) {
@@ -16,11 +17,17 @@ export const mutations = {
     } catch (error) {
       throw new Error(`WHATSAPP CONTACTS MUTATE ${error}`)
     }
+  },
+  getOwnWhatsappMessages (state, ownWhatsappMessages) {
+    try {
+      state.ownWhatsappMessages = ownWhatsappMessages
+    } catch (error) {
+      throw new Error(`WHATSAPP CONTACTS MUTATE ${error}`)
+    }
   }
 }
 export const actions = {
   createMediaEntry ({ commit }, payload) {
-    console.log(payload)
     return new Promise((resolve, reject) => {
       fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsappmedias`, {
         method: 'POST',
@@ -84,7 +91,10 @@ export const actions = {
         const qs = require('qs')
         const query = qs.stringify({
           filters: {
-            phone: payload.phone
+            phone: payload.phone,
+            to: {
+              $null: true
+            }
           },
           pagination: {
             pageSize: 100
@@ -104,6 +114,41 @@ export const actions = {
           .then((whatsappMessages) => {
             commit('getWhatsappMessages', whatsappMessages.data)
             resolve(whatsappMessages.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`WHATSAPP CONTACTS ACTION ${error}`)
+    }
+  },
+  getOwnWhatsappMessages ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        const qs = require('qs')
+        const query = qs.stringify({
+          filters: {
+            phone: payload.phone,
+            to: {
+              $notNull: true
+            }
+          },
+          pagination: {
+            pageSize: 100
+          }
+        },
+        {
+          encodeValuesOnly: true
+        })
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsapps?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((ownWhatsappMessages) => {
+            commit('getOwnWhatsappMessages', ownWhatsappMessages.data)
+            resolve(ownWhatsappMessages.data)
           })
       })
     } catch (error) {
