@@ -19,6 +19,65 @@ export const mutations = {
   }
 }
 export const actions = {
+  createMediaEntry ({ commit }, payload) {
+    console.log(payload)
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsappmedias`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            mediaid: payload.mediaid,
+            url: payload.img.url
+          }
+        })
+      })
+        .then(response => response.json())
+        .then((whatsappMedia) => {
+          resolve(whatsappMedia)
+        })
+    })
+  },
+  getImgByMediaId ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}getwhatsappmedia?mediaid=${payload.id}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${payload.token}`
+        }
+      })
+        .then((whatsappMedia) => {
+          resolve(whatsappMedia)
+        })
+    })
+  },
+  getMediaById (_, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      filters: {
+        mediaid: payload.id
+      }
+    },
+    {
+      encodeValuesOnly: true
+    })
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsappmedias?${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        }
+      })
+        .then(res => res.json())
+        .then((whatsappMedia) => {
+          resolve(whatsappMedia.data)
+        })
+    })
+  },
   getWhatsappMessages ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {

@@ -33,30 +33,41 @@ export default {
   },
   methods: {
     async getMediaById () {
-      await fetch(`https://graph.facebook.com/v14.0/${this.payload.entry[0].changes[0].value.messages[0].image.id}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${this.$config.META_TOKEN}`
-        }
+      const mediaInDatabase = await this.$store.dispatch('whatsapp/getMediaById', {
+        id: this.payload.entry[0].changes[0].value.messages[0].image.id,
+        token: this.$store.state.auth.token
       })
-        .then(response => response.json())
-        .then((data) => {
-          console.log(data)
-          setTimeout(() => {
-            fetch('https://lookaside.fbsbx.com/whatsapp_business/attachments/?mid=839491347225724&ext=1666124484&hash=ATuMvDQCE9au0RSMMJ-NLe5kihvfsQGHIwKuhUsg3Ykpmg', {
-              method: 'GET',
-              headers: {
-                'Access-Control-Allow-Origin': '*',
-                Authorization: `Bearer ${this.$config.META_TOKEN}`
-              }
-            })
-              .then((data) => {
-                console.log(data)
-                const imageObjectURL = URL.createObjectURL(data)
-                this.imgBlob = imageObjectURL
-              })
-          }, 500)
+      if (mediaInDatabase.length > 0) {
+        console.info('media exists in database')
+        this.imgBlob = `${this.$config.CDN_STRAPI_ENDPOINT}${mediaInDatabase[0].url}`
+      } else {
+        console.info('media does not exists in database. Downloading...')
+        const media = await this.$store.dispatch('whatsapp/getImgByMediaId', {
+          id: this.payload.entry[0].changes[0].value.messages[0].image.id,
+          token: this.$store.state.auth.token
         })
+        const form = new FormData()
+        form.append('files', await media.blob(), `${this.payload.entry[0].changes[0].value.messages[0].image.id}.${media.type === 'image/jpeg' ? 'jpg' : 'png'}`)
+        await fetch('http://localhost:1337/api/upload', {
+          method: 'post',
+          headers: {
+            Authorization: `Bearer ${this.$store.state.auth.token}`
+          },
+          body: form
+        })
+          .then(res => res.json())
+          .then((res) => {
+            this.createMediaEntry(res[0], this.payload.entry[0].changes[0].value.messages[0].image.id)
+            this.imgBlob = 'http://localhost:1337' + res[0].url
+          })
+      }
+    },
+    createMediaEntry (img = { url: 'upload/default.jpg' }, mediaid = 'default') {
+      this.$store.dispatch('whatsapp/createMediaEntry', {
+        mediaid,
+        img,
+        token: this.$store.state.auth.token
+      })
     },
     getDateFromUnixTime (unixTime) {
       const date = new Date(unixTime * 1000)

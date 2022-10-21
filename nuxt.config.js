@@ -31,7 +31,9 @@ export default {
 
   publicRuntimeConfig: {
     API_STRAPI_ENDPOINT: process.env.API_STRAPI_ENDPOINT || 'http://localhost:1337/api/',
-    META_TOKEN: process.env.META_TOKEN || ''
+    CDN_STRAPI_ENDPOINT: process.env.CDN_STRAPI_ENDPOINT || 'http://localhost:1337',
+    META_TOKEN: process.env.META_TOKEN || '',
+    CORS_PROXY: process.env.CORS_PROXY || ''
   },
 
   /*

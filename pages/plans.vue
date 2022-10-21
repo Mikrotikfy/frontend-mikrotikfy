@@ -5,6 +5,11 @@
     >
       Enviar
     </v-btn>
+    <form>
+      <!-- Can be multiple files -->
+      <input type="file" name="files" />
+      <input type="submit" value="Submit" @click="sendForm" />
+    </form>
   </div>
 </template>
   <!-- eslint-disable quote-props -->
@@ -12,10 +17,24 @@
 export default {
   data () {
     return {
-      clients: []
+      clients: [],
+      files: null
     }
   },
   methods: {
+    sendForm () {
+      const form = document.querySelector('form')
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        const formData = new FormData(e.target)
+        console.log(e.target)
+        await fetch('http://localhost:1337/api/upload', {
+          method: 'post',
+          body: formData
+        })
+      })
+    },
     async getClientsByCity () {
       this.clients = await this.$store.dispatch('cuts/getClientsByCity', {
         token: this.$store.state.auth.token,
