@@ -151,6 +151,7 @@
             item-value="id"
             :items="offers"
             label="Oferta"
+            return-object
             outlined
             dense
             hide-details
@@ -351,21 +352,27 @@ export default {
     this.getOffers()
   },
   methods: {
-    async createDebtMovement (clientId) {
+    async createDebtMovement (client) {
       await this.$store.dispatch('offer/setNewDebt', {
         token: this.$store.state.auth.token,
         city: this.city,
         isindebt: false,
-        client: clientId,
+        client,
         technician: this.$store.state.auth
       })
     },
-    async createOfferMovement (clientId, offer) {
+    async createOfferMovement (client, offer) {
       await this.$store.dispatch('offer/setNewOffer', {
         token: this.$store.state.auth.token,
-        client: clientId,
-        offer: { id: offer },
+        client,
+        offer,
         technician: this.$store.state.auth
+      })
+      await this.$store.dispatch('client/setAuxPlan', {
+        token: this.$store.state.auth.token,
+        clientId: client.id,
+        plan: offer.plan,
+        index: this.index
       })
     },
     async testCodeForDuplicated (code) {

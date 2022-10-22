@@ -1,7 +1,6 @@
 export const state = () => ({
   whatsappContacts: [],
-  whatsappMessages: [],
-  ownWhatsappMessages: []
+  whatsappMessages: []
 })
 export const mutations = {
   getWhatsappContacts (state, whatsappContacts) {
@@ -13,14 +12,14 @@ export const mutations = {
   },
   getWhatsappMessages (state, whatsappMessages) {
     try {
-      state.whatsappMessages = whatsappMessages
+      state.whatsappMessages.push(whatsappMessages)
     } catch (error) {
       throw new Error(`WHATSAPP CONTACTS MUTATE ${error}`)
     }
   },
   getOwnWhatsappMessages (state, ownWhatsappMessages) {
     try {
-      state.ownWhatsappMessages = ownWhatsappMessages
+      state.whatsappMessages.push(ownWhatsappMessages)
     } catch (error) {
       throw new Error(`WHATSAPP CONTACTS MUTATE ${error}`)
     }
