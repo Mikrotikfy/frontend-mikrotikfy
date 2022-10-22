@@ -1,5 +1,5 @@
 <template>
-  <v-card class="elevation-0">
+  <v-card class="elevation-0" style="height:100%;">
     <v-card-title class="justify-center">
       Historial de Movimientos
     </v-card-title>

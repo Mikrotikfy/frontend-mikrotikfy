@@ -36,18 +36,18 @@
           Centro de Control de Usuario | {{ client.name }}
         </v-card-title>
         <v-divider />
-        <v-row class="mt-2">
-          <v-col cols="12" md="4" class="px-0 order-md-first order-lg-first" style="border-right:1px solid grey;">
-            <MiscOfferHistory />
+        <v-row>
+          <v-col cols="12" md="4" class="order-md-first order-lg-first">
+            <MiscOfferHistory style="border-right:1px solid grey;" />
           </v-col>
-          <v-col cols="12" md="4" class="px-0 order-first">
+          <v-col cols="12" md="4" class="order-first">
             <div style="display:grid;place-items:center;">
               <MainClientControlDebt :client="client" :index="index" />
               <MainClientControlOffer :client="client" :index="index" />
             </div>
           </v-col>
-          <v-col cols="12" md="4" class="px-0" style="border-left:1px solid grey;">
-            <MiscDebtHistory />
+          <v-col cols="12" md="4">
+            <MiscDebtHistory style="border-left:1px solid grey;" />
           </v-col>
         </v-row>
       </v-card>

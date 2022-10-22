@@ -1,7 +1,14 @@
 <template>
-  <div>
+  <div style="width:100%;">
     <div v-if="isInDebt !== null" class="mb-5" style="display:grid;place-items:center;">
-      <v-alert text prominent :type="isRetired ? 'warning' : isInDebt ? 'error' : 'success'">
+      <v-alert
+        text
+        tile
+        dense
+        :color="isRetired ? 'warning' : isInDebt ? 'error' : 'success'"
+        style="width:100%;"
+        class="text-center"
+      >
         El Cliente esta {{ isRetired ? 'RETIRADO' : isInDebt ? 'EN MORA' : 'AL DIA' }}
       </v-alert>
       <v-btn
@@ -16,11 +23,42 @@
       <span v-if="!isInDebt && !isRetired" class="text-subtitle-2 grey--text lighten-2 mt-2">Para retirar el cliente es necesario antes cortarlo</span>
     </div>
     <div v-if="isInDebt && !isRetired" class="mb-5" style="display:grid;place-items:center;">
-      <v-btn color="yellow darken-4" x-large rounded @click="setRetired">
+      <v-btn color="yellow darken-4" x-large rounded @click="isRetired ? setRetired : reasonDialog = true">
         <v-icon>mdi-cancel</v-icon>
         {{ isRetired ? 'REACTIVAR' : 'RETIRAR' }}
       </v-btn>
     </div>
+    <v-dialog
+      v-model="reasonDialog"
+      width="500"
+    >
+      <v-card>
+        <v-card-title class="text-h5">
+          Retirar cliente
+        </v-card-title>
+
+        <v-card-text>
+          <v-text-field
+            v-model="reason"
+            label="Razon de retiro"
+            outlined
+          />
+        </v-card-text>
+
+        <v-divider />
+
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="red"
+            text
+            @click="setRetired"
+          >
+            Retirar Cliente
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -40,7 +78,9 @@ export default {
     return {
       isInDebt: null,
       isRetired: null,
-      offers: []
+      offers: [],
+      reason: '',
+      reasonDialog: false
     }
   },
   computed: {
@@ -78,13 +118,18 @@ export default {
       })
     },
     async setRetired () {
+      if (this.reason === '') {
+        this.$toast.error('Debe ingresar una razon de retiro', { duration: 10000 })
+        return
+      }
       await this.$store.dispatch('offer/setNewDebt', {
         token: this.$store.state.auth.token,
         city: this.city,
         isindebt: this.isInDebt,
         isretired: !this.isRetired,
         client: this.client,
-        technician: this.$store.state.auth
+        technician: this.$store.state.auth,
+        comment: this.reason
       }).then(() => {
         this.$simpleTelegramUpdateDebt({ client: this.client, operator: this.$store.state.auth.username, isInDebt: this.isInDebt, isRetired: !this.isRetired, telegramBots: this.telegramBots })
         this.getLastDebtMovement()
@@ -97,6 +142,7 @@ export default {
           operator: this.$store.state.auth.id,
           token: this.$store.state.auth.token
         })
+        this.reasonDialog = false
       })
     },
     async getLastDebtMovement () {
