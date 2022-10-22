@@ -258,7 +258,6 @@ export const actions = {
     }
   },
   setAuxPlan ({ commit }, payload) {
-    console.log(payload)
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.clientId}`, {
@@ -283,6 +282,32 @@ export const actions = {
       })
     } catch (error) {
       throw new Error(`ACTION AUX PLAN SET ${error}`)
+    }
+  },
+  clientForDeviceManipulation ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      populate: ['mac_addresses']
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.clientid}?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((client) => {
+            resolve(client.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`CLIENT FOR DEVICE MANIPULATION ACTION ${error}`)
     }
   },
   setPlanFromModal ({ commit }, payload) {

@@ -11,6 +11,28 @@ export const mutations = {
   }
 }
 export const actions = {
+  assignDeviceToClient ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}devices`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            mac_address: payload.mac,
+            details: 'ASIGNADO AUTOMATICAMENTE POR LA API',
+            clients: [payload.clientid]
+          }
+        })
+      })
+        .then(response => response.json())
+        .then((created) => {
+          resolve(created.data)
+        })
+    })
+  },
   async getDeviceBrandsFromDatabase ({ commit }) {
     try {
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}devicebrands`)

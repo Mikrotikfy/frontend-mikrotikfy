@@ -167,7 +167,40 @@ export default {
         .then((clientstatus) => {
           this.loading = false
           this.clientData = clientstatus
+          this.searchDeviceByClient(clientstatus.mac_address)
         })
+    },
+    async searchDeviceByClient (mac = 'default') {
+      const macOfCurrentDevice = mac.replace(/:/g, '')
+      const client = await this.$store.dispatch('client/clientForDeviceManipulation', {
+        clientid: this.clientid,
+        token: this.$store.state.auth.token
+      })
+      if (!client) { return }
+      const devices = client.mac_addresses.map((device) => {
+        device.mac_address = device.mac_address.replace(/:/g, '')
+        return device
+      })
+      if (devices.length === 0) {
+        this.$store.dispatch('device/assignDeviceToClient', {
+          token: this.$store.state.auth.token,
+          clientid: this.clientid,
+          mac: macOfCurrentDevice
+        })
+        this.$toast.info('Nueva MAC asignada', { duration: 5000 })
+        return
+      }
+      if (devices.length > 0) {
+        const device = devices.find(device => device.mac_address === macOfCurrentDevice)
+        if (!device) {
+          this.$store.dispatch('device/assignDeviceToClient', {
+            token: this.$store.state.auth.token,
+            clientid: this.clientid,
+            mac: macOfCurrentDevice
+          })
+          this.$toast.info('Nueva MAC asignada', { duration: 5000 })
+        }
+      }
     },
     formatBytes (bytes, decimals = 2) {
       if (bytes === 0) { return '0 Bytes' }
