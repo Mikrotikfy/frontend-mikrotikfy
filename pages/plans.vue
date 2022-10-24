@@ -51,7 +51,7 @@ export default {
         body: JSON.stringify(
           {
             messaging_product: 'whatsapp',
-            to: '573024493001',
+            to: '573125090684',
             type: 'template',
             template: {
               'name': 'internet_account_dynamic',
@@ -64,7 +64,7 @@ export default {
                   'parameters': [
                     {
                       'type': 'text',
-                      'text': '15 de octubre'
+                      'text': '15 de noviembre'
                     }
                   ]
                 },
