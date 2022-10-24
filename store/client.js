@@ -284,6 +284,36 @@ export const actions = {
       throw new Error(`ACTION AUX PLAN SET ${error}`)
     }
   },
+  getByDni ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      filters: {
+        dni: payload.dni
+      },
+      populate: [
+        'monthlybills'
+      ]
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(res => res.json())
+          .then((client) => {
+            resolve(client.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`CLIENT FROM PUBLIC ACTION ${error}`)
+    }
+  },
   clientForDeviceManipulation ({ commit }, payload) {
     const qs = require('qs')
     const query = qs.stringify({

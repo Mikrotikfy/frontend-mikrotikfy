@@ -86,7 +86,7 @@ export const actions = {
       return new Promise((resolve, reject) => {
         const sentBody = {
           data: {
-            month: parseInt(month),
+            month: parseInt(month) + 2,
             year: parseInt(year),
             path,
             success: payload.success,
