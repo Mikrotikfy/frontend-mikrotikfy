@@ -79,14 +79,15 @@ export const actions = {
   },
   notificationSent ({ commit }, payload) {
     const date = Date.now()
-    const month = new Date(date).getMonth()
+    let month = new Date(date).getMonth()
+    month = month + 2
     const year = new Date(date).getFullYear()
     const path = `fac/${payload.city.toLowerCase()}/${payload.clienttype.toLowerCase()}/${month}${year}_${payload.client.code}.pdf`
     try {
       return new Promise((resolve, reject) => {
         const sentBody = {
           data: {
-            month: parseInt(month) + 2,
+            month: parseInt(month),
             year: parseInt(year),
             path,
             success: payload.success,
