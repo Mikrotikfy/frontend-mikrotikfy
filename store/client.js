@@ -369,6 +369,29 @@ export const actions = {
         this.$toast.info('Cliente actualizado con exito', { duration: 4000, position: 'top-center' })
       })
   },
+  async updateServiceInfo ({ commit }, payload) {
+    try {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            nap_onu_address: payload.ticketAdvance.nap_onu_address,
+            opticalPower: payload.ticketAdvance.opticalPower
+          }
+        })
+      })
+        .then(res => res.json())
+        .then((_) => {
+          this.$toast.info('Detalles del servicio actualizados con exito', { duration: 4000, position: 'top-center' })
+        })
+    } catch (error) {
+      this.$toast.error('Error al actualizar detalles. Verifica tu conexion o reportalo a nico', { position: 'top-center' })
+    }
+  },
   async adminCreate ({ commit }, { client, index, token, operator }) {
     await fetch(`${this.$config.API_STRAPI_ENDPOINT}admincreate`, {
       method: 'POST',

@@ -37,6 +37,21 @@
               class="mt-4"
               label="Detalles adicionales"
             />
+            <v-text-field
+              v-if="ticket.tickettype.name === 'CONEXION NUEVA'"
+              v-model="ticketAdvance.nap_onu_address"
+              outlined
+              class="mt-4"
+              label="NAP DE LA QUE DEPENDE"
+            />
+            <v-text-field
+              v-if="ticket.tickettype.name === 'CONEXION NUEVA'"
+              v-model.number="ticketAdvance.opticalPower"
+              type="number"
+              outlined
+              class="mt-4"
+              label="POTENCIA OPTICA"
+            />
             <v-checkbox
               v-if="$isAdmin()"
               v-model="ticketAdvance.escalated"
@@ -122,7 +137,9 @@ export default {
       closeTicket: false,
       escalated: false,
       escalatedoffice: false,
-      editindex: -1
+      editindex: -1,
+      nap_onu_address: '',
+      opticalPower: null
     }
   }),
   computed: {
@@ -137,6 +154,10 @@ export default {
       this.ticketAdvance.editindex = this.editindex
     },
     async CreateTicketAdvance () {
+      if (this.ticket.tickettype.name === 'CONEXION NUEVA' && (this.ticketAdvance.nap_onu_address === '' || this.ticketAdvance.opticalPower === null)) {
+        this.$toast.error('Debes llenar la informacion de nap y potencia optica antes de cerrar el ticket', { duration: 4000, position: 'top-center' })
+        return
+      }
       this.loading = true
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticketid}`, {
         method: 'PUT',
@@ -168,6 +189,11 @@ export default {
             if (input.status === 200) {
               this.modal = false
               this.$emit('updateTicketStatus', this.ticketAdvance)
+              this.$store.dispatch('client/updateServiceInfo', {
+                token: this.$store.state.auth.token,
+                client: this.client,
+                ticketAdvance: this.ticketAdvance
+              })
               this.$simpleTelegramCreateTicketAdvance({
                 client: this.client,
                 ticket: this.ticket,
