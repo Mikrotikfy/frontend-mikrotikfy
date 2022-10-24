@@ -41,7 +41,7 @@ export const actions = {
             to: `57${payload.client.phone}`,
             type: 'template',
             template: {
-              name: 'internet_account_dynamic',
+              name: 'internet_account',
               language: {
                 code: 'es'
               },
