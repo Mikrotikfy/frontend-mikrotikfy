@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <v-col>
+      <v-col class="align-center d-flex">
         <v-btn
           color="primary"
           class="mr-2"
@@ -12,6 +12,7 @@
           Buscar Clientes
         </v-btn>
         <v-btn
+          class="mr-2"
           color="red"
           :loading="loading"
           :disabled="loading || $store.state.notification.clients.length < 1"
@@ -19,7 +20,7 @@
         >
           Enviar Notificaciones
         </v-btn>
-        <span v-if="$store.state.notification.sendIndex > 0" class="text-h5">Enviando: <strong>{{ $store.state.notification.sendIndex }}</strong></span>
+        <span v-if="$store.state.notification.sendIndex > 0" class="text-h5">Enviados: <strong>{{ $store.state.notification.sendIndex }}</strong></span>
       </v-col>
     </v-row>
     <v-row>
@@ -28,7 +29,24 @@
           v-if="$store.state.notification.clients.length > 0"
           :headers="headers"
           :items="$store.state.notification.clients"
-        />
+        >
+          <template v-slot:[`item.messageSent`]="{ item }">
+            <v-chip
+              v-if="item.messageSent"
+              :color="item.messageSent ? 'green' : 'red'"
+              text-color="white"
+            >
+              {{ item.messageSent ? 'ENVIADO' : 'FALLIDO' }}
+            </v-chip>
+            <v-chip
+              v-else
+              :color="'cyan darken-4'"
+              text-color="white"
+            >
+              PENDIENTE
+            </v-chip>
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
   </v-container>
@@ -41,7 +59,8 @@ export default {
       headers: [
         { text: 'Codigo', value: 'code', sortable: false },
         { text: 'Nombre', value: 'name', sortable: false },
-        { text: 'Celular', value: 'phone', sortable: false }
+        { text: 'Celular', value: 'phone', sortable: false },
+        { text: 'Estado del envio', value: 'messageSent', sortable: false }
       ]
     }
   },
@@ -76,6 +95,7 @@ export default {
           })
         })
       }
+      this.loading = false
     },
     async getClientsFromCodes () {
       this.loading = true

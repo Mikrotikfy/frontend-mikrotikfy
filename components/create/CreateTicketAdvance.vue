@@ -189,11 +189,13 @@ export default {
             if (input.status === 200) {
               this.modal = false
               this.$emit('updateTicketStatus', this.ticketAdvance)
-              this.$store.dispatch('client/updateServiceInfo', {
-                token: this.$store.state.auth.token,
-                client: this.client,
-                ticketAdvance: this.ticketAdvance
-              })
+              if (this.ticket.tickettype.name === 'CONEXION NUEVA' && (this.ticketAdvance.nap_onu_address !== '' || this.ticketAdvance.opticalPower !== null)) {
+                this.$store.dispatch('client/updateServiceInfo', {
+                  token: this.$store.state.auth.token,
+                  client: this.client,
+                  ticketAdvance: this.ticketAdvance
+                })
+              }
               this.$simpleTelegramCreateTicketAdvance({
                 client: this.client,
                 ticket: this.ticket,

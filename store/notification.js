@@ -6,6 +6,9 @@ export const state = () => ({
   sendIndex: 0
 })
 export const mutations = {
+  setClientSuccess (state, payload) {
+    state.clients[payload.index].messageSent = payload.success
+  },
   setSendIndex (state, index) {
     state.sendIndex = index
   },
@@ -29,7 +32,7 @@ export const mutations = {
 export const actions = {
   sendWhatsapp ({ commit }, payload) {
     return new Promise((resolve, reject) => {
-      fetch('https://graph.facebook.com/v14.0/100480202798133/messages', {
+      fetch(this.$config.META_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -41,7 +44,7 @@ export const actions = {
             to: `57${payload.client.phone}`,
             type: 'template',
             template: {
-              name: 'internet_account',
+              name: 'internet_account_test',
               language: {
                 code: 'es'
               },
@@ -94,7 +97,6 @@ export const actions = {
             client: payload.client.id
           }
         }
-        console.log(sentBody)
         fetch(`${this.$config.API_STRAPI_ENDPOINT}monthlybills`, {
           method: 'POST',
           headers: {
@@ -105,6 +107,11 @@ export const actions = {
         })
           .then(res => res.json())
           .then((monthlybill) => {
+            commit('setClientSuccess', {
+              client: payload.client,
+              index: payload.index,
+              success: payload.success
+            })
             resolve(monthlybill.data)
           })
       })
