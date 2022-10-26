@@ -33,6 +33,7 @@ export default {
     API_STRAPI_ENDPOINT: process.env.API_STRAPI_ENDPOINT || 'http://localhost:1337/api/',
     CDN_STRAPI_ENDPOINT: process.env.CDN_STRAPI_ENDPOINT || 'http://localhost:1337',
     META_ENDPOINT: process.env.NODE_ENV === 'production' ? process.env.META_PROD_ENDPOINT : process.env.META_DEV_ENDPOINT,
+    META_TEMPLATE: process.env.NODE_ENV === 'production' ? process.env.META_PROD_TEMPLATE : process.env.META_DEV_TEMPLATE,
     META_TOKEN: process.env.META_TOKEN || '',
     CORS_PROXY: process.env.CORS_PROXY || ''
   },

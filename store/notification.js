@@ -44,7 +44,7 @@ export const actions = {
             to: `57${payload.client.phone}`,
             type: 'template',
             template: {
-              name: 'internet_account_test',
+              name: this.$config.META_TEMPLATE,
               language: {
                 code: 'es'
               },
