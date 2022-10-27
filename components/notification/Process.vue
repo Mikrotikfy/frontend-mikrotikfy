@@ -113,8 +113,11 @@ export default {
           return client.code === code
         })
       })
-      console.log(search)
-      this.$store.commit('notification/setClients', search)
+      const filtered = search.filter(function (el) {
+        return el !== undefined
+      })
+      console.log(filtered)
+      this.$store.commit('notification/setClients', filtered)
       this.$store.commit('notification/readyForSend')
       this.loading = false
     },
