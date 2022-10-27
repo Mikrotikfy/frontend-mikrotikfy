@@ -129,7 +129,7 @@ export const actions = {
         clienttype: {
           name: payload.clienttype
         },
-        monthlybill: {
+        monthlybills: {
           $null: true
         }
       },
