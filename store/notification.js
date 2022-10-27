@@ -128,6 +128,9 @@ export const actions = {
         },
         clienttype: {
           name: payload.clienttype
+        },
+        monthlybill: {
+          $null: true
         }
       },
       pagination: {
