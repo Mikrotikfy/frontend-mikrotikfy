@@ -35,7 +35,7 @@
     </v-toolbar>
       <v-card class="printme">
         <v-card-text>
-          <v-container>
+          <v-container fluid>
             <v-row>
               <v-col cols="2" style="border: 1px solid grey;" class="align-center justify-center printme">
                 <MainLogoDark />
@@ -61,11 +61,11 @@
                 class="parent"
               >
                 <span>
-                  <v-chip
-                    :color="getTicketTypeColor(item.tickettype.name)"
+                  <strong
+                    :class="getTicketTypeColor(item.tickettype.name)"
                   >
                     {{ item.tickettype.name }}
-                  </v-chip>
+                  </strong>
                 </span>
                 <span>{{ item.client.code }}</span>
                 <span>{{ item.client.name }}</span>
@@ -148,15 +148,15 @@ export default {
     },
     getTicketTypeColor (tickettype) {
       if (tickettype === 'SIN SERVICIO') {
-        return 'red white--text'
+        return 'red--text'
       } else if (tickettype === 'SERVICIO LENTO') {
-        return 'orange darken-2 white--text'
+        return 'orange--text darken-2'
       } else if (tickettype === 'INTERMITENCIA') {
-        return 'orange darken-4 white--text'
+        return 'orange--text darken-4'
       } else if (tickettype === 'CONEXION NUEVA') {
-        return 'green darken-2 white--text'
+        return 'green--text darken-2'
       } else {
-        return 'primary'
+        return 'primary--text'
       }
     },
     getDate (date) {
@@ -179,7 +179,7 @@ export default {
 .parent {
   display: grid;
   width: 100%;
-  grid-template-columns: 2fr 1fr 4fr 4fr 2fr 4fr 4fr;
+  grid-template-columns: 3fr 1fr 4fr 4fr 2fr 4fr 4fr;
   grid-gap: 0px;
 }
 .parent > span {
