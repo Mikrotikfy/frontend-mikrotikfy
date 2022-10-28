@@ -32,19 +32,6 @@
       >
         <v-icon>mdi-close</v-icon>
       </v-btn>
-      <v-spacer />
-      <v-autocomplete
-        v-model="technician"
-        :items="technicians"
-        item-text="username"
-        item-value="id"
-        return-object
-        multiple
-        label="Tecnico"
-        dense
-        class="mr-4 mt-4"
-        outlined
-      />
     </v-toolbar>
       <v-card class="printme">
         <v-card-text>
@@ -53,8 +40,8 @@
               <v-col cols="2" style="border: 1px solid grey;" class="align-center justify-center printme">
                 <MainLogoDark />
               </v-col>
-              <v-col cols="5" style="border: 1px solid grey;background-color:#94e394;" class="d-flex align-center justify-center">
-                <h2 class="printme">Mantenimiento Internet</h2>
+              <v-col cols="5" style="border: 1px solid grey;background-color:#bfffff;" class="d-flex align-center justify-center">
+                <h2 class="printme">Agenda Técnica Internet</h2>
               </v-col>
               <v-col cols="5" style="border: 1px solid grey;" class="d-flex align-center justify-center">
                 <v-row>
@@ -62,14 +49,7 @@
                     <h3>Fecha: {{ getDate(new Date()) }}</h3>
                   </v-col>
                   <v-col cols="7" class="justify-center align-center d-flex">
-                    <h3> {{ technician ? technician.length > 1 ? 'Tecnicos:' : 'Tecnico:' : 'Tecnico/s ____________________'}} </h3>
-                    <h3
-                      v-for="(tech, index) in technician"
-                      :key="tech.id"
-                      class="ml-2"
-                    >
-                      {{ technician.length > 1 ? index > 0 ? '/' : '' : '' }} {{ tech.username.charAt(0).toUpperCase() + tech.username.slice(1) }}
-                    </h3>
+                    <h3 style="color:#c9c9c9;"> Tecnico/s </h3>
                   </v-col>
                 </v-row>
               </v-col>
@@ -80,13 +60,22 @@
                 :key="item.client.id"
                 class="parent"
               >
-                <span class="item">RV</span>
-                <span>{{ item.client.code }}</span>
-                <span><strong>{{ item.tickettype.name }}</strong></span>
-                <span>{{ item.client.name }}</span>
                 <span>
+                  <v-chip
+                    :color="getTicketTypeColor(item.tickettype.name)"
+                  >
+                    {{ item.tickettype.name }}
+                  </v-chip>
+                </span>
+                <span>{{ item.client.code }}</span>
+                <span>{{ item.client.name }}</span>
+                <span v-if="item.tickettype.name !== 'TRASLADO'">
                   {{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).address : item.client.address }}
                   {{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).neighborhood.name : item.client.neighborhood.name }}
+                </span>
+                <span v-else style="display:grid;">
+                  <strong class="red--text darken-4 text-decoration-underline">{{ item.details.split('CX:')[0] }}<br></strong>
+                  <strong class="green--text darken-4 text-decoration-underline">{{ 'CX: ' + item.details.split('CX:')[1] }}</strong>
                 </span>
                 <span>{{ item.client.phone }}</span>
                 <span style="color:#c9c9c9;">OBSERVACIONES</span>
@@ -96,9 +85,8 @@
                 v-if="tickets.length <= 4"
                 class="parent"
               >
-                <span class="item">RV</span>
-                <span style="color:#c9c9c9;">Código</span>
                 <span style="color:#c9c9c9;"><strong>Tipo de ticket</strong></span>
+                <span style="color:#c9c9c9;">Código</span>
                 <span style="color:#c9c9c9;">Nombre</span>
                 <span style="color:#c9c9c9;">
                   Direccion
@@ -110,9 +98,8 @@
               <div
                 class="parent"
               >
-                <span class="item">RV</span>
-                <span style="color:#c9c9c9;">Código</span>
                 <span style="color:#c9c9c9;"><strong>Tipo de ticket</strong></span>
+                <span style="color:#c9c9c9;">Código</span>
                 <span style="color:#c9c9c9;">Nombre</span>
                 <span style="color:#c9c9c9;">
                   Direccion
@@ -122,7 +109,7 @@
                 <span style="color:#c9c9c9;">FIRMA CLIENTE</span>
               </div>
             </v-row>
-            <v-row class="mt-3 justify-center" style="border: 1px solid grey;">Agenda de revisiones generada por {{$store.state.auth.username.charAt(0).toUpperCase() + $store.state.auth.username.slice(1)}} el {{ getDate(new Date()) }} - Tabla autogenerada por la API</v-row>
+            <v-row class="mt-3 justify-center" style="border: 1px solid grey;">Agenda de servicio técnico generada por {{$store.state.auth.username.charAt(0).toUpperCase() + $store.state.auth.username.slice(1)}} el {{ getDate(new Date()) }} - Tabla autogenerada por la API</v-row>
           </v-container>
         </v-card-text>
       </v-card>
@@ -159,9 +146,22 @@ export default {
         token: this.$store.state.auth.token
       })
     },
+    getTicketTypeColor (tickettype) {
+      if (tickettype === 'SIN SERVICIO') {
+        return 'red white--text'
+      } else if (tickettype === 'SERVICIO LENTO') {
+        return 'orange darken-2 white--text'
+      } else if (tickettype === 'INTERMITENCIA') {
+        return 'orange darken-4 white--text'
+      } else if (tickettype === 'CONEXION NUEVA') {
+        return 'green darken-2 white--text'
+      } else {
+        return 'primary'
+      }
+    },
     getDate (date) {
       const dateObject = new Date(date)
-      const humanDateFormat = dateObject.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric' })
+      const humanDateFormat = dateObject.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
       return humanDateFormat
     }
   }
@@ -179,7 +179,7 @@ export default {
 .parent {
   display: grid;
   width: 100%;
-  grid-template-columns: 1fr 1fr 2fr 4fr 4fr 2fr 4fr 4fr;
+  grid-template-columns: 2fr 1fr 4fr 4fr 2fr 4fr 4fr;
   grid-gap: 0px;
 }
 .parent > span {
