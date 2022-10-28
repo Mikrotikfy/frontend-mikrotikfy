@@ -46,7 +46,7 @@
               <v-col cols="5" style="border: 1px solid grey;" class="d-flex align-center justify-center">
                 <v-row>
                   <v-col cols="5" class="text-center" style="border-right: 1px solid grey;">
-                    <h3>Fecha: {{ getDate(new Date()) }}</h3>
+                    <h3>Fecha: ______ de {{ getDate(new Date()) }}</h3>
                   </v-col>
                   <v-col cols="7" class="justify-center align-center d-flex">
                     <h3 style="color:#c9c9c9;"> Tecnico/s </h3>
@@ -161,7 +161,7 @@ export default {
     },
     getDate (date) {
       const dateObject = new Date(date)
-      const humanDateFormat = dateObject.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+      const humanDateFormat = dateObject.toLocaleString('es-ES', { month: 'long', year: 'numeric' })
       return humanDateFormat
     }
   }
