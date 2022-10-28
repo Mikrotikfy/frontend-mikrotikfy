@@ -1,6 +1,7 @@
 export const state = () => ({
   whatsappContacts: [],
-  whatsappMessages: []
+  whatsappMessages: [],
+  currentChat: null
 })
 export const mutations = {
   getWhatsappContacts (state, whatsappContacts) {
@@ -12,14 +13,16 @@ export const mutations = {
   },
   getWhatsappMessages (state, whatsappMessages) {
     try {
-      state.whatsappMessages.push(whatsappMessages)
+      const lastDummyItem = { to: 'dummy', payload: { type: 'text' } }
+      state.whatsappMessages = whatsappMessages
+      state.whatsappMessages.push(lastDummyItem)
     } catch (error) {
       throw new Error(`WHATSAPP CONTACTS MUTATE ${error}`)
     }
   },
-  getOwnWhatsappMessages (state, ownWhatsappMessages) {
+  setCurrentChat (state, currentChat) {
     try {
-      state.whatsappMessages.push(ownWhatsappMessages)
+      state.currentChat = currentChat
     } catch (error) {
       throw new Error(`WHATSAPP CONTACTS MUTATE ${error}`)
     }
@@ -84,20 +87,58 @@ export const actions = {
         })
     })
   },
+  createMessage ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsapps`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            phone: payload.phone,
+            to: payload.to,
+            payload: payload.payload
+          }
+        })
+      })
+        .then(response => response.json())
+        .then((whatsappMessage) => {
+          resolve(whatsappMessage)
+        })
+    })
+  },
+  sendMessage ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(`https://graph.facebook.com/v14.0/${payload.phone}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.$config.META_TOKEN}`
+        },
+        body: JSON.stringify(
+          payload.template
+        )
+      })
+        .then(res => res.json())
+        .then((res) => {
+          resolve(res)
+        })
+    })
+  },
   getWhatsappMessages ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {
         const qs = require('qs')
         const query = qs.stringify({
           filters: {
-            phone: payload.phone,
-            to: {
-              $null: true
-            }
+            phone: payload.phone
           },
           pagination: {
             pageSize: 100
-          }
+          },
+          sort: 'createdAt:asc'
         },
         {
           encodeValuesOnly: true
@@ -112,42 +153,8 @@ export const actions = {
           .then(res => res.json())
           .then((whatsappMessages) => {
             commit('getWhatsappMessages', whatsappMessages.data)
+            commit('setCurrentChat', payload.phone)
             resolve(whatsappMessages.data)
-          })
-      })
-    } catch (error) {
-      throw new Error(`WHATSAPP CONTACTS ACTION ${error}`)
-    }
-  },
-  getOwnWhatsappMessages ({ commit }, payload) {
-    try {
-      return new Promise((resolve, reject) => {
-        const qs = require('qs')
-        const query = qs.stringify({
-          filters: {
-            phone: payload.phone,
-            to: {
-              $notNull: true
-            }
-          },
-          pagination: {
-            pageSize: 100
-          }
-        },
-        {
-          encodeValuesOnly: true
-        })
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsapps?${query}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${payload.token}`
-          }
-        })
-          .then(res => res.json())
-          .then((ownWhatsappMessages) => {
-            commit('getOwnWhatsappMessages', ownWhatsappMessages.data)
-            resolve(ownWhatsappMessages.data)
           })
       })
     } catch (error) {

@@ -1,10 +1,11 @@
 <template>
   <span
     class="ma-2 grey darken-3 rounded-lg pa-2 text-subtitle-1"
-    style="height:fit-content;width:fit-content;max-width:50%;overflow-wrap:break-word;position:relative;"
+    style="height:fit-content;width:fit-content;max-width:50%;overflow-wrap:break-word;position:relative;float:right;"
   >
     <ChatdeskOwnMessageText
       v-if="payload.type === 'text'"
+      :to="to"
       :payload="payload"
       :createdat="createdat"
     />
@@ -29,6 +30,10 @@ export default {
       required: true
     },
     createdat: {
+      type: String,
+      required: true
+    },
+    to: {
       type: String,
       required: true
     }

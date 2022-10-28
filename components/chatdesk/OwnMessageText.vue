@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="to !== 'dummy'">
     <span class="px-2 mb-3 mr-8">
       {{
         payload.text.body
@@ -21,6 +21,10 @@ export default {
       required: true
     },
     createdat: {
+      type: String,
+      required: true
+    },
+    to: {
       type: String,
       required: true
     }

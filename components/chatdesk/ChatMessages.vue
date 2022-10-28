@@ -1,18 +1,23 @@
 <template>
   <div class="parent-chat-message">
-    <ChatdeskThirdPartyBubble
+    <div
       v-for="message in whatsappMessages"
       :key="message.id"
-      :payload="message.payload"
-      class="partner-message"
-    />
-    <ChatdeskOwnBubble
-      v-for="message in ownWhatsappMessages"
-      :key="message.id"
-      :payload="message.payload"
-      :createdat="message.createdAt"
-      class="own-message"
-    />
+    >
+      <ChatdeskThirdPartyBubble
+        v-if="message.to === null"
+        :payload="message.payload"
+        class="partner-message"
+      />
+      <ChatdeskOwnBubble
+        v-if="message.to !== null && message.to !== 'dummy'"
+        :to="message.to"
+        :payload="message.payload"
+        :createdat="message.createdAt"
+        class="own-message"
+      />
+      <span v-if="message.to === 'dummy'" ref="goToScrollItem" style="display:hidden;" />
+    </div>
   </div>
 </template>
 <script>
@@ -23,9 +28,22 @@ export default {
   computed: {
     whatsappMessages () {
       return this.$store.state.whatsapp.whatsappMessages
-    },
-    ownWhatsappMessages () {
-      return this.$store.state.whatsapp.ownWhatsappMessages
+    }
+  },
+  watch: {
+    '$store.state.whatsapp.currentChat' () {
+      this.goToBottomOfChat()
+    }
+  },
+  mounted () {
+    this.goToBottomOfChat()
+  },
+  methods: {
+    goToBottomOfChat () {
+      setTimeout(() => {
+        const chatMessages = document.querySelector('.parent-chat-message')
+        chatMessages.scrollTop = chatMessages.scrollHeight
+      }, 500)
     }
   }
 }
