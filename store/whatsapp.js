@@ -203,7 +203,7 @@ export const actions = {
           pagination: {
             pageSize: 100
           },
-          sort: 'createdAt:desc'
+          sort: 'updatedAt:desc'
         },
         {
           encodeValuesOnly: true
