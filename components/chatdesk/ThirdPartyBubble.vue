@@ -1,6 +1,6 @@
 <template>
   <span
-    class="ma-2 green darken-4 darken-4 rounded-lg pa-2 text-subtitle-1"
+    class="ma-2 pb-4 green darken-4 darken-4 rounded-lg pa-2 text-subtitle-1"
     style="height:fit-content;width:fit-content;max-width:50%;overflow-wrap:break-word;position:relative;"
   >
     <ChatdeskMessageText

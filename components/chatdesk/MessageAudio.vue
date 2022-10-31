@@ -3,7 +3,7 @@
     <span class="px-2 mb-3 mr-8">
       <audio controls :src="audio" type="audio/ogg" />
     </span>
-    <span class="text-caption" style="right:10px;bottom:0;position:absolute;">
+    <span class="text-caption mt-3" style="right:10px;bottom:0;position:absolute;">
       {{
         getDateFromUnixTime(payload.entry[0].changes[0].value.messages[0].timestamp)
       }}
@@ -67,7 +67,7 @@ export default {
     },
     getDateFromUnixTime (unixTime) {
       const date = new Date(unixTime * 1000)
-      return `${date.getHours()}:${date.getMinutes()}`
+      return `${date.getHours()}:${date.getMinutes()} - ${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`
     }
   }
 }

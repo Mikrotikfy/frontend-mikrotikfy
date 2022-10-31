@@ -1,6 +1,6 @@
 <template>
   <span
-    class="ma-2 grey darken-3 rounded-lg pa-2 text-subtitle-1"
+    class="ma-2 pb-4 grey darken-3 rounded-lg pa-2 pl-10 text-subtitle-1"
     style="height:fit-content;width:fit-content;max-width:50%;overflow-wrap:break-word;position:relative;float:right;"
   >
     <ChatdeskOwnMessageText
@@ -45,7 +45,7 @@ export default {
   methods: {
     getDateFromUnixTime (unixTime) {
       const date = new Date(unixTime * 1000)
-      return `${date.getHours()}:${date.getMinutes()}`
+      return `${date.getHours()}:${date.getMinutes()} - ${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`
     }
   }
 }
