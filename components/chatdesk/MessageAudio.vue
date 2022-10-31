@@ -43,7 +43,7 @@ export default {
         }).then(async (media) => {
           const form = new FormData()
           form.append('files', await media.blob(), `${this.payload.entry[0].changes[0].value.messages[0].audio.id}.${media.type === 'audio/ogg; codecs=opus' ? 'ogg' : 'mp3'}`)
-          await fetch('http://localhost:1337/api/upload', {
+          await fetch(`${this.$config.API_STRAPI_ENDPOINT}upload`, {
             method: 'post',
             headers: {
               Authorization: `Bearer ${this.$store.state.auth.token}`
@@ -53,7 +53,7 @@ export default {
             .then(res => res.json())
             .then((res) => {
               this.createAudioEntry(res[0], this.payload.entry[0].changes[0].value.messages[0].audio.id)
-              this.audio = 'http://localhost:1337' + res[0].url
+              this.audio = `${this.$config.CDN_STRAPI_ENDPOINT}${res[0].url}`
             })
         })
       }
