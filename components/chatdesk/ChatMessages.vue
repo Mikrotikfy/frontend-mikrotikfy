@@ -51,7 +51,7 @@ export default {
 <style scoped>
   .parent-chat-message {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 10px;
     width:100%;
     height: 100%;

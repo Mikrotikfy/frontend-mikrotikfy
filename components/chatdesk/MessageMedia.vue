@@ -3,9 +3,10 @@
     <span class="px-2 mb-3 mr-8">
       <v-img
         :src="imgBlob"
-        max-width="500px"
+        max-width="350px"
         height="auto"
-        cover
+        contain
+        @click="imageZoom = true"
       />
     </span>
     <span class="text-caption" style="right:10px;bottom:0;position:absolute;">
@@ -13,6 +14,16 @@
         getDateFromUnixTime(payload.entry[0].changes[0].value.messages[0].timestamp)
       }}
     </span>
+    <v-dialog
+      v-model="imageZoom"
+      width="auto"
+    >
+      <v-img
+        :src="imgBlob"
+        height="auto"
+        contain
+      />
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -26,7 +37,8 @@ export default {
   },
   data () {
     return {
-      imgBlob: null
+      imgBlob: null,
+      imageZoom: false
     }
   },
   mounted () {

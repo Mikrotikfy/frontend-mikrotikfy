@@ -19,6 +19,10 @@
       v-if="payload.entry[0].changes[0].value.messages[0].type === 'reaction'"
       :payload="payload"
     />
+    <ChatdeskMessageAudio
+      v-if="payload.entry[0].changes[0].value.messages[0].type === 'audio'"
+      :payload="payload"
+    />
   </span>
 </template>
 <script>

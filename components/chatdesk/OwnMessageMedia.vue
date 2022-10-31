@@ -1,11 +1,12 @@
 <template>
-  <div>
+  <div style="width:350px;">
     <span class="px-2 mb-3 mr-8">
       <v-img
         :src="payload.image.link"
-        width="500px"
-        height="auto"
+        height="100%"
+        width="100%"
         cover
+        @click="imageZoom = true"
       />
     </span>
     <span class="text-caption" style="right:10px;bottom:0;position:absolute;">
@@ -13,6 +14,16 @@
         getDate(createdat)
       }}
     </span>
+    <v-dialog
+      v-model="imageZoom"
+      width="90%"
+    >
+      <v-img
+        :src="payload.image.link"
+        width="100%"
+        cover
+      />
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -30,7 +41,8 @@ export default {
   },
   data () {
     return {
-      imgBlob: null
+      imgBlob: null,
+      imageZoom: false
     }
   },
   mounted () {

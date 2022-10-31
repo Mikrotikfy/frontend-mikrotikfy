@@ -8,6 +8,7 @@
         <v-list-item
           v-for="(item, index) in whatsappContacts"
           :key="index"
+          :disabled="item.lastMessageOn ? getUnixTimeFromString(item.lastMessageOn) < Date.now() - 1000 * 60 * 60 * 24 : false"
           @click="openChat(item)"
         >
           <v-list-item-avatar>
@@ -39,7 +40,9 @@ export default {
         city: this.$route.query.city,
         token: this.$store.state.auth.token
       })
-      this.isAnySelected()
+      setInterval(() => {
+        this.isAnySelected()
+      }, 10000)
     },
     isAnySelected () {
       if (this.$route.query.phone) {
@@ -58,6 +61,11 @@ export default {
     openChat (item) {
       this.$router.push({ path: `/chatdesk?phone=${item.phone}&city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}` })
       this.getWhatsappMessages(item)
+    },
+    getUnixTimeFromString (dateStr) {
+      const date = new Date(dateStr)
+      const unixTimestamp = Math.floor(date.getTime() / 1000)
+      return unixTimestamp
     }
   }
 }

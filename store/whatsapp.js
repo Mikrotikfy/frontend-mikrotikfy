@@ -50,7 +50,41 @@ export const actions = {
         })
     })
   },
+  createAudioEntry ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsappmedias`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            mediaid: payload.mediaid,
+            url: payload.audio.url
+          }
+        })
+      })
+        .then(response => response.json())
+        .then((whatsappMedia) => {
+          resolve(whatsappMedia)
+        })
+    })
+  },
   getImgByMediaId ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}getwhatsappmedia?mediaid=${payload.id}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${payload.token}`
+        }
+      })
+        .then((whatsappMedia) => {
+          resolve(whatsappMedia)
+        })
+    })
+  },
+  getAudioByMediaId ({ commit }, payload) {
     return new Promise((resolve, reject) => {
       fetch(`${this.$config.API_STRAPI_ENDPOINT}getwhatsappmedia?mediaid=${payload.id}`, {
         method: 'GET',
@@ -138,7 +172,7 @@ export const actions = {
           pagination: {
             pageSize: 100
           },
-          sort: 'createdAt:asc'
+          sort: 'createdAt:desc'
         },
         {
           encodeValuesOnly: true
