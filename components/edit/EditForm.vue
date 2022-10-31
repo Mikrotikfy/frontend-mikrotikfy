@@ -406,15 +406,12 @@ export default {
       await this.$store.dispatch('client/updateClient', { client, index, operator, token: this.$store.state.auth.token })
       await this.$store.dispatch('client/updateClientCommentOnMikrotik', { client, token: this.$store.state.auth.token })
       this.$emit('updateSuccess')
-      this.$simpleTelegramUpdate({ client: this.client, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+      this.$simpleTelegramUpdate({ client, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
       this.loading = false
       this.dialogEdit = false
     },
     emitupdateClient () {
       this.$emit('updateSuccess')
-    },
-    genAddress () {
-      this.Client.address = `${this.dir1} ${this.dir2} ${this.dir3} ${this.dir4}`
     },
     getDate (date) {
       const dateObject = new Date(date)

@@ -410,7 +410,7 @@ export const actions = {
         body: JSON.stringify({
           data: {
             nap_onu_address: payload.ticketAdvance.nap_onu_address,
-            opticalPower: payload.ticketAdvance.opticalPower
+            opticalPower: '' + payload.ticketAdvance.opticalPower
           }
         })
       })

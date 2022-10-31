@@ -59,7 +59,6 @@ export default {
   },
   mounted () {
     this.searchClientInput = this.$route.params.search
-    console.log(this.$refs.searchClient)
     setTimeout(() => {
       this.$refs.searchClient.$refs.input.select()
       this.$refs.searchClient.$refs.input.focus()

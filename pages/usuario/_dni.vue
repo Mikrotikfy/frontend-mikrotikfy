@@ -65,10 +65,6 @@ export default {
       this.clients = await this.$store.dispatch('client/getByDni', {
         dni: this.dni
       })
-      const date = Date.now()
-      const month = new Date(date).getMonth()
-      const year = new Date(date).getFullYear()
-      console.log(date, month + 2, year)
     }
   },
   head () {

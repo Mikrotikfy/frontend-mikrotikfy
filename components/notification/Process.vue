@@ -105,7 +105,6 @@ export default {
         city: this.$route.query.city,
         clienttype: this.$route.query.clienttype
       })
-      console.log(clients)
       const search = codes.map((code) => {
         return clients.find((client) => {
           client.messageSent = null
@@ -115,7 +114,6 @@ export default {
       const filtered = search.filter(function (el) {
         return el !== undefined
       })
-      console.log(filtered)
       this.$store.commit('notification/setClients', filtered)
       this.$store.commit('notification/readyForSend')
       this.loading = false
