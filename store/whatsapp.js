@@ -202,7 +202,8 @@ export const actions = {
         const query = qs.stringify({
           pagination: {
             pageSize: 100
-          }
+          },
+          sort: 'createdAt:desc'
         },
         {
           encodeValuesOnly: true
