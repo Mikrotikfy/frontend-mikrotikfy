@@ -203,6 +203,7 @@ export const actions = {
           pagination: {
             pageSize: 100
           },
+          populate: ['lastwhatsapp'],
           sort: 'updatedAt:desc'
         },
         {
@@ -224,5 +225,25 @@ export const actions = {
     } catch (error) {
       throw new Error(`WHATSAPP CONTACTS ACTION ${error}`)
     }
+  },
+  setReadToTrue ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsappcontacts/${payload.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            read: true
+          }
+        })
+      })
+        .then(response => response.json())
+        .then((whatsappContacts) => {
+          resolve(whatsappContacts)
+        })
+    })
   }
 }

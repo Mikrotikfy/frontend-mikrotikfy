@@ -9,7 +9,7 @@
       </v-list-item-avatar>
 
       <v-list-item-content>
-        <v-list-item-title v-text="currentContact ? currentContact.name : ''" />
+        <v-list-item-title v-text="currentContact ? currentContact.name + ' - ' + currentContact.phone.slice(2) : ''" />
       </v-list-item-content>
     </v-list-item>
   </div>

@@ -17,8 +17,19 @@
 
           <v-list-item-content>
             <v-list-item-title v-text="item.name" />
-            <v-list-item-subtitle v-text="item.phone" />
+            <v-list-item-subtitle v-text="item.lastwhatsapp ? getMessage(item.lastwhatsapp) : ''" />
           </v-list-item-content>
+
+          <v-list-item-action>
+            <v-list-item-action-text class="d-flex mt-4 align-center">
+              <v-icon
+                v-if="!item.read"
+                color="green lighten-1"
+              >
+                mdi-circle
+              </v-icon>
+            </v-list-item-action-text>
+          </v-list-item-action>
         </v-list-item>
       </v-list-item-group>
     </v-list>
@@ -31,41 +42,78 @@ export default {
     selectedItem: null,
     header: 'Conversaciones recientes'
   }),
+  watch: {
+    '$route.query.phone' () {
+      this.getWhatsappMessages()
+    }
+  },
   mounted () {
     this.getWhatsappContacts()
+    this.setIntervalToGetWhatsappMessages()
   },
   methods: {
+    setIntervalToGetWhatsappMessages () {
+      setInterval(() => {
+        this.getWhatsappContacts()
+      }, 1000)
+    },
     async getWhatsappContacts () {
       this.whatsappContacts = await this.$store.dispatch('whatsapp/getWhatsappContacts', {
         city: this.$route.query.city,
         token: this.$store.state.auth.token
       })
-      setInterval(() => {
-        this.isAnySelected()
-      }, 10000)
+      this.isAnySelected()
     },
     isAnySelected () {
       if (this.$route.query.phone) {
         const f = c => c.phone === this.$route.query.phone
         this.selectedItem = this.whatsappContacts.findIndex(f)
-        this.openChat(this.whatsappContacts.find(f))
+        this.getWhatsappMessages()
       }
     },
-    getWhatsappMessages (item) {
+    getWhatsappMessages () {
       this.$store.dispatch('whatsapp/getWhatsappMessages', {
-        phone: item.phone,
+        phone: this.$route.query.phone,
         city: this.$route.query.city,
         token: this.$store.state.auth.token
       })
     },
     openChat (item) {
       this.$router.push({ path: `/chatdesk?phone=${item.phone}&city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}` })
-      this.getWhatsappMessages(item)
+      if (!item.read) {
+        this.setReadToTrue(item)
+      }
+    },
+    setReadToTrue (item) {
+      this.$store.dispatch('whatsapp/setReadToTrue', {
+        id: item.id,
+        token: this.$store.state.auth.token
+      })
     },
     getUnixTimeFromString (dateStr) {
       const date = new Date(dateStr)
       const unixTimestamp = Math.floor(date.getTime() / 1000)
       return unixTimestamp
+    },
+    getMessage (message) {
+      const type = message.payload.entry[0].changes[0].value.messages[0].type
+
+      if (type === 'text') {
+        return message.payload.entry[0].changes[0].value.messages[0].text.body
+      }
+      if (type === 'image') {
+        return '*Envió una imagen'
+      }
+      if (type === 'audio') {
+        return '*Envió un audio'
+      }
+      if (type === 'reaction') {
+        return '*Envió una reaccion'
+      }
+      if (type === 'video') {
+        return '*Envió un video'
+      }
+      return 'Otro'
     }
   }
 }
