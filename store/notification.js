@@ -80,17 +80,15 @@ export const actions = {
         })
     })
   },
-  notificationSent ({ commit }, payload) {
+  createBillAccount ({ commit }, payload) {
     const date = Date.now()
-    let month = new Date(date).getMonth()
-    month = month + 2
     const year = new Date(date).getFullYear()
-    const path = `fac/${payload.city.toLowerCase()}/${payload.clienttype.toLowerCase()}/${month}${year}_${payload.client.code}.pdf`
+    const path = `fac/${payload.month}/${payload.city.toLowerCase()}/${payload.clienttype.toLowerCase()}/${payload.month}${year}_${payload.client.code}.pdf`
     try {
       return new Promise((resolve, reject) => {
         const sentBody = {
           data: {
-            month: parseInt(month),
+            month: parseInt(payload.month),
             year: parseInt(year),
             path,
             success: payload.success,
@@ -107,11 +105,11 @@ export const actions = {
         })
           .then(res => res.json())
           .then((monthlybill) => {
-            commit('setClientSuccess', {
-              client: payload.client,
-              index: payload.index,
-              success: payload.success
-            })
+            // commit('setClientSuccess', {
+            //   client: payload.client,
+            //   index: payload.index,
+            //   success: payload.success
+            // })
             resolve(monthlybill.data)
           })
       })
@@ -162,7 +160,7 @@ export const actions = {
   },
   async getListOfBills ({ commit }, payload) {
     try {
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}listofbills?city=${payload.city}&clienttype=${payload.clienttype}`, {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}listofbills?city=${payload.city}&clienttype=${payload.clienttype}&month=${payload.month}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -171,7 +169,11 @@ export const actions = {
       })
         .then(res => res.json())
         .then((bills) => {
-          commit('getListOfBills', bills.data)
+          if (bills.data === null) {
+            commit('getListOfBills', [])
+          } else {
+            commit('getListOfBills', bills.data)
+          }
         })
     } catch (error) {
       throw new Error(`GET BILLS ACTION ${error}`)

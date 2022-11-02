@@ -9,7 +9,7 @@
           :disabled="loading || $store.state.notification.clients.length > 0"
           @click="getClientsFromCodes"
         >
-          Buscar Clientes
+          Generar Estados de Cuenta
         </v-btn>
         <v-btn
           class="mr-2"
@@ -53,6 +53,12 @@
 </template>
 <script>
 export default {
+  props: {
+    month: {
+      type: String,
+      default: ''
+    }
+  },
   data () {
     return {
       loading: false,
@@ -75,24 +81,24 @@ export default {
         await this.$store.dispatch('notification/sendWhatsapp', {
           client: clients[i],
           token: this.$store.state.auth.token
-        }).then(async (res) => {
+        }).then((res) => {
           console.log(res)
-          let success = false
-          if (
-            res &&
-            res.contacts &&
-            res.contacts[0]
-          ) {
-            success = true
-          }
-          await this.$store.dispatch('notification/notificationSent', {
-            token: this.$store.state.auth.token,
-            index: i,
-            success,
-            city: this.$route.query.city,
-            clienttype: this.$route.query.clienttype,
-            client: clients[i]
-          })
+          // let success = false
+          // if (
+          //   res &&
+          //   res.contacts &&
+          //   res.contacts[0]
+          // ) {
+          //   success = true
+          // }
+          // await this.$store.dispatch('notification/notificationSent', {
+          //   token: this.$store.state.auth.token,
+          //   index: i,
+          //   success,
+          //   city: this.$route.query.city,
+          //   clienttype: this.$route.query.clienttype,
+          //   client: clients[i]
+          // })
         })
       }
       this.loading = false
@@ -114,6 +120,16 @@ export default {
       const filtered = search.filter(function (el) {
         return el !== undefined
       })
+      for (let i = 0; i < filtered.length; i++) {
+        await this.$store.dispatch('notification/createBillAccount', {
+          token: this.$store.state.auth.token,
+          index: i,
+          city: this.$route.query.city,
+          clienttype: this.$route.query.clienttype,
+          client: filtered[i],
+          month: this.month
+        })
+      }
       this.$store.commit('notification/setClients', filtered)
       this.$store.commit('notification/readyForSend')
       this.loading = false

@@ -6,7 +6,16 @@
           <v-card-title>
             Notificacion masiva a usuarios
           </v-card-title>
-          <v-card-text>
+          <v-card-text v-if="e1 === 1">
+            <v-select
+              v-model="month"
+              :items="months"
+              label="Mes a facturar"
+              filled
+              rounded
+            />
+          </v-card-text>
+          <v-card-text v-if="month">
             <v-stepper v-model="e1">
               <v-stepper-header>
                 <v-stepper-step
@@ -45,7 +54,7 @@
                 </v-stepper-content>
 
                 <v-stepper-content step="2">
-                  <NotificationProcess />
+                  <NotificationProcess :month="month" />
                   <v-btn
                     color="primary"
                     @click="e1 = 3"
@@ -84,18 +93,72 @@ export default {
   data () {
     return {
       e1: 1,
-      message: 'Hello Vue!'
+      message: 'Hello Vue!',
+      month: null,
+      months: [
+        {
+          text: 'Enero',
+          value: '1'
+        },
+        {
+          text: 'Febrero',
+          value: '2'
+        },
+        {
+          text: 'Marzo',
+          value: '3'
+        },
+        {
+          text: 'Abril',
+          value: '4'
+        },
+        {
+          text: 'Mayo',
+          value: '5'
+        },
+        {
+          text: 'Junio',
+          value: '6'
+        },
+        {
+          text: 'Julio',
+          value: '7'
+        },
+        {
+          text: 'Agosto',
+          value: '8'
+        },
+        {
+          text: 'Septiembre',
+          value: '9'
+        },
+        {
+          text: 'Octubre',
+          value: '10'
+        },
+        {
+          text: 'Noviembre',
+          value: '11'
+        },
+        {
+          text: 'Diciembre',
+          value: '12'
+        }
+      ]
     }
   },
-  mounted () {
-    this.getListOfBills()
+  watch: {
+    month () {
+      this.getListOfBills()
+    }
   },
   methods: {
     getListOfBills () {
       this.$store.dispatch('notification/getListOfBills', {
         token: this.$store.state.auth.token,
         city: this.$route.query.city,
-        clienttype: this.$route.query.clienttype
+        clienttype: this.$route.query.clienttype,
+        month: this.month
       })
     }
   },
