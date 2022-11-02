@@ -291,7 +291,10 @@ export const actions = {
         dni: payload.dni
       },
       populate: [
-        'monthlybills'
+        'monthlybills',
+        'city',
+        'addresses',
+        'addresses.neighborhood'
       ]
     },
     {
