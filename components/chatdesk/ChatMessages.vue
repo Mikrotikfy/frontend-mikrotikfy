@@ -30,21 +30,9 @@ export default {
       return this.$store.state.whatsapp.whatsappMessages
     }
   },
-  watch: {
-    '$store.state.whatsapp.currentChat' () {
-      this.goToBottomOfChat()
-    }
-  },
   mounted () {
-    this.goToBottomOfChat()
   },
   methods: {
-    goToBottomOfChat () {
-      setTimeout(() => {
-        const chatMessages = document.querySelector('.parent-chat-message')
-        chatMessages.scrollTop = chatMessages.scrollHeight
-      }, 500)
-    }
   }
 }
 </script>

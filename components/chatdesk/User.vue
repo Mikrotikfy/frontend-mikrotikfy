@@ -1,5 +1,5 @@
 <template>
-  <div style="overflow-y: scroll;height: calc(95vh - 200px);">
+  <div ref="scroll" style="overflow-y:scroll;height: calc(95vh - 200px);" @scroll="scroll($event)">
     <v-list three-line>
       <v-list-item-group
         v-model="selectedItem"
@@ -38,10 +38,18 @@
 <script>
 export default {
   data: () => ({
-    whatsappContacts: [],
     selectedItem: null,
-    header: 'Conversaciones recientes'
+    header: 'Conversaciones recientes',
+    pagination: {
+      page: 1,
+      pageSize: 100
+    }
   }),
+  computed: {
+    whatsappContacts () {
+      return this.$store.state.whatsapp.whatsappContacts
+    }
+  },
   watch: {
     '$route.query.phone' () {
       this.getWhatsappMessages()
@@ -52,15 +60,45 @@ export default {
     this.setIntervalToGetWhatsappMessages()
   },
   methods: {
+    async scroll (e) {
+      const bottomOfWindow = this.$refs.scroll.scrollTop + this.$refs.scroll.clientHeight + 1 >= this.$refs.scroll.scrollHeight
+
+      if (bottomOfWindow) {
+        const count = await this.$store.dispatch('whatsapp/getWhatsappContactsCount', {
+          city: this.$route.query.city,
+          token: this.$store.state.auth.token
+        })
+        if (this.whatsappContacts.length < count) {
+          this.$store.dispatch('whatsapp/getMoreWhatsappContacts', {
+            city: this.$route.query.city,
+            token: this.$store.state.auth.token,
+            pagination: {
+              page: this.pagination.page + 1,
+              pageSize: this.pagination.pageSize
+            }
+          })
+        }
+      }
+    },
     setIntervalToGetWhatsappMessages () {
       setInterval(() => {
-        this.getWhatsappContacts()
+        this.getWhatsappContactsCount()
       }, 1000)
     },
-    async getWhatsappContacts () {
-      this.whatsappContacts = await this.$store.dispatch('whatsapp/getWhatsappContacts', {
+    async getWhatsappContactsCount () {
+      const count = await this.$store.dispatch('whatsapp/getWhatsappContactsCount', {
         city: this.$route.query.city,
         token: this.$store.state.auth.token
+      })
+      if (count > this.whatsappContacts.length) {
+        this.getWhatsappContacts()
+      }
+    },
+    async getWhatsappContacts () {
+      await this.$store.dispatch('whatsapp/getWhatsappContacts', {
+        city: this.$route.query.city,
+        token: this.$store.state.auth.token,
+        pagination: this.pagination
       })
       this.isAnySelected()
     },

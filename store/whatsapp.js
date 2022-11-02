@@ -1,12 +1,22 @@
 export const state = () => ({
   whatsappContacts: [],
+  whatsappContactsPagination: [],
   whatsappMessages: [],
   currentChat: null
 })
 export const mutations = {
   getWhatsappContacts (state, whatsappContacts) {
     try {
-      state.whatsappContacts = whatsappContacts
+      state.whatsappContacts = whatsappContacts.data
+      state.whatsappContactsPagination = whatsappContacts.meta.pagination
+    } catch (error) {
+      throw new Error(`WHATSAPP CONTACTS MUTATE ${error}`)
+    }
+  },
+  getMoreWhatsappContacts (state, whatsappContacts) {
+    try {
+      state.whatsappContacts = state.whatsappContacts.concat(whatsappContacts.data)
+      state.whatsappContactsPagination = whatsappContacts.meta.pagination
     } catch (error) {
       throw new Error(`WHATSAPP CONTACTS MUTATE ${error}`)
     }
@@ -29,6 +39,21 @@ export const mutations = {
   }
 }
 export const actions = {
+  getWhatsappContactsCount ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsappcontacts`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        }
+      })
+        .then(response => response.json())
+        .then((whatsappContacts) => {
+          resolve(whatsappContacts.meta.pagination.total)
+        })
+    })
+  },
   createMediaEntry ({ commit }, payload) {
     return new Promise((resolve, reject) => {
       fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsappmedias`, {
@@ -200,9 +225,7 @@ export const actions = {
       return new Promise((resolve, reject) => {
         const qs = require('qs')
         const query = qs.stringify({
-          pagination: {
-            pageSize: 100
-          },
+          pagination: payload.pagination,
           populate: ['lastwhatsapp'],
           sort: 'updatedAt:desc'
         },
@@ -218,7 +241,36 @@ export const actions = {
         })
           .then(res => res.json())
           .then((whatsappContacts) => {
-            commit('getWhatsappContacts', whatsappContacts.data)
+            commit('getWhatsappContacts', whatsappContacts)
+            resolve(whatsappContacts.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`WHATSAPP CONTACTS ACTION ${error}`)
+    }
+  },
+  getMoreWhatsappContacts ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        const qs = require('qs')
+        const query = qs.stringify({
+          pagination: payload.pagination,
+          populate: ['lastwhatsapp'],
+          sort: 'updatedAt:desc'
+        },
+        {
+          encodeValuesOnly: true
+        })
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsappcontacts?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((whatsappContacts) => {
+            commit('getMoreWhatsappContacts', whatsappContacts)
             resolve(whatsappContacts.data)
           })
       })
