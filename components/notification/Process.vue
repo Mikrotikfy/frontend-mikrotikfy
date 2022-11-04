@@ -81,24 +81,23 @@ export default {
         await this.$store.dispatch('notification/sendWhatsapp', {
           client: clients[i],
           token: this.$store.state.auth.token
-        }).then((res) => {
-          console.log(res)
-          // let success = false
-          // if (
-          //   res &&
-          //   res.contacts &&
-          //   res.contacts[0]
-          // ) {
-          //   success = true
-          // }
-          // await this.$store.dispatch('notification/notificationSent', {
-          //   token: this.$store.state.auth.token,
-          //   index: i,
-          //   success,
-          //   city: this.$route.query.city,
-          //   clienttype: this.$route.query.clienttype,
-          //   client: clients[i]
-          // })
+        }).then(async (res) => {
+          let success = false
+          if (
+            res &&
+            res.contacts &&
+            res.contacts[0]
+          ) {
+            success = true
+          }
+          await this.$store.dispatch('notification/updateSentStatus', {
+            token: this.$store.state.auth.token,
+            index: i,
+            success,
+            city: this.$route.query.city,
+            clienttype: this.$route.query.clienttype,
+            client: clients[i]
+          })
         })
       }
       this.loading = false
@@ -109,7 +108,8 @@ export default {
       const clients = await this.$store.dispatch('notification/getClients', {
         token: this.$store.state.auth.token,
         city: this.$route.query.city,
-        clienttype: this.$route.query.clienttype
+        clienttype: this.$route.query.clienttype,
+        month: this.month
       })
       const search = codes.map((code) => {
         return clients.find((client) => {

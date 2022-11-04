@@ -80,6 +80,72 @@ export const actions = {
         })
     })
   },
+  async updateSentStatus ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      filters: {
+        client: payload.client.id
+      },
+      sort: 'createdAt:desc'
+    },
+    {
+      encodeValuesOnly: true
+    })
+    await fetch(`${this.$config.API_STRAPI_ENDPOINT}monthlybills?${query}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${payload.token}`
+      }
+    })
+      .then((raw) => {
+        if (raw.status === 200) {
+          return raw.json()
+        } else {
+          this.$toast.error('No existe el movimiento monthlybill err#107')
+          return false
+        }
+      })
+      .then(async (monthlybills) => {
+        if (!monthlybills) {
+          return false
+        }
+        await fetch(`${this.$config.API_STRAPI_ENDPOINT}monthlybills/${monthlybills.data[0].id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              success: payload.success
+            }
+          })
+        })
+          .then((res) => {
+            if (res.status === 200) {
+              return res.json()
+            } else {
+              this.$toast.error('No se pudo actualizar movimiento err#131')
+              commit('setClientSuccess', {
+                index: payload.index,
+                success: payload.success
+              })
+              return false
+            }
+          })
+          .then((res) => {
+            if (!res) {
+              return false
+            }
+            this.$toast.info('Exito al actualizar movimiento')
+            commit('setClientSuccess', {
+              index: payload.index,
+              success: payload.success
+            })
+          })
+      })
+  },
   createBillAccount ({ commit }, payload) {
     const date = Date.now()
     const year = new Date(date).getFullYear()
@@ -92,7 +158,8 @@ export const actions = {
             year: parseInt(year),
             path,
             success: payload.success,
-            client: payload.client.id
+            client: payload.client.id,
+            type: payload.clienttype.toLowerCase()
           }
         }
         fetch(`${this.$config.API_STRAPI_ENDPOINT}monthlybills`, {
@@ -128,9 +195,21 @@ export const actions = {
           name: payload.clienttype
         },
         monthlybills: {
-          path: {
-            $null: true
-          }
+          $or: [
+            {
+              month: {
+                $ne: parseInt(payload.month)
+              }
+            },
+            {
+              path: {
+                $null: true
+              }
+            }
+          ]
+        },
+        phone: {
+          $ne: '0'
         }
       },
       pagination: {
