@@ -6,6 +6,7 @@
     <v-navigation-drawer
       v-model="drawer"
       class="no-printme"
+      color="grey darken-4"
       app
       :permanent="$store.state.isDesktop"
       :expand-on-hover="$store.state.isDesktop"
@@ -20,14 +21,14 @@
         class="my-2 ml-5"
         @change="changeTheme()"
       />
-      <v-list>
+      <v-list
+        nav
+      >
         <v-list-item
           v-for="(item, i) in menu"
           :key="i"
           :to="`${item.url}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
-          router
           exact
-          active-class="blue--text lighten-2"
         >
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
@@ -49,21 +50,6 @@
       class="elevation-0 transparent no-printme"
     >
       <v-app-bar-nav-icon v-if="!$store.state.isDesktop" @click.stop="drawer = !drawer" />
-      <v-btn
-        v-for="clienttype in $store.state.auth.clienttypes"
-        :key="clienttype.name"
-        class="ml-2"
-        :color="clienttype.name === $route.query.clienttype ? $vuetify.theme.dark ? 'blue darken-4 white--text' : 'blue darken-4' : 'white black--text'"
-        elevation="0"
-        rounded
-        small
-        :to="`${$route.path}?city=${$route.query.city}&clienttype=${clienttype.name}`"
-      >
-        <v-icon :class="!$store.state.isDesktop ? '' : 'mr-2'">
-          {{ clienttype.icon }}
-        </v-icon>
-        {{ !$store.state.isDesktop ? null : clienttype.name }}
-      </v-btn>
       <v-spacer />
       <v-switch
         v-if="$store.state.isDesktop"
@@ -90,7 +76,7 @@
         <v-btn
           v-for="city in $store.state.auth.cities"
           :key="city.name"
-          class="ml-2"
+          class="ml-2 rounded-xl"
           small
           :color="city.color"
           :to="`${$route.path}?city=${city.name}&clienttype=${$route.query.clienttype}`"
@@ -124,17 +110,6 @@
       </v-alert>
       <nuxt />
     </v-main>
-    <v-footer
-      app
-      inset
-      absolute
-      style="font-size:11px;"
-      class="text-center justify-center no-printme"
-    >
-      <span
-        class="text-center"
-      >&copy; 2019 - {{ new Date().getFullYear() }} Base de Datos interactiva - Desarrollada para ARNOProducciones por Nicolas Echeverry - Todos los derechos reservados.</span>
-    </v-footer>
   </v-app>
 </template>
 
@@ -147,7 +122,8 @@ export default {
       light: null,
       hasPendingChanges: false,
       drawer: false,
-      title: 'Aplicación de Gestión Dinámica ARNOP'
+      title: 'Aplicación de Gestión Dinámica ARNOP',
+      rounded: false
     }
   },
   computed: {

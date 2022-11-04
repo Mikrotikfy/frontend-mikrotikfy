@@ -11,7 +11,7 @@
           v-on="on"
           @click="initComponent()"
         >
-          <v-icon>mdi-comment-text-multiple-outline</v-icon>
+          <v-icon>mdi-history</v-icon>
           <span v-if="block">
             Historial de Tickets
           </span>

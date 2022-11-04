@@ -25,6 +25,50 @@
         </v-card-title>
       </v-card>
     </v-row>
+    <v-row v-if="clients.length > 0">
+      <v-col>
+        <v-card class="rounded-xl mb-5">
+          <v-card-text>
+            <div>
+              <v-btn
+                color="blue darken-4 white--text"
+                dark
+                elevation="0"
+                rounded
+                class="mr-2"
+                @click="createDialog = true"
+              >
+                <v-icon>mdi-plus</v-icon>
+                Nuevo Cliente
+              </v-btn>
+              <v-btn
+                color="white black--text"
+                dark
+                rounded
+                class="mr-4"
+                elevation="0"
+                :disabled="refreshLoading"
+                :loading="refreshLoading"
+                @click="refreshActiveClients"
+              >
+                <v-icon>mdi-reload</v-icon>
+              </v-btn>
+              <v-spacer />
+              <!-- <v-text-field
+                :value="options.itemsPerPage"
+                label="Clientes por Pagina"
+                type="number"
+                min="5"
+                max="50"
+                width="80px"
+                hide-details
+                @input="options.itemsPerPage = parseInt($event, 10)"
+              /> -->
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
     <v-row v-if="clients.length > 0" class="mt-0">
       <v-col class="pt-0">
         <v-card class="elevation-0 rounded-xl">
@@ -39,52 +83,12 @@
                 :page.sync="page"
                 :options.sync="options"
                 :loading="loadingDataTable"
-                :item-class="clienttype.name === 'INTERNET' ? itemRowBackground : ''"
                 no-data-text="No hay resultados a la busqueda..."
                 loading-text="Cargando información de clientes..."
-                dense
                 hide-default-footer
                 mobile-breakpoint="100"
                 @page-count="pageCount = $event"
               >
-                <template v-slot:top>
-                  <div class="mb-4">
-                    <v-btn
-                      color="blue darken-4 white--text"
-                      dark
-                      elevation="0"
-                      rounded
-                      class="mr-2"
-                      @click="createDialog = true"
-                    >
-                      <v-icon>mdi-plus</v-icon>
-                      Nuevo Cliente
-                    </v-btn>
-                    <v-btn
-                      color="white black--text"
-                      dark
-                      rounded
-                      class="mr-4"
-                      elevation="0"
-                      :disabled="refreshLoading"
-                      :loading="refreshLoading"
-                      @click="refreshActiveClients"
-                    >
-                      <v-icon>mdi-reload</v-icon>
-                    </v-btn>
-                    <v-spacer />
-                    <!-- <v-text-field
-                      :value="options.itemsPerPage"
-                      label="Clientes por Pagina"
-                      type="number"
-                      min="5"
-                      max="50"
-                      width="80px"
-                      hide-details
-                      @input="options.itemsPerPage = parseInt($event, 10)"
-                    /> -->
-                  </div>
-                </template>
                 <template v-if="clienttype.name === 'INTERNET'" v-slot:[`item.plan.name`]="props">
                   <MainClientControl :client="props.item" :index="clients.map(function(x) {return x.id; }).indexOf(props.item.id)" />
                 </template>
@@ -106,9 +110,9 @@
                   {{ item.addresses.length > 0 ? item.addresses.at(-1).neighborhood.name : item.neighborhood.name }}
                 </template>
                 <template v-slot:[`item.technology.name`]="{ item }">
-                  <v-chip small class="white black--text">
+                  <strong>
                     {{ item.technology ? item.technology.name : 'No Reg.' }}
-                  </v-chip>
+                  </strong>
                 </template>
                 <template v-slot:[`item.newModel`]="{ item }">
                   <svg height="13" width="20">
@@ -175,7 +179,7 @@
                 <template v-slot:[`item.actions`]="{ item }">
                   <div style="white-space:nowrap">
                     <!-- <MainTramits :client="item" /> -->
-                    <MiscInfoSell v-if="$isAdmin() || $isBiller()" :client="item" />
+                    <!-- <MiscInfoSell v-if="$isAdmin() || $isBiller()" :client="item" /> -->
                     <CreateTicket
                       :client="item"
                       :assignated="$store.state.auth.id"
@@ -197,10 +201,10 @@
                       :name="item.name"
                       :clientid="item.id"
                     />
-                    <MainIpModel
+                    <!-- <MainIpModel
                       v-if="clienttype.name === 'INTERNET' && $isAdmin()"
                       :client="item"
-                    />
+                    /> -->
                     <EditForm
                       :client="item"
                       :index="clients.indexOf(item)"
@@ -368,15 +372,6 @@ export default {
   methods: {
     redirectToBilling () {
       this.$router.push({ path: `/billing/${this.$route.params.search}`, query: { city: this.$route.query.city, clienttype: this.$route.query.clienttype } })
-    },
-    itemRowBackground (item) {
-      if (this.$vuetify.theme.dark) {
-        if (item.status === 'red') {
-          return 'offline'
-        } else {
-          return 'online'
-        }
-      }
     },
     async refreshActiveClients () {
       this.refreshLoading = true
