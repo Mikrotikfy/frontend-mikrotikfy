@@ -120,10 +120,10 @@
                 <span v-else>{{props.item.client.name}}</span>
               </template>
               <template v-slot:[`item.client.address`]="{ item }">
-                  {{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).address : item.client.address }}
+                  <strong>{{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).address : item.client.address }}</strong>
               </template>
               <template v-slot:[`item.client.neighborhood.name`]="{ item }">
-                  {{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).neighborhood.name : item.client.neighborhood.name }}
+                  <strong>{{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).neighborhood.name : item.client.neighborhood.name }}</strong>
               </template>
               <template v-slot:[`item.client.code`]="props">
                 <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`">{{props.item.client.code}}</nuxt-link>

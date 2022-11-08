@@ -50,6 +50,21 @@
       class="elevation-0 transparent no-printme"
     >
       <v-app-bar-nav-icon v-if="!$store.state.isDesktop" @click.stop="drawer = !drawer" />
+      <v-btn
+        v-for="clienttype in $store.state.auth.clienttypes"
+        :key="clienttype.name"
+        class="ml-2"
+        :color="clienttype.name === $route.query.clienttype ? $vuetify.theme.dark ? 'blue darken-4 white--text' : 'blue darken-4' : 'white black--text'"
+        elevation="0"
+        rounded
+        small
+        :to="`${$route.path}?city=${$route.query.city}&clienttype=${clienttype.name}`"
+      >
+        <v-icon :class="!$store.state.isDesktop ? '' : 'mr-2'">
+          {{ clienttype.icon }}
+        </v-icon>
+        {{ !$store.state.isDesktop ? null : clienttype.name }}
+      </v-btn>
       <v-spacer />
       <v-switch
         v-if="$store.state.isDesktop"
