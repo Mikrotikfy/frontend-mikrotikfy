@@ -16,6 +16,7 @@
               rouned
               prepend-icon="mdi-account"
               hide-details="auto"
+              @keyup.enter="searchAccount"
             />
           </v-card-text>
           <v-card-text class="d-flex justify-center pb-5">

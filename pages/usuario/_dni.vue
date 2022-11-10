@@ -3,12 +3,13 @@
     <v-row class="justify-center">
       <v-col cols="12" md="7" xl="5">
         <v-card class="rounded-xl">
-          <v-card-title>
+          <v-card-title v-if="!$route.params.dni">
             Consulta tu estado de cuenta
           </v-card-title>
-          <v-divider />
+          <v-divider v-if="!$route.params.dni" />
           <v-card-text>
             <v-text-field
+              v-if="!$route.params.dni"
               v-model="dni"
               :rules="valid_dni"
               label="Ingresu tu cedula"
@@ -16,6 +17,7 @@
               rouned
               prepend-icon="mdi-account"
               hide-details="auto"
+              @keyup.enter="searchAccount"
             />
           </v-card-text>
           <v-card-text class="d-flex justify-center pb-5">
@@ -39,21 +41,31 @@
           </v-card-title>
           <v-card-text v-for="client in clients" :key="client.id">
             <div v-if="client.monthlybills.length > 0">
-              <h3>{{ client.name }}</h3>
+              <h3>{{ client.city.name }} - {{ client.name }}</h3>
               <p>{{ client.addresses ? client.addresses.at(-1).address + ' ' + client.addresses.at(-1).neighborhood.name : client.address }}</p>
               <v-chip
                 v-for="bill in client.monthlybills"
                 :key="bill.id"
                 class="text-h6 mr-3 primary"
-                :href="`${this.$config.CDN_STRAPI_ENDPOINT}${bill.path}`"
+                :href="`${$config.CDN_STRAPI_ENDPOINT}${bill.path}`"
               >
                 {{ bill.type === 'internet' ? 'INTERNET' : 'TELEVISION' }}
               </v-chip>
             </div>
             <div v-else>
-              {{ client.name }} no tiene estados de cuenta.
+              {{ client.city.name }} - {{ client.name }} no tiene estados de cuenta.
             </div>
+            <v-divider class="mt-5" />
           </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row v-else class="justify-center">
+      <v-col cols="12" md="7" xl="5">
+        <v-card class="rounded-xl">
+          <v-card-title>
+            No hemos encontrado información sobre este usuario.
+          </v-card-title>
         </v-card>
       </v-col>
     </v-row>
@@ -76,7 +88,7 @@ export default {
   data () {
     return {
       dni: '',
-      clients: null,
+      clients: [],
       valid_dni: [
         value => !!value || 'Debes especificar la cedula',
         (value) => {
@@ -98,6 +110,9 @@ export default {
     async searchAccount () {
       if (this.dni === '') {
         this.$router.push({ path: '/usuario/' })
+      }
+      if (this.dni !== this.$route.params.dni) {
+        this.$router.push({ path: `/usuario/${this.dni}` })
       }
       this.clients = await this.$store.dispatch('client/getByDni', {
         dni: this.dni
