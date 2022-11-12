@@ -367,8 +367,14 @@ export default {
     this.getResolution()
     this.refreshTickets()
     this.getTickettypes()
+    this.setGetTicketsInterval()
   },
   methods: {
+    setGetTicketsInterval () {
+      setInterval(() => {
+        this.refreshTickets()
+      }, 60000)
+    },
     testPlanDx (client) {
       return client.debtmovements.at(-1)?.isindebt || client.debtmovements?.at(-1)?.isretired
     },
