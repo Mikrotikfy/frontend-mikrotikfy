@@ -47,7 +47,7 @@
                 v-for="bill in client.monthlybills"
                 :key="bill.id"
                 class="text-h6 mr-3 primary"
-                :href="`${$config.CDN_STRAPI_ENDPOINT}${bill.path}`"
+                :href="`${$config.CDN_STRAPI_ENDPOINT}/${bill.path}`"
               >
                 {{ bill.type === 'internet' ? 'INTERNET' : 'TELEVISION' }}
               </v-chip>
