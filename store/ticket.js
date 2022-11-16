@@ -25,16 +25,15 @@ export const mutations = {
     if (clienttype === 'INTERNET') {
       state.headers = [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
+        { text: 'Tipo', sortable: false, value: 'tickettype.name' },
+        { text: 'Observaciones', sortable: false, value: 'details', width: 400, align: ' d-none d-lg-table-cell' },
+        { text: 'Barrio', sortable: true, value: 'client.neighborhood.name' },
+        { text: 'Dirección', sortable: false, value: 'client.address', align: ' d-none d-lg-table-cell' },
         { text: 'Codigo', sortable: false, value: 'client.code', width: 60, align: ' d-none d-lg-table-cell' },
-        { text: 'Cédula', sortable: false, value: 'client.dni', width: 60, align: ' d-none d-lg-table-cell' },
         { text: 'Cliente', sortable: false, value: 'client.name' },
         { text: 'Telefono', sortable: false, value: 'client.phone', align: ' d-none d-lg-table-cell' },
-        { text: 'Dirección', sortable: false, value: 'client.address', align: ' d-none d-lg-table-cell' },
-        { text: 'Barrio', sortable: true, value: 'client.neighborhood.name' },
         { text: 'Tec.', sortable: false, value: 'client.technology.name', align: ' d-none d-lg-table-cell' },
-        { text: 'Tipo', sortable: false, value: 'tickettype.name' },
         { text: 'Creado por', sortable: false, value: 'assignated.username', align: ' d-none d-lg-table-cell' },
-        { text: 'Observaciones', sortable: false, value: 'details', width: 400, align: ' d-none d-lg-table-cell' },
         { text: 'Creado el', sortable: false, value: 'createdAt', align: ' d-none d-lg-table-cell' },
         { text: 'Acciones', sortable: false, value: 'actions', align: ' d-none d-lg-table-cell' }
       ]
