@@ -12,7 +12,7 @@
           v-for="number in contact.phones"
           :key="number.phone"
         >
-          {{number.phone}}
+          {{ number.phone }}
         </span>
       </span>
     </span>

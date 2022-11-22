@@ -3,7 +3,9 @@
     <v-container class="justify-center d-flex">
       <v-card width="90%">
         <v-card-title class="text-center justify-center">
-          <span class="headline">Gestión de Tarifas Masivamente {{$route.query.city}}</span>
+          <span class="headline">Gestión de Tarifas Masivamente {{
+            $route.query.city
+          }}</span>
         </v-card-title>
         <v-card-text>
           <v-stepper v-model="e1">

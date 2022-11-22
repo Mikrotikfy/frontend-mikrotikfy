@@ -48,7 +48,9 @@
           Resumen de su cuenta
         </div>
         <div class="sub-parent-resume" style="border-radius:0px 0px 10px 10px;">
-          <h3 class="blue darken-2 white--text rounded-xl px-2" style="margin-left:-5px;">SALDO TOTAL: $170.000</h3>
+          <h3 class="blue darken-2 white--text rounded-xl px-2" style="margin-left:-5px;">
+            SALDO TOTAL: $170.000
+          </h3>
           <h4>SALDOS AGOSTO: 50.000</h4>
           <h4>SALDOS JULIO: 50.000</h4>
           <h4>SALDOS EQUIPOS: 70.000</h4>
@@ -81,7 +83,8 @@
       </div>
       <div>
         <p class="text-caption">
-          ARNOProducciones empresa de telecomunicaciones del norte del tolima. Porque ya somos parte de tu hogar. Conozca nuestra politica de tratamiento de datos en www.arnoproducciones.com - Conozca los derechos y deberes como usuario de servicios de comunicaciones en www.comunicadoscomoes.gov.co - ARNOProducciones ofrece el servicio de atención en dias no laborales para atender sus solicitudes de domingo a domingo incluidos festivos a nuestra linea de atención 310 343 25 99 en Mariquita y 350 810 59 49 en Fresno. Porque ya somos parte de tu hogar. </p>
+          ARNOProducciones empresa de telecomunicaciones del norte del tolima. Porque ya somos parte de tu hogar. Conozca nuestra politica de tratamiento de datos en www.arnoproducciones.com - Conozca los derechos y deberes como usuario de servicios de comunicaciones en www.comunicadoscomoes.gov.co - ARNOProducciones ofrece el servicio de atención en dias no laborales para atender sus solicitudes de domingo a domingo incluidos festivos a nuestra linea de atención 310 343 25 99 en Mariquita y 350 810 59 49 en Fresno. Porque ya somos parte de tu hogar.
+        </p>
       </div>
     </v-container>
     <v-container class="parent-payment">

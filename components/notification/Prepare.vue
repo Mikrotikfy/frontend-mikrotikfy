@@ -16,6 +16,14 @@
       :headers="headers"
       :items="bills"
     />
+    <v-btn
+      :disabled="!readyForSend"
+      color="primary"
+      class="mt-2"
+      @click="nextE1"
+    >
+      Continuar
+    </v-btn>
   </div>
 </template>
 <script>
@@ -36,9 +44,15 @@ export default {
           file: bill
         }
       })
+    },
+    readyForSend () {
+      return this.$store.state.notification.readyForSend
     }
   },
   methods: {
+    nextE1 () {
+      this.$store.commit('notification/e1', { e1: 2 })
+    },
     getCodesFromBills () {
       const codes = this.bills.map((bill) => {
         return bill.file.split('_')[1].split('.')[0]

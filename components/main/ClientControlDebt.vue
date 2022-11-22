@@ -16,7 +16,8 @@
         :disabled="$store.state.offer.offerHistory < 1 ? true : false"
         x-large
         rounded
-        @click="setNewDebt">
+        @click="setNewDebt"
+      >
         <v-icon>{{ isRetired ? 'mdi-check-all' : isInDebt ? 'mdi-check-all' : 'mdi-cancel' }}</v-icon>
         {{ isRetired ? 'REACTIVAR' : isInDebt ? 'RECONECTAR' : 'CORTAR' }}
       </v-btn>

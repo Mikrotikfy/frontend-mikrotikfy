@@ -74,7 +74,7 @@
                     >
                       <div class="parent">
                         <span>{{ client.name }}</span>
-                        <span>{{ client.addresses ? client.addresses.langth > 0 ? client.addresses.at(-1).address + ' ' + client.addresses.at(-1).neighborhood.name : client.address : client.address}}</span>
+                        <span>{{ client.addresses ? client.addresses.langth > 0 ? client.addresses.at(-1).address + ' ' + client.addresses.at(-1).neighborhood.name : client.address : client.address }}</span>
                         <span class="rounded-xl px-2 text-h6 text-weigth-bold">{{ client.city.name }}</span>
                         <span>
                           <v-btn

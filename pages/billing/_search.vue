@@ -14,7 +14,7 @@
       <v-col cols="7" class="parent">
         <v-card class="rounded-xl" style="overflow-y:scroll;">
           <v-card-title>
-            <span :class="this.$store.state.billing.showArchive ? 'headline ml-4 red darken-4 rounded-xl px-2' : 'headline ml-4'">{{ this.$store.state.billing.showArchive ? 'ARCHIVO DE CUENTA' : 'Movimiento de Cuenta'}}</span>
+            <span :class="this.$store.state.billing.showArchive ? 'headline ml-4 red darken-4 rounded-xl px-2' : 'headline ml-4'">{{ this.$store.state.billing.showArchive ? 'ARCHIVO DE CUENTA' : 'Movimiento de Cuenta' }}</span>
             <v-spacer />
             <BillingToggleArchive />
             <BillingPrintMovement />

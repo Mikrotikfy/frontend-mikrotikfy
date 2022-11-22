@@ -101,7 +101,6 @@ export default {
           const parts = text.split('\n')
           const data = parts.map((part, index) => {
             const sanPart = part.replace('0/', '').replace('ONU Register', 'Registro').replace('Auth Success', 'Autentico').replace('ONU Finish', 'Finalizo').replace('Dying Gasp', 'Perdida_Potencia').replace('Event Notific', 'N/A').replace('ONU Port Los', 'Perdida_Potencia').replace('ONU Deregister', 'Cayó').replace('ONU AUTH Success', 'Autentico').replace(/ +(?= )/g, '')
-            console.log(sanPart)
             // eslint-disable-next-line no-unused-vars
             const [createdAt, hostname, auditd, type, PON, ponnumber, ONU, onunumber, mac] = sanPart.split(' ')
             return {

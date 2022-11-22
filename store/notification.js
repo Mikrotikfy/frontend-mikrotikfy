@@ -1,11 +1,19 @@
 export const state = () => ({
+  e1: 1,
   readyForSend: false,
   bills: [],
   codes: [],
   clients: [],
-  sendIndex: 0
+  sendIndex: 0,
+  month: null
 })
 export const mutations = {
+  e1 (state, payload) {
+    state.e1 = payload.e1
+  },
+  setMonth (state, payload) {
+    state.month = payload.month
+  },
   setClientSuccess (state, payload) {
     state.clients[payload.index].messageSent = payload.success
   },
