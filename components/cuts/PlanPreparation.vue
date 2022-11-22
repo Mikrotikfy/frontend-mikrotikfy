@@ -1,21 +1,31 @@
 <template>
-  <v-card>
-    <v-card-title>
-      Aplicar Tarifa a <strong v-if="$store.state.cuts.clientsByPlan.length > 0" class="ml-1 mr-1"> {{ this.$store.state.cuts.clientsByPlan.length }} </strong> clientes
-    </v-card-title>
-    <v-card-text>
-      <v-form>
-        <v-select
-          v-model="offer"
-          :items="offers"
-          label="Tarifas Disponibles"
-          item-text="name"
-          item-value="id"
-          return-object
-        />
-      </v-form>
-    </v-card-text>
-  </v-card>
+  <div>
+    <v-card>
+      <v-card-title>
+        Aplicar Tarifa a <strong v-if="clientsByPlan.length > 0" class="ml-1 mr-1"> {{ clientsByPlan.length }} </strong> clientes
+      </v-card-title>
+      <v-card-text>
+        <v-form>
+          <v-select
+            v-model="offer"
+            :items="offers"
+            label="Tarifas Disponibles"
+            item-text="name"
+            item-value="id"
+            return-object
+          />
+        </v-form>
+      </v-card-text>
+    </v-card>
+    <v-btn
+      v-if="(clients.length > 0 || clientsByPlan.length > 0) && !loading"
+      color="primary"
+      class="mt-5"
+      @click="process"
+    >
+      Continuar
+    </v-btn>
+  </div>
 </template>
 <script>
 export default {
@@ -28,6 +38,9 @@ export default {
   },
   computed: {
     clients () {
+      return this.$store.state.cuts.clientsByPlan
+    },
+    clientsByPlan () {
       return this.$store.state.cuts.clientsByPlan
     }
   },

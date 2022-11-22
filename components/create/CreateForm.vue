@@ -414,7 +414,7 @@ export default {
         })
     },
     async createClient () {
-      if (this.Client.code === '' || this.Client.name === '' || this.Client.dni === '' || this.Client.neighborhood === null || this.Client.city === '' || this.Client.phone === '' || this.Client.email === null) {
+      if (this.Client.code === '' || this.Client.offer === null || this.Client.name === '' || this.Client.dni === '' || this.Client.neighborhood === null || this.Client.city === '' || this.Client.phone === '' || this.Client.email === null) {
         this.$toast.error('Por favor, complete todos los campos.')
         return
       }

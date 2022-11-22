@@ -1,24 +1,34 @@
 <template>
-  <v-card>
-    <v-card-text v-if="!prepare" class="justify-center d-flex">
-      <v-btn
-        color="primary"
-        large
-        @click="prepareClients"
-      >
-        <v-icon>mdi-magnify</v-icon>
-        <span>Preparar Cortes</span>
-      </v-btn>
-    </v-card-text>
-    <v-card-text v-else>
-      <v-data-table
-        :headers="headers"
-        :items="clients ? clients : clientsByPlan"
-        :loading="loading"
-        :item-class="getcolor"
-      />
-    </v-card-text>
-  </v-card>
+  <div>
+    <v-card>
+      <v-card-text v-if="!prepare" class="justify-center d-flex">
+        <v-btn
+          color="primary"
+          large
+          @click="prepareClients"
+        >
+          <v-icon>mdi-magnify</v-icon>
+          <span>Preparar Cortes</span>
+        </v-btn>
+      </v-card-text>
+      <v-card-text v-else>
+        <v-data-table
+          :headers="headers"
+          :items="clients ? clients : clientsByPlan"
+          :loading="loading"
+          :item-class="getcolor"
+        />
+      </v-card-text>
+    </v-card>
+    <v-btn
+      v-if="(clients.length > 0 || clientsByPlan.length > 0) && !loading"
+      color="primary"
+      class="mt-5"
+      @click="process"
+    >
+      Continuar
+    </v-btn>
+  </div>
 </template>
 <script>
 export default {
@@ -30,7 +40,6 @@ export default {
   },
   data () {
     return {
-      prepare: false,
       headers: [
         { text: 'Codigo', value: 'code' },
         { text: 'Nombre', value: 'name' },
@@ -42,8 +51,17 @@ export default {
     }
   },
   computed: {
+    prepare () {
+      return this.$store.state.cuts.prepare
+    },
     ready () {
       return this.$store.state.cuts.ready
+    },
+    applyOffer () {
+      return this.$store.state.cuts.applyOffer
+    },
+    offer () {
+      return this.$store.state.cuts.offer
     },
     clients () {
       return this.$store.state.cuts.clients
@@ -62,7 +80,7 @@ export default {
         this.$store.commit('cuts/reseterror')
         this.$store.commit('cuts/resetcuts')
         this.$store.commit('cuts/resetvalid')
-        this.prepare = false
+        this.$store.commit('cuts/prepare', false)
       }
     },
     $route () {
@@ -70,18 +88,25 @@ export default {
       this.$store.commit('cuts/reseterror')
       this.$store.commit('cuts/resetcuts')
       this.$store.commit('cuts/resetvalid')
-      this.prepare = false
+      this.$store.commit('cuts/prepare', false)
     }
   },
   methods: {
+    process () {
+      this.$store.commit('cuts/e1', '4')
+    },
     async prepareClients () {
-      this.prepare = true
-      this.$store.commit('cuts/reset')
-      this.$store.commit('cuts/loading', true)
       if (!this.ready) {
         this.$toast.error('No hay clientes para preparar')
         return
       }
+      if (this.applyOffer && !this.offer) {
+        this.$toast.error('No has seleccionado la oferta para continuar')
+        return
+      }
+      this.$store.commit('cuts/prepare', true)
+      this.$store.commit('cuts/reset')
+      this.$store.commit('cuts/loading', true)
       for (let i = 0; i < this.ready.length; i++) {
         await this.$store.dispatch('cuts/prepareClients', {
           city: this.$route.query.city,

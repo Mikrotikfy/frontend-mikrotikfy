@@ -8,14 +8,9 @@
         :loading="loading"
         @click="makeCuts"
       >
-        Iniciar proceso de cortes
+        {{ $store.state.cuts.applyOffer ? 'Iniciar proceso de cambio de tarifas' : 'Iniciar proceso de cortes' }}
       </v-btn>
     </span>
-    <v-card>
-      <v-card-title>
-        Proceso
-      </v-card-title>
-    </v-card>
     <v-card v-if="inprocess">
       <v-card-text>
         <v-data-table
@@ -74,6 +69,12 @@ export default {
     kick () {
       return this.$store.state.cuts.kick
     },
+    applyOffer () {
+      return this.$store.state.cuts.applyOffer
+    },
+    offer () {
+      return this.$store.state.cuts.offer
+    },
     loading () {
       return this.$store.state.cuts.loading
     },
@@ -96,14 +97,64 @@ export default {
     },
     async makeCuts () {
       this.inprocess = true
+      this.$store.commit('cuts/loading', true)
+      this.$store.commit('cuts/resetcuts')
+
+      await this.addBillingPeriod()
+
+      if (this.applyOffer && this.offer) {
+        await this.applyOffers()
+        this.$store.commit('cuts/loading', false)
+      } else {
+        await this.cutsProcess()
+        this.$store.commit('cuts/loading', false)
+      }
+    },
+    async addBillingPeriod () {
       await this.$store.dispatch('cuts/addBillingPeriod', {
         city: this.city,
         token: this.$store.state.auth.token,
         name: this.getMonthName()
       })
-      this.$store.commit('cuts/loading', true)
-      this.$store.commit('cuts/resetcuts')
-
+    },
+    async applyOffers () {
+      for (let i = 0; i < this.validClients.length; i++) {
+        const client = this.validClients[i]
+        await this.$store.dispatch('offer/setNewOffer', {
+          token: this.$store.state.auth.token,
+          city: this.city,
+          isindebt: true,
+          isretired: false,
+          isBulkDx: true,
+          client,
+          comment: 'CAMBIO DE TARIFA EN LOTE',
+          technician: this.$store.state.auth
+        }).then(async () => {
+          this.$simpleTelegramUpdateDebt({ client, operator: this.$store.state.auth.username, isInDebt: true, isRetired: false, telegramBots: this.telegramBots })
+          await this.$store.dispatch('client/setPlanFromModal', {
+            clientId: client.id,
+            clientIndex: null,
+            isOfferChange: false,
+            kick: this.kick,
+            isBulkDx: true,
+            newPlan: { id: 7 },
+            operator: this.$store.state.auth.id,
+            token: this.$store.state.auth.token
+          }).then((success) => {
+            if (success) {
+              this.$store.commit('cuts/addCut', {
+                client
+              })
+            } else {
+              this.$store.commit('cuts/addCutError', {
+                client
+              })
+            }
+          })
+        })
+      }
+    },
+    async cutsProcess () {
       for (let i = 0; i < this.validClients.length; i++) {
         const client = this.validClients[i]
         await this.$store.dispatch('offer/setNewDebt', {
@@ -139,7 +190,6 @@ export default {
           })
         })
       }
-      this.$store.commit('cuts/loading', false)
     },
     getcolor (item) {
       if (item.success) {

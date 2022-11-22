@@ -1,21 +1,36 @@
 export const state = () => ({
-  ready: [],
+  applyOffer: false,
+  usePlan: false,
+  billingPeriod: null,
+  billingPeriodMovements: [],
   clients: [],
   clientsByPlan: [],
-  plans: [],
-  validClients: [],
-  cuts: [],
   cutErrors: [],
-  inprocess: false,
-  loading: false,
-  kick: false,
+  cuts: [],
+  e1: '1',
   errors: 0,
-  type: null,
+  inprocess: false,
+  kick: false,
+  loading: false,
+  month: null,
+  offer: null,
   offerForBulkProcess: null,
-  billingPeriod: null,
-  billingPeriodMovements: []
+  plans: [],
+  prepare: false,
+  ready: [],
+  type: null,
+  validClients: []
 })
 export const mutations = {
+  e1 (state, e1) {
+    state.e1 = e1
+  },
+  usePlan (state, usePlan) {
+    state.usePlan = usePlan
+  },
+  setMonth (state, month) {
+    state.month = month
+  },
   setOfferForBulkProcess (state, offer) {
     state.offerForBulkProcess = offer
   },
@@ -57,6 +72,15 @@ export const mutations = {
   },
   kick (state, kick) {
     state.kick = kick
+  },
+  prepare (state, prepare) {
+    state.prepare = prepare
+  },
+  applyOffer (state, applyOffer) {
+    state.applyOffer = applyOffer
+  },
+  offer (state, offer) {
+    state.offer = offer
   },
   getBillingPeriod (state, billingPeriod) {
     state.billingPeriod = billingPeriod
