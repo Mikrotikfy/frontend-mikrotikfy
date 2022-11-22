@@ -17,7 +17,7 @@
       :items="bills"
     />
     <v-btn
-      :disabled="!readyForSend"
+      :disabled="!readyForSend && !codes.length > 0"
       color="primary"
       class="mt-2"
       @click="nextE1"
@@ -59,7 +59,9 @@ export default {
       })
       this.codes = codes
       this.$store.commit('notification/setCodes', codes)
-      this.$store.commit('notification/readyForSend')
+      if (codes.length > 0) {
+        this.$store.commit('notification/readyForSend')
+      }
     }
   }
 }

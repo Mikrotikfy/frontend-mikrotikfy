@@ -62,7 +62,11 @@ export const actions = {
                   parameters: [
                     {
                       type: 'text',
-                      text: '15 de noviembre'
+                      text: `${payload.month.text}`
+                    },
+                    {
+                      type: 'text',
+                      text: `15 de ${payload.month.text}`
                     }
                   ]
                 },
@@ -157,12 +161,12 @@ export const actions = {
   createBillAccount ({ commit }, payload) {
     const date = Date.now()
     const year = new Date(date).getFullYear()
-    const path = `fac/${payload.month}/${payload.city.toLowerCase()}/${payload.clienttype.toLowerCase()}/${payload.month}${year}_${payload.client.code}.pdf`
+    const path = `fac/${payload.month.value}/${payload.city.toLowerCase()}/${payload.clienttype.toLowerCase()}/${payload.month.value}${year}_${payload.client.code}.pdf`
     try {
       return new Promise((resolve, reject) => {
         const sentBody = {
           data: {
-            month: parseInt(payload.month),
+            month: parseInt(payload.month.value),
             year: parseInt(year),
             path,
             success: payload.success,
@@ -206,7 +210,7 @@ export const actions = {
           $or: [
             {
               month: {
-                $ne: parseInt(payload.month)
+                $ne: parseInt(payload.month.value)
               }
             },
             {
@@ -247,7 +251,7 @@ export const actions = {
   },
   async getListOfBills ({ commit }, payload) {
     try {
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}listofbills?city=${payload.city}&clienttype=${payload.clienttype}&month=${payload.month}`, {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}listofbills?city=${payload.city}&clienttype=${payload.clienttype}&month=${payload.month.value}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

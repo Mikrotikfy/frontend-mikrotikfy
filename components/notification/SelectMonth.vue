@@ -4,6 +4,7 @@
       <v-select
         v-model="month"
         :items="months"
+        return-object
         label="Mes a facturar"
         filled
         rounded
@@ -20,51 +21,51 @@ export default {
       months: [
         {
           text: 'Enero',
-          value: '1'
+          value: 1
         },
         {
           text: 'Febrero',
-          value: '2'
+          value: 2
         },
         {
           text: 'Marzo',
-          value: '3'
+          value: 3
         },
         {
           text: 'Abril',
-          value: '4'
+          value: 4
         },
         {
           text: 'Mayo',
-          value: '5'
+          value: 5
         },
         {
           text: 'Junio',
-          value: '6'
+          value: 6
         },
         {
           text: 'Julio',
-          value: '7'
+          value: 7
         },
         {
           text: 'Agosto',
-          value: '8'
+          value: 8
         },
         {
           text: 'Septiembre',
-          value: '9'
+          value: 9
         },
         {
           text: 'Octubre',
-          value: '10'
+          value: 10
         },
         {
           text: 'Noviembre',
-          value: '11'
+          value: 11
         },
         {
           text: 'Diciembre',
-          value: '12'
+          value: 12
         }
       ]
     }

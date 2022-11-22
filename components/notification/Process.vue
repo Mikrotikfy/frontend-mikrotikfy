@@ -87,13 +87,15 @@ export default {
     },
     async sendNotifications () {
       this.loading = true
-      const clients = this.$store.state.notification.clients
+      const clients = this.clients
+
       for (let i = 0; i < clients.length; i++) {
         await this.sleep(1500)
         this.$store.commit('notification/setSendIndex', i + 1)
 
         await this.$store.dispatch('notification/sendWhatsapp', {
           client: clients[i],
+          month: this.month,
           token: this.$store.state.auth.token
         }).then(async (res) => {
           let success = false

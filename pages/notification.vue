@@ -2,6 +2,9 @@
   <v-container>
     <v-row>
       <v-col>
+        <h2 class="text-center">
+          Control de Tarifa de Usuarios
+        </h2>
         <NotificationSelectMonth />
         <v-card v-if="month" class="rounded-xl">
           <v-card-title>
