@@ -114,68 +114,6 @@
                     {{ item.technology ? item.technology.name : 'No Reg.' }}
                   </strong>
                 </template>
-                <template v-slot:[`item.newModel`]="{ item }">
-                  <svg height="13" width="20">
-                    <circle cx="10" cy="8" r="5" :fill="getModel(item.newModel)" />
-                  </svg>
-                </template>
-                <template v-if="clienttype.name === 'INTERNET'" v-slot:[`item.active`]="props">
-                  <div style="white-space:nowrap;display:inline-flex">
-                    <v-tooltip v-if="$isAdmin()" left>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                          :color="props.item.active ? 'green darken-3' : 'red darken-3'"
-                          dark
-                          small
-                          :loading="props.item.loading"
-                          v-bind="attrs"
-                          text
-                          v-on="on"
-                          @click="updateStatus(props.item, clients.map(function(x) {return x.id; }).indexOf(props.item.id))"
-                        >
-                          <v-icon>mdi-{{ props.item.active ? 'check' : 'close' }} {{ props.index }}</v-icon>
-                        </v-btn>
-                      </template>
-                      <span>Activar Cliente</span>
-                    </v-tooltip>
-                  </div>
-                </template>
-                <template v-else v-slot:[`item.active`]="props">
-                  <v-edit-dialog
-                    ref="dialog"
-                    large
-                    cancel-text="Cancelar"
-                    save-text="Guardar"
-                    @save="saveActiveFromModal(props.item.id, dxreason, props.item.active, clients.map(function(x) {return x.id; }).indexOf(props.item.id))"
-                    @cancel="cancel()"
-                  >
-                    <v-chip
-                      small
-                      :color="getColor(props.item.active)"
-                      class="white--text"
-                    >
-                      {{ getState(props.item.active) }}
-                    </v-chip>
-                    <template v-slot:input>
-                      <v-checkbox
-                        :input-value="props.item.active"
-                        label="Cliente activo?"
-                        @change="updateStatusFromModal($event, clients.map(function(x) {return x.id; }).indexOf(props.item.id))"
-                      />
-                      <v-select
-                        v-if="!props.item.active"
-                        :value="dxreason"
-                        item-text="name"
-                        item-value="id"
-                        :items="dxreasons"
-                        return-object
-                        single-line
-                        label="Establecer como"
-                        dense
-                      />
-                    </template>
-                  </v-edit-dialog>
-                </template>
                 <template v-slot:[`item.actions`]="{ item }">
                   <div style="white-space:nowrap">
                     <!-- <MainTramits :client="item" /> -->
@@ -184,11 +122,11 @@
                       :client="item"
                       :assignated="$store.state.auth.id"
                     />
-                    <TicketHistory
+                    <MiscTicketHistory
                       :clientid="item.id"
                       :name="item.name"
                     />
-                    <ClientStatus
+                    <MainClientStatus
                       v-if="clienttype.name === 'INTERNET'"
                       :name="item.name"
                       :clientid="item.id"
@@ -227,53 +165,26 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-dialog v-model="createDialog" max-width="1150px" :retain-focus="false">
-      <v-card>
-        <v-card-title>
-          <v-toolbar
-            elevation="0"
-          >
-            <v-btn
-              icon
-              @click="createDialog = false"
-            >
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-            <v-toolbar-title><span class="headline">Crear Cliente de {{ clienttype.name }} en {{ currentCity.name }}</span></v-toolbar-title>
-          </v-toolbar>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <CreateForm
-              v-if="createDialog"
-              :citycolor="'blue'"
-              :role="$store.state.auth.rolename"
-              @createClient="createClient($event)"
-              @createClientDialog="createClientDialog($event)"
-              @createClientSnack="createClientSnack($event)"
-            />
-          </v-container>
-        </v-card-text>
-      </v-card>
+    <v-dialog
+      v-model="createDialog"
+      origin="bottom center"
+      class="transparent"
+      max-width="1150px"
+      :retain-focus="false"
+    >
+      <CreateForm
+        v-if="createDialog"
+        @createClient="createClient($event)"
+        @createClientDialog="createClientDialog($event)"
+        @createClientSnack="createClientSnack($event)"
+      />
     </v-dialog>
   </v-container>
 </template>
 
 <script>
-import EditForm from '../edit/EditForm'
-import ClientStatus from '../main/ClientStatus'
-import CreateTicket from '../create/CreateTicket'
-import TicketHistory from '../misc/TicketHistory'
-import CreateForm from '../create/CreateForm'
 export default {
   name: 'ClientList',
-  components: {
-    CreateForm,
-    EditForm,
-    ClientStatus,
-    CreateTicket,
-    TicketHistory
-  },
   props: {
     search: {
       type: String,
@@ -286,17 +197,6 @@ export default {
   },
   data () {
     return {
-      dxreason: null,
-      dxreasons: [
-        {
-          id: 1,
-          name: 'RETIRO VOLUNTARIO'
-        },
-        {
-          id: 2,
-          name: 'DX POR MORA'
-        }
-      ],
       createDialog: false,
       isRx: true,
       itemsPerPage: 15,
@@ -407,20 +307,6 @@ export default {
         await this.$store.dispatch('client/calculateClientStatus', this.activeClientsList)
       }
     },
-    cancel () {
-      return true
-    },
-    getModel (model) {
-      if (model === 0) {
-        return 'grey'
-      } else if (model === 1) {
-        if (this.$vuetify.theme.dark) {
-          return 'white'
-        } else {
-          return 'black'
-        }
-      }
-    },
     clientCount () {
       return parseInt(localStorage.getItem('clientCount'))
     },
@@ -430,31 +316,10 @@ export default {
     createClientSnack (value) {
       this.$toast.success('Cliente creado con exito', { duration: 4000, position: 'top-center' })
     },
-    updateStatus (client, index) {
-      if (client.active === true) {
-        this.$store.dispatch('client/adminDelete', { client, index, token: this.$store.state.auth.token, operator: this.$store.state.auth.username })
-      } else {
-        this.$store.dispatch('client/adminCreate', { client, index, token: this.$store.state.auth.token, operator: this.$store.state.auth.username })
-      }
-    },
     async getHeadersByClientType () {
       const city = this.$route.query.city
       const clienttype = this.$route.query.clienttype
       await this.$store.dispatch('client/getHeadersByClientType', { city, clienttype, token: this.$store.state.auth.token })
-    },
-    getColor (state) {
-      if (state) {
-        return 'blue'
-      } else {
-        return 'red'
-      }
-    },
-    getState (state) {
-      if (state) {
-        return 'Activo'
-      } else {
-        return 'Desconectado'
-      }
     }
   }
 }
@@ -464,9 +329,6 @@ export default {
 .done {
   text-decoration: line-through;
 }
-.offline {
-  background-color: #291f1f;
-}
 .offline-text {
   font-weight: bold;
   font-size:1rem;
@@ -474,8 +336,5 @@ export default {
 .online-text {
   font-weight: bold;
   font-size:1rem;
-}
-.online {
-  background-color: #1f291f;
 }
 </style>

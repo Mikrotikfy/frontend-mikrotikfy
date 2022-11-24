@@ -1,255 +1,256 @@
 <template>
-  <div>
-    <v-alert
-      v-if="alertBox"
-      type="info"
-      :class="alertBoxColor"
-      tile
-      dismissible
-    >
-      {{ createdMessage }}
-    </v-alert>
-    <v-form v-model="valid">
-      <v-row>
-        <v-col>
-          <v-text-field
-            ref="code"
-            v-model="Client.code"
-            type="number"
-            :label="codeSuccess ? 'Código correcto' : 'Código'"
-            required
-            outlined
-            dense
-            :error="codeError"
-            :success="codeSuccess"
-            :hint="d00pHint"
-            :hide-details="hideD00pHint"
-            :persistent-hint="!hideD00pHint"
-            @change="testCodeForDuplicated(Client.code)"
-            @keyup="codeSuccess = false, codeError = false, hideD00pHint = true"
-          />
-        </v-col>
-        <v-col>
-          <v-text-field
-            ref="dni"
-            v-model="Client.dni"
-            type="number"
-            label="Cedula"
-            :rules="valid_dni"
-            autocomplete="off"
-            required
-            :valid="true"
-            outlined
-            dense
-            :hide-details="$refs.dni ? $refs.dni.valid ? true : $refs.dni.isFocused ? $refs.dni.badInput ? false : true : $refs.dni.badInput ? false : true : false"
-            @keyup="calculateSsid"
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-text-field
-            :value="Client.name.toUpperCase()"
-            label="Nombre Completo"
-            required
-            outlined
-            dense
-            hide-details
-            @keyup="clienttype.name === 'INTERNET' ? calculateSsid() : null"
-            @input="Client.name = $event.toUpperCase()"
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="6" lg="3" md="3">
-          <v-select
-            v-model="dir1"
-            :items="dirFragment1"
-            label="Dirección"
-            outlined
-            dense
-            hide-details
-            @blur="genAddress"
-          />
-        </v-col>
-        <v-col cols="6" lg="3" md="3">
-          <v-text-field
-            v-model="dir2"
-            label="#"
-            outlined
-            dense
-            hide-details
-            @blur="genAddress"
-          />
-        </v-col>
-        <v-col cols="6" lg="3" md="3">
-          <v-select
-            v-model="dir3"
-            :items="dirFragment2"
-            label="#"
-            value="#"
-            outlined
-            dense
-            hide-details
-            @blur="genAddress"
-          />
-        </v-col>
-        <v-col cols="6" lg="3" md="3">
-          <v-text-field
-            v-model="dir4"
-            label="#"
-            outlined
-            dense
-            hide-details
-            @blur="genAddress"
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-autocomplete
-            v-model="Client.neighborhood"
-            item-text="name"
-            item-value="id"
-            return-object
-            :items="neighborhoods"
-            label="Barrio"
-            outlined
-            dense
-            hide-details
-          />
-        </v-col>
-        <v-col>
-          <v-select
-            v-model="Client.city"
-            item-text="name"
-            item-value="id"
-            :items="cities"
-            label="Ciudad"
-            disabled
-            outlined
-            dense
-            hide-details
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-text-field
-            v-model="Client.phone"
-            label="Telefono"
-            required
-            outlined
-            dense
-            hide-details
-          />
-        </v-col>
-        <v-col v-if="clienttype.name === 'INTERNET'">
-          <v-select
-            v-model="Client.offer"
-            item-text="name"
-            item-value="id"
-            :items="offers"
-            label="Oferta"
-            return-object
-            outlined
-            dense
-            hide-details
-          />
-        </v-col>
-      </v-row>
-      <v-row v-if="clienttype.name === 'INTERNET'">
-        <v-col>
-          <v-text-field
-            v-model="Client.wifi_ssid"
-            label="Nombre de Red"
-            required
-            outlined
-            dense
-            hide-details
-          />
-        </v-col>
-        <v-col>
-          <v-text-field
-            v-model="Client.wifi_password"
-            label="Clave de Red"
-            required
-            outlined
-            dense
-            hide-details
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-text-field
-            ref="email"
-            v-model="Client.email"
-            label="Correo Electronico"
-            required
-            :rules="email"
-            outlined
-            dense
-            hide-details="auto"
-          />
-        </v-col>
-      </v-row>
-      <v-row v-if="clienttype.name === 'INTERNET'">
-        <v-col>
-          <v-select
-            v-model="Client.newModel"
-            :items="idwith"
-            item-text="name"
-            item-value="id"
-            mandatory
-            label="Identificar con:"
-            outlined
-            dense
-            hide-details
-          />
-        </v-col>
-      </v-row>
-      <v-row v-if="clienttype.name === 'INTERNET'">
-        <v-col>
-          <v-select
-            v-model="Client.ipmodel"
-            :items="ipmodelItems"
-            item-text="name"
-            item-value="id"
-            mandatory
-            label="Tipo de IP para cliente"
-            outlined
-            dense
-            hide-details
-          />
-        </v-col>
-      </v-row>
-      <v-btn
-        class="mr-4 mt-4"
-        :color="citycolor"
-        :loading="isSubmitting"
-        :disabled="isSubmitting"
-        @click="createClient"
+  <v-card class="rounded-xl">
+    <v-card-title>
+      <v-icon class="mr-2">
+        mdi-account
+      </v-icon>
+      Crear Cliente de {{ clienttype.name }} en {{ currentCity.name }}
+    </v-card-title>
+    <v-divider class="mb-5" />
+    <v-card-text>
+      <v-alert
+        v-if="alertBox"
+        type="info"
+        :class="alertBoxColor"
+        tile
+        dismissible
       >
-        Crear Cliente de {{ clienttype.name }}
-      </v-btn>
-    </v-form>
-  </div>
+        {{ createdMessage }}
+      </v-alert>
+      <v-form v-model="valid">
+        <v-row>
+          <v-col>
+            <v-text-field
+              ref="code"
+              v-model="Client.code"
+              type="number"
+              :label="codeSuccess ? 'Código correcto' : 'Código'"
+              required
+              outlined
+              dense
+              :error="codeError"
+              :success="codeSuccess"
+              :hint="d00pHint"
+              :hide-details="hideD00pHint"
+              :persistent-hint="!hideD00pHint"
+              @change="testCodeForDuplicated(Client.code)"
+              @keyup="codeSuccess = false, codeError = false, hideD00pHint = true"
+            />
+          </v-col>
+          <v-col>
+            <v-text-field
+              ref="dni"
+              v-model="Client.dni"
+              type="number"
+              label="Cedula"
+              :rules="valid_dni"
+              autocomplete="off"
+              required
+              :valid="true"
+              outlined
+              dense
+              :hide-details="$refs.dni ? $refs.dni.valid ? true : $refs.dni.isFocused ? $refs.dni.badInput ? false : true : $refs.dni.badInput ? false : true : false"
+              @keyup="calculateSsid"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-text-field
+              :value="Client.name.toUpperCase()"
+              label="Nombre Completo"
+              required
+              outlined
+              dense
+              hide-details
+              @keyup="clienttype.name === 'INTERNET' ? calculateSsid() : null"
+              @input="Client.name = $event.toUpperCase()"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="6" lg="3" md="3">
+            <v-select
+              v-model="dir1"
+              :items="dirFragment1"
+              label="Dirección"
+              outlined
+              dense
+              hide-details
+              @blur="genAddress"
+            />
+          </v-col>
+          <v-col cols="6" lg="3" md="3">
+            <v-text-field
+              v-model="dir2"
+              label="#"
+              placeholder="5, 10, etc..."
+              outlined
+              dense
+              hide-details
+              @blur="genAddress"
+            />
+          </v-col>
+          <v-col cols="6" lg="3" md="3">
+            <v-select
+              v-model="dir3"
+              :items="dirFragment2"
+              label="#"
+              value="#"
+              outlined
+              dense
+              hide-details
+              @blur="genAddress"
+            />
+          </v-col>
+          <v-col cols="6" lg="3" md="3">
+            <v-text-field
+              v-model="dir4"
+              label="#"
+              placeholder="01 - 23"
+              outlined
+              dense
+              hide-details
+              @blur="genAddress"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-autocomplete
+              v-model="Client.neighborhood"
+              item-text="name"
+              item-value="id"
+              return-object
+              :items="neighborhoods"
+              label="Barrio"
+              outlined
+              dense
+              hide-details
+            />
+          </v-col>
+          <v-col>
+            <v-select
+              v-model="Client.city"
+              item-text="name"
+              item-value="id"
+              :items="cities"
+              label="Ciudad"
+              disabled
+              outlined
+              dense
+              hide-details
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-text-field
+              v-model="Client.phone"
+              label="Telefono"
+              required
+              outlined
+              dense
+              hide-details
+            />
+          </v-col>
+          <v-col v-if="clienttype.name === 'INTERNET'">
+            <v-select
+              v-model="Client.offer"
+              item-text="name"
+              item-value="id"
+              :items="offers"
+              label="Oferta"
+              return-object
+              outlined
+              dense
+              hide-details
+            />
+          </v-col>
+        </v-row>
+        <v-row v-if="clienttype.name === 'INTERNET'">
+          <v-col>
+            <v-text-field
+              v-model="Client.wifi_ssid"
+              label="Nombre de Red"
+              required
+              outlined
+              dense
+              hide-details
+            />
+          </v-col>
+          <v-col>
+            <v-text-field
+              v-model="Client.wifi_password"
+              label="Clave de Red"
+              required
+              outlined
+              dense
+              hide-details
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-text-field
+              ref="email"
+              v-model="Client.email"
+              label="Correo Electronico"
+              required
+              :rules="email"
+              outlined
+              dense
+              hide-details="auto"
+            />
+          </v-col>
+        </v-row>
+        <v-row v-if="clienttype.name === 'INTERNET'">
+          <v-col>
+            <v-select
+              v-model="Client.newModel"
+              :items="idwith"
+              item-text="name"
+              item-value="id"
+              mandatory
+              label="Identificar con:"
+              outlined
+              dense
+              hide-details
+            />
+          </v-col>
+        </v-row>
+        <v-row v-if="clienttype.name === 'INTERNET'">
+          <v-col>
+            <v-select
+              v-model="Client.ipmodel"
+              :items="ipmodelItems"
+              item-text="name"
+              item-value="id"
+              mandatory
+              label="Tipo de IP para cliente"
+              outlined
+              dense
+              hide-details
+            />
+          </v-col>
+        </v-row>
+        <v-btn
+          class="mr-4 mt-4"
+          color="primary"
+          :loading="isSubmitting"
+          :disabled="isSubmitting"
+          @click="createClient"
+        >
+          Crear Cliente de {{ clienttype.name }}
+        </v-btn>
+      </v-form>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
 export default {
   name: 'CreateForm',
-  props: {
-    citycolor: {
-      type: String,
-      default: ''
-    },
-    role: {
-      type: String,
-      default: ''
-    }
-  },
   data: () => {
     return {
       valid: false,
@@ -340,6 +341,10 @@ export default {
     telegramBots () {
       return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
     },
+    currentCity () {
+      // eslint-disable-next-line eqeqeq
+      return this.$store.state.cities ? this.$store.state.cities.find(c => c.name == this.$route.query.city) : ''
+    },
     clienttype () {
       return this.$store.state.clienttypes.find(ct => ct.name === this.$route.query.clienttype)
     }
@@ -425,7 +430,7 @@ export default {
           Authorization: `Bearer ${this.$store.state.auth.token}`
         },
         body: JSON.stringify({
-          data: { ...this.Client, neighborhood: this.Client.neighborhood.id, operator: this.$store.state.auth.id, operator_role: this.role, clienttype: [this.clienttype.id] }
+          data: { ...this.Client, active: true, neighborhood: this.Client.neighborhood.id, operator: this.$store.state.auth.id, clienttype: [this.clienttype.id] }
         })
       })
         .then(res => res.json())
@@ -439,6 +444,15 @@ export default {
             client: client.data,
             neighborhood: this.Client.neighborhood,
             token: this.$store.state.auth.token
+          })
+          this.$store.dispatch('client/adminCreate', {
+            client: {
+              ...this.Client,
+              id: client.data.id
+            },
+            city: this.city,
+            token: this.$store.state.auth.token,
+            operator: this.$store.state.auth.username
           })
           this.$simpleTelegramCreate({ client: this.Client, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
         }).catch((error) => {

@@ -11,7 +11,7 @@
           @click="initComponent()"
         >
           <span>
-            {{ lastDebtMovement ? lastDebtMovement.isretired ? 'RETIRADO' : lastDebtMovement.isindebt ? 'EN MORA' : 'AL DIA' : 'Control de Usuario' }}
+            {{ lastDebtMovement ? lastDebtMovement.isretired ? 'RETIRADO' : lastDebtMovement.isindebt ? 'EN MORA' : `AL DIA | ${client.offer.plan.name}` : 'Control de Usuario' }}
           </span>
         </v-btn>
       </template>

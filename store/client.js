@@ -425,7 +425,8 @@ export const actions = {
       this.$toast.error('Error al actualizar detalles. Verifica tu conexion o reportalo a nico', { position: 'top-center' })
     }
   },
-  async adminCreate ({ commit }, { client, index, token, operator }) {
+  async adminCreate ({ commit }, { client, city, index, token, operator }) {
+    console.log(client)
     await fetch(`${this.$config.API_STRAPI_ENDPOINT}admincreate`, {
       method: 'POST',
       headers: {
@@ -433,11 +434,11 @@ export const actions = {
         Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
-        data: { ...client, operator }
+        data: { ...client, operator, city }
       })
     }).then((input) => {
       if (input.status === 200) {
-        commit('adminToggle', { client, index })
+        this.$toast.info('Ciente creado en mikrotik correctamente', { duration: 4000, position: 'top-center' })
       }
     }).catch((error) => {
       // eslint-disable-next-line no-console
@@ -540,8 +541,6 @@ export const actions = {
       { text: 'Telefono', sortable: false, value: 'phone' },
       { text: 'Tarifa', value: 'plan.name', sortable: false },
       { text: 'Tecnologia', value: 'technology.name', sortable: false },
-      { text: 'Tipo', value: 'newModel', sortable: false },
-      { text: 'Activo', value: 'active', sortable: false },
       { text: '', value: 'actions', sortable: false }
     ]
     const television = [
@@ -549,7 +548,6 @@ export const actions = {
       { text: 'Nombre', value: 'name', sortable: false },
       { text: 'Cedula', value: 'dni', sortable: false },
       { text: 'Direccion', sortable: false, value: 'address' },
-      { text: 'Estado', sortable: false, value: 'active' },
       { text: 'Barrio', value: 'neighborhood.name', sortable: false },
       { text: 'Telefono', sortable: false, value: 'phone' },
       { text: '', value: 'actions', sortable: false }
