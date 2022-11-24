@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mb-4 rounded-xl">
+  <v-card class="mb-4 rounded-xl mx-auto" width="800">
     <v-card-text>
       <v-select
         v-model="month"

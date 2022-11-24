@@ -7,7 +7,7 @@
           class="mr-2"
           :loading="loading"
           :disabled="loading || clients.length > 0"
-          @click="getClientsFromCodes"
+          @click="generateBilling"
         >
           Generar Estados de Cuenta
         </v-btn>
@@ -51,6 +51,7 @@
     </v-row>
     <v-btn
       color="primary"
+      :disabled="loading || clients.length < 1"
       @click="nextE1"
     >
       Continue
@@ -118,7 +119,7 @@ export default {
       }
       this.loading = false
     },
-    async getClientsFromCodes () {
+    async generateBilling () {
       this.loading = true
       const codes = this.$store.state.notification.codes
       const clients = await this.$store.dispatch('notification/getClients', {
@@ -133,13 +134,14 @@ export default {
           return client.code === code
         })
       })
+
       const filtered = search.filter(function (el) {
         return el !== undefined
       })
+
       for (let i = 0; i < filtered.length; i++) {
         await this.$store.dispatch('notification/createBillAccount', {
           token: this.$store.state.auth.token,
-          index: i,
           city: this.$route.query.city,
           clienttype: this.$route.query.clienttype,
           client: filtered[i],

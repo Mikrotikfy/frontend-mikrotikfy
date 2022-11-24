@@ -6,7 +6,7 @@
           Control de Tarifa de Usuarios
         </h2>
         <NotificationSelectMonth />
-        <v-card v-if="month" class="rounded-xl">
+        <v-card v-if="month" class="rounded-xl mx-auto" width="800">
           <v-card-title>
             Notificacion masiva a usuarios
           </v-card-title>

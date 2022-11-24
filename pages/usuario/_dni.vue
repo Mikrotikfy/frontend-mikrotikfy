@@ -41,15 +41,13 @@
           </v-card-title>
           <v-card-text v-for="client in clients" :key="client.id">
             <div v-if="client.monthlybills.length > 0">
-              <h3>{{ client.city.name }} - {{ client.name }}</h3>
+              <h3>Factura de {{ client.clienttype.name === 'INTERNET' ? 'INTERNET' : 'TELEVISION' }} en {{ client.city.name }} para {{ client.name }}</h3>
               <p>{{ client.addresses ? client.addresses.at(-1).address + ' ' + client.addresses.at(-1).neighborhood.name : client.address }}</p>
               <v-chip
-                v-for="bill in client.monthlybills"
-                :key="bill.id"
                 class="text-h6 mr-3 primary"
-                :href="`${$config.CDN_STRAPI_ENDPOINT}/${bill.path}`"
+                :href="`${$config.CDN_STRAPI_ENDPOINT}/${client.monthlybills.at(-1).path}`"
               >
-                {{ bill.type === 'internet' ? 'INTERNET' : 'TELEVISION' }}
+                {{ `MES ${months[client.monthlybills.at(-1).month - 1].text.toUpperCase()}` }}
               </v-chip>
             </div>
             <div v-else>
@@ -94,6 +92,56 @@ export default {
         (value) => {
           const pattern = /^[A-Za-z0-9]+$/
           return pattern.test(value) || 'La cedula no debe llevar puntos ni otros caracteres que no sean numeros.'
+        }
+      ],
+      months: [
+        {
+          text: 'Enero',
+          value: 1
+        },
+        {
+          text: 'Febrero',
+          value: 2
+        },
+        {
+          text: 'Marzo',
+          value: 3
+        },
+        {
+          text: 'Abril',
+          value: 4
+        },
+        {
+          text: 'Mayo',
+          value: 5
+        },
+        {
+          text: 'Junio',
+          value: 6
+        },
+        {
+          text: 'Julio',
+          value: 7
+        },
+        {
+          text: 'Agosto',
+          value: 8
+        },
+        {
+          text: 'Septiembre',
+          value: 9
+        },
+        {
+          text: 'Octubre',
+          value: 10
+        },
+        {
+          text: 'Noviembre',
+          value: 11
+        },
+        {
+          text: 'Diciembre',
+          value: 12
         }
       ]
     }

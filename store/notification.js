@@ -184,12 +184,10 @@ export const actions = {
         })
           .then(res => res.json())
           .then((monthlybill) => {
-            // commit('setClientSuccess', {
-            //   client: payload.client,
-            //   index: payload.index,
-            //   success: payload.success
-            // })
             resolve(monthlybill.data)
+          })
+          .catch((err) => {
+            reject(err)
           })
       })
     } catch (error) {

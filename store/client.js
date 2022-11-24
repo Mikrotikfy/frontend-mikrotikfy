@@ -294,7 +294,8 @@ export const actions = {
         'monthlybills',
         'city',
         'addresses',
-        'addresses.neighborhood'
+        'addresses.neighborhood',
+        'clienttype'
       ]
     },
     {
@@ -426,7 +427,6 @@ export const actions = {
     }
   },
   async adminCreate ({ commit }, { client, city, index, token, operator }) {
-    console.log(client)
     await fetch(`${this.$config.API_STRAPI_ENDPOINT}admincreate`, {
       method: 'POST',
       headers: {
