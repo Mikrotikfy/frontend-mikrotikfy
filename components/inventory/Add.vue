@@ -91,7 +91,7 @@ export default {
       modal: false,
       add: {
         material: null,
-        materialtype: null,
+        materialtype: 1,
         quantity: 1
       },
       loading: false

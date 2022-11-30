@@ -334,6 +334,32 @@ export const actions = {
       throw new Error(`CREATE ITEM ACTION ${error}`)
     }
   },
+  setMaterialQuantity (_, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}materialquantities/${payload.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              quantity: payload.quantity
+            }
+          })
+        })
+          .then(res => res.json())
+          .then((_) => {
+            this.$toast.success(`OPERACION DE INVENTARIO EXITOSA, AHORA HAY ${payload.quantity}`, { duration: 2000, position: 'top-center' })
+            resolve()
+          })
+      })
+    } catch (error) {
+      this.$toast.error(error, { position: 'top-center' })
+      throw new Error(`MATERIALS ACTION ${error}`)
+    }
+  },
   async updateCurrentMaterialQuantity (_, payload) {
     const finalQuantity = payload.action === 'add' ? payload.availableQuantity[0].quantity - payload.newQuantity.quantity : payload.availableQuantity[0].quantity + payload.newQuantity.quantity
     try {

@@ -33,21 +33,47 @@
                 />
               </div>
             </template>
-            <template v-slot:[`item.materialquantities`]="{ item }">
-              <v-chip
-                small
-                class="blue darken-4 white--text mr-4"
-              >
-                Total: {{ item.materialquantities.reduce((total, materialquantity) => total + materialquantity.quantity, 0) }}
-              </v-chip>
-              <v-chip
-                v-for="(materialquantity, index) in item.materialquantities"
-                :key="index"
-                small
-                :class="materialquantity.quantity < 1 ? 'red darken-4 white--text mr-4' : 'white black--text mr-4'"
-              >
-                {{ materialquantity.materialtype.name + ' ' }}: <strong>{{ materialquantity.quantity }}</strong>
-              </v-chip>
+            <template v-slot:[`item.materialquantities`]="{ item, index }">
+              <div class="d-flex">
+                <v-chip
+                  small
+                  class="blue darken-4 white--text mr-4"
+                >
+                  Total: {{ item.materialquantities.reduce((total, materialquantity) => total + materialquantity.quantity, 0) }}
+                </v-chip>
+
+                <v-edit-dialog
+                  v-for="(materialquantity, i) in item.materialquantities"
+                  :key="i"
+                  :return-value.sync="materialquantity.quantity"
+                  save-text="Guardar"
+                  cancel-text="Cancelar"
+                  large
+                  @save="updateQuantity(materialquantity)"
+                  @open="setCurrentQuantityHelper(materialquantity.quantity, index)"
+                >
+                  <v-chip
+                    small
+                    :class="materialquantity.quantity < 1 ? 'red darken-4 white--text mr-4' : 'white black--text mr-4'"
+                  >
+                    {{ materialquantity.materialtype.name + ' ' }}: <strong>{{ materialquantity.quantity }}</strong>
+                  </v-chip>
+                  <template v-slot:input>
+                    <div class="mt-4 text-h6">
+                      Cambiar Cantidad
+                    </div>
+                    <v-text-field
+                      ref="edit"
+                      v-model.number="changeQuantity"
+                      single-line
+                      outlined
+                      autofocus
+                      dense
+                      onclick="this.select()"
+                    />
+                  </template>
+                </v-edit-dialog>
+              </div>
             </template>
             <template v-slot:[`item.createdAt`]="{ item }">
               <span>
@@ -68,6 +94,7 @@
 export default {
   data () {
     return {
+      changeQuantity: null,
       search: null,
       sort: {
         sortBy: 'id',
@@ -114,6 +141,20 @@ export default {
     this.getOperatorList()
   },
   methods: {
+    setCurrentQuantityHelper (e, i) {
+      this.changeQuantity = e
+      setTimeout(() => {
+        this.$refs.edit[i].$refs.input.select()
+      }, 300)
+    },
+    async updateQuantity ({ id }) {
+      await this.$store.dispatch('inventory/setMaterialQuantity', {
+        id,
+        quantity: this.changeQuantity,
+        token: this.$store.state.auth.token
+      })
+      this.getMaterialList()
+    },
     getMaterialTypes () {
       this.$store.dispatch('inventory/getMaterialTypes', { token: this.$store.state.auth.token, city: this.$route.query.city, pagination: { page: 1, pageSize: 1000 } })
     },
