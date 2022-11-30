@@ -150,7 +150,7 @@ export const actions = {
             if (!res) {
               return false
             }
-            this.$toast.info('Exito al actualizar movimiento')
+            this.$toast.info('Exito al actualizar movimiento', { duration: 1000 })
             commit('setClientSuccess', {
               index: payload.index,
               success: payload.success

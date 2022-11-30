@@ -97,7 +97,6 @@ export default {
       const clients = this.clients
 
       for (let i = 0; i < clients.length; i++) {
-        await this.sleep(200)
         this.$store.commit('notification/setSendIndex', i + 1)
 
         await this.$store.dispatch('notification/sendWhatsapp', {
@@ -158,11 +157,6 @@ export default {
       this.$store.commit('notification/setClients', filtered)
       this.$store.commit('notification/readyForSend')
       this.loading = false
-    },
-    sleep (time) {
-      return new Promise((resolve) => {
-        setTimeout(resolve, time)
-      })
     }
   }
 }
