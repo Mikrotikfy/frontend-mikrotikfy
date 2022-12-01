@@ -8,7 +8,6 @@
         <v-list-item
           v-for="(item, index) in whatsappContacts"
           :key="index"
-          :disabled="item.lastMessageOn ? getUnixTimeFromString(item.lastMessageOn) < Date.now() - 1000 * 60 * 60 * 24 : false"
           @click="openChat(item)"
         >
           <v-list-item-avatar>
@@ -39,6 +38,7 @@
 export default {
   data: () => ({
     selectedItem: null,
+    initialCount: null,
     header: 'Conversaciones recientes',
     pagination: {
       page: 1,
@@ -58,41 +58,43 @@ export default {
   mounted () {
     this.getWhatsappContacts()
     this.setIntervalToGetWhatsappMessages()
+    this.updateWhatsappMessagesCount()
   },
   methods: {
     async scroll (e) {
       const bottomOfWindow = this.$refs.scroll.scrollTop + this.$refs.scroll.clientHeight + 1 >= this.$refs.scroll.scrollHeight
 
       if (bottomOfWindow) {
-        const count = await this.$store.dispatch('whatsapp/getWhatsappContactsCount', {
+        await this.$store.dispatch('whatsapp/getMoreWhatsappContacts', {
           city: this.$route.query.city,
-          token: this.$store.state.auth.token
+          token: this.$store.state.auth.token,
+          pagination: {
+            page: this.pagination.page + 1,
+            pageSize: this.pagination.pageSize
+          }
         })
-        if (this.whatsappContacts.length < count) {
-          this.$store.dispatch('whatsapp/getMoreWhatsappContacts', {
-            city: this.$route.query.city,
-            token: this.$store.state.auth.token,
-            pagination: {
-              page: this.pagination.page + 1,
-              pageSize: this.pagination.pageSize
-            }
-          })
-        }
       }
     },
     setIntervalToGetWhatsappMessages () {
       setInterval(() => {
-        this.getWhatsappContactsCount()
+        this.getWhatsappMessagesCount()
       }, 1000)
     },
-    async getWhatsappContactsCount () {
-      const count = await this.$store.dispatch('whatsapp/getWhatsappContactsCount', {
+    async getWhatsappMessagesCount () {
+      const count = await this.$store.dispatch('whatsapp/getWhatsappMessagesCount', {
         city: this.$route.query.city,
         token: this.$store.state.auth.token
       })
-      if (count > this.whatsappContacts.length) {
+      if (count > this.initialCount) {
         this.getWhatsappContacts()
+        this.updateWhatsappMessagesCount()
       }
+    },
+    async updateWhatsappMessagesCount () {
+      this.initialCount = await this.$store.dispatch('whatsapp/getWhatsappMessagesCount', {
+        city: this.$route.query.city,
+        token: this.$store.state.auth.token
+      })
     },
     async getWhatsappContacts () {
       await this.$store.dispatch('whatsapp/getWhatsappContacts', {
@@ -116,14 +118,15 @@ export default {
         token: this.$store.state.auth.token
       })
     },
-    openChat (item) {
+    async openChat (item) {
       this.$router.push({ path: `/chatdesk?phone=${item.phone}&city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}` })
       if (!item.read) {
-        this.setReadToTrue(item)
+        await this.setReadToTrue(item)
+        this.getWhatsappContacts()
       }
     },
-    setReadToTrue (item) {
-      this.$store.dispatch('whatsapp/setReadToTrue', {
+    async setReadToTrue (item) {
+      await this.$store.dispatch('whatsapp/setReadToTrue', {
         id: item.id,
         token: this.$store.state.auth.token
       })

@@ -24,7 +24,7 @@ export default {
   methods: {
     getDateFromUnixTime (unixTime) {
       const date = new Date(unixTime * 1000)
-      return `${date.getHours()}:${date.getMinutes()} - ${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`
+      return `${date.getHours()}:${date.getMinutes()} - ${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`
     }
   }
 }

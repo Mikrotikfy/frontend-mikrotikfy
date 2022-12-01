@@ -39,9 +39,9 @@ export const mutations = {
   }
 }
 export const actions = {
-  getWhatsappContactsCount ({ commit }, payload) {
+  getWhatsappMessagesCount ({ commit }, payload) {
     return new Promise((resolve, reject) => {
-      fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsappcontacts`, {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsapps`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -227,7 +227,7 @@ export const actions = {
         const query = qs.stringify({
           pagination: payload.pagination,
           populate: ['lastwhatsapp'],
-          sort: 'updatedAt:desc'
+          sort: 'lastmessage:desc'
         },
         {
           encodeValuesOnly: true

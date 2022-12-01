@@ -86,7 +86,7 @@ export default {
     // },
     getDate (inputdate) {
       const date = new Date(inputdate)
-      return `${date.getHours()}:${date.getMinutes()} - ${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`
+      return `${date.getHours()}:${date.getMinutes()} - ${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`
     }
   }
 }
