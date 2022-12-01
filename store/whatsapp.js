@@ -49,6 +49,21 @@ export const actions = {
         }
       })
         .then(response => response.json())
+        .then((whatsappMessages) => {
+          resolve(whatsappMessages.meta.pagination.total)
+        })
+    })
+  },
+  getWhatsappContactsCount ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsappcontacts`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        }
+      })
+        .then(response => response.json())
         .then((whatsappContacts) => {
           resolve(whatsappContacts.meta.pagination.total)
         })

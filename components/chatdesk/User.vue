@@ -40,6 +40,8 @@ export default {
     selectedItem: null,
     initialCount: null,
     intervalID: null,
+    contactsCount: null,
+    debounce: false,
     header: 'Conversaciones recientes',
     pagination: {
       page: 1,
@@ -63,12 +65,13 @@ export default {
     this.getWhatsappContacts()
     this.setIntervalToGetWhatsappMessages()
     this.updateWhatsappMessagesCount()
+    this.getWhatsappContactsCount()
   },
   methods: {
     async scroll (e) {
       const bottomOfWindow = this.$refs.scroll.scrollTop + this.$refs.scroll.clientHeight + 1 >= this.$refs.scroll.scrollHeight
-
-      if (bottomOfWindow) {
+      if (bottomOfWindow && this.contactsCount > this.whatsappContacts.length && !this.debounce) {
+        this.debounce = true
         await this.$store.dispatch('whatsapp/getMoreWhatsappContacts', {
           city: this.$route.query.city,
           token: this.$store.state.auth.token,
@@ -77,6 +80,9 @@ export default {
             pageSize: this.pagination.pageSize
           }
         })
+        setTimeout(() => {
+          this.debounce = false
+        }, 500)
       }
     },
     setIntervalToGetWhatsappMessages () {
@@ -93,6 +99,12 @@ export default {
         this.getWhatsappContacts()
         this.updateWhatsappMessagesCount()
       }
+    },
+    async getWhatsappContactsCount () {
+      this.contactsCount = await this.$store.dispatch('whatsapp/getWhatsappContactsCount', {
+        city: this.$route.query.city,
+        token: this.$store.state.auth.token
+      })
     },
     async updateWhatsappMessagesCount () {
       this.initialCount = await this.$store.dispatch('whatsapp/getWhatsappMessagesCount', {
