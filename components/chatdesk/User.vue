@@ -39,6 +39,7 @@ export default {
   data: () => ({
     selectedItem: null,
     initialCount: null,
+    intervalID: null,
     header: 'Conversaciones recientes',
     pagination: {
       page: 1,
@@ -54,6 +55,9 @@ export default {
     '$route.query.phone' () {
       this.getWhatsappMessages()
     }
+  },
+  destroyed () {
+    clearInterval(this.intervalID)
   },
   mounted () {
     this.getWhatsappContacts()
@@ -76,7 +80,7 @@ export default {
       }
     },
     setIntervalToGetWhatsappMessages () {
-      setInterval(() => {
+      this.intervalID = setInterval(() => {
         this.getWhatsappMessagesCount()
       }, 1000)
     },
