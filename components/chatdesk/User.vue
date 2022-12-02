@@ -51,11 +51,26 @@ export default {
   computed: {
     whatsappContacts () {
       return this.$store.state.whatsapp.whatsappContacts
+    },
+    notReadCount () {
+      return this.$store.state.whatsapp.whatsappContacts.map(item => item.read).filter(item => item === false).length
+    },
+    chatdeskMenu () {
+      return this.$store.state.menu.menu.filter(item => item.name === 'Escritorio')[0]
     }
   },
   watch: {
     '$route.query.phone' () {
       this.getWhatsappMessages()
+    },
+    async notReadCount (val) {
+      if (val < 1) {
+        await this.$store.dispatch('menu/removeAlertOnMenu', {
+          token: this.$store.state.auth.token,
+          menuId: this.chatdeskMenu.id
+        })
+        this.getMenu()
+      }
     }
   },
   destroyed () {
@@ -171,6 +186,11 @@ export default {
         return '*Envió un video'
       }
       return 'Otro'
+    },
+    async getMenu () {
+      await this.$store.dispatch('menu/getMenuFromDatabase', {
+        token: this.$store.state.auth.token
+      })
     }
   }
 }

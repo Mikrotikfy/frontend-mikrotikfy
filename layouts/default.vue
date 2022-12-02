@@ -32,15 +32,11 @@
         >
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
+            <span v-if="item.alert && $route.name !== 'chatdesk'" class="dot" />
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title v-text="item.name" />
           </v-list-item-content>
-          <v-list-item-action v-if="item.info">
-            <v-chip color="red">
-              {{ item.info }}
-            </v-chip>
-          </v-list-item-action>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -156,7 +152,7 @@ export default {
       return this.currentCity ? `${this.$route.name.toUpperCase()} ${this.currentCity.name}` : this.title
     },
     menu () {
-      return this.$store.state.auth.menu
+      return this.$store.state.menu.menu
     }
   },
   destroyed () {
@@ -169,8 +165,16 @@ export default {
     this.comprobeDateToSetChristmasTheme()
     this.loadThemeFromVuetifyThemeManager()
     this.isDesktopScreen()
+    this.getMenu()
   },
   methods: {
+    getMenu () {
+      setInterval(async () => {
+        await this.$store.dispatch('menu/getMenuFromDatabase', {
+          token: this.$store.state.auth.token
+        })
+      }, 1000 * 60)
+    },
     testAuthToken () {
       if (this.$store.state.auth.token) {
         this.$store.dispatch('authActions/checkToken', {
@@ -243,6 +247,14 @@ export default {
 }
 </script>
 <style>
+.dot {
+  position: absolute;
+  height: 5px;
+  width: 5px;
+  background-color: rgb(212, 19, 19);
+  border-radius: 50%;
+  display: inline-block;
+}
 .secondary-city {
     background: #16312d;
     color: #fff;
