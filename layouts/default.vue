@@ -166,14 +166,15 @@ export default {
     this.loadThemeFromVuetifyThemeManager()
     this.isDesktopScreen()
     this.getMenu()
+    setInterval(() => {
+      this.getMenu()
+    }, 1000 * 60)
   },
   methods: {
-    getMenu () {
-      setInterval(async () => {
-        await this.$store.dispatch('menu/getMenuFromDatabase', {
-          token: this.$store.state.auth.token
-        })
-      }, 1000 * 60)
+    async getMenu () {
+      await this.$store.dispatch('menu/getMenuFromDatabase', {
+        token: this.$store.state.auth.token
+      })
     },
     testAuthToken () {
       if (this.$store.state.auth.token) {
