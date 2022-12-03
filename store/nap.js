@@ -34,7 +34,7 @@ export const actions = {
       throw new Error(`NAPS CREATE ACTION ${error}`)
     }
   },
-  async getNaps ({ commit }, payload) {
+  getNaps ({ commit }, payload) {
     const qs = require('qs')
     const query = qs.stringify({
       filters: {
@@ -55,16 +55,20 @@ export const actions = {
       encodeValuesOnly: true
     })
     try {
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}naps?${query}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${payload.token}`
-        }
-      })
-        .then(res => res.json())
-        .then((naps) => {
-          commit('napList', naps.data)
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}naps?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
         })
+          .then(res => res.json())
+          .then((naps) => {
+            commit('napList', naps.data)
+            resolve(naps.data)
+          })
+      })
     } catch (error) {
       throw new Error(`NAPS GET ACTION ${error}`)
     }
@@ -72,6 +76,7 @@ export const actions = {
   async getNapTypes ({ commit }, token) {
     try {
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}naptypes`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
@@ -83,6 +88,50 @@ export const actions = {
         })
     } catch (error) {
       throw new Error(`NAPSTYPES GET ACTION ${error}`)
+    }
+  },
+  saveClientNap ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              naps: [payload.nap.id, ...payload.current.map(nap => nap.id)]
+            }
+          })
+        })
+          .then(res => res.json())
+          .then((naps) => {
+            this.$toast.info(`${payload.client.name} agregado a NAP ${payload.nap.code}`, { duration: 2000 })
+            resolve(naps)
+          })
+      })
+    } catch (error) {
+      throw new Error(`NAPS SAVE CLIENT ACTION ${error}`)
+    }
+  },
+  getClientNapData ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}?populate=naps`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((clientNapData) => {
+            resolve(clientNapData.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`NAPS GET CLIENT ACTION ${error}`)
     }
   }
 }

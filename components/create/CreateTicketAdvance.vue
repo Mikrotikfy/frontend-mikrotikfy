@@ -37,20 +37,10 @@
               class="mt-4"
               label="Detalles adicionales"
             />
-            <v-text-field
+            <NapManageClient
               v-if="ticket.tickettype.name === 'CONEXION NUEVA' || ticket.tickettype.name === 'TRASLADO'"
-              v-model="ticketAdvance.nap_onu_address"
-              outlined
-              class="mt-4"
-              label="NAP DE LA QUE DEPENDE"
-            />
-            <v-text-field
-              v-if="ticket.tickettype.name === 'CONEXION NUEVA' || ticket.tickettype.name === 'TRASLADO'"
-              v-model.number="ticketAdvance.opticalPower"
-              type="number"
-              outlined
-              class="mt-4"
-              label="POTENCIA OPTICA"
+              :client="client"
+              :block="true"
             />
             <v-checkbox
               v-if="$isAdmin()"
@@ -154,17 +144,6 @@ export default {
       this.ticketAdvance.editindex = this.editindex
     },
     async CreateTicketAdvance () {
-      if ((this.ticket.tickettype.name === 'CONEXION NUEVA' || this.ticket.tickettype.name === 'TRASLADO')) {
-        if (this.ticketAdvance.nap_onu_address !== '' || this.ticketAdvance.opticalPower !== null) {
-          this.$store.dispatch('client/updateServiceInfo', {
-            token: this.$store.state.auth.token,
-            client: this.client,
-            ticketAdvance: this.ticketAdvance
-          })
-        } else {
-          this.$toast.error('Debes llenar la informacion de nap y potencia optica antes de cerrar el ticket', { duration: 4000, position: 'top-center' })
-        }
-      }
       this.loading = true
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticketid}`, {
         method: 'PUT',

@@ -143,6 +143,10 @@
                       v-if="clienttype.name === 'INTERNET' && $isAdmin()"
                       :client="item"
                     /> -->
+                    <NapManageClient
+                      v-if="clienttype.name === 'INTERNET'"
+                      :client="item"
+                    />
                     <EditForm
                       :client="item"
                       :index="clients.indexOf(item)"

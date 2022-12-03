@@ -2,14 +2,16 @@
   <span>
     <v-tooltip top>
       <template v-slot:activator="{ on, attrs }">
-        <v-icon
+        <v-btn
           v-bind="attrs"
-          :color="$vuetify.theme.dark ? 'white' : 'primary'"
+          text
+          x-small
+          :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
           v-on="on"
           @click="initComponent()"
         >
-          mdi-comment-plus-outline
-        </v-icon>
+          <v-icon>mdi-comment-plus-outline</v-icon>
+        </v-btn>
       </template>
       <span>Crear Ticket</span>
     </v-tooltip>
@@ -266,6 +268,10 @@ export default {
     role: {
       type: Array,
       default: () => {}
+    },
+    block: {
+      type: Boolean,
+      default: false
     }
   },
   data: () => ({
