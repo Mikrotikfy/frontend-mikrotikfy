@@ -4,6 +4,9 @@ export const state = () => ({
   headers: []
 })
 export const mutations = {
+  addNap (state, payload) {
+    state.tickets[payload.ticketindex].client.naps.push(payload.nap)
+  },
   updateTickettype (state, payload) {
     state.tickets[payload.index].tickettype = payload.tickettype
   },
@@ -119,6 +122,7 @@ export const actions = {
           'client.neighborhood',
           'client.technology',
           'client.plan',
+          'client.naps',
           'client.debtmovements',
           'city',
           'tickettype',

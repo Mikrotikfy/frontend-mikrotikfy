@@ -133,6 +133,11 @@ export default {
           this.alertBox = true
           this.alertBoxColor = 'info darken-4'
           this.createdMessage = 'NAP creada correctamente.'
+          this.$store.dispatch('nap/getNaps', {
+            token: this.$store.state.auth.token,
+            city: this.$route.query.city
+          })
+          this.$emit('close')
         })
         .catch((err) => {
           this.isSubmitting = !this.isSubmitting

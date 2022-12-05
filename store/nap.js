@@ -15,6 +15,15 @@ export const mutations = {
     } catch (error) {
       throw new Error(`NAPSTYPES MUTATE ${error}`)
     }
+  },
+  filterCurrentNaps (state, { naps }) {
+    try {
+      state.naps = state.naps.filter((nap) => {
+        return !naps.find(current => current.id === nap.id)
+      })
+    } catch (error) {
+      throw new Error(`CURRENTNAPS MUTATE ${error}`)
+    }
   }
 }
 export const actions = {

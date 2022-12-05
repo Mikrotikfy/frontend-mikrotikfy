@@ -7,12 +7,13 @@
           :text="!block"
           :x-small="!block"
           :block="block"
-          :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
+          class="rounded-xl"
+          :color="$vuetify.theme.dark && !block ? 'white' : client.naps.length > 0 ? 'grey darken-2' : 'primary'"
           v-on="on"
           @click="initComponent()"
         >
           <v-icon>mdi-lan</v-icon>
-          <span v-if="block">Gestionar NAP</span>
+          <span v-if="block">{{ client.naps.length > 0 ? 'Actualizar NAP' : 'Agregar NAP'}}</span>
         </v-btn>
       </template>
       <span>Gestionar Acceso a Red</span>
@@ -58,6 +59,7 @@
           >
             Guardar
           </v-btn>
+          <NapCreateDialog />
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -71,6 +73,14 @@
 export default {
   name: 'ManageClientNap',
   props: {
+    isticket: {
+      type: Boolean,
+      default: false
+    },
+    ticketindex: {
+      type: Number,
+      default: 0
+    },
     client: {
       type: Object,
       required: true
@@ -83,11 +93,15 @@ export default {
   data () {
     return {
       modal: false,
-      naps: [],
       selected: null,
       current: [],
       waitingForClientNapData: true,
-      clientNapData: null
+      clientNapData: []
+    }
+  },
+  computed: {
+    naps () {
+      return this.$store.state.nap.naps
     }
   },
   methods: {
@@ -103,6 +117,13 @@ export default {
         nap: this.selected,
         current: this.current
       })
+      if (this.isticket) {
+        this.$store.commit('ticket/addNap', {
+          token: this.$store.state.auth.token,
+          ticketindex: this.ticketindex,
+          nap: this.selected
+        })
+      }
       this.selected = null
       this.modal = false
     },
@@ -112,15 +133,15 @@ export default {
         client: this.client
       })
       this.current = this.clientNapData.naps
-      this.naps = this.naps.filter((nap) => {
-        return !this.current.find(current => current.id === nap.id)
-      })
       this.waitingForClientNapData = false
     },
     async getNapsByCity () {
-      this.naps = await this.$store.dispatch('nap/getNaps', {
+      await this.$store.dispatch('nap/getNaps', {
         token: this.$store.state.auth.token,
         city: this.$route.query.city
+      })
+      await this.$store.commit('nap/filterCurrentNaps', {
+        naps: this.clientNapData.naps
       })
     }
   }

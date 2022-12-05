@@ -131,34 +131,31 @@
               <template v-slot:[`item.client.technology.name`]="props">
                 {{ props.item.client.technology !== null ? props.item.client.technology.name : 'No reg.' }}
               </template>
-              <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="props">
+              <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="{ item, index }">
                 <div class="nowspace">
                   <TicketHistory
-                    :clientid="props.item.client.id"
-                    :name="props.item.client.name"
+                    :clientid="item.client.id"
+                    :name="item.client.name"
                   />
                   <ClientStatus
                       v-if="clienttype === 'INTERNET'"
-                      :name="props.item.client.name"
-                      :clientid="props.item.client.id"
-                      :code="props.item.client.code"
+                      :name="item.client.name"
+                      :clientid="item.client.id"
+                      :code="item.client.code"
                       :role="$store.state.auth.allowed_components"
                     />
-                  <CreateTicketAdvance
-                    :editindex="ticketList.indexOf(props.item)"
-                    :ticketid="props.item.id"
-                    :ticket="props.item"
-                    :client="props.item.client"
-                    :name="props.item.client.name"
+                  <CreateTicketAdvancev2
+                    :ticket="item"
+                    :ticketindex="index"
                     @updateTicketStatus="updateTicketStatus($event)"
                   />
                   <TvServiceStepper
                     v-if="clienttype === 'TELEVISION'"
-                    :clientid="props.item.client.id"
+                    :clientid="item.client.id"
                   />
                   <TicketAdvanceHistory
-                    :ticketid="props.item.id"
-                    :name="props.item.client.name"
+                    :ticketid="item.id"
+                    :name="item.client.name"
                   />
                 </div>
               </template>
@@ -271,7 +268,7 @@
                     :code="editModalData.client.code"
                     :role="this.$store.state.auth.allowed_components"
                   />
-                <CreateTicketAdvance
+                <CreateTicketAdvancev2
                   :block="true"
                   :editindex="editModalData.editindex"
                   :ticketid="editModalData.id"
@@ -305,14 +302,12 @@
 </template>
 
 <script>
-import CreateTicketAdvance from '../create/CreateTicketAdvance'
 import TicketAdvanceHistory from '../misc/TicketAdvanceHistory'
 import TicketHistory from '../misc/TicketHistory'
 import ClientStatus from '../main/ClientStatus'
 export default {
   name: 'Tickets',
   components: {
-    CreateTicketAdvance,
     TicketAdvanceHistory,
     TicketHistory,
     ClientStatus
