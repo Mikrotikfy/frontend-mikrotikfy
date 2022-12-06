@@ -6,21 +6,29 @@
     <v-navigation-drawer
       v-model="drawer"
       class="no-printme"
-      color="grey darken-4"
+      :color="this.$vuetify.theme.dark ? 'grey darken-4' : ''"
       app
       :permanent="$store.state.isDesktop"
       :expand-on-hover="$store.state.isDesktop"
       :mini-variant="$store.state.isDesktop"
       :bottom="!$store.state.isDesktop"
     >
-      <v-switch
-        v-if="!$store.state.isDesktop"
-        v-model="light"
-        :prepend-icon="light ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent'"
-        inset
-        class="my-2 ml-5"
-        @change="changeTheme()"
-      />
+      <v-tooltip
+        v-if="$store.state.isDesktop"
+        bottom
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-icon
+            :class="$nuxt.isOffline ? 'red--text darken-4 px-2 py-3 justify-center align-center d-flex' : 'green--text darken-4 px-2 py-3 justify-center align-center d-flex'"
+            v-bind="attrs"
+            v-on="on"
+          >
+            mdi-account
+          </v-icon>
+        </template>
+        <span>{{ $store.state.auth.username.charAt(0).toUpperCase() + $store.state.auth.username.slice(1) }}</span>
+      </v-tooltip>
+      <v-divider />
       <v-list
         nav
       >
@@ -43,7 +51,7 @@
     <v-app-bar
       app
       dense
-      class="elevation-0 transparent no-printme"
+      :class="this.$vuetify.theme.dark ? 'elevation-0 grey darken-4 no-printme' : 'elevation-0 no-printme'"
     >
       <v-app-bar-nav-icon v-if="!$store.state.isDesktop" @click.stop="drawer = !drawer" />
       <v-btn
@@ -63,27 +71,13 @@
       </v-btn>
       <v-spacer />
       <v-switch
-        v-if="$store.state.isDesktop"
         v-model="light"
         :prepend-icon="light ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent'"
         inset
-        class="mt-5"
+        class="ml-5 mt-5"
         @change="changeTheme()"
       />
       <div v-if="$store.state.auth">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-icon
-              :class="$nuxt.isOffline ? 'red--text darken-4' : 'green--text darken-4'"
-              v-bind="attrs"
-              v-on="on"
-            >
-              mdi-account
-            </v-icon>
-          </template>
-          <span>{{ $store.state.auth.username.charAt(0).toUpperCase() + $store.state.auth.username.slice(1) }}</span>
-        </v-tooltip>
-        <span class="mr-1 d-none d-xs-none d-sm-none d-md-inline d-lg-inline" style="font-size:0.7rem">{{ $store.state.auth.username.charAt(0).toUpperCase() + $store.state.auth.username.slice(1) }}</span>
         <v-btn
           v-for="city in $store.state.auth.cities"
           :key="city.name"

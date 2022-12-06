@@ -1,7 +1,11 @@
 <template>
-  <div :class="client.naps.length > 0 ? 'green--text mb-2' : 'red--text darken-4 mb-2'">
-    {{ client.naps.length > 0 ? `El cliente actualmente pertenece a la NAP: ${client.naps[0].code}. Si es necesario, actualizala` : 'El cliente no pertenece a ninguna NAP. En necesario agregarla'}}
-  </div>
+  <v-alert
+    :type="client.naps.length > 0 ? 'success' : 'error'"
+    dense
+    outlined
+  >
+    {{ client.naps.length > 0 ? `El cliente actualmente pertenece a la NAP: ${client.naps[0].code}.` : 'El cliente no pertenece a ninguna NAP. En necesario agregarla' }}
+  </v-alert>
 </template>
 <script>
 export default {

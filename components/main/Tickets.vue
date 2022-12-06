@@ -15,46 +15,46 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
                     v-bind="attrs"
-                    class="mt-4 mx-4"
+                    class="mt-4 ml-4 mr-4"
                     color="white black--text"
                     dark
                     rounded
                     :disabled="initialLoading"
                     :loading="initialLoading"
                     v-on="on"
-                    @click="refreshTickets()"
+                    @click="initIntervalAndGetTickets()"
                   >
                   <v-icon>mdi-reload</v-icon>
                   </v-btn>
                 </template>
               <span>Refrescar Tickets</span>
             </v-tooltip>
+            <MiscPrintTicket
+              v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop  ? true : false"
+              :tickets="selected"
+            />
             <v-checkbox
               v-model="showClosedValue"
               class="mr-4"
               label="Mostrar cerrados"
-              @change="refreshTickets()"
+              @change="initIntervalAndGetTickets()"
             />
             <v-checkbox
               v-model="showRetired"
               class="mr-4"
               label="Mostrar retiros"
-              @change="refreshTickets()"
+              @change="initIntervalAndGetTickets()"
             />
             <h3 v-if="!showClosedValue" class="align-self-center">
               {{ ticketList.length }}
               {{ ticketList.length === 1 ? 'Ticket activo' : 'Tickets activos' }}
             </h3>
-            <v-spacer />
-            <MiscPrintTicket
-              v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop  ? true : false"
-              :tickets="selected" />
             </v-row>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row class="mt-0 pt-0">
       <v-col>
         <v-card
           fluid
@@ -175,7 +175,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row v-if="pageCount > 1">
       <v-col>
         <div class="text-center pt-2">
           <v-pagination v-model="page" :length="pageCount" />
@@ -269,14 +269,11 @@
                     :role="this.$store.state.auth.allowed_components"
                   />
                 <CreateTicketAdvancev2
-                  :block="true"
-                  :editindex="editModalData.editindex"
-                  :ticketid="editModalData.id"
-                  :ticket="editModalData"
-                  :client="editModalData.client"
-                  :name="editModalData.client.name"
-                  @updateTicketStatus="updateTicketStatus($event)"
-                />
+                    :ticket="editModalData"
+                    :ticketindex="editModalData.index"
+                    :block="true"
+                    @updateTicketStatus="updateTicketStatus($event)"
+                  />
                 <TicketAdvanceHistory
                   :block="true"
                   :ticketid="editModalData.id"
@@ -331,7 +328,8 @@ export default {
       infoModal: false,
       expanded: [],
       singleExpand: true,
-      selected: []
+      selected: [],
+      interval: null
     }
   },
   computed: {
@@ -360,13 +358,22 @@ export default {
   },
   mounted () {
     this.getResolution()
-    this.refreshTickets()
     this.getTickettypes()
-    this.setGetTicketsInterval()
+    this.initIntervalAndGetTickets()
   },
   methods: {
+    initIntervalAndGetTickets () {
+      this.removeOldIntervalIfExists()
+      this.setGetTicketsInterval()
+      this.refreshTickets()
+    },
+    removeOldIntervalIfExists () {
+      if (this.interval) {
+        clearInterval(this.interval)
+      }
+    },
     setGetTicketsInterval () {
-      setInterval(() => {
+      this.interval = setInterval(() => {
         this.refreshTickets()
       }, 60000)
     },

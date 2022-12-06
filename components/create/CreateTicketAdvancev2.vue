@@ -29,6 +29,10 @@
     <v-card>
       <v-card-title>
         <span class="headline">Crear Avance en Ticket</span>
+        <v-spacer />
+        <v-btn icon @click="dialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-stepper
         v-model="stepper"
@@ -178,7 +182,7 @@ export default {
           if (this.details.length > 0) {
             this.stepper++
           } else {
-            this.$toast.error('Debes escribir un resumen del caso')
+            this.$toast.error('Debes escribir un resumen del caso', { duration: 3000 })
           }
           break
         case 2:
