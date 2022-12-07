@@ -52,12 +52,13 @@
             v-model="details"
             outlined
             class="mt-4"
+            hide-details="auto"
             label="Describe el caso lo mas detalladamente posible"
           />
           <v-btn
             color="primary"
             block
-            class="rounded-xl mt-4"
+            class="rounded-xl my-2"
             @click="evaluateStep(1)"
           >
             Continuar
@@ -75,6 +76,13 @@
         <v-stepper-content step="2">
           <NapActualInfo
             :client="ticket.client"
+          />
+          <NapRemoveDialog
+            v-if="ticket.client.naps.length > 0 && ticket.tickettype.name === 'TRASLADO'"
+            :ticketindex="ticketindex"
+            :isticket="true"
+            :client="ticket.client"
+            :block="true"
           />
           <NapManageClient
             :isticket="true"

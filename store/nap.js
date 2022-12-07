@@ -27,6 +27,30 @@ export const mutations = {
   }
 }
 export const actions = {
+  removeNap ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              naps: []
+            }
+          })
+        })
+          .then(res => res.json())
+          .then((client) => {
+            resolve(client.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`NAPS GET ACTION ${error}`)
+    }
+  },
   async createNap (_, napPayload) {
     try {
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}naps`, {

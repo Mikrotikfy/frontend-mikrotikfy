@@ -7,6 +7,9 @@ export const mutations = {
   addNap (state, payload) {
     state.tickets[payload.ticketindex].client.naps.push(payload.nap)
   },
+  removeNap (state, payload) {
+    state.tickets[payload.ticketindex].client.naps = []
+  },
   updateTickettype (state, payload) {
     state.tickets[payload.index].tickettype = payload.tickettype
   },
