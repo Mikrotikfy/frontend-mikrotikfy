@@ -167,7 +167,8 @@ export default {
   methods: {
     async getMenu () {
       await this.$store.dispatch('menu/getMenuFromDatabase', {
-        token: this.$store.state.auth.token
+        token: this.$store.state.auth.token,
+        userId: this.$store.state.auth.id
       })
     },
     testAuthToken () {

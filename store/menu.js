@@ -37,8 +37,15 @@ export const actions = {
   },
   getMenuFromDatabase ({ commit }, payload) {
     try {
+      const qs = require('qs')
+      const query = qs.stringify({
+        populate: ['menus']
+      },
+      {
+        encodeValuesOnly: true
+      })
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}menus?sort=priority:asc`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}users/${payload.userId}?${query}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -47,8 +54,9 @@ export const actions = {
         })
           .then(res => res.json())
           .then((menu) => {
-            commit('getMenuFromDatabase', menu.data)
-            resolve(menu.data)
+            const menuList = menu.menus.sort((a, b) => a.priority - b.priority)
+            commit('getMenuFromDatabase', menuList)
+            resolve(menuList)
           })
       })
     } catch (error) {
