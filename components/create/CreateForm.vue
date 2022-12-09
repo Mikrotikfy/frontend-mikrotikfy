@@ -222,6 +222,19 @@
         <v-row v-if="clienttype.name === 'INTERNET'">
           <v-col>
             <v-select
+              v-model="Client.technology"
+              :items="technologies"
+              item-text="name"
+              item-value="id"
+              mandatory
+              label="Tecnología"
+              outlined
+              dense
+              hide-details
+            />
+          </v-col>
+          <v-col>
+            <v-select
               v-model="Client.ipmodel"
               :items="ipmodelItems"
               item-text="name"
@@ -268,6 +281,7 @@ export default {
         wifi_ssid: '',
         wifi_password: '',
         mac_address: '',
+        technology: { id: 2, name: 'FTTH' },
         comment: '',
         email: null,
         electronicbill: true,
