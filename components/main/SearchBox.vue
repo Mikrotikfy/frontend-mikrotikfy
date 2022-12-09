@@ -9,7 +9,7 @@
       xl="6"
     >
       <v-row
-        class="mx-1 mt-5 mb-1 justify-center d-flex"
+        class="mx-1 mt-4 justify-center d-flex"
       >
         <v-btn
           color="grey lighten-4 black--text elevation-0"

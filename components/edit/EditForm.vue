@@ -22,254 +22,250 @@
     <v-dialog v-if="dialogEdit" v-model="dialogEdit" max-width="1100px" :retain-focus="false" :fullscreen="!$store.state.isDesktop">
       <v-card>
         <v-card-title>
-          <v-toolbar
-            elevation="0"
-          >
-            <v-btn
-              icon
-              @click="dialogEdit = false"
-            >
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-            <v-toolbar-title>Editar Cliente <span class="text--disabled text-caption"> // ID: {{ editClient ? editClient.id : '' }}</span></v-toolbar-title>
-          </v-toolbar>
+          <v-icon class="mr-2">
+            mdi-pencil
+          </v-icon>
+          Editar {{ editClient.name }}
+          <v-spacer />
+          <v-btn icon @click="dialogEdit = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </v-card-title>
+        <v-divider class="mb-5" />
         <v-card-text>
-          <v-container>
-            <v-alert
-              v-if="alertBox"
-              type="info"
-              :class="alertBoxColor"
-              tile
-              dismissible
-            >
-              {{ createdMessage }}
-            </v-alert>
-            <v-form ref="editForm" v-model="valid">
-              <v-row>
-                <v-col>
-                  <v-text-field
-                    v-model="editClient.code"
-                    :disabled="!$isAdmin()"
-                    type="number"
-                    label="Codigo"
-                    required
-                    outlined
-                    dense
-                    hide-details
-                  />
-                </v-col>
-                <v-col>
-                  <v-text-field
-                    v-model="editClient.dni"
-                    :disabled="!$isAdmin()"
-                    type="number"
-                    label="Cedula"
-                    required
-                    outlined
-                    dense
-                    hide-details
-                  />
-                </v-col>
-              </v-row>
-              <v-text-field
-                :value="editClient.name ? editClient.name.toUpperCase() : ''"
-                :disabled="!(!$isAdmin() || !$isBiller())"
-                label="Nombre Completo"
-                required
-                outlined
-                dense
-                hide-details
-                class="pb-3 mt-3"
-                @input="editClient.name = $event.toUpperCase()"
-              />
-              <v-row>
-                <v-col cols="6" lg="6" md="6">
-                  <v-text-field
-                    :value="editClient.addresses.length > 0 ? editClient.addresses.at(-1).address : editClient.address"
-                    disabled
-                    label="Direccion"
-                    outlined
-                    dense
-                    hide-details
-                  />
-                </v-col>
-                <v-col cols="6" lg="6" md="6" class="d-flex">
-                  <v-text-field
-                    :value="editClient.addresses.length > 0 ? editClient.addresses.at(-1).neighborhood.name : editClient.neighborhood.name"
-                    disabled
-                    class="mr-3"
-                    label="Barrio"
-                    outlined
-                    dense
-                    hide-details
-                  />
-                  <CreateAddress :client="editClient" @updateClient="emitupdateClient" />
-                  <MiscAddresses v-if="editClient.addresses.length > 0" :client="editClient" />
-                </v-col>
-              </v-row>
-              <v-row v-if="clienttype.name === 'INTERNET'">
-                <v-col cols="12" lg="4" md="4">
-                  <v-text-field
-                    v-model="editClient.phone"
-                    :disabled="!(!$isAdmin() || !$isBiller())"
-                    label="Telefono"
-                    required
-                    outlined
-                    dense
-                    hide-details
-                  />
-                </v-col>
-                <v-col cols="6" lg="4" md="4">
-                  <v-text-field
-                    v-model="editClient.wifi_ssid"
-                    :disabled="!$isAdmin()"
-                    label="Nombre de Red"
-                    required
-                    outlined
-                    dense
-                    hide-details
-                  />
-                </v-col>
-                <v-col cols="6" lg="4" md="4">
-                  <v-text-field
-                    v-model="editClient.wifi_password"
-                    :disabled="!$isAdmin()"
-                    :type="!(!$isAdmin() || !$isBiller()) ? 'password' : 'text'"
-                    label="Clave de Red"
-                    required
-                    outlined
-                    dense
-                    hide-details
-                  />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" xs="12" sm="12" md="4" lg="4">
-                  <v-select
-                    v-if="clienttype.name === 'INTERNET'"
-                    v-model="editClient.technology"
-                    :disabled="!(!$isAdmin() || !$isBiller() || !$isTechnician())"
-                    item-text="name"
-                    item-value="id"
-                    :items="technologies"
-                    :rules="[v => !!v || 'Debes especificar la tecnología']"
-                    return-object
-                    label="Tecnología"
-                    outlined
-                    dense
-                    required
-                    hide-details
-                  />
-                </v-col>
-                <v-col cols="12" xs="12" sm="12" md="4" lg="4">
-                  <v-text-field
-                    v-if="clienttype.name === 'INTERNET'"
-                    :value="editClient.nap_onu_address ? editClient.nap_onu_address.toUpperCase() : ''"
-                    label="Direccion NAP/ONU"
-                    outlined
-                    dense
-                    hide-details
-                    @input="editClient.nap_onu_address = $event.toUpperCase()"
-                  />
-                </v-col>
-                <v-col cols="12" xs="12" sm="12" md="4" lg="4">
-                  <v-text-field
-                    v-if="clienttype.name === 'INTERNET'"
-                    v-model="editClient.opticalPower"
-                    label="Potencia Óptica (Solo numeros)"
-                    outlined
-                    dense
-                    type="number"
-                    hide-details
-                  />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12">
-                  <v-text-field
-                    v-if="clienttype.name === 'INTERNET'"
-                    v-model="editClient.email"
-                    :disabled="!(!$isAdmin() || !$isBiller())"
-                    :type="!(!$isAdmin() || !$isBiller()) ? 'password' : 'text'"
-                    :rules="email"
-                    label="Correo Electronico"
-                    outlined
-                    dense
-                    hide-details="auto"
-                  />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col>
-                  <v-text-field
-                    :value="getDate(editClient.createdAt)"
-                    label="Fecha de Creación"
-                    required
-                    outlined
-                    dense
-                    readonly
-                    disabled
-                    hide-details
-                  />
-                </v-col>
-                <v-col>
-                  <v-text-field
-                    :value="getDate(editClient.updatedAt)"
-                    label="Última actualización"
-                    required
-                    outlined
-                    dense
-                    readonly
-                    disabled
-                    hide-details
-                  />
-                </v-col>
-                <v-col>
-                  <v-select
-                    v-if="clienttype.name === 'INTERNET'"
-                    v-model="editClient.newModel"
-                    :disabled="!$isAdmin()"
-                    :items="idwith"
-                    item-text="name"
-                    item-value="id"
-                    mandatory
-                    label="Identificar con"
-                    outlined
-                    dense
-                    hide-details
-                  />
-                </v-col>
-                <v-col>
-                  <v-select
-                    v-if="clienttype.name === 'INTERNET'"
-                    v-model="editClient.ipmodel"
-                    :disabled="!$isAdmin()"
-                    :items="ipmodelItems"
-                    item-text="name"
-                    item-value="id"
-                    mandatory
-                    label="Tipo de IP para cliente"
-                    outlined
-                    dense
-                    hide-details
-                  />
-                </v-col>
-              </v-row>
-              <!-- <div v-if="can('EditFormComment')">
-                <v-textarea
-                  :value="editClient.comment"
-                  auto-grow
-                  persistent-hint
+          <v-alert
+            v-if="alertBox"
+            type="info"
+            :class="alertBoxColor"
+            tile
+            dismissible
+          >
+            {{ createdMessage }}
+          </v-alert>
+          <v-form ref="editForm" v-model="valid">
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="editClient.code"
+                  :disabled="!$isAdmin()"
+                  type="number"
+                  label="Codigo"
+                  required
                   outlined
-                  label="Comentario Local (Solo API)"
+                  dense
+                  hide-details
+                />
+              </v-col>
+              <v-col>
+                <v-text-field
+                  v-model="editClient.dni"
+                  :disabled="!$isAdmin()"
+                  type="number"
+                  label="Cedula"
+                  required
+                  outlined
+                  dense
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <v-text-field
+              :value="editClient.name ? editClient.name.toUpperCase() : ''"
+              :disabled="!(!$isAdmin() || !$isBiller())"
+              label="Nombre Completo"
+              required
+              outlined
+              dense
+              hide-details
+              class="pb-3 mt-3"
+              @input="editClient.name = $event.toUpperCase()"
+            />
+            <v-row>
+              <v-col cols="6" lg="6" md="6">
+                <v-text-field
+                  :value="editClient.addresses.length > 0 ? editClient.addresses.at(-1).address : editClient.address"
+                  disabled
+                  label="Direccion"
+                  outlined
+                  dense
+                  hide-details
+                />
+              </v-col>
+              <v-col cols="6" lg="6" md="6" class="d-flex">
+                <v-text-field
+                  :value="editClient.addresses.length > 0 ? editClient.addresses.at(-1).neighborhood.name : editClient.neighborhood.name"
+                  disabled
+                  class="mr-3"
+                  label="Barrio"
+                  outlined
+                  dense
+                  hide-details
+                />
+                <CreateAddress :client="editClient" @updateClient="emitupdateClient" />
+                <MiscAddresses v-if="editClient.addresses.length > 0" :client="editClient" />
+              </v-col>
+            </v-row>
+            <v-row v-if="clienttype.name === 'INTERNET'">
+              <v-col cols="12" lg="4" md="4">
+                <v-text-field
+                  v-model="editClient.phone"
+                  :disabled="!(!$isAdmin() || !$isBiller())"
+                  label="Telefono"
+                  required
+                  outlined
+                  dense
+                  hide-details
+                />
+              </v-col>
+              <v-col cols="6" lg="4" md="4">
+                <v-text-field
+                  v-model="editClient.wifi_ssid"
+                  :disabled="!$isAdmin()"
+                  label="Nombre de Red"
+                  required
+                  outlined
+                  dense
+                  hide-details
+                />
+              </v-col>
+              <v-col cols="6" lg="4" md="4">
+                <v-text-field
+                  v-model="editClient.wifi_password"
+                  :disabled="!$isAdmin()"
+                  :type="!(!$isAdmin() || !$isBiller()) ? 'password' : 'text'"
+                  label="Clave de Red"
+                  required
+                  outlined
+                  dense
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" xs="12" sm="12" md="4" lg="4">
+                <v-select
+                  v-if="clienttype.name === 'INTERNET'"
+                  v-model="editClient.technology"
+                  :disabled="!(!$isAdmin() || !$isBiller() || !$isTechnician())"
+                  item-text="name"
+                  item-value="id"
+                  :items="technologies"
+                  :rules="[v => !!v || 'Debes especificar la tecnología']"
+                  return-object
+                  label="Tecnología"
+                  outlined
+                  dense
+                  required
+                  hide-details
+                />
+              </v-col>
+              <v-col cols="12" xs="12" sm="12" md="4" lg="4">
+                <v-text-field
+                  v-if="clienttype.name === 'INTERNET'"
+                  :value="editClient.nap_onu_address ? editClient.nap_onu_address.toUpperCase() : ''"
+                  label="Direccion NAP/ONU"
+                  outlined
+                  dense
+                  hide-details
+                  @input="editClient.nap_onu_address = $event.toUpperCase()"
+                />
+              </v-col>
+              <v-col cols="12" xs="12" sm="12" md="4" lg="4">
+                <v-text-field
+                  v-if="clienttype.name === 'INTERNET'"
+                  v-model="editClient.opticalPower"
+                  label="Potencia Óptica (Solo numeros)"
+                  outlined
+                  dense
+                  type="number"
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  v-if="clienttype.name === 'INTERNET'"
+                  v-model="editClient.email"
+                  :disabled="!(!$isAdmin() || !$isBiller())"
+                  :type="!(!$isAdmin() || !$isBiller()) ? 'password' : 'text'"
+                  :rules="email"
+                  label="Correo Electronico"
+                  outlined
+                  dense
+                  hide-details="auto"
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  :value="getDate(editClient.createdAt)"
+                  label="Fecha de Creación"
+                  required
+                  outlined
                   dense
                   readonly
                   disabled
+                  hide-details
                 />
-              </div> -->
-            </v-form>
-          </v-container>
+              </v-col>
+              <v-col>
+                <v-text-field
+                  :value="getDate(editClient.updatedAt)"
+                  label="Última actualización"
+                  required
+                  outlined
+                  dense
+                  readonly
+                  disabled
+                  hide-details
+                />
+              </v-col>
+              <v-col>
+                <v-select
+                  v-if="clienttype.name === 'INTERNET'"
+                  v-model="editClient.newModel"
+                  :disabled="!$isAdmin()"
+                  :items="idwith"
+                  item-text="name"
+                  item-value="id"
+                  mandatory
+                  label="Identificar con"
+                  outlined
+                  dense
+                  hide-details
+                />
+              </v-col>
+              <v-col>
+                <v-select
+                  v-if="clienttype.name === 'INTERNET'"
+                  v-model="editClient.ipmodel"
+                  :disabled="!$isAdmin()"
+                  :items="ipmodelItems"
+                  item-text="name"
+                  item-value="id"
+                  mandatory
+                  label="Tipo de IP para cliente"
+                  outlined
+                  dense
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <!-- <div v-if="can('EditFormComment')">
+              <v-textarea
+                :value="editClient.comment"
+                auto-grow
+                persistent-hint
+                outlined
+                label="Comentario Local (Solo API)"
+                dense
+                readonly
+                disabled
+              />
+            </div> -->
+          </v-form>
         </v-card-text>
         <v-card-actions>
           <v-btn
