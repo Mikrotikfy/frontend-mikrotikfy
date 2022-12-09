@@ -94,7 +94,6 @@
             color="primary"
             block
             class="rounded-xl mt-4"
-            :disabled="ticket.client.naps.length < 1"
             @click="evaluateStep(2)"
           >
             Continuar
