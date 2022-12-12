@@ -11,7 +11,7 @@
           v-on="on"
           @click="initComponent()"
         >
-          <v-icon>mdi-history</v-icon>
+          <v-icon>mdi-note-outline</v-icon>
           <span v-if="block">
             Ver Avances
           </span>

@@ -76,13 +76,19 @@
               sort-by="createdAt"
               calculate-widths
               sort-desc
+              dense
               no-data-text="No hay Tickets abiertos aún..."
               loading-text="Cargando información de tickets..."
               hide-default-footer
-              mobile-breakpoint="100"
+              mobile-breakpoint="600"
               @page-count="pageCount = $event"
               @click:row="showTicketInfo({ item: $event, index: ticketList.indexOf($event) })"
             >
+              <template v-slot:[`item.active`]="props">
+                <v-chip small :color="getColor(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice)" class="white--text">
+                  {{ getState(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice) }}
+                </v-chip>
+              </template>
               <template v-slot:[`item.tickettype.name`]="props">
                 <v-edit-dialog
                   ref="dialog"
@@ -119,8 +125,50 @@
                 <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA O RETIRADO <span class="text-decoration-line-through">{{props.item.client.name}}</span></span>
                 <span v-else>{{props.item.client.name}}</span>
               </template>
+              <template v-slot:[`item.details`]="{ item }">
+                <v-tooltip bottom max-width="400">
+                  <template v-slot:activator="{ on, attrs }">
+                    <div
+                      v-bind="attrs"
+                      v-on="on"
+                      class="text-truncate" style="width:200px;"
+                    >
+                      {{ item.details }}
+                    </div>
+                  </template>
+                  <span>{{ item.details }}</span>
+              </v-tooltip>
+              </template>
+              <template v-slot:[`item.client.name`]="{ item }">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <div
+                      v-bind="attrs"
+                      v-on="on"
+                      class="text-truncate" style="max-width:150px;"
+                    >
+                      {{ showOnlyNameAndSecondName(item.client.name) }}
+                    </div>
+                  </template>
+                  <span>{{ item.client.name }}</span>
+              </v-tooltip>
+              </template>
               <template v-slot:[`item.client.address`]="{ item }">
-                  <strong>{{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).address : item.client.address }}</strong>
+                  <v-tooltip
+                    bottom
+                  >
+                  <template v-slot:activator="{ on, attrs }">
+                    <div
+                      v-bind="attrs"
+                      v-on="on"
+                      class="text-truncate" style="max-width:150px;"
+                      @click="copyToClipboard('Direccion', item.client.addresses.length > 0 ? item.client.addresses.at(-1).address : item.client.address)"
+                    >
+                      {{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).address : item.client.address }}
+                    </div>
+                  </template>
+                  <span>{{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).address : item.client.address }}</span>
+              </v-tooltip>
               </template>
               <template v-slot:[`item.client.neighborhood.name`]="{ item }">
                   <strong>{{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).neighborhood.name : item.client.neighborhood.name }}</strong>
@@ -128,14 +176,18 @@
               <template v-slot:[`item.client.code`]="props">
                 <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`">{{props.item.client.code}}</nuxt-link>
               </template>
+              <template v-slot:[`item.assignated.username`]="{ item }">
+                <strong style="max-width:60px;"> {{ ucfirst(item.assignated.username) }}</strong>
+              </template>
               <template v-slot:[`item.client.technology.name`]="props">
                 {{ props.item.client.technology !== null ? props.item.client.technology.name : 'No reg.' }}
               </template>
               <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="{ item, index }">
-                <div class="nowspace">
-                  <TicketHistory
-                    :clientid="item.client.id"
-                    :name="item.client.name"
+                <div class="d-flex">
+                  <CreateTicketAdvancev2
+                    :ticket="item"
+                    :ticketindex="index"
+                    @updateTicketStatus="updateTicketStatus($event)"
                   />
                   <ClientStatus
                       v-if="clienttype === 'INTERNET'"
@@ -144,10 +196,9 @@
                       :code="item.client.code"
                       :role="$store.state.auth.allowed_components"
                     />
-                  <CreateTicketAdvancev2
-                    :ticket="item"
-                    :ticketindex="index"
-                    @updateTicketStatus="updateTicketStatus($event)"
+                  <TicketHistory
+                    :clientid="item.client.id"
+                    :name="item.client.name"
                   />
                   <TvServiceStepper
                     v-if="clienttype === 'TELEVISION'"
@@ -159,14 +210,12 @@
                   />
                 </div>
               </template>
-              <template v-slot:[`item.active`]="props">
-                <v-chip small :color="getColor(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice)" class="white--text">
-                  {{ getState(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice) }}
-                </v-chip>
-              </template>
               <template v-slot:[`item.createdAt`]="{ item }">
-                <span>
+                <span class="text-caption">
                   {{ getDate(item.createdAt) }}
+                </span>
+                <span class="text-caption text--secondary">
+                  {{ getHour(item.createdAt) }}
                 </span>
               </template>
             </v-data-table>
@@ -261,18 +310,18 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-content v-if="editModalData.client !== undefined">
+                <CreateTicketAdvancev2
+                  :ticket="editModalData"
+                  :ticketindex="editModalData.index"
+                  :block="true"
+                  @updateTicketStatus="updateTicketStatus($event)"
+                />
                 <ClientStatus
                     :block="true"
                     :name="editModalData.client.name"
                     :clientid="editModalData.client.id"
                     :code="editModalData.client.code"
                     :role="this.$store.state.auth.allowed_components"
-                  />
-                <CreateTicketAdvancev2
-                    :ticket="editModalData"
-                    :ticketindex="editModalData.index"
-                    :block="true"
-                    @updateTicketStatus="updateTicketStatus($event)"
                   />
                 <TicketAdvanceHistory
                   :block="true"
@@ -361,6 +410,9 @@ export default {
     this.getTickettypes()
     this.initIntervalAndGetTickets()
   },
+  destroyed () {
+    this.removeOldIntervalIfExists()
+  },
   methods: {
     initIntervalAndGetTickets () {
       this.removeOldIntervalIfExists()
@@ -404,9 +456,26 @@ export default {
       this.refreshTickets()
       this.infoModal = false
     },
+    copyToClipboard (component, text) {
+      navigator.clipboard.writeText(text)
+      this.$toast.info(`${component} Copiado al portapapeles!`, { duration: 2000 })
+    },
+    showOnlyNameAndSecondName (name) {
+      const nameArray = name.split(' ')
+      if (nameArray.length > 2) {
+        return nameArray[0] + ' ' + nameArray[2]
+      } else {
+        return name
+      }
+    },
     getDate (date) {
       const dateObject = new Date(date)
-      const humanDateFormat = dateObject.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric' })
+      const humanDateFormat = dateObject.toLocaleString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
+      return humanDateFormat
+    },
+    getHour (date) {
+      const dateObject = new Date(date)
+      const humanDateFormat = dateObject.toLocaleString('es-ES', { hour: 'numeric', minute: 'numeric', hour12: true })
       return humanDateFormat
     },
     getTicketTypeColor (tickettype) {
@@ -469,13 +538,15 @@ export default {
       if (currentCity !== recordedCity) {
         this.$store.dispatch('refreshTickets', { city: currentCity, limit: 50 })
       }
+    },
+    ucfirst (string) {
+      return string.charAt(0).toUpperCase() + string.slice(1)
     }
   }
 }
 </script>
 
 <style scoped>
-  .nowspace {white-space: nowrap !important;}
   .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td {
     font-size: 12px;
   }
