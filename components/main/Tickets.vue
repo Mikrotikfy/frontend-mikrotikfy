@@ -80,7 +80,7 @@
               no-data-text="No hay Tickets abiertos aún..."
               loading-text="Cargando información de tickets..."
               hide-default-footer
-              mobile-breakpoint="600"
+              mobile-breakpoint="100"
               @page-count="pageCount = $event"
               @click:row="showTicketInfo({ item: $event, index: ticketList.indexOf($event) })"
             >
