@@ -91,12 +91,12 @@
               </template>
               <template v-slot:[`item.tickettype.name`]="props">
                 <v-edit-dialog
+                  v-if="$isAdmin()"
                   ref="dialog"
                   large
                   cancel-text="Cancelar"
                   save-text="Guardar"
                   @save="saveTickettypeFromModal(props.item.id, props.item.tickettype.id, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
-                  @cancel="cancel()"
                 >
                   <v-chip small :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
                     {{ props.item.tickettype.name }}
@@ -115,6 +115,9 @@
                     />
                   </template>
                 </v-edit-dialog>
+                <v-chip v-else small :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
+                  {{ props.item.tickettype.name }}
+                </v-chip>
               </template>
               <template v-if="!$store.state.isDesktop" v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length">
@@ -232,115 +235,75 @@
       </v-col>
     </v-row>
     <v-dialog
-      v-if="!isDesktop"
+      v-if="!$store.state.isDesktop"
       v-model="infoModal"
       fullscreen
       hide-overlay
       transition="dialog-bottom-transition"
     >
       <v-card>
-        <v-toolbar
-          dark
-        >
-          <v-btn
-            icon
-            dark
-            @click="infoModal = false"
-          >
+        <v-card-title>
+          Información de Ticket
+          <v-spacer />
+          <v-btn icon @click="infoModal = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
-        </v-toolbar>
-        <v-card-title>
-          Información de Ticket  
         </v-card-title>
-        <v-card-text>
-          <v-list rounded>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.tickettype ? editModalData.tickettype.name : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.code : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.name : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.addresses.length > 0 ? editModalData.client.addresses.at(-1).address : editModalData.client.address : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.addresses.length > 0 ? editModalData.client.addresses.at(-1).neighborhood.name : editModalData.client.neighborhood.name : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.phone : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-subtitle>Detalles</v-list-item-subtitle>
-                <p>{{ editModalData ? editModalData.details : '' }}</p>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-subtitle>Reporto</v-list-item-subtitle>
-                <v-list-item-title>{{ editModalData.assiganted ? editModalData.assiganted.username : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-subtitle>Creado en</v-list-item-subtitle>
-                <v-list-item-title>{{ editModalData ? editModalData.createdAt : '' }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content v-if="editModalData.client !== undefined">
-                <CreateTicketAdvancev2
-                  :ticket="editModalData"
-                  :ticketindex="editModalData.index"
-                  :block="true"
-                  @updateTicketStatus="updateTicketStatus($event)"
-                />
-                <ClientStatus
-                    :block="true"
-                    :name="editModalData.client.name"
-                    :clientid="editModalData.client.id"
-                    :code="editModalData.client.code"
-                    :role="this.$store.state.auth.allowed_components"
-                  />
-                <TicketAdvanceHistory
-                  :block="true"
-                  :ticketid="editModalData.id"
-                  :name="editModalData.client.name"
-                />
-                <TvServiceStepper
-                  v-if="clienttype === 'TELEVISION'"
-                  :clientid="editModalData.client.id"
-                  :block="true"
-                />
-                <TicketHistory
-                  :clientid="editModalData.client.id"
-                  :name="editModalData.client.name"
-                  :block="true"
-                />
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
+        <v-card-text
+          style="height: calc(100vh - 69px);"
+          class="d-flex flex-column justify-space-between"
+        >
+          <div>
+            <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">{{ editModalData.tickettype ? editModalData.tickettype.name : '' }}</p>
+            <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">{{ editModalData.client ? editModalData.client.code : '' }}</p>
+            <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">{{ editModalData.client ? editModalData.client.name : '' }}</p>
+            <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">{{ editModalData.client ? editModalData.client.addresses.length > 0 ? editModalData.client.addresses.at(-1).address : editModalData.client.address : '' }}</p>
+            <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">{{ editModalData.client ? editModalData.client.addresses.length > 0 ? editModalData.client.addresses.at(-1).neighborhood.name : editModalData.client.neighborhood.name : '' }}</p>
+            <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">{{ editModalData.client ? editModalData.client.phone : '' }}</p>
+            <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}</p>
+            <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">{{ editModalData ? editModalData.details : '' }}</p>
+            <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">{{ editModalData.assignated ? ucfirst(editModalData.assignated.username) : '' }}</p>
+            <span class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">
+              {{ getDate(editModalData ? editModalData.createdAt : '') }}
+            </span>
+            <span class="pb-0 mb-0 text-h6 font-weigth-bold mb-2 text--secondary">
+              {{ getHour(editModalData ? editModalData.createdAt : '') }}
+            </span>
+          </div>
+          <div v-if="editModalData.client !== undefined" style="
+            display:grid;
+            grid-template-rows: 1fr 1fr 1fr 1fr;
+            row-gap: 10px;
+          ">
+            <CreateTicketAdvancev2
+              :ticket="editModalData"
+              :ticketindex="editModalData.index"
+              :block="true"
+              @updateTicketStatus="updateTicketStatus($event)"
+            />
+            <ClientStatus
+                :block="true"
+                :name="editModalData.client.name"
+                :clientid="editModalData.client.id"
+                :code="editModalData.client.code"
+                :role="this.$store.state.auth.allowed_components"
+              />
+            <TicketAdvanceHistory
+              :block="true"
+              :ticketid="editModalData.id"
+              :name="editModalData.client.name"
+            />
+            <TvServiceStepper
+              v-if="clienttype === 'TELEVISION'"
+              :clientid="editModalData.client.id"
+              :block="true"
+            />
+            <TicketHistory
+              :clientid="editModalData.client.id"
+              :name="editModalData.client.name"
+              :block="true"
+            />
+          </div>
         </v-card-text>
       </v-card>
     </v-dialog>
