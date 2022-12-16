@@ -1,7 +1,8 @@
 <template>
   <div>
     <MainSearchBox />
-    <MainClientList :search="search" />
+    <MainSearchResults />
+    <!-- <MainClientList :search="search" /> -->
   </div>
 </template>
 
