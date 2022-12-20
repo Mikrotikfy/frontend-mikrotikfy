@@ -70,7 +70,8 @@ export const actions = {
           data: {
             client: payload.client.id,
             offer: payload.offer.id,
-            technician: payload.technician.id
+            technician: payload.technician.id,
+            details: payload.details
           }
         })
       })

@@ -122,12 +122,13 @@ export default {
         const client = this.validClients[i]
         await this.$store.dispatch('offer/setNewOffer', {
           token: this.$store.state.auth.token,
+          client,
           city: this.city,
+          offer: this.offer,
+          details: 'CAMBIO DE TARIFA EN LOTE',
           isindebt: true,
           isretired: false,
           isBulkDx: true,
-          client,
-          comment: 'CAMBIO DE TARIFA EN LOTE',
           technician: this.$store.state.auth
         }).then(async () => {
           this.$simpleTelegramUpdateDebt({ client, operator: this.$store.state.auth.username, isInDebt: true, isRetired: false, telegramBots: this.telegramBots })
@@ -137,7 +138,7 @@ export default {
             isOfferChange: false,
             kick: this.kick,
             isBulkDx: true,
-            newPlan: { id: 7 },
+            newPlan: { id: this.offer.plan.id },
             operator: this.$store.state.auth.id,
             token: this.$store.state.auth.token
           }).then((success) => {

@@ -1,15 +1,18 @@
 <template>
   <div>
-    <v-container class="justify-center d-flex">
-      <v-card width="90%">
+    <v-container class="justify-center d-flex" fluid>
+      <v-card width="100%" class="rounded-xl">
         <v-card-title class="text-center justify-center">
           <span class="headline">Gestión de Tarifas Masivamente {{
             $route.query.city
           }}</span>
         </v-card-title>
         <v-card-text>
-          <v-stepper v-model="e1">
-            <v-stepper-header>
+          <v-stepper
+            v-model="e1"
+            class="transparent elevation-0"
+          >
+            <v-stepper-header class="elevation-0">
               <v-stepper-step
                 :complete="e1 > 1"
                 step="1"
@@ -67,8 +70,8 @@
         </v-card-text>
       </v-card>
     </v-container>
-    <v-container>
-      <v-card v-if="e1 < 2">
+    <v-container class="justify-center d-flex pt-0" fluid>
+      <v-card v-if="e1 < 2" width="100%" class="rounded-xl">
         <CutsResume />
       </v-card>
     </v-container>
@@ -98,6 +101,9 @@ export default {
     this.$store.dispatch('cuts/getPlans', {
       token: this.$store.state.auth.token
     })
+  },
+  destroyed () {
+    this.$store.commit('cuts/clear')
   },
   head () {
     return {

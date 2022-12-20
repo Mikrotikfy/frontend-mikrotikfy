@@ -22,6 +22,29 @@ export const state = () => ({
   validClients: []
 })
 export const mutations = {
+  clear (state) {
+    state.applyOffer = false
+    state.usePlan = false
+    state.billingPeriod = null
+    state.billingPeriodMovements = []
+    state.clients = []
+    state.clientsByPlan = []
+    state.cutErrors = []
+    state.cuts = []
+    state.e1 = '1'
+    state.errors = 0
+    state.inprocess = false
+    state.kick = false
+    state.loading = false
+    state.month = null
+    state.offer = null
+    state.offerForBulkProcess = null
+    state.plans = []
+    state.prepare = false
+    state.ready = []
+    state.type = null
+    state.validClients = []
+  },
   e1 (state, e1) {
     state.e1 = e1
   },

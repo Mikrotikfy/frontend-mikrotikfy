@@ -42,13 +42,6 @@ export default {
         token: this.$store.state.auth.token
       })
     },
-    can (component) {
-      // eslint-disable-next-line camelcase
-      const allowed_components = this.role
-      // eslint-disable-next-line camelcase
-      const current_component = component
-      return allowed_components.includes(current_component)
-    },
     getLocalStorage () {
       this.$store.dispatch('loadLocalStorage')
     }
