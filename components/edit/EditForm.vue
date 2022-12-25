@@ -9,7 +9,7 @@
           :x-small="!block"
           :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
           v-on="on"
-          @click="dialogEdit = true"
+          @click="initComponent()"
         >
           <v-icon>mdi-pencil</v-icon>
           <span v-if="block">
@@ -20,12 +20,12 @@
       <span>Editar Cliente</span>
     </v-tooltip>
     <v-dialog v-if="dialogEdit" v-model="dialogEdit" max-width="1100px" :retain-focus="false" :fullscreen="!$store.state.isDesktop">
-      <v-card>
+      <v-card v-if="currentEditClient">
         <v-card-title>
           <v-icon class="mr-2">
             mdi-pencil
           </v-icon>
-          Editar {{ editClient.name }}
+          Editar {{ currentEditClient.name }}
           <v-spacer />
           <v-btn icon @click="dialogEdit = false">
             <v-icon>mdi-close</v-icon>
@@ -42,48 +42,54 @@
           >
             {{ createdMessage }}
           </v-alert>
-          <v-form ref="editForm" v-model="valid">
+          <v-form ref="editForm" v-model="valid" @focus="resetSaveStatus">
             <v-row>
               <v-col>
                 <v-text-field
-                  v-model="editClient.code"
-                  :disabled="!$isAdmin()"
+                  v-model="currentEditClient.code"
                   type="number"
                   label="Codigo"
                   required
                   outlined
                   dense
                   hide-details
+                  :disabled="!$isAdmin() || loading"
+                  @blur="updateClient"
+                  @keyup.enter="$event.target.blur()"
                 />
               </v-col>
               <v-col>
                 <v-text-field
-                  v-model="editClient.dni"
-                  :disabled="!$isAdmin()"
+                  v-model="currentEditClient.dni"
                   type="number"
                   label="Cedula"
                   required
                   outlined
                   dense
                   hide-details
+                  :disabled="!$isAdmin() || loading"
+                  @blur="updateClient"
+                  @keyup.enter="$event.target.blur()"
                 />
               </v-col>
             </v-row>
             <v-text-field
-              :value="editClient.name ? editClient.name.toUpperCase() : ''"
-              :disabled="!(!$isAdmin() || !$isBiller())"
+              :value="currentEditClient.name ? currentEditClient.name.toUpperCase() : ''"
+              :disabled="!(!$isAdmin() || !$isBiller()) || loading"
               label="Nombre Completo"
               required
               outlined
               dense
               hide-details
               class="pb-3 mt-3"
-              @input="editClient.name = $event.toUpperCase()"
+              @input="currentEditClient.name = $event.toUpperCase()"
+              @blur="updateClient"
+              @keyup.enter="$event.target.blur()"
             />
             <v-row>
               <v-col cols="6" lg="6" md="6">
                 <v-text-field
-                  :value="editClient.addresses.length > 0 ? editClient.addresses.at(-1).address : editClient.address"
+                  :value="currentEditClient.addresses.length > 0 ? currentEditClient.addresses.at(-1).address : currentEditClient.address"
                   disabled
                   label="Direccion"
                   outlined
@@ -93,7 +99,7 @@
               </v-col>
               <v-col cols="6" lg="6" md="6" class="d-flex">
                 <v-text-field
-                  :value="editClient.addresses.length > 0 ? editClient.addresses.at(-1).neighborhood.name : editClient.neighborhood.name"
+                  :value="currentEditClient.addresses.length > 0 ? currentEditClient.addresses.at(-1).neighborhood.name : currentEditClient.neighborhood.name"
                   disabled
                   class="mr-3"
                   label="Barrio"
@@ -101,52 +107,57 @@
                   dense
                   hide-details
                 />
-                <CreateAddress :client="editClient" @updateClient="emitupdateClient" />
-                <MiscAddresses v-if="editClient.addresses.length > 0" :client="editClient" />
+                <CreateAddress :client="currentEditClient" @updateClient="emitupdateClient" />
+                <MiscAddresses v-if="currentEditClient.addresses.length > 0" :client="currentEditClient" />
               </v-col>
             </v-row>
             <v-row v-if="clienttype.name === 'INTERNET'">
               <v-col cols="12" lg="4" md="4">
                 <v-text-field
-                  v-model="editClient.phone"
-                  :disabled="!(!$isAdmin() || !$isBiller())"
+                  v-model="currentEditClient.phone"
                   label="Telefono"
                   required
                   outlined
                   dense
                   hide-details
+                  :disabled="!(!$isAdmin() || !$isBiller()) || loading"
+                  @blur="updateClient"
+                  @keyup.enter="$event.target.blur()"
                 />
               </v-col>
               <v-col cols="6" lg="4" md="4">
                 <v-text-field
-                  v-model="editClient.wifi_ssid"
-                  :disabled="!$isAdmin()"
+                  v-model="currentEditClient.wifi_ssid"
+                  :disabled="!$isAdmin() || loading"
                   label="Nombre de Red"
                   required
                   outlined
                   dense
                   hide-details
+                  @blur="updateClient"
+                  @keyup.enter="$event.target.blur()"
                 />
               </v-col>
               <v-col cols="6" lg="4" md="4">
                 <v-text-field
-                  v-model="editClient.wifi_password"
-                  :disabled="!$isAdmin()"
-                  :type="!(!$isAdmin() || !$isBiller()) ? 'password' : 'text'"
+                  v-model="currentEditClient.wifi_password"
+                  :disabled="!$isAdmin() || loading"
                   label="Clave de Red"
                   required
                   outlined
                   dense
                   hide-details
+                  @blur="updateClient"
+                  @keyup.enter="$event.target.blur()"
                 />
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" xs="12" sm="12" md="4" lg="4">
+              <v-col cols="12" xs="12" sm="12" md="6" lg="6">
                 <v-select
                   v-if="clienttype.name === 'INTERNET'"
-                  v-model="editClient.technology"
-                  :disabled="!(!$isAdmin() || !$isBiller() || !$isTechnician())"
+                  v-model="currentEditClient.technology"
+                  :disabled="!(!$isAdmin() || !$isBiller() || !$isTechnician()) || loading"
                   item-text="name"
                   item-value="id"
                   :items="technologies"
@@ -157,76 +168,30 @@
                   dense
                   required
                   hide-details
+                  @change="updateClient"
                 />
               </v-col>
-              <v-col cols="12" xs="12" sm="12" md="4" lg="4">
+              <v-col cols="12" xs="12" sm="12" md="6" lg="6">
                 <v-text-field
                   v-if="clienttype.name === 'INTERNET'"
-                  :value="editClient.nap_onu_address ? editClient.nap_onu_address.toUpperCase() : ''"
-                  label="Direccion NAP/ONU"
-                  outlined
-                  dense
-                  hide-details
-                  @input="editClient.nap_onu_address = $event.toUpperCase()"
-                />
-              </v-col>
-              <v-col cols="12" xs="12" sm="12" md="4" lg="4">
-                <v-text-field
-                  v-if="clienttype.name === 'INTERNET'"
-                  v-model="editClient.opticalPower"
-                  label="Potencia Óptica (Solo numeros)"
-                  outlined
-                  dense
-                  type="number"
-                  hide-details
-                />
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-if="clienttype.name === 'INTERNET'"
-                  v-model="editClient.email"
-                  :disabled="!(!$isAdmin() || !$isBiller())"
-                  :type="!(!$isAdmin() || !$isBiller()) ? 'password' : 'text'"
+                  v-model="currentEditClient.email"
+                  :disabled="!(!$isAdmin() || !$isBiller()) || loading"
                   :rules="email"
                   label="Correo Electronico"
                   outlined
                   dense
                   hide-details="auto"
+                  @blur="updateClient"
+                  @keyup.enter="$event.target.blur()"
                 />
               </v-col>
             </v-row>
             <v-row>
               <v-col>
-                <v-text-field
-                  :value="getDate(editClient.createdAt)"
-                  label="Fecha de Creación"
-                  required
-                  outlined
-                  dense
-                  readonly
-                  disabled
-                  hide-details
-                />
-              </v-col>
-              <v-col>
-                <v-text-field
-                  :value="getDate(editClient.updatedAt)"
-                  label="Última actualización"
-                  required
-                  outlined
-                  dense
-                  readonly
-                  disabled
-                  hide-details
-                />
-              </v-col>
-              <v-col>
                 <v-select
                   v-if="clienttype.name === 'INTERNET'"
-                  v-model="editClient.newModel"
-                  :disabled="!$isAdmin()"
+                  v-model="currentEditClient.newModel"
+                  :disabled="!$isAdmin() || loading"
                   :items="idwith"
                   item-text="name"
                   item-value="id"
@@ -235,13 +200,14 @@
                   outlined
                   dense
                   hide-details
+                  @change="updateClient"
                 />
               </v-col>
               <v-col>
                 <v-select
                   v-if="clienttype.name === 'INTERNET'"
-                  v-model="editClient.ipmodel"
-                  :disabled="!$isAdmin()"
+                  v-model="currentEditClient.ipmodel"
+                  :disabled="!$isAdmin() || loading"
                   :items="ipmodelItems"
                   item-text="name"
                   item-value="id"
@@ -250,6 +216,7 @@
                   outlined
                   dense
                   hide-details
+                  @change="updateClient"
                 />
               </v-col>
             </v-row>
@@ -267,17 +234,15 @@
             </div> -->
           </v-form>
         </v-card-text>
-        <v-card-actions>
-          <v-btn
-            class="mr-4"
-            color="primary"
-            :loading="loading"
-            :disabled="loading"
-            @click="updateClient(editClient, index)"
-          >
-            Confirmar
-          </v-btn>
-        </v-card-actions>
+        <v-divider />
+        <v-card-text class="d-flex align-center mt-5">
+          <caption ref="saveStatusText" class="font-italic">{{ saveStatus }}</caption>
+          <v-spacer />
+          <div style="display: inline-grid;place-items: end;">
+            <caption>Fecha de creacion: {{ getDate(currentEditClient.createdAt) }}</caption>
+            <caption>Fecha de ultima modificacion: {{ getDate(currentEditClient.updatedAt) }}</caption>
+          </div>
+        </v-card-text>
       </v-card>
     </v-dialog>
   </span>
@@ -307,12 +272,12 @@ export default {
   },
   data: () => {
     return {
+      saveStatus: 'No hay cambios pendientes...',
+      currentEditClient: {},
+      changes: 0,
       addDevice: false,
       device: {},
       valid: false,
-      editClient: {
-        ipmodel: 0
-      },
       email: [
         v => !!v || 'El correo es requerido',
         v => /\S+@\S+\.\S+/.test(v) || 'El correo no es valido'
@@ -385,26 +350,44 @@ export default {
     }
   },
   watch: {
-    client () {
-      Object.assign(this.editClient, this.client)
-    },
     addDevice () {
       this.device = {}
     }
   },
-  mounted () {
-    Object.assign(this.editClient, this.client)
-  },
   methods: {
-    async updateClient (client, index) {
+    initComponent () {
+      this.dialogEdit = true
+      Object.assign(this.currentEditClient, this.client)
+    },
+    testChanges () {
+      const client = this.currentEditClient
+      const oldClient = this.client
+      const changes = Object.keys(client).filter(key => client[key] !== oldClient[key])
+      return changes.length
+    },
+    resetSaveStatus () {
+      this.saveStatus = 'No hay cambios pendientes...'
+    },
+    async updateClient () {
+      this.$refs.saveStatusText.classList.remove('success--text')
+      this.saveStatus = 'No hay cambios pendientes...'
+      this.$refs.saveStatusText.classList.add('cyan--text')
+      if (this.testChanges() === 0) { return }
       this.loading = true
       const operator = this.$store.state.auth.id
-      await this.$store.dispatch('client/updateClient', { client, index, operator, token: this.$store.state.auth.token })
+      const client = this.currentEditClient
+
+      this.saveStatus = 'Guardando...'
+
+      await this.$store.dispatch('client/updateClient', { client, index: this.index, operator, token: this.$store.state.auth.token })
       await this.$store.dispatch('client/updateClientCommentOnMikrotik', { client, token: this.$store.state.auth.token })
-      this.$emit('updateSuccess')
       this.$simpleTelegramUpdate({ client, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+
+      this.$refs.saveStatusText.classList.remove('cyan--text')
+      this.$refs.saveStatusText.classList.add('success--text')
+      this.$refs.saveStatusText.classList.add('font-weight-bold')
+      this.saveStatus = 'Guardado'
       this.loading = false
-      this.dialogEdit = false
     },
     emitupdateClient () {
       this.$emit('updateSuccess')

@@ -51,7 +51,7 @@ export const mutations = {
   },
   updateClient (state, { client, index }) {
     try {
-      state.clients[index] = client
+      Object.assign(state.clients[index], client)
     } catch (error) {
       throw new Error(`UPDATE CLIENT MUTATE ${error}`)
     }
@@ -466,20 +466,20 @@ export const actions = {
       throw new Error(`ADMINDELETE ACTION ${error}`)
     })
   },
-  async updateClient ({ commit }, { client, index, operator, token }) {
-    delete client.active
-    await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${client.id}`, {
+  async updateClient ({ commit }, payload) {
+    delete payload.client.active
+    await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${payload.token}`
       },
       body: JSON.stringify({
-        data: { operator, ...client }
+        data: { operator: payload.operator, ...payload.client }
       })
     }).then((input) => {
       if (input.status === 200) {
-        commit('updateClient', { client, index })
+        commit('updateClient', { client: payload.client, index: payload.index })
       }
     }).catch((error) => {
       // eslint-disable-next-line no-console

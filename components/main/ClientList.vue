@@ -77,7 +77,7 @@
               <v-data-table
                 v-if="headers"
                 :headers="headers"
-                :items.sync="clients"
+                :items="clients"
                 :server-items-length="clientCount()"
                 :items-per-page.sync="itemsPerPage"
                 :page.sync="page"
@@ -114,7 +114,7 @@
                     {{ item.technology ? item.technology.name : 'No Reg.' }}
                   </strong>
                 </template>
-                <template v-slot:[`item.actions`]="{ item }">
+                <template v-slot:[`item.actions`]="{ item, index }">
                   <div style="white-space:nowrap">
                     <!-- <MainTramits :client="item" /> -->
                     <!-- <MiscInfoSell v-if="$isAdmin() || $isBiller()" :client="item" /> -->
@@ -149,7 +149,7 @@
                     />
                     <EditForm
                       :client="item"
-                      :index="clients.indexOf(item)"
+                      :index="index"
                       @updateSuccess="getClientBySearch()"
                     />
                   </div>
