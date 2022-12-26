@@ -205,7 +205,7 @@ export const actions = {
     })
       .then(res => res.json())
       .then((_) => {
-        this.$toast.info('Tipo de Ticket actualizado con exito', { duration: 4000, position: 'top-center' })
+        this.$toast.info('Tipo de Ticket actualizado con exito', { duration: 4000, position: 'bottom-center' })
       })
   }
 }

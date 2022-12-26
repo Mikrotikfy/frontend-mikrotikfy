@@ -273,7 +273,7 @@ export default {
     },
     processDni () {
       if (this.dni === null || this.dni === '') {
-        this.$toast.error('Debe especificar la cedula o Nit para continuar.', { duration: 5000, position: 'top-center' })
+        this.$toast.error('Debe especificar la cedula o Nit para continuar.', { duration: 5000, position: 'bottom-center' })
       }
       this.$store.dispatch('password/searchClientByDni', {
         dni: this.dni
@@ -292,7 +292,7 @@ export default {
             this.e1 = 2
           }
         } else {
-          this.$toast.error('No se ha encontrado ningun usuario con esta informacion. Comunicate al 310 343 25 99 en Mariquita y al 350 810 59 49 en Fresno', { position: 'top-center' })
+          this.$toast.error('No se ha encontrado ningun usuario con esta informacion. Comunicate al 310 343 25 99 en Mariquita y al 350 810 59 49 en Fresno', { position: 'bottom-center' })
         }
       })
     }

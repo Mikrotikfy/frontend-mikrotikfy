@@ -84,12 +84,6 @@
           </v-card-text>
         </div>
         <v-card-actions>
-          <EditForm
-            v-if="item"
-            :client="item"
-            :index="index"
-            :role="$store.state.auth.allowed_components"
-          />
           <v-spacer />
 
           <v-btn
@@ -106,12 +100,8 @@
 </template>
 
 <script>
-import EditForm from '../edit/EditForm'
 export default {
   name: 'ClientStatus',
-  components: {
-    EditForm
-  },
   props: {
     clientid: {
       type: Number,

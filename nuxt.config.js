@@ -91,7 +91,7 @@ export default {
     '@nuxtjs/toast'
   ],
   toast: {
-    position: 'top-center'
+    position: 'bottom-center'
   },
   /*
   ** vuetify module configuration

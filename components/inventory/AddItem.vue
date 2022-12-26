@@ -75,7 +75,7 @@ export default {
     async addItem () {
       this.loading = !this.loading
       if (!this.item.name) {
-        this.$toast.error('Rellena todos los campos antes de continuar', { position: 'top-center' })
+        this.$toast.error('Rellena todos los campos antes de continuar', { position: 'bottom-center' })
         this.loading = !this.loading
         return
       }

@@ -269,7 +269,7 @@ export const actions = {
         })
           .then(res => res.json())
           .then((billingperiod) => {
-            this.$toast.info('Periodo de corte actualizado.', { duration: 4000, position: 'top-center' })
+            this.$toast.info('Periodo de corte actualizado.', { duration: 4000, position: 'bottom-center' })
             resolve(billingperiod)
           })
       })

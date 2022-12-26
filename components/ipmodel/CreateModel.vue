@@ -129,7 +129,7 @@ export default {
     },
     saveIpModel () {
       if (!this.newModel.vlan) {
-        this.$toast.error('Debes especificar la VLAN', { position: 'top-center' })
+        this.$toast.error('Debes especificar la VLAN', { position: 'bottom-center' })
         return
       }
       this.$store.dispatch('ipmodel/saveIpModel', {

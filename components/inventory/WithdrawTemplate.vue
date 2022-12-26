@@ -149,7 +149,7 @@ export default {
     async loopMaterialList () {
       this.loading = true
       if (this.withdrawList.length < 1 || !this.dispense.technician) {
-        this.$toast.error('Rellena todos los campos antes de continuar', { position: 'top-center' })
+        this.$toast.error('Rellena todos los campos antes de continuar', { position: 'bottom-center' })
         this.loading = !this.loading
         return
       }
@@ -167,7 +167,7 @@ export default {
     async dispenseMaterial (material) {
       const currentQuantityOfSelected = material.details.materialquantities.filter(item => item.materialtype.name === material.materialtype.name)[0]?.quantity
       if (material.quantity > currentQuantityOfSelected || !currentQuantityOfSelected || currentQuantityOfSelected.length < 1) {
-        this.$toast.error(`No hay suficiente material para dispensar ${material.details.name}`, { position: 'top-center' })
+        this.$toast.error(`No hay suficiente material para dispensar ${material.details.name}`, { position: 'bottom-center' })
         this.loading = false
         return
       }

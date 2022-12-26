@@ -122,10 +122,10 @@
                       :client="item"
                       :assignated="$store.state.auth.id"
                     />
-                    <MiscTicketHistory
+                    <!-- <MiscTicketHistory
                       :clientid="item.id"
                       :name="item.name"
-                    />
+                    /> -->
                     <MainClientStatus
                       v-if="clienttype.name === 'INTERNET'"
                       :name="item.name"
@@ -134,23 +134,22 @@
                       :item="item"
                       :index="clients.indexOf(item)"
                     />
-                    <MainDevices
+                    <!-- <MainDevices
                       v-if="clienttype.name === 'INTERNET'"
                       :name="item.name"
                       :clientid="item.id"
-                    />
+                    /> -->
                     <!-- <MainIpModel
                       v-if="clienttype.name === 'INTERNET' && $isAdmin()"
                       :client="item"
                     /> -->
-                    <NapManageClient
+                    <!-- <NapManageClient
                       v-if="clienttype.name === 'INTERNET'"
                       :client="item"
-                    />
-                    <EditForm
+                    /> -->
+                    <ControlCenter
                       :client="item"
                       :index="index"
-                      @updateSuccess="getClientBySearch()"
                     />
                   </div>
                 </template>
@@ -318,7 +317,7 @@ export default {
       this.createDialog = false
     },
     createClientSnack (value) {
-      this.$toast.success('Cliente creado con exito', { duration: 4000, position: 'top-center' })
+      this.$toast.success('Cliente creado con exito', { duration: 4000, position: 'bottom-center' })
     },
     async getHeadersByClientType () {
       const city = this.$route.query.city

@@ -304,7 +304,7 @@ export const actions = {
         })
       })
     } catch (error) {
-      this.$toast.error(error, { position: 'top-center' })
+      this.$toast.error(error, { position: 'bottom-center' })
       throw new Error(`MATERIALS ACTION ${error}`)
     }
   },
@@ -324,13 +324,13 @@ export const actions = {
         })
       }).then((res) => {
         if (res.status === 200) {
-          this.$toast.success('Material creado con éxito', { duration: 3000, position: 'top-center' })
+          this.$toast.success('Material creado con éxito', { duration: 3000, position: 'bottom-center' })
         } else {
-          this.$toast.error(res.statusText, { position: 'top-center' })
+          this.$toast.error(res.statusText, { position: 'bottom-center' })
         }
       })
     } catch (error) {
-      this.$toast.error(error, { position: 'top-center' })
+      this.$toast.error(error, { position: 'bottom-center' })
       throw new Error(`CREATE ITEM ACTION ${error}`)
     }
   },
@@ -351,12 +351,12 @@ export const actions = {
         })
           .then(res => res.json())
           .then((_) => {
-            this.$toast.success(`OPERACION DE INVENTARIO EXITOSA, AHORA HAY ${payload.quantity}`, { duration: 2000, position: 'top-center' })
+            this.$toast.success(`OPERACION DE INVENTARIO EXITOSA, AHORA HAY ${payload.quantity}`, { duration: 2000, position: 'bottom-center' })
             resolve()
           })
       })
     } catch (error) {
-      this.$toast.error(error, { position: 'top-center' })
+      this.$toast.error(error, { position: 'bottom-center' })
       throw new Error(`MATERIALS ACTION ${error}`)
     }
   },
@@ -377,10 +377,10 @@ export const actions = {
       })
         .then(res => res.json())
         .then((_) => {
-          this.$toast.success(`OPERACION DE INVENTARIO EXITOSA, AHORA HAY ${finalQuantity} ${payload.material.details.name}`, { duration: 5000, position: 'top-center' })
+          this.$toast.success(`OPERACION DE INVENTARIO EXITOSA, AHORA HAY ${finalQuantity} ${payload.material.details.name}`, { duration: 5000, position: 'bottom-center' })
         })
     } catch (error) {
-      this.$toast.error(error, { position: 'top-center' })
+      this.$toast.error(error, { position: 'bottom-center' })
       throw new Error(`MATERIALS ACTION ${error}`)
     }
   },
@@ -402,10 +402,10 @@ export const actions = {
       })
         .then(res => res.json())
         .then((_) => {
-          this.$toast.success('OPERACION DE INVENTARIO EXITOSA, AHORA HAY ' + payload.data.quantity, { duration: 5000, position: 'top-center' })
+          this.$toast.success('OPERACION DE INVENTARIO EXITOSA, AHORA HAY ' + payload.data.quantity, { duration: 5000, position: 'bottom-center' })
         })
     } catch (error) {
-      this.$toast.error(error, { position: 'top-center' })
+      this.$toast.error(error, { position: 'bottom-center' })
       throw new Error(`MATERIALS ACTION ${error}`)
     }
   }

@@ -68,7 +68,7 @@ export default {
         devicebrand: device.devicebrand,
         createdAt: device.device.data.createdAt
       })
-      this.$toast.success('Dispositivo creado correctamente', { duration: 4000, position: 'top-center' })
+      this.$toast.success('Dispositivo creado correctamente', { duration: 4000, position: 'bottom-center' })
     },
     initComponent () {
       this.modal = true

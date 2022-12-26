@@ -44,7 +44,7 @@ export default {
         city: this.$route.query.city
       }).then(async (billingperiod) => {
         if (billingperiod.name === 'default') {
-          this.$toast.error('No hay datos para continuar', { duration: 4000, position: 'top-center' })
+          this.$toast.error('No hay datos para continuar', { duration: 4000, position: 'bottom-center' })
           this.loading = false
           return
         }

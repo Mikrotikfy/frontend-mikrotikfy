@@ -50,6 +50,7 @@ export const mutations = {
     }
   },
   updateClient (state, { client, index }) {
+    console.log(client, state.clients, index)
     try {
       Object.assign(state.clients[index], client)
     } catch (error) {
@@ -122,7 +123,7 @@ export const actions = {
           })
         }).then((input) => {
           if (input.status === 200) {
-            this.$toast.info('Orden de instalacion creada', { duration: 4000, position: 'top-center' })
+            this.$toast.info('Orden de instalacion creada', { duration: 4000, position: 'bottom-center' })
             resolve(true)
           } else {
             resolve(false)
@@ -368,7 +369,7 @@ export const actions = {
               commit('setPlanFromModal', payload)
             }
             if (!payload.isBulkDx) {
-              this.$toast.info('Plan actualizado actualizado con exito', { duration: 4000, position: 'top-center' })
+              this.$toast.info('Plan actualizado actualizado con exito', { duration: 4000, position: 'bottom-center' })
             }
             resolve(true)
           } else {
@@ -400,7 +401,7 @@ export const actions = {
       .then(res => res.json())
       .then((res) => {
         commit('setActiveFromModal', payload)
-        this.$toast.info('Cliente actualizado con exito', { duration: 4000, position: 'top-center' })
+        this.$toast.info('Cliente actualizado con exito', { duration: 4000, position: 'bottom-center' })
       })
   },
   async updateServiceInfo ({ commit }, payload) {
@@ -420,10 +421,10 @@ export const actions = {
       })
         .then(res => res.json())
         .then((_) => {
-          this.$toast.info('Detalles del servicio actualizados con exito', { duration: 4000, position: 'top-center' })
+          this.$toast.info('Detalles del servicio actualizados con exito', { duration: 4000, position: 'bottom-center' })
         })
     } catch (error) {
-      this.$toast.error('Error al actualizar detalles. Verifica tu conexion o reportalo a nico', { position: 'top-center' })
+      this.$toast.error('Error al actualizar detalles. Verifica tu conexion o reportalo a nico', { position: 'bottom-center' })
     }
   },
   async adminCreate ({ commit }, { client, city, index, token, operator }) {
@@ -438,7 +439,7 @@ export const actions = {
       })
     }).then((input) => {
       if (input.status === 200) {
-        this.$toast.info('Ciente creado en mikrotik correctamente', { duration: 4000, position: 'top-center' })
+        this.$toast.info('Ciente creado en mikrotik correctamente', { duration: 4000, position: 'bottom-center' })
       }
     }).catch((error) => {
       // eslint-disable-next-line no-console

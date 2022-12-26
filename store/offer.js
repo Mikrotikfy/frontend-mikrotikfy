@@ -77,7 +77,7 @@ export const actions = {
       })
         .then(res => res.json())
         .then((debtmovements) => {
-          this.$toast.info('Operacion de cambio de tarifa realizada con éxito.', { duration: 4000, position: 'top-center' })
+          this.$toast.info('Operacion de cambio de tarifa realizada con éxito.', { duration: 4000, position: 'bottom-center' })
           commit('setNewOffer', debtmovements.data)
         })
     } catch (error) {
@@ -108,7 +108,7 @@ export const actions = {
           .then((debtmovements) => {
             commit('setNewDebt', debtmovements.data)
             if (!payload.isBulkDx) {
-              this.$toast.info('Operacion de control de usuario realizada con éxito.', { duration: 4000, position: 'top-center' })
+              this.$toast.info('Operacion de control de usuario realizada con éxito.', { duration: 4000, position: 'bottom-center' })
             }
             resolve(true)
           })
