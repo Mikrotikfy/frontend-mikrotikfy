@@ -57,7 +57,7 @@
 
               <v-stepper-content step="3">
                 <CutsControls v-if="processType === 'normal'" />
-                <CutsReadyList v-if="processType === 'normal'" :e1="e1" />
+                <CutsClientPreparation v-if="processType === 'normal'" :e1="e1" />
                 <CutsPlanPreparation v-if="processType === 'plan'" />
               </v-stepper-content>
 

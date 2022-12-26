@@ -9,6 +9,7 @@ export const state = () => ({
   cuts: [],
   e1: '1',
   errors: 0,
+  isindebt: 0,
   inprocess: false,
   kick: false,
   loading: false,
@@ -74,6 +75,9 @@ export const mutations = {
   },
   addCutError (state, erroredClient) {
     state.cutErrors = erroredClient
+  },
+  addCutInDebt (state, cuts) {
+    state.isindebt.push(cuts.client)
   },
   reset (state) {
     state.clients = []
@@ -287,7 +291,7 @@ export const actions = {
             name: payload.city
           }
         },
-        populate: ['neighborhood', 'plan'],
+        populate: ['neighborhood', 'plan', 'offer', 'debtmovements'],
         sort: 'createdAt:desc'
       },
       {

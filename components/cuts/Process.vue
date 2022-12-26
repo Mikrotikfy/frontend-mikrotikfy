@@ -100,12 +100,11 @@ export default {
       this.$store.commit('cuts/loading', true)
       this.$store.commit('cuts/resetcuts')
 
-      await this.addBillingPeriod()
-
       if (this.applyOffer && this.offer) {
         await this.applyOffers()
         this.$store.commit('cuts/loading', false)
       } else {
+        await this.addBillingPeriod()
         await this.cutsProcess()
         this.$store.commit('cuts/loading', false)
       }
@@ -120,39 +119,45 @@ export default {
     async applyOffers () {
       for (let i = 0; i < this.validClients.length; i++) {
         const client = this.validClients[i]
-        await this.$store.dispatch('offer/setNewOffer', {
-          token: this.$store.state.auth.token,
-          client,
-          city: this.city,
-          offer: this.offer,
-          details: 'CAMBIO DE TARIFA EN LOTE',
-          isindebt: true,
-          isretired: false,
-          isBulkDx: true,
-          technician: this.$store.state.auth
-        }).then(async () => {
-          this.$simpleTelegramUpdateDebt({ client, operator: this.$store.state.auth.username, isInDebt: true, isRetired: false, telegramBots: this.telegramBots })
-          await this.$store.dispatch('client/setPlanFromModal', {
-            clientId: client.id,
-            clientIndex: null,
-            isOfferChange: false,
-            kick: this.kick,
-            isBulkDx: true,
-            newPlan: { id: this.offer.plan.id },
-            operator: this.$store.state.auth.id,
-            token: this.$store.state.auth.token
-          }).then((success) => {
-            if (success) {
-              this.$store.commit('cuts/addCut', {
-                client
-              })
-            } else {
-              this.$store.commit('cuts/addCutError', {
-                client
-              })
-            }
+        console.log(client)
+        if (client.debtmovement.isindebt) {
+          this.$store.commit('cuts/addCutInDebt', {
+            client
           })
-        })
+        } else {
+          await this.$store.dispatch('offer/setNewOffer', {
+            token: this.$store.state.auth.token,
+            client,
+            city: this.city,
+            offer: this.offer,
+            details: 'CAMBIO DE TARIFA EN LOTE',
+            isindebt: true,
+            isretired: false,
+            isBulkDx: true,
+            technician: this.$store.state.auth
+          }).then(async () => {
+            await this.$store.dispatch('client/setPlanFromModal', {
+              clientId: client.id,
+              clientIndex: null,
+              isOfferChange: false,
+              kick: this.kick,
+              isBulkDx: true,
+              newPlan: { id: this.offer.plan.id },
+              operator: this.$store.state.auth.id,
+              token: this.$store.state.auth.token
+            }).then((success) => {
+              if (success) {
+                this.$store.commit('cuts/addCut', {
+                  client
+                })
+              } else {
+                this.$store.commit('cuts/addCutError', {
+                  client
+                })
+              }
+            })
+          })
+        }
       }
     },
     async cutsProcess () {

@@ -8,7 +8,7 @@
           @click="prepareClients"
         >
           <v-icon>mdi-magnify</v-icon>
-          <span>Preparar Cortes</span>
+          <span>Preparar Clientes</span>
         </v-btn>
       </v-card-text>
       <v-card-text v-else>
@@ -107,6 +107,12 @@ export default {
       this.$store.commit('cuts/prepare', true)
       this.$store.commit('cuts/reset')
       this.$store.commit('cuts/loading', true)
+
+      await this.validateClients()
+
+      this.$store.commit('cuts/loading', false)
+    },
+    async validateClients () {
       for (let i = 0; i < this.ready.length; i++) {
         await this.$store.dispatch('cuts/prepareClients', {
           city: this.$route.query.city,
@@ -114,7 +120,6 @@ export default {
           ready: this.ready[i]
         })
       }
-      this.$store.commit('cuts/loading', false)
     },
     getcolor (item) {
       if (item.valid) {
