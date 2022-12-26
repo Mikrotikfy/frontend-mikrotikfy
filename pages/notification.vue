@@ -2,14 +2,11 @@
   <v-container>
     <v-row>
       <v-col>
-        <h2 class="text-center">
-          Control de Tarifa de Usuarios
+        <h2 class="text-center mb-4">
+          Envío de Estado de Cuenta Mensual
         </h2>
         <NotificationSelectMonth />
         <v-card v-if="month" class="rounded-xl mx-auto elevation-0" width="800">
-          <v-card-title>
-            Notificacion masiva a usuarios
-          </v-card-title>
           <v-card-text>
             <v-stepper v-model="e1" class="transparent elevation-0">
               <v-stepper-header class="elevation-0">
