@@ -15,7 +15,7 @@
           class="mr-2"
           color="red"
           :loading="loading"
-          :disabled="loading || clients.length < 1"
+          :disabled="loading || clients.length < 1 || ended"
           @click="sendNotifications"
         >
           Enviar Notificaciones
@@ -54,13 +54,6 @@
         </v-data-table>
       </v-col>
     </v-row>
-    <v-btn
-      color="primary"
-      :disabled="loading || clients.length < 1"
-      @click="nextE1"
-    >
-      Continue
-    </v-btn>
   </v-container>
 </template>
 <script>
@@ -69,6 +62,7 @@ export default {
     return {
       loading: false,
       generatedBills: 0,
+      ended: false,
       headers: [
         { text: 'Codigo', value: 'code', sortable: false },
         { text: 'Nombre', value: 'name', sortable: false },
@@ -86,12 +80,12 @@ export default {
     },
     month () {
       return this.$store.state.notification.month
+    },
+    year () {
+      return this.$store.state.notification.year
     }
   },
   methods: {
-    nextE1 () {
-      this.$store.commit('notification/e1', { e1: 2 })
-    },
     async sendNotifications () {
       this.loading = true
       const clients = this.clients
@@ -123,6 +117,7 @@ export default {
         })
       }
       this.loading = false
+      this.ended = true
     },
     async generateBilling () {
       this.loading = true
@@ -131,7 +126,8 @@ export default {
         token: this.$store.state.auth.token,
         city: this.$route.query.city,
         clienttype: this.$route.query.clienttype,
-        month: this.month
+        month: this.month,
+        year: this.year
       })
       const search = codes.map((code) => {
         return clients.find((client) => {
@@ -150,7 +146,8 @@ export default {
           city: this.$route.query.city,
           clienttype: this.$route.query.clienttype,
           client: filtered[i],
-          month: this.month
+          month: this.month,
+          year: this.year
         })
         this.generatedBills++
       }

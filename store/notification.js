@@ -5,11 +5,15 @@ export const state = () => ({
   codes: [],
   clients: [],
   sendIndex: 0,
-  month: null
+  month: null,
+  year: null
 })
 export const mutations = {
   e1 (state, payload) {
     state.e1 = payload.e1
+  },
+  setYear (state, payload) {
+    state.year = payload.year
   },
   setMonth (state, payload) {
     state.month = payload.month
@@ -159,15 +163,13 @@ export const actions = {
       })
   },
   createBillAccount ({ commit }, payload) {
-    const date = Date.now()
-    const year = new Date(date).getFullYear()
-    const path = `fac/${payload.month.value}/${payload.city.toLowerCase()}/${payload.clienttype.toLowerCase()}/${payload.month.value}${year}_${payload.client.code}.pdf`
+    const path = `fac/${payload.year}/${payload.month.value}/${payload.city.toLowerCase()}/${payload.clienttype.toLowerCase()}/${payload.month.value}${payload.year}_${payload.client.code}.pdf`
     try {
       return new Promise((resolve, reject) => {
         const sentBody = {
           data: {
             month: parseInt(payload.month.value),
-            year: parseInt(year),
+            year: parseInt(payload.year),
             path,
             success: payload.success,
             client: payload.client.id,
@@ -212,6 +214,11 @@ export const actions = {
               }
             },
             {
+              year: {
+                $ne: parseInt(payload.year)
+              }
+            },
+            {
               path: {
                 $null: true
               }
@@ -249,7 +256,7 @@ export const actions = {
   },
   async getListOfBills ({ commit }, payload) {
     try {
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}listofbills?city=${payload.city}&clienttype=${payload.clienttype}&month=${payload.month.value}`, {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}listofbills?city=${payload.city}&clienttype=${payload.clienttype}&month=${payload.month.value}&year=${payload.year}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
