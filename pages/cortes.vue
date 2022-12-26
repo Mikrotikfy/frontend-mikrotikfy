@@ -223,7 +223,7 @@ export default {
       const city = this.$route.query.city
       const pendingDx = this.pendingCuts
       if (this.setPlan.id === 0 || this.pendingCuts.length < 1) {
-        this.$toast.error('Porfavor ingresa datos antes de iniciar.', { position: 'top-center' })
+        this.$toast.error('Porfavor ingresa datos antes de iniciar.', { position: 'bottom-center' })
         this.loading = false
       } else {
         this.$toast.success('El proceso ha comenzado...', { duration: 7000, position: 'bottom-center' })
@@ -251,7 +251,7 @@ export default {
                 this.successfulCuts.push({ ...pendingDx[i], success: true })
               } else {
                 this.errorCount++
-                this.$toast.error('Error', { position: 'top-center' })
+                this.$toast.error('Error', { position: 'bottom-center' })
                 this.loading = false
               }
             })

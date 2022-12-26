@@ -115,14 +115,14 @@ export default {
     async addMaterial () {
       this.loading = !this.loading
       if (!this.add.material || !this.add.quantity) {
-        this.$toast.error('Rellena todos los campos antes de continuar', { position: 'top-center' })
+        this.$toast.error('Rellena todos los campos antes de continuar', { position: 'bottom-center' })
         this.loading = !this.loading
         return
       }
       const hasQuantities = this.add.material.materialquantities.length > 0
       const availableQuantity = this.add.material.materialquantities.filter(q => q.materialtype.name === this.add.materialtype.name)
       if (hasQuantities && availableQuantity.length > 0) {
-        this.$toast.success('Cantidad actualizada... ', { duration: 1000, position: 'top-center' })
+        this.$toast.success('Cantidad actualizada... ', { duration: 1000, position: 'bottom-center' })
         await this.$store.dispatch('inventory/updateCurrentMaterialQuantity', {
           material: {
             details: this.add.material
@@ -134,7 +134,7 @@ export default {
           action: 'return'
         })
       } else {
-        this.$toast.info('Cantidad creada... ', { duration: 1000, position: 'top-center' })
+        this.$toast.info('Cantidad creada... ', { duration: 1000, position: 'bottom-center' })
         await this.$store.dispatch('inventory/createMaterialQuantity', { token: this.$store.state.auth.token, city: this.$route.query.city, data: this.add, action: 'return' })
       }
       this.getMaterialList()

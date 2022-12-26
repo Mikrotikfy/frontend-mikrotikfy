@@ -138,7 +138,7 @@ export default {
         this.$vuetify.theme.dark = false
         this.modal = true
       } else {
-        this.$toast.error('Selecciona los clientes antes de imprimir', { position: 'top-center' })
+        this.$toast.error('Selecciona los clientes antes de imprimir', { position: 'bottom-center' })
       }
     },
     async getTechnicians () {

@@ -127,7 +127,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 td {
   background-color: rgb(81, 135, 0);
     -moz-animation: cssAnimation 1s ease-in 0.3s forwards;

@@ -77,7 +77,7 @@
               <v-data-table
                 v-if="headers"
                 :headers="headers"
-                :items.sync="clients"
+                :items="clients"
                 :server-items-length="clientCount()"
                 :items-per-page.sync="itemsPerPage"
                 :page.sync="page"
@@ -114,7 +114,7 @@
                     {{ item.technology ? item.technology.name : 'No Reg.' }}
                   </strong>
                 </template>
-                <template v-slot:[`item.actions`]="{ item }">
+                <template v-slot:[`item.actions`]="{ item, index }">
                   <div style="white-space:nowrap">
                     <!-- <MainTramits :client="item" /> -->
                     <!-- <MiscInfoSell v-if="$isAdmin() || $isBiller()" :client="item" /> -->
@@ -122,10 +122,10 @@
                       :client="item"
                       :assignated="$store.state.auth.id"
                     />
-                    <MiscTicketHistory
+                    <!-- <MiscTicketHistory
                       :clientid="item.id"
                       :name="item.name"
-                    />
+                    /> -->
                     <MainClientStatus
                       v-if="clienttype.name === 'INTERNET'"
                       :name="item.name"
@@ -134,23 +134,22 @@
                       :item="item"
                       :index="clients.indexOf(item)"
                     />
-                    <MainDevices
+                    <!-- <MainDevices
                       v-if="clienttype.name === 'INTERNET'"
                       :name="item.name"
                       :clientid="item.id"
-                    />
+                    /> -->
                     <!-- <MainIpModel
                       v-if="clienttype.name === 'INTERNET' && $isAdmin()"
                       :client="item"
                     /> -->
-                    <NapManageClient
+                    <!-- <NapManageClient
                       v-if="clienttype.name === 'INTERNET'"
                       :client="item"
-                    />
-                    <EditForm
+                    /> -->
+                    <ControlCenter
                       :client="item"
-                      :index="clients.indexOf(item)"
-                      @updateSuccess="getClientBySearch()"
+                      :index="index"
                     />
                   </div>
                 </template>
@@ -318,7 +317,7 @@ export default {
       this.createDialog = false
     },
     createClientSnack (value) {
-      this.$toast.success('Cliente creado con exito', { duration: 4000, position: 'top-center' })
+      this.$toast.success('Cliente creado con exito', { duration: 4000, position: 'bottom-center' })
     },
     async getHeadersByClientType () {
       const city = this.$route.query.city

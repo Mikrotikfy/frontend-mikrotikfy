@@ -31,10 +31,10 @@ export const actions = {
         })
       }).then((input) => {
         if (input.status === 200) {
-          this.$toast.success('Peticion creada con éxito.', { position: 'top-center' })
+          this.$toast.success('Peticion creada con éxito.', { position: 'bottom-center' })
           resolve(input)
         } else {
-          this.$toast.error('Error al crear la solicitud. Intenta de nuevo o llamanos al 310 343 25 99 en Mariquita o al 350 810 59 49 en Fresno', { position: 'top-center' })
+          this.$toast.error('Error al crear la solicitud. Intenta de nuevo o llamanos al 310 343 25 99 en Mariquita o al 350 810 59 49 en Fresno', { position: 'bottom-center' })
         }
       }).catch((error) => {
         // eslint-disable-next-line no-console
