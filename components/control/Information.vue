@@ -73,7 +73,7 @@
             <MiscAddresses v-if="currentEditClient.addresses" :client="currentEditClient" />
           </v-col>
         </v-row>
-        <v-row v-if="clienttype.name === 'INTERNET'">
+        <v-row>
           <v-col cols="12" lg="4" md="4">
             <v-text-field
               v-model="currentEditClient.phone"
