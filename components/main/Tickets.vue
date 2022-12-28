@@ -124,6 +124,11 @@
                   <span class="grey--text">Avance:</span> {{ item.details ? item.details : 'no hay' }}
                 </td>
               </template>
+              <template v-slot:[`item.channel`]="{ item }">
+                <v-chip small :color="getChannelColor(item.channel)" class="white--text">
+                  {{ item.channel ? getChannelName(item.channel) : 'No reg.' }}
+                </v-chip>
+              </template>
               <template v-if="clienttype === 'INTERNET'" v-slot:[`item.client.name`]="props">
                 <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA O RETIRADO <span class="text-decoration-line-through">{{props.item.client.name}}</span></span>
                 <span v-else>{{props.item.client.name}}</span>
@@ -255,6 +260,7 @@
         >
           <div>
             <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">{{ editModalData.tickettype ? editModalData.tickettype.name : '' }}</p>
+            <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">Reporto por: {{ editModalData.channel ? getChannelName(editModalData.channel) : '' }}</p>
             <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">{{ editModalData.client ? editModalData.client.code : '' }}</p>
             <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">{{ editModalData.client ? editModalData.client.name : '' }}</p>
             <p class="pb-0 mb-0 text-h6 font-weigth-bold mb-2">{{ editModalData.client ? editModalData.client.addresses.length > 0 ? editModalData.client.addresses.at(-1).address : editModalData.client.address : '' }}</p>
@@ -478,6 +484,32 @@ export default {
         return 'Escalado a Oficina'
       } else {
         return 'Cerrado'
+      }
+    },
+    getChannelColor (channel) {
+      if (channel === 'phone') {
+        return 'primary'
+      } else if (channel === 'office') {
+        return 'purple darken-4'
+      } else if (channel === 'whatsapp') {
+        return 'green darken-4'
+      } else if (channel === 'email') {
+        return 'grey darken-4'
+      } else {
+        return 'grey darken-4'
+      }
+    },
+    getChannelName (channel) {
+      if (channel === 'phone') {
+        return 'Telefonico'
+      } else if (channel === 'office') {
+        return 'Oficina'
+      } else if (channel === 'whatsapp') {
+        return 'Whatsapp'
+      } else if (channel === 'email') {
+        return 'Email'
+      } else {
+        return 'Email'
       }
     },
     getResolution () {

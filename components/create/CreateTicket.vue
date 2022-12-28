@@ -176,9 +176,8 @@
                     @keyup="hideHint = false"
                   />
                 </v-card-text>
-                <v-card-text>
+                <v-card-text v-if="ticketPayload.type.name !== 'TRASLADO' && ticketPayload.type.name !== 'CAMBIO DE CONTRASEÑA'">
                   <v-textarea
-                    v-if="ticketPayload.type.name !== 'TRASLADO' && ticketPayload.type.name !== 'CAMBIO DE CONTRASEÑA'"
                     v-model="ticketPayload.details"
                     outlined
                     label="Detalles del del caso"
@@ -186,6 +185,29 @@
                     :error="errors.details"
                     @focus="errors.details = false, alertBox = false"
                   />
+                  <p class="text-h6">Canal de reporte</p>
+                  <v-radio-group v-model="ticketPayload.channel">
+                    <v-radio
+                      label="Telefónico"
+                      value="phone"
+                    />
+                    <v-radio
+                      label="En Oficina"
+                      value="office"
+                    />
+                    <v-radio
+                      label="Whatsapp"
+                      value="whatsapp"
+                    />
+                    <v-radio
+                      label="Correo Electronico"
+                      value="email"
+                    />
+                    <v-radio
+                      label="Otro"
+                      value="other"
+                    />
+                  </v-radio-group>
                 </v-card-text>
               </div>
               <v-card-actions>
@@ -290,6 +312,7 @@ export default {
       type: {},
       details: '',
       city: '',
+      channel: null,
       assignated: ''
     },
     phoneRules: [
@@ -391,6 +414,14 @@ export default {
         this.errors.details = true
         return
       }
+      if (this.ticketPayload.channel === null) {
+        this.alertBox = true
+        this.alertBoxColor = 'red darken-4'
+        this.createdMessage = 'Por favor especifica el canal de reporte del ticket antes de continuar'
+        this.loading = false
+        this.errors.details = true
+        return
+      }
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets`, {
         method: 'POST',
         headers: {
@@ -401,6 +432,7 @@ export default {
           data: {
             active: true,
             client: this.ticketPayload.client,
+            channel: this.ticketPayload.channel,
             city: this.ticketPayload.city,
             tickettype: this.ticketPayload.type.id,
             clienttype: this.clienttype.id,

@@ -32,6 +32,7 @@ export const mutations = {
       state.headers = [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 100 },
+        { text: 'Canal', sortable: false, value: 'channel', width: 100, align: ' d-none d-lg-table-cell' },
         { text: 'Observaciones', sortable: false, value: 'details', width: 150, align: ' d-none d-lg-table-cell' },
         { text: 'Barrio', sortable: true, value: 'client.neighborhood.name', width: 150 },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 150, align: ' d-none d-lg-table-cell' },
