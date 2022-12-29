@@ -374,7 +374,11 @@ export default {
       this.cx.finalAddress = `${this.cx.dir1} ${this.cx.dir2} ${this.cx.dir3} ${this.cx.dir4} | ${this.cx.neighborhood.name}`
     },
     initComponent () {
-      this.modal = true
+      if (this.client.phone !== '0' && this.client.phone !== '') {
+        this.modal = true
+      } else {
+        this.$toast.error('El cliente no tiene un celular registrado', { duration: 5000 })
+      }
       this.ticketPayload.client = this.client.id
       this.ticketPayload.city = this.client.city.id
       this.ticketPayload.assignated = this.assignated
