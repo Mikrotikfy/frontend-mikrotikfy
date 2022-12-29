@@ -125,9 +125,25 @@
                 </td>
               </template>
               <template v-slot:[`item.channel`]="{ item }">
-                <v-chip small :color="getChannelColor(item.channel)" class="white--text">
-                  {{ item.channel ? getChannelName(item.channel) : 'No reg.' }}
-                </v-chip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-chip
+                      v-bind="attrs"
+                      v-on="on"
+                      small
+                      :color="getChannelColor(item.reboot, item.network, item.on)"
+                      class="white--text">
+                    {{ item.channel ? getChannelName(item.channel) : 'No reg.' }}
+                  </v-chip>
+                  </template>
+                  <span>
+                    <ul>
+                      <li :class="item.reboot ? 'green darken-4 px-2 rounded-xl mb-2' : 'red darken-4 px-2 rounded-xl mb-2'">Se reinicio el Router/ONU? {{ item.reboot ? 'SI': 'NO' }}</li>
+                      <li :class="item.network ? 'green darken-4 px-2 rounded-xl mb-2' : 'red darken-4 px-2 rounded-xl mb-2'">Se verifico conexion a la red WiFi? {{ item.network ? 'SI': 'NO' }}</li>
+                      <li :class="item.on ? 'green darken-4 px-2 rounded-xl mb-2' : 'red darken-4 px-2 rounded-xl mb-2'">El equipo esta encendido? {{ item.on ? 'SI': 'NO' }}</li>
+                    </ul>
+                  </span>
+              </v-tooltip>
               </template>
               <template v-if="clienttype === 'INTERNET'" v-slot:[`item.client.name`]="props">
                 <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA O RETIRADO <span class="text-decoration-line-through">{{props.item.client.name}}</span></span>
@@ -486,17 +502,11 @@ export default {
         return 'Cerrado'
       }
     },
-    getChannelColor (channel) {
-      if (channel === 'phone') {
-        return 'primary'
-      } else if (channel === 'office') {
-        return 'purple darken-4'
-      } else if (channel === 'whatsapp') {
+    getChannelColor (reboot, network, on) {
+      if (reboot && network && on) {
         return 'green darken-4'
-      } else if (channel === 'email') {
-        return 'grey darken-4'
       } else {
-        return 'grey darken-4'
+        return 'red darken-4'
       }
     },
     getChannelName (channel) {

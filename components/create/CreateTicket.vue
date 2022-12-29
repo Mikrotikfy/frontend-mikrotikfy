@@ -20,17 +20,18 @@
       fullscreen
     >
       <v-card class="ticketCard" width="90%">
-        <v-toolbar>
+        <v-card-title>
+          <v-spacer />
           <v-btn
             icon
-            dark
+            class="transparent"
             @click="modal = false"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn>
-        </v-toolbar>
-        <v-row class="mx-0 px-5 mt-10">
-          <v-col cols="12" md="6" lg="4">
+        </v-card-title>
+        <v-row class="mx-0 px-5">
+          <v-col cols="12" md="6" lg="5">
             <v-card
               :loading="loading"
               class="rounded-xl"
@@ -185,32 +186,55 @@
                     :error="errors.details"
                     @focus="errors.details = false, alertBox = false"
                   />
-                  <p class="text-h6">Canal de reporte</p>
-                  <v-radio-group v-model="ticketPayload.channel">
-                    <v-radio
-                      label="Telefónico"
-                      value="phone"
-                    />
-                    <v-radio
-                      label="En Oficina"
-                      value="office"
-                    />
-                    <v-radio
-                      label="Whatsapp"
-                      value="whatsapp"
-                    />
-                    <v-radio
-                      label="Correo Electronico"
-                      value="email"
-                    />
-                    <v-radio
-                      label="Otro"
-                      value="other"
-                    />
-                  </v-radio-group>
+                  <div class="d-flex">
+                    <v-col>
+                      <p class="text-h6">Canal de reporte</p>
+                      <v-radio-group v-model="ticketPayload.channel">
+                        <v-radio
+                          label="Telefónico"
+                          value="phone"
+                        />
+                        <v-radio
+                          label="En Oficina"
+                          value="office"
+                        />
+                        <v-radio
+                          label="Whatsapp"
+                          value="whatsapp"
+                        />
+                        <v-radio
+                          label="Correo Electronico"
+                          value="email"
+                        />
+                        <v-radio
+                          label="Otro"
+                          value="other"
+                        />
+                      </v-radio-group>
+                    </v-col>
+                    <v-col>
+                      <p class="text-h6">Acciones de solución</p>
+                      <v-checkbox
+                        v-model="ticketPayload.reboot"
+                        label="Conecto y desconecto el equipo"
+                      />
+                      <v-checkbox
+                        v-model="ticketPayload.network"
+                        label="Verifico que apareciera la red"
+                      />
+                      <v-checkbox
+                        v-model="ticketPayload.on"
+                        label="Verifico que el equipo estuviera encendido"
+                      />
+                    </v-col>
+                  </div>
                 </v-card-text>
               </div>
-              <v-card-actions>
+              <v-divider />
+              <div class="d-flex ml-5 mt-4">
+                <caption>Luego de verificacion inicial se determino que el usuario requiere visita.</caption>
+              </div>
+              <v-card-text class="d-flex">
                 <v-btn
                   color="blue darken-4"
                   class="rounded-xl"
@@ -231,10 +255,10 @@
                 >
                   Cancelar el caso
                 </v-btn>
-              </v-card-actions>
+              </v-card-text>
             </v-card>
           </v-col>
-          <v-col cols="12" md="6" lg="8">
+          <v-col cols="12" md="6" lg="7">
             <v-card class="rounded-xl">
               <v-card-title>
                 <v-icon class="mr-2">
@@ -313,7 +337,10 @@ export default {
       details: '',
       city: '',
       channel: null,
-      assignated: ''
+      assignated: '',
+      reboot: false,
+      network: false,
+      on: false
     },
     phoneRules: [
       (value) => {
@@ -437,6 +464,9 @@ export default {
             active: true,
             client: this.ticketPayload.client,
             channel: this.ticketPayload.channel,
+            reboot: this.ticketPayload.reboot,
+            network: this.ticketPayload.network,
+            on: this.ticketPayload.on,
             city: this.ticketPayload.city,
             tickettype: this.ticketPayload.type.id,
             clienttype: this.clienttype.id,
