@@ -116,6 +116,7 @@ export const actions = {
               tickettype: 36,
               assignated: 22,
               clienttype: 1,
+              channel: 'office',
               details: `
                 CX: ${payload.client.address} ${payload.neighborhood.name}
               `

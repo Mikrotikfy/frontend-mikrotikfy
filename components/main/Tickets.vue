@@ -125,13 +125,13 @@
                 </td>
               </template>
               <template v-slot:[`item.channel`]="{ item }">
-                <v-tooltip bottom>
+                <v-tooltip v-if="item.tickettype.requireverification" bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-chip
                       v-bind="attrs"
                       v-on="on"
                       small
-                      :color="getChannelColor(item.reboot, item.network, item.on)"
+                      :color="getChannelColor(item.tickettype, item.reboot, item.network, item.on)"
                       class="white--text">
                     {{ item.channel ? getChannelName(item.channel) : 'No reg.' }}
                   </v-chip>
@@ -144,6 +144,13 @@
                     </ul>
                   </span>
               </v-tooltip>
+              <v-chip
+                  v-else
+                  small
+                  :color="getChannelColor(item.tickettype, item.reboot, item.network, item.on)"
+                  class="white--text">
+                {{ item.channel ? getChannelName(item.channel) : 'No Aplica' }}
+              </v-chip>
               </template>
               <template v-if="clienttype === 'INTERNET'" v-slot:[`item.client.name`]="props">
                 <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA O RETIRADO <span class="text-decoration-line-through">{{props.item.client.name}}</span></span>
@@ -502,7 +509,10 @@ export default {
         return 'Cerrado'
       }
     },
-    getChannelColor (reboot, network, on) {
+    getChannelColor (tickettype, reboot, network, on) {
+      if (!tickettype.requireverification) {
+        return 'grey darken-4'
+      }
       if (reboot && network && on) {
         return 'green darken-4'
       } else {

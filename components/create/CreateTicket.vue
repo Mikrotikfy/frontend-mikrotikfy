@@ -230,9 +230,11 @@
                   </div>
                 </v-card-text>
               </div>
-              <v-divider />
-              <div class="d-flex ml-5 mt-4">
-                <caption>Luego de verificacion inicial se determino que el usuario requiere visita.</caption>
+              <div v-if="ticketPayload.type && ticketPayload.type.name !== 'TRASLADO'">
+                <v-divider />
+                <div class="d-flex ml-5 mt-4">
+                  <caption>Luego de verificacion inicial se determino que el usuario requiere visita.</caption>
+                </div>
               </div>
               <v-card-text class="d-flex">
                 <v-btn
@@ -445,7 +447,7 @@ export default {
         this.errors.details = true
         return
       }
-      if (this.ticketPayload.channel === null) {
+      if (this.ticketPayload.channel === null && (this.ticketPayload.type && this.ticketPayload.type.name !== 'TRASLADO')) {
         this.alertBox = true
         this.alertBoxColor = 'red darken-4'
         this.createdMessage = 'Por favor especifica el canal de reporte del ticket antes de continuar'
@@ -463,7 +465,7 @@ export default {
           data: {
             active: true,
             client: this.ticketPayload.client,
-            channel: this.ticketPayload.channel,
+            channel: this.ticketPayload.type && this.ticketPayload.type.name === 'TRASLADO' ? 'office' : this.ticketPayload.channel,
             reboot: this.ticketPayload.reboot,
             network: this.ticketPayload.network,
             on: this.ticketPayload.on,
