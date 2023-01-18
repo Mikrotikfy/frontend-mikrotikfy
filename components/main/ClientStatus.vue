@@ -25,11 +25,13 @@
     >
       <v-card
         :loading="loading"
-        :class="clientData ? clientData.online ? clientData.address.includes('172.') ? 'blue-grey darken-4' : 'teal darken-4' : '' : ''"
+        :class="clientData ? clientData.online ? clientData.address.includes('172.') ? 'blue-grey darken-4 rounded-xl' : 'teal darken-4 rounded-xl' : 'rounded-xl' : 'rounded-xl'"
       >
-        <v-card-title class="headline">
+        <v-card-title>
+          <v-icon>mdi-account</v-icon>
           {{ name }}
         </v-card-title>
+        <v-divider />
         <div v-if="!loading">
           <v-card-text>
             <v-alert
@@ -37,7 +39,7 @@
               dense
               text
               :type="clientData.address.includes('172.') ? 'error' : 'success'"
-              class="my-4"
+              class="mb-4"
             >
               El cliente esta <strong>{{ clientData.address.includes('172.') ? 'en linea pero NO ESTA NAVEGANDO (SIGUE CORTADO) REPORTAR A NICO' : 'en Linea ' }}</strong>
             </v-alert>
@@ -60,7 +62,8 @@
               type="warning"
               class="my-4"
             >
-              Mal identificado en la API. Informa de esto al webmaster
+              <v-icon>mdi-lightbulb-alert-outline</v-icon>
+              Error de conexión con las Mikrotik. Suele deberse a fallas en el internet. Por favor reportar al webmaster
             </v-alert>
             <v-divider class="my-4" />
             <div v-if="clientData && clientData.online">
@@ -72,7 +75,6 @@
                   <v-spacer />
                   <h3>Uptime: {{ clientData.uptime }}</h3>
                   <v-spacer />
-                  <h3>Clave: 4Rn0P{{ code }}</h3>
                 </v-col>
                 <v-col>
                   <h3>Descarga: <strong>{{ formatBytes(clientData.download) }}</strong></h3>
