@@ -27,7 +27,7 @@
     </v-row>
     <v-row v-if="clients.length > 0">
       <v-col>
-        <v-card class="rounded-xl mb-5">
+        <v-card class="rounded-xl mb-5 elevation-0">
           <v-card-text>
             <div>
               <v-btn

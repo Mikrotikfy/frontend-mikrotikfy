@@ -58,7 +58,7 @@
         v-for="clienttype in $store.state.auth.clienttypes"
         :key="clienttype.name"
         class="ml-2"
-        :color="clienttype.name === $route.query.clienttype ? $vuetify.theme.dark ? 'blue darken-4 white--text' : 'blue darken-4' : 'white black--text'"
+        :color="clienttype.name === $route.query.clienttype ? $vuetify.theme.dark ? 'blue darken-4 white--text' : 'blue darken-4 white--text' : 'white black--text'"
         elevation="0"
         rounded
         small
