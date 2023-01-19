@@ -116,38 +116,23 @@
                 </template>
                 <template v-slot:[`item.actions`]="{ item, index }">
                   <div style="white-space:nowrap">
-                    <!-- <MainTramits :client="item" /> -->
-                    <!-- <MiscInfoSell v-if="$isAdmin() || $isBiller()" :client="item" /> -->
                     <CreateTicket
                       :client="item"
                       :assignated="$store.state.auth.id"
                     />
-                    <!-- <MiscTicketHistory
-                      :clientid="item.id"
-                      :name="item.name"
-                    /> -->
                     <MainClientStatus
                       v-if="clienttype.name === 'INTERNET'"
                       :name="item.name"
-                      :clientid="item.id"
+                      :client="item.id"
                       :code="item.code"
                       :item="item"
                       :index="clients.indexOf(item)"
                     />
-                    <!-- <MainDevices
-                      v-if="clienttype.name === 'INTERNET'"
-                      :name="item.name"
-                      :clientid="item.id"
-                    /> -->
-                    <!-- <MainIpModel
-                      v-if="clienttype.name === 'INTERNET' && $isAdmin()"
-                      :client="item"
-                    /> -->
-                    <!-- <NapManageClient
-                      v-if="clienttype.name === 'INTERNET'"
-                      :client="item"
-                    /> -->
                     <ControlCenter
+                      :client="item"
+                      :index="index"
+                    />
+                    <BillingAuxBillingList
                       :client="item"
                       :index="index"
                     />
@@ -155,15 +140,6 @@
                 </template>
               </v-data-table>
             </client-only>
-            <!-- <v-row>
-              <v-col cols="12" sm="8" md="10" lg="11" style="max-width:90%;margin:auto;">
-                <v-pagination
-                  v-model="pagination.page"
-                  :length="pagination.pageCount"
-                  :total-visible="6"
-                />
-              </v-col>
-            </v-row> -->
           </v-card-text>
         </v-card>
       </v-col>
