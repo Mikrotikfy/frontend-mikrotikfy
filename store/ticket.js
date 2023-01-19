@@ -30,6 +30,7 @@ export const mutations = {
   getHeadersByClienttype (state, clienttype) {
     if (clienttype === 'INTERNET') {
       state.headers = [
+        { text: 'TK #', sortable: false, value: 'id', width: '2%' },
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 100 },
         { text: 'Canal', sortable: false, value: 'channel', width: 100, align: ' d-none d-lg-table-cell' },

@@ -26,7 +26,7 @@
             <v-icon class="mr-2">
               mdi-account
             </v-icon>
-            Información de usuario {{ client.name }}
+            Información de usuario {{ client.name }} <span class="caption grey--text ml-3"> // ID Cliente: <strong>{{ client.id }}</strong></span>
             <v-spacer />
             <v-btn icon @click="dialogEdit = false">
               <v-icon>mdi-close</v-icon>
@@ -49,7 +49,7 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="12" xs="12" md="12" lg="4" xl="6">
+            <v-col cols="12" xs="12" md="12" lg="6" xl="6">
               <v-row class="flex-column">
                 <v-col>
                   <ControlNap
