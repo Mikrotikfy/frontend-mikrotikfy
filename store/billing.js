@@ -235,6 +235,107 @@ export const actions = {
       throw new Error(`BILLING CLIENTS SEARCH ACTION ${error}`)
     }
   },
+  getBillsByClientId ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      populate: ['monthlybills']
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((res) => {
+            resolve(res.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`GET BILLS BY CLIENT ID ACTION ${error}`)
+    }
+  },
+  sendBill ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(this.$config.META_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.$config.META_TOKEN}`
+        },
+        body: JSON.stringify(
+          {
+            messaging_product: 'whatsapp',
+            to: `57${payload.client.phone}`,
+            type: 'template',
+            template: {
+              name: this.$config.META_TEMPLATE,
+              language: {
+                code: 'es'
+              },
+              components: [
+                {
+                  type: 'body',
+                  parameters: [
+                    {
+                      type: 'text',
+                      text: `${payload.bill.month.text}`
+                    },
+                    {
+                      type: 'text',
+                      text: `15 de ${payload.bill.month.text}`
+                    }
+                  ]
+                },
+                {
+                  type: 'button',
+                  sub_type: 'url',
+                  index: '0',
+                  parameters: [
+                    {
+                      type: 'text',
+                      text: `${payload.client.dni}`
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        )
+      })
+        .then(res => res.json())
+        .then((res) => {
+          resolve(res)
+        })
+    })
+  },
+  updateResend ({ commit }, payload) {
+    const resend = payload.bill.resend + 1
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}monthlybills/${payload.bill.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            resend,
+            resend_at: new Date()
+          }
+        })
+      }).then(res => res.json())
+        .then((res) => {
+          resolve(res)
+        })
+    })
+  },
   getHeadersByClientType ({ commit }, { city, clienttype }) {
     const internet = [
       { text: 'Codigo', value: 'code', sortable: false },
