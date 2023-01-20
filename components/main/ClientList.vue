@@ -123,7 +123,7 @@
                     <MainClientStatus
                       v-if="clienttype.name === 'INTERNET'"
                       :name="item.name"
-                      :client="item.id"
+                      :clientid="item.id"
                       :code="item.code"
                       :item="item"
                       :index="clients.indexOf(item)"
