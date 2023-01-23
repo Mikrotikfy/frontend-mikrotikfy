@@ -41,18 +41,6 @@
                 <v-icon>mdi-plus</v-icon>
                 Nuevo Cliente
               </v-btn>
-              <v-btn
-                color="white black--text"
-                dark
-                rounded
-                class="mr-4"
-                elevation="0"
-                :disabled="refreshLoading"
-                :loading="refreshLoading"
-                @click="refreshActiveClients"
-              >
-                <v-icon>mdi-reload</v-icon>
-              </v-btn>
               <v-spacer />
               <!-- <v-text-field
                 :value="options.itemsPerPage"
@@ -93,9 +81,6 @@
                   <MainClientControl :client="props.item" :index="clients.map(function(x) {return x.id; }).indexOf(props.item.id)" />
                 </template>
                 <template v-slot:[`item.code`]="{ item }">
-                  <svg height="13" width="20">
-                    <circle cx="10" cy="8" r="5" :fill="item.status === 'green' ? 'green' : 'red'" />
-                  </svg>
                   <span v-if="clienttype.name === 'INTERNET'" :class="item.status === 'green' ? 'online-text' : 'offline-text'">
                     {{ item.code }}
                   </span>
@@ -252,14 +237,6 @@ export default {
     redirectToBilling () {
       this.$router.push({ path: `/billing/${this.$route.params.search}`, query: { city: this.$route.query.city, clienttype: this.$route.query.clienttype } })
     },
-    async refreshActiveClients () {
-      this.refreshLoading = true
-      const city = this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
-      const clienttype = this.$route.query.clienttype
-      await this.$store.dispatch('refreshActiveClients', { city, clienttype, token: this.$store.state.auth.token })
-      await this.getClientStatusOnMikrotik()
-      this.refreshLoading = false
-    },
     async getClientBySearch () {
       this.loadingDataTable = true
       await this.$store.dispatch('client/clearClientsFromDatatable')
@@ -271,20 +248,13 @@ export default {
       if (search) {
         await this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search, city, clienttype, token: this.$store.state.auth.token, pagination: this.pagination })
         this.pagination = { ...this.$store.state.client.pagination }
-        await this.getClientStatusOnMikrotik()
         this.loadingDataTable = false
         this.result = 'No se han encontrado resultados.'
       }
     },
     async resetsearchfn () {
       await this.$store.dispatch('client/clearClientsFromDatatable')
-      await this.getClientStatusOnMikrotik()
       this.loadingDataTable = false
-    },
-    async getClientStatusOnMikrotik () {
-      if (this.$route.query.clienttype === 'INTERNET') {
-        await this.$store.dispatch('client/calculateClientStatus', this.activeClientsList)
-      }
     },
     clientCount () {
       return parseInt(localStorage.getItem('clientCount'))

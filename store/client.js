@@ -7,9 +7,6 @@ export const mutations = {
   setActiveFromModal (state, payload) {
     state.clients[payload.index].active = payload.active
   },
-  calculateClientStatus (state, newState) {
-    state.clients = newState
-  },
   clearClientsFromDatatable (state) {
     state.clients = []
   },
@@ -153,28 +150,6 @@ export const actions = {
     } catch (error) {
       throw new Error(`INSERT CLIENT ACTION ${error}`)
     }
-  },
-  async calculateClientStatus ({ state, commit }, payload) {
-    const shallowState = JSON.parse(JSON.stringify(state.clients))
-    const newState = await shallowState.map((client) => {
-      // eslint-disable-next-line eqeqeq
-      const ac = payload.find(c => c == client.code)
-      if (ac) {
-        client.status = 'green'
-        return client
-      } else {
-        // eslint-disable-next-line eqeqeq
-        const ac2 = payload.find(c => c == client.dni)
-        if (ac2) {
-          client.status = 'green'
-          return client
-        } else {
-          client.status = 'red'
-          return client
-        }
-      }
-    })
-    commit('calculateClientStatus', newState)
   },
   async getClientTypesFromDatabase (_, token) {
     try {
