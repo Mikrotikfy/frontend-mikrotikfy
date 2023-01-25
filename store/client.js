@@ -47,7 +47,6 @@ export const mutations = {
     }
   },
   updateClient (state, { client, index }) {
-    console.log(client, state.clients, index)
     try {
       Object.assign(state.clients[index], client)
     } catch (error) {
@@ -151,19 +150,22 @@ export const actions = {
       throw new Error(`INSERT CLIENT ACTION ${error}`)
     }
   },
-  async getClientTypesFromDatabase (_, token) {
+  getClientTypesFromDatabase (_, token) {
     try {
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}clienttypes`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        }
-      })
-        .then(res => res.json())
-        .then((clienttypes) => {
-          localStorage.setItem('clienttypes', JSON.stringify(clienttypes.data))
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clienttypes`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          }
         })
+          .then(res => res.json())
+          .then((clienttypes) => {
+            resolve(clienttypes.data)
+            localStorage.setItem('clienttypes', JSON.stringify(clienttypes.data))
+          })
+      })
     } catch (error) {
       throw new Error(`ACTION ${error}`)
     }
