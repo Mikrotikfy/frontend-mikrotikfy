@@ -24,7 +24,6 @@
         </v-icon>
       </v-btn>
     </div>
-    <pre>{{res}}</pre>
   </div>
 </template>
 <script>
@@ -36,12 +35,21 @@ export default {
       v => !!v || 'El numero telefonico es requerido',
       v => v.length === 10 || 'El numero telefonico debe tener 10 digitos'
     ],
-    res: null
+    res: null,
+    randomNumber: null
   }),
+  mounted () {
+    this.randomNumber = this.random6Digits()
+  },
   methods: {
     async sendCode () {
       this.loading = true
-      this.res = await this.sendWhatsappCode()
+      if (this.$store.state.create.hasWhatsapp) {
+        this.res = await this.sendWhatsappCode()
+      }
+      this.$store.commit('create/randomNumber', this.randomNumber)
+      this.$store.commit('create/setClientNumber', this.phone)
+      this.$store.commit('create/sete1', 4)
       this.loading = false
     },
     random6Digits () {
@@ -71,7 +79,7 @@ export default {
                     parameters: [
                       {
                         type: 'text',
-                        text: `${this.random6Digits()}`
+                        text: `${this.randomNumber}`
                       }
                     ]
                   }

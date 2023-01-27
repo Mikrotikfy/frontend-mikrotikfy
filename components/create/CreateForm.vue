@@ -21,20 +21,13 @@
         <v-row>
           <v-col>
             <v-text-field
-              ref="code"
               v-model="Client.code"
-              type="number"
-              :label="codeSuccess ? 'Código correcto' : 'Código'"
+              label="Codigo"
+              hide-details="auto"
               required
+              disabled
               outlined
               dense
-              :error="codeError"
-              :success="codeSuccess"
-              :hint="d00pHint"
-              :hide-details="hideD00pHint"
-              :persistent-hint="!hideD00pHint"
-              @change="testCodeForDuplicated(Client.code)"
-              @keyup="codeSuccess = false, codeError = false, hideD00pHint = true"
             />
           </v-col>
           <v-col>
@@ -363,14 +356,22 @@ export default {
       return this.$store.state.clienttypes.find(ct => ct.name === this.$route.query.clienttype)
     }
   },
-  mounted () {
+  async mounted () {
     if (this.$route.query.city) {
       const city = this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
       this.Client.city = city.id
     }
     this.getOffers()
+    await this.getCode()
   },
   methods: {
+    async getCode () {
+      const client = await this.$store.dispatch('client/getCode', {
+        token: this.$store.state.auth.token,
+        city: this.$route.query.city
+      })
+      this.Client.code = (parseInt(client[0].code) + 1).toString()
+    },
     async createDebtMovement (client) {
       await this.$store.dispatch('offer/setNewDebt', {
         token: this.$store.state.auth.token,
@@ -394,44 +395,6 @@ export default {
         index: this.index
       })
     },
-    async testCodeForDuplicated (code) {
-      const qs = require('qs')
-      const query = qs.stringify({
-        filters: {
-          code: {
-            $eq: code
-          },
-          city: {
-            name: {
-              $eq: this.$route.query.city
-            }
-          }
-        }
-      },
-      {
-        encodeValuesOnly: true
-      })
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.$store.state.auth.token}`
-        }
-      })
-        .then(res => res.json())
-        .then((clients) => {
-          if (clients.data.length > 0) {
-            this.codeError = true
-            this.d00pHint = 'Error. El codigo ya existe.'
-            this.hideD00pHint = false
-          } else {
-            this.codeError = false
-            this.d00pHint = ''
-            this.hideD00pHint = true
-            this.codeSuccess = true
-          }
-        })
-    },
     async createClient () {
       if (this.Client.code === '' || this.Client.offer === null || this.Client.name === '' || this.Client.dni === '' || this.Client.neighborhood === null || this.Client.city === '' || this.Client.phone === '' || this.Client.email === null) {
         this.$toast.error('Por favor, complete todos los campos.')
@@ -449,8 +412,6 @@ export default {
       })
         .then(res => res.json())
         .then((client) => {
-          this.$emit('createClientDialog', false)
-          this.$emit('createClientSnack', true)
           this.createOfferMovement(client.data, this.Client.offer)
           this.createDebtMovement(client.data)
           this.$store.dispatch('client/createTicketForNewClient', {
@@ -469,6 +430,8 @@ export default {
             operator: this.$store.state.auth.username
           })
           this.$simpleTelegramCreate({ client: this.Client, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+          this.$router.push({ path: `/clients/${this.Client.code}`, query: { city: this.$route.query.city } })
+          this.$store.commit('create/sete1', 1)
         }).catch((error) => {
           // eslint-disable-next-line no-console
           console.error(error)

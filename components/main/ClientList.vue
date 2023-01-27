@@ -25,38 +25,6 @@
         </v-card-title>
       </v-card>
     </v-row>
-    <v-row v-if="clients.length > 0">
-      <v-col>
-        <v-card class="rounded-xl mb-5 elevation-0">
-          <v-card-text>
-            <div>
-              <v-btn
-                color="blue darken-4 white--text"
-                dark
-                elevation="0"
-                rounded
-                class="mr-2"
-                @click="createDialog = true"
-              >
-                <v-icon>mdi-plus</v-icon>
-                Nuevo Cliente
-              </v-btn>
-              <v-spacer />
-              <!-- <v-text-field
-                :value="options.itemsPerPage"
-                label="Clientes por Pagina"
-                type="number"
-                min="5"
-                max="50"
-                width="80px"
-                hide-details
-                @input="options.itemsPerPage = parseInt($event, 10)"
-              /> -->
-            </div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
     <v-row v-if="clients.length > 0" class="mt-0">
       <v-col class="pt-0">
         <v-card class="elevation-0 rounded-xl">
@@ -129,20 +97,6 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-dialog
-      v-model="createDialog"
-      origin="bottom center"
-      class="transparent"
-      max-width="1150px"
-      :retain-focus="false"
-    >
-      <CreateForm
-        v-if="createDialog"
-        @createClient="createClient($event)"
-        @createClientDialog="createClientDialog($event)"
-        @createClientSnack="createClientSnack($event)"
-      />
-    </v-dialog>
   </v-container>
 </template>
 

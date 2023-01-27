@@ -31,6 +31,11 @@ export default {
   data: () => ({
     hasWhatsapp: true
   }),
+  watch: {
+    hasWhatsapp (val) {
+      this.$store.commit('create/hasWhatsapp', val)
+    }
+  },
   methods: {
     nextE1 () {
       this.$store.commit('create/sete1', 3)

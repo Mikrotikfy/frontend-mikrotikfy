@@ -1,12 +1,14 @@
 <template>
   <v-container>
     <v-card class="rounded-xl mx-auto elevation-0" max-width="1024">
+      <v-card-title class="justify-center">
+        Afiliación de Cliente | Proceso
+      </v-card-title>
       <v-stepper v-model="e1" class="transparent elevation-0">
         <v-stepper-header>
           <v-stepper-step
             :complete="e1 > 1"
             step="1"
-            editable
           >
             Tipo de Cliente
           </v-stepper-step>
@@ -16,7 +18,6 @@
           <v-stepper-step
             :complete="e1 > 2"
             step="2"
-            editable
           >
             Disponibilidad de WhatsApp
           </v-stepper-step>
@@ -26,7 +27,6 @@
           <v-stepper-step
             :complete="e1 > 3"
             step="3"
-            editable
           >
             Envio de Codigo
           </v-stepper-step>
@@ -63,6 +63,9 @@ export default {
   computed: {
     e1 () {
       return this.$store.state.create.e1
+    },
+    hasWhatsapp () {
+      return this.$store.state.create.hasWhatsapp
     }
   }
 }
