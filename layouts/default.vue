@@ -83,7 +83,7 @@
           :key="city.name"
           class="ml-2 rounded-xl"
           small
-          :color="city.color"
+          :color="city.name === $route.query.city ? $vuetify.theme.dark ? 'blue darken-4 white--text' : 'blue darken-4 white--text' : 'white black--text'"
           :to="`${$route.path}?city=${city.name}&clienttype=${$route.query.clienttype}`"
         >
           {{ !$store.state.isDesktop ? city.name.charAt(0) : city.name }}
