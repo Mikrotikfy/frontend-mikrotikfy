@@ -436,6 +436,7 @@ export default {
           this.createOfferMovement(client.data, this.Client.offer)
           this.createDebtMovement(client.data)
           this.$store.dispatch('client/createTicketForNewClient', {
+            clienttype: this.$store.state.auth.clienttypes.find(ct => ct.name === this.$route.query.clienttype),
             city: this.Client.city,
             client: client.data,
             neighborhood: this.Client.neighborhood,

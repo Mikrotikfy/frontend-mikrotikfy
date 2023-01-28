@@ -111,7 +111,7 @@ export const actions = {
               client: payload.client.id,
               tickettype: 36,
               assignated: 22,
-              clienttype: 1,
+              clienttype: payload.clienttype.id,
               channel: 'office',
               details: `
                 CX: ${payload.client.address} ${payload.neighborhood.name}
