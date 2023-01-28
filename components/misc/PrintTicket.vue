@@ -40,8 +40,8 @@
               <v-col cols="2" style="border: 1px solid grey;" class="align-center justify-center printme">
                 <MainLogoDark />
               </v-col>
-              <v-col cols="5" style="border: 1px solid grey;background-color:#bfffff;" class="d-flex align-center justify-center">
-                <h2 class="printme">Agenda Técnica Internet</h2>
+              <v-col cols="5" :style="$route.query.clienttype === 'INTERNET' ? 'border: 1px solid grey;background-color:#bfffff;' : 'border: 1px solid grey;background-color:#ffe8bf;'" class="d-flex align-center justify-center">
+                <h2 class="printme">Agenda Técnica {{ $route.query.clienttype }}</h2>
               </v-col>
               <v-col cols="5" style="border: 1px solid grey;" class="d-flex align-center justify-center">
                 <v-row>
@@ -109,7 +109,7 @@
                 <span style="color:#c9c9c9;">FIRMA CLIENTE</span>
               </div>
             </v-row>
-            <v-row class="mt-3 justify-center" style="border: 1px solid grey;">Agenda de servicio técnico generada por {{$store.state.auth.username.charAt(0).toUpperCase() + $store.state.auth.username.slice(1)}} el {{ getDate(new Date()) }} - Tabla autogenerada por la API</v-row>
+            <v-row class="mt-3 justify-center" style="border: 1px solid grey;">Agenda de servicio técnico generada por {{$store.state.auth.username.charAt(0).toUpperCase() + $store.state.auth.username.slice(1)}} el {{ getDateLog(new Date()) }} - Tabla autogenerada por la API</v-row>
           </v-container>
         </v-card-text>
       </v-card>
@@ -162,6 +162,11 @@ export default {
     getDate (date) {
       const dateObject = new Date(date)
       const humanDateFormat = dateObject.toLocaleString('es-ES', { month: 'long', year: 'numeric' })
+      return humanDateFormat
+    },
+    getDateLog (date) {
+      const dateObject = new Date(date)
+      const humanDateFormat = dateObject.toLocaleString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })
       return humanDateFormat
     }
   }
