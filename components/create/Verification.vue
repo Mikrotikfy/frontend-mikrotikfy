@@ -55,9 +55,7 @@
     >
       <CreateForm
         v-if="createDialog"
-        @createClient="createClient($event)"
-        @createClientDialog="createClientDialog($event)"
-        @createClientSnack="createClientSnack($event)"
+        :clientnumber="clientNumber"
       />
     </v-dialog>
   </div>

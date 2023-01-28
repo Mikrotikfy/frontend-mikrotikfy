@@ -156,6 +156,9 @@ export const actions = {
       filters: {
         city: {
           name: payload.city
+        },
+        clienttype: {
+          name: payload.clienttype
         }
       },
       sort: ['id:desc']

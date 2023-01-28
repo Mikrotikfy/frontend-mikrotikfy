@@ -87,7 +87,7 @@
               @keyup.enter="$event.target.blur()"
             />
           </v-col>
-          <v-col cols="6" lg="4" md="4">
+          <v-col v-if="$route.query.clienttype === 'INTERNET'" cols="6" lg="4" md="4">
             <v-text-field
               v-model="currentEditClient.wifi_ssid"
               :disabled="!$isAdmin() || loading"
@@ -101,7 +101,7 @@
               @keyup.enter="$event.target.blur()"
             />
           </v-col>
-          <v-col cols="6" lg="4" md="4">
+          <v-col v-if="$route.query.clienttype === 'INTERNET'" cols="6" lg="4" md="4">
             <v-text-field
               v-model="currentEditClient.wifi_password"
               :disabled="!$isAdmin() || loading"
@@ -280,8 +280,12 @@ export default {
       this.saveStatus = 'Guardando...'
 
       await this.$store.dispatch('client/updateClient', { client, index: this.index, operator, token: this.$store.state.auth.token })
-      this.$store.dispatch('client/updateClientCommentOnMikrotik', { client, token: this.$store.state.auth.token })
-      this.$simpleTelegramUpdate({ client, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+      if (this.$route.query.clienttype === 'INTERNET') {
+        this.$store.dispatch('client/updateClientCommentOnMikrotik', { client, token: this.$store.state.auth.token })
+        this.$simpleTelegramUpdate({ client, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+      } else {
+        this.$simpleTelegramUpdateTV({ client, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+      }
 
       this.$refs.saveStatusText.classList.remove('cyan--text')
       this.$refs.saveStatusText.classList.add('success--text')

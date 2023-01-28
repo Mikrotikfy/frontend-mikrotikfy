@@ -43,6 +43,10 @@ export default {
   },
   methods: {
     async sendCode () {
+      if (typeof this.phoneRules[0](this.phone) !== 'boolean' || typeof this.phoneRules[1](this.phone) !== 'boolean') {
+        this.$toast.error('El numero telefonico es invalido', { duration: 3000 })
+        return
+      }
       this.loading = true
       if (this.$store.state.create.hasWhatsapp) {
         this.res = await this.sendWhatsappCode()

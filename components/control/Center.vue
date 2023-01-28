@@ -41,7 +41,7 @@
                     :index="index"
                   />
                 </v-col>
-                <v-col>
+                <v-col v-if="$route.query.clienttype === 'INTERNET'">
                   <ControlDevices
                     :clientid="client.id"
                     :name="client.name"
@@ -51,7 +51,7 @@
             </v-col>
             <v-col cols="12" xs="12" md="12" lg="6" xl="6">
               <v-row class="flex-column">
-                <v-col>
+                <v-col v-if="$route.query.clienttype === 'INTERNET'">
                   <ControlNap
                     :isticket="false"
                     :client="client"

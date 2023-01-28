@@ -257,6 +257,12 @@
 <script>
 export default {
   name: 'CreateForm',
+  props: {
+    clientnumber: {
+      type: String,
+      required: true
+    }
+  },
   data: () => {
     return {
       valid: false,
@@ -361,6 +367,7 @@ export default {
       const city = this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
       this.Client.city = city.id
     }
+    this.Client.phone = this.clientnumber
     this.getOffers()
     await this.getCode()
   },
@@ -368,6 +375,7 @@ export default {
     async getCode () {
       const client = await this.$store.dispatch('client/getCode', {
         token: this.$store.state.auth.token,
+        clienttype: this.$route.query.clienttype,
         city: this.$route.query.city
       })
       this.Client.code = (parseInt(client[0].code) + 1).toString()
@@ -396,7 +404,20 @@ export default {
       })
     },
     async createClient () {
-      if (this.Client.code === '' || this.Client.offer === null || this.Client.name === '' || this.Client.dni === '' || this.Client.neighborhood === null || this.Client.city === '' || this.Client.phone === '' || this.Client.email === null) {
+      if (
+        (
+          this.$route.query.clienttype === 'INTERNET' &&
+          (
+            this.Client.code === '' || this.Client.offer === null || this.Client.name === '' || this.Client.dni === '' || this.Client.neighborhood === null || this.Client.city === '' || this.Client.phone === '' || this.Client.email === null
+          )
+        ) ||
+        (
+          this.$route.query.clienttype === 'TELEVISION' &&
+          (
+            this.Client.code === '' || this.Client.name === '' || this.Client.dni === '' || this.Client.neighborhood === null || this.Client.city === '' || this.Client.phone === '' || this.Client.email === null
+          )
+        )
+      ) {
         this.$toast.error('Por favor, complete todos los campos.')
         return
       }
@@ -420,17 +441,19 @@ export default {
             neighborhood: this.Client.neighborhood,
             token: this.$store.state.auth.token
           })
-          this.$store.dispatch('client/adminCreate', {
-            client: {
-              ...this.Client,
-              id: client.data.id
-            },
-            city: this.city,
-            token: this.$store.state.auth.token,
-            operator: this.$store.state.auth.username
-          })
+          if (this.$route.query.clienttype === 'INTERNET') {
+            this.$store.dispatch('client/adminCreate', {
+              client: {
+                ...this.Client,
+                id: client.data.id
+              },
+              city: this.city,
+              token: this.$store.state.auth.token,
+              operator: this.$store.state.auth.username
+            })
+          }
           this.$simpleTelegramCreate({ client: this.Client, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
-          this.$router.push({ path: `/clients/${this.Client.code}`, query: { city: this.$route.query.city } })
+          this.$router.push({ path: `/clients/${this.Client.code}`, query: { city: this.$route.query.city, clienttype: this.$route.query.clienttype } })
           this.$store.commit('create/sete1', 1)
         }).catch((error) => {
           // eslint-disable-next-line no-console

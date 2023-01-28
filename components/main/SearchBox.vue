@@ -60,6 +60,15 @@ export default {
       return this.$store.state.cities ? this.$store.state.cities.find(c => c.id == this.$route.query.city) : ''
     }
   },
+  watch: {
+    '$route.query.clienttype' () {
+      setTimeout(() => {
+        this.$refs.searchClient.$refs.input.select()
+        this.$refs.searchClient.$refs.input.focus()
+      }, 200)
+      this.searchClientInput = ''
+    }
+  },
   mounted () {
     this.searchClientInput = this.$route.params.search
     setTimeout(() => {

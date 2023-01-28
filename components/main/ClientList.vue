@@ -1,24 +1,6 @@
 <template>
   <v-container fluid>
-    <div v-if="clients.length < 1 && !$route.params.search && clienttype">
-      <v-row class="justify-center">
-        <h4>Crea un cliente</h4>
-      </v-row>
-      <v-row class="justify-center">
-        <v-fab-transition>
-          <v-btn
-            color="blue darken-4 elevation-0"
-            fab
-            large
-            dark
-            @click="createDialog = true"
-          >
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </v-fab-transition>
-      </v-row>
-    </div>
-    <v-row v-else-if="clients.length < 1 && $route.params.search" class="justify-center">
+    <v-row v-if="clients.length < 1 && $route.params.search" class="justify-center">
       <v-card :loading="loadingDataTable">
         <v-card-title>
           {{ result }}
@@ -203,7 +185,7 @@ export default {
         await this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search, city, clienttype, token: this.$store.state.auth.token, pagination: this.pagination })
         this.pagination = { ...this.$store.state.client.pagination }
         this.loadingDataTable = false
-        this.result = 'No se han encontrado resultados.'
+        this.result = 'No se han encontrado resultados de' + ' ' + search
       }
     },
     async resetsearchfn () {

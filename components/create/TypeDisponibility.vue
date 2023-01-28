@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="d-flex">
-      <v-radio-group v-model="hasWhatsapp" row label="Usuario tiene WhatsApp?">
+      <v-radio-group
+        v-model="hasWhatsapp"
+        row
+        label="Usuario tiene WhatsApp?"
+      >
         <v-radio
           label="Si"
           color="green"
