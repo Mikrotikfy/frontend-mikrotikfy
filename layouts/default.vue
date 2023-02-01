@@ -13,22 +13,6 @@
       :mini-variant="$store.state.isDesktop"
       :bottom="!$store.state.isDesktop"
     >
-      <v-tooltip
-        v-if="$store.state.isDesktop"
-        bottom
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-icon
-            :class="$nuxt.isOffline ? 'red--text darken-4 px-2 py-3 justify-center align-center d-flex' : 'green--text darken-4 px-2 py-3 justify-center align-center d-flex'"
-            v-bind="attrs"
-            v-on="on"
-          >
-            mdi-account
-          </v-icon>
-        </template>
-        <span>{{ $store.state.auth.username.charAt(0).toUpperCase() + $store.state.auth.username.slice(1) }}</span>
-      </v-tooltip>
-      <v-divider />
       <v-list
         nav
       >
@@ -70,13 +54,6 @@
         {{ !$store.state.isDesktop ? null : clienttype.name }}
       </v-btn>
       <v-spacer />
-      <v-switch
-        v-model="light"
-        :prepend-icon="light ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent'"
-        inset
-        class="ml-5 mt-5"
-        @change="changeTheme()"
-      />
       <div v-if="$store.state.auth">
         <v-btn
           v-for="city in $store.state.auth.cities"
@@ -89,21 +66,56 @@
           {{ !$store.state.isDesktop ? city.name.charAt(0) : city.name }}
         </v-btn>
       </div>
-      <v-tooltip bottom>
+      <v-menu offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on, attrs }">
           <v-btn
-            icon
-            large
             class="ml-2"
+            fab
+            small
             v-bind="attrs"
             v-on="on"
-            @click="logout(false)"
           >
-            <v-icon>mdi-exit-to-app</v-icon>
+            <v-icon>mdi-account</v-icon>
           </v-btn>
         </template>
-        <span>Cerrar sesión</span>
-      </v-tooltip>
+        <v-list>
+          <v-list-item>
+            <v-icon
+              :class="$nuxt.isOffline ? 'red--text darken-4 px-2 py-3 justify-center align-center d-flex' : 'green--text darken-4 px-2 py-3 justify-center align-center d-flex'"
+              v-bind="attrs"
+              v-on="on"
+            >
+              mdi-account
+            </v-icon>
+            <span>{{ $store.state.auth.username.charAt(0).toUpperCase() + $store.state.auth.username.slice(1) }}</span>
+          </v-list-item>
+          <v-list-item>
+            <v-switch
+              v-model="light"
+              :prepend-icon="light ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent'"
+              inset
+              class="mt-5"
+              @change="changeTheme()"
+            />
+          </v-list-item>
+          <v-list-item>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  large
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="logout(false)"
+                >
+                  <v-icon>mdi-exit-to-app</v-icon>
+                </v-btn>
+              </template>
+              <span>Cerrar sesión</span>
+            </v-tooltip>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
     <v-main>
       <v-alert
