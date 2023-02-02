@@ -91,7 +91,6 @@
             <v-switch
               v-model="light"
               :prepend-icon="light ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent'"
-              inset
               class="mt-5"
               @change="changeTheme()"
             />
