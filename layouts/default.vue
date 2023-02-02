@@ -82,8 +82,6 @@
           <v-list-item>
             <v-icon
               :class="$nuxt.isOffline ? 'red--text darken-4 px-2 py-3 justify-center align-center d-flex' : 'green--text darken-4 px-2 py-3 justify-center align-center d-flex'"
-              v-bind="attrs"
-              v-on="on"
             >
               mdi-account
             </v-icon>
