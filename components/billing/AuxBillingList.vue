@@ -68,7 +68,7 @@
               {{ item.resend_at ? getHumanDate(item.resend_at) : 'Nunca' }}
             </template>
             <template v-slot:[`item.updatedAt`]="{ item }">
-              {{ item.resend ? item.resend > 0 ? `${item.resend} ${item.resend > 1 ? 'veces' : 'vez'}` : 'Nunca' : 'Nunca'}}
+              {{ item.resend ? item.resend > 0 ? `${item.resend} ${item.resend > 1 ? 'veces' : 'vez'}` : 'Nunca' : 'Nunca' }}
             </template>
             <template v-slot:[`item.actions`]="{ item }">
               <div class="d-flex">

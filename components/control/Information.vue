@@ -189,7 +189,9 @@
     </v-card-text>
     <v-divider />
     <v-card-text class="d-flex align-center mt-5">
-      <caption ref="saveStatusText" class="font-italic">{{ saveStatus }}</caption>
+      <caption ref="saveStatusText" class="font-italic">
+        {{ saveStatus }}
+      </caption>
       <v-spacer />
       <div style="display: inline-grid;place-items: end;">
         <caption>Fecha de creacion: {{ getDate(currentEditClient.createdAt) }}</caption>

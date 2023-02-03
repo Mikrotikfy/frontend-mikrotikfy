@@ -119,7 +119,6 @@ export default {
     async applyOffers () {
       for (let i = 0; i < this.validClients.length; i++) {
         const client = this.validClients[i]
-        console.log(client)
         if (client.debtmovement.isindebt) {
           this.$store.commit('cuts/addCutInDebt', {
             client

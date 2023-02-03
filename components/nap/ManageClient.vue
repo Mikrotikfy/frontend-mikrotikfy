@@ -13,7 +13,7 @@
           @click="initComponent()"
         >
           <v-icon>mdi-lan</v-icon>
-          <span v-if="block">{{ client.naps.length > 0 ? 'Actualizar NAP' : 'Agregar NAP'}}</span>
+          <span v-if="block">{{ client.naps.length > 0 ? 'Actualizar NAP' : 'Agregar NAP' }}</span>
         </v-btn>
       </template>
       <span>Gestionar Acceso a Red</span>
