@@ -228,11 +228,12 @@ export default {
         this.specsString = JSON.stringify(this.specs)
       }
     },
-    setNewSpecs () {
+    setNewSpecs (ticketdetail) {
       if (this.specsString !== JSON.stringify(this.specs) && this.$route.query.clienttype === 'TELEVISION') {
         this.$store.dispatch('tv/saveSpecs', {
           token: this.$store.state.auth.token,
           clientid: this.ticket.client.id,
+          ticketdetail,
           specs: this.specs
         })
       }
@@ -270,7 +271,6 @@ export default {
         })
         return
       }
-      this.setNewSpecs()
       this.loading = true
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticket.id}`, {
         method: 'PUT',
@@ -333,9 +333,14 @@ export default {
               this.technicianescalated = false
               this.loading = false
             }
-          }).catch((error) => {
-            this.$toast.error(error, { position: 'bottom-center' })
+            return input.json()
           })
+            .then((res) => {
+              this.setNewSpecs(res.data)
+            })
+            .catch((error) => {
+              this.$toast.error(error, { position: 'bottom-center' })
+            })
         }
       }).catch((error) => {
         this.$toast.error(error, { position: 'bottom-center' })

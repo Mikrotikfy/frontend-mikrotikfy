@@ -39,6 +39,7 @@ export const actions = {
         body: JSON.stringify({
           data: {
             client: payload.clientid,
+            ticketdetail: payload.ticketdetail.id,
             ...payload.specs
           }
         })

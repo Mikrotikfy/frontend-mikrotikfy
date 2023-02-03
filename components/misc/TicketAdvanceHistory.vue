@@ -21,7 +21,7 @@
     </v-tooltip>
     <v-dialog
       v-model="modal"
-      max-width="990"
+      max-width="1200"
     >
       <v-card
         :loading="loading"
@@ -33,7 +33,7 @@
           <v-card-text>
             <client-only>
               <v-data-table
-                :headers="headers"
+                :headers="$route.query.clienttype === 'INTERNET' ? headers : headersTV"
                 :items="ticketdetails"
                 :items-per-page="itemsPerPage"
                 :page.sync="page"
@@ -97,6 +97,18 @@ export default {
       { text: 'Creado por', sortable: false, value: 'operator.username' },
       { text: 'Detalles', sortable: true, value: 'details' },
       { text: 'Avance creado el', sortable: true, value: 'createdAt' }
+    ],
+    headersTV: [
+      { text: 'Cliente', sortable: true, value: 'ticket.client.name' },
+      { text: 'Tipo', sortable: true, value: 'ticket.tickettype.name' },
+      { text: 'Creado por', sortable: false, value: 'operator.username' },
+      { text: 'Detalles', sortable: true, value: 'details' },
+      { text: 'Televisores', sortable: true, value: 'ticket.client.tvspecs[0].tvs' },
+      { text: 'dBm', sortable: true, value: 'ticket.client.tvspecs[0].db' },
+      { text: 'Altos', sortable: true, value: 'ticket.client.tvspecs[0].high' },
+      { text: 'Bajos', sortable: true, value: 'ticket.client.tvspecs[0].down' },
+      { text: 'Calidad', sortable: true, value: 'ticket.client.tvspecs[0].tvspectype.name' },
+      { text: 'Avance creado el', sortable: true, value: 'createdAt' }
     ]
   }),
   methods: {
@@ -116,8 +128,11 @@ export default {
           'ticket',
           'ticket.client',
           'ticket.tickettype',
+          'ticket.client.tvspecs',
+          'ticket.client.tvspecs.tvspectype',
           'operator'
-        ]
+        ],
+        sort: 'createdAt:DESC'
       },
       {
         encodeValuesOnly: true
@@ -131,6 +146,12 @@ export default {
       })
         .then(res => res.json())
         .then((ticketdetails) => {
+          console.log(ticketdetails.data)
+          ticketdetails.data.map((ticketdetail) => {
+            ticketdetail.ticket.client.tvspecs = ticketdetail.ticket.client.tvspecs.sort((a, b) => {
+              return new Date(b.createdAt) - new Date(a.createdAt)
+            })
+          })
           this.ticketdetails = ticketdetails.data
         })
     },
