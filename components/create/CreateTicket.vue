@@ -181,7 +181,7 @@
                   <v-textarea
                     v-model="ticketPayload.details"
                     outlined
-                    label="Detalles del del caso"
+                    label="Detalles del caso"
                     placeholder="El router se encuentra bloqueado o fuera de linea desde..."
                     :error="errors.details"
                     @focus="errors.details = false, alertBox = false"
@@ -212,7 +212,7 @@
                         />
                       </v-radio-group>
                     </v-col>
-                    <v-col>
+                    <v-col v-if="$route.query.clienttype === 'INTERNET'">
                       <p class="text-h6">Acciones de solución</p>
                       <v-checkbox
                         v-model="ticketPayload.reboot"
@@ -260,13 +260,13 @@
               </v-card-text>
             </v-card>
           </v-col>
-          <v-col cols="12" md="6" lg="7">
+          <v-col v-if="$route.query.clienttype === 'INTERNET'" cols="12" md="6" lg="7">
             <v-card class="rounded-xl">
               <v-card-title>
                 <v-icon class="mr-2">
                   mdi-account-alert-outline
                 </v-icon>
-                Recomendaciones para la toma de cosas nuevos
+                Recomendaciones para la toma de casos nuevos
               </v-card-title>
               <v-card-text>
                 <span class="text-body-1 text-decoration-underline red--text">Preguntas a realizar al ENCONTRARSE FUERA DE LINEA ❌</span><br>
@@ -292,6 +292,29 @@
                 <span class="text-body-1 ml-10">• El usuario puede no estar conectado a la red WIFI. Preguntar a que red esta conectada y si concuerda con su apellido para descartar este escenario. O puede estar conectado a la red de algún vecino del que tenga la contraseña.</span><br>
                 <span class="text-body-1 ml-2">• ¿Ha solicitado un cambio de contraseña recientemente?</span><br>
                 <span class="text-body-1 ml-10">• A veces el usuario olvida que pidió un cambio de contraseña y no la agrega a sus dispositivos de nuevo, quedándose sin navegación.</span>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col v-if="$route.query.clienttype === 'TELEVISION'" cols="12" md="6" lg="7">
+            <v-card class="rounded-xl">
+              <v-card-title>
+                <v-icon class="mr-2">
+                  mdi-account-alert-outline
+                </v-icon>
+                Recomendaciones para la toma de casos nuevos
+              </v-card-title>
+              <v-card-text>
+                <span class="text-body-1 text-decoration-underline green--text">Preguntas a realizar al Cliente ✔️: </span><br>
+                <span class="text-body-1 ml-2">• ¿Afecta solo 1 canal o es en todos?</span><br>
+                <span class="text-body-1 ml-10">• Verificar esto para determinar si es el nodo o amplificador</span><br>
+                <span class="text-body-1 ml-2">• ¿Desde que fecha presenta el inconveniente?</span><br>
+                <span class="text-body-1 ml-10">• Asegurarse que la revisión se pide en fechas que no concuerden con trabajos de adecuacion de red o de terceros.</span><br>
+                <span class="text-body-1 ml-2">• ¿Aparece un letrero de "Codificado" o similar?</span><br>
+                <span class="text-body-1 ml-10">• Puede tratarse de una revision por solo 1 canal que tenga afectado la señal satelital.</span><br>
+                <span class="text-body-1 ml-2">• ¿Esta conectado el Televisor al cable de la parabolica?</span><br>
+                <span class="text-body-1 ml-10">• El usuario pudo haber desconectado el cable por alguna limpieza o cambio de lugar que haya realizado y olvido volverlo a conectar</span><br>
+                <span class="text-body-1 ml-2">• ¿Sucede en todos los televisores o solo en 1?</span><br>
+                <span class="text-body-1 ml-10">• Si presenta el problema solo en 1 televisor puede significar daño en conector o cable.</span>
               </v-card-text>
             </v-card>
           </v-col>
