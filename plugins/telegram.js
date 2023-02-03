@@ -5,6 +5,7 @@ export default (_, inject) => {
   inject('simpleTelegramUpdatePlan', input => simpleTelegramUpdatePlan(input))
   inject('simpleTelegramCreateTicket', input => simpleTelegramCreateTicket(input))
   inject('simpleTelegramCreateTicketAdvance', input => simpleTelegramCreateTicketAdvance(input))
+  inject('simpleTelegramCreateTicketAdvanceTv', input => simpleTelegramCreateTicketAdvanceTv(input))
   inject('simpleTelegramCreateRequest', input => simpleTelegramCreateRequest(input))
   inject('simpleTelegramAdminCreate', input => simpleTelegramAdminCreate(input))
   inject('simpleTelegramUpdateOffer', input => simpleTelegramUpdateOffer(input))
@@ -200,6 +201,48 @@ function simpleTelegramCreateTicketAdvance ({ client, ticket, status, details, o
   }
   const line10 = operator
   const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n${line8}\n\n${line9}\n${line10}`
+  const req =
+    'https://api.telegram.org/bot' +
+    bot +
+    '/sendMessage?chat_id=' +
+    chatid +
+    '&text=' +
+    encodeURIComponent(message)
+  fetch(req)
+    .catch(function (err) {
+      return err
+    })
+}
+function simpleTelegramCreateTicketAdvanceTv ({ client, ticket, status, details, specs, operator, telegramBots }) {
+  const fetch = require('node-fetch')
+  const bot = telegramBots.token
+  const chatid = telegramBots.tvchat
+  let line1 = ''
+  if (status) {
+    line1 = '✅ CIERRE DE TICKET ✅'
+  } else {
+    line1 = '✴️ AVANCE DE TICKET ✴️'
+  }
+  const line2 = sanitizeString(client.code)
+  const line3 = sanitizeString(client.name)
+  const line4 = sanitizeString(client.address)
+  const line5 = sanitizeString(client.neighborhood.name)
+  const line6 = sanitizeString(client.phone)
+  const line7 = sanitizeString(ticket.tickettype.name)
+  const line8 = `Calidad de señal: ${sanitizeString(specs.tvspectype.name)}`
+  const line9 = `dBm: ${specs.db}`
+  const line10 = `Altos: ${specs.high}`
+  const line11 = `Bajos: ${specs.down}`
+  const line12 = `Televisores: ${specs.tvs}`
+  const line13 = `Observaciones: ${sanitizeString(details)}`
+  let line14 = ''
+  if (status) {
+    line14 = 'CASO CERRADO'
+  } else {
+    line14 = 'CASO ACTIVO'
+  }
+  const line15 = operator
+  const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n\n${line8}\n${line9}\n${line10}\n${line11}\n${line12}\n\n${line13}\n\n${line14}\n${line15}`
   const req =
     'https://api.telegram.org/bot' +
     bot +
