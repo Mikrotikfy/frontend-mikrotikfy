@@ -239,7 +239,7 @@
               </template>
               <template v-slot:[`item.createdAt`]="{ item }">
                 <div style="display:flex!important;flex-direction:column;">
-                  <span class="text-caption">
+                  <span class="text-caption" style="white-space:nowrap;">
                     {{ getDate(item.createdAt) }}
                   </span>
                   <span style="line-height:1rem;" class="text-caption text--secondary">
