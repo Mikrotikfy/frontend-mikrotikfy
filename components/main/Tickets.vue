@@ -238,12 +238,14 @@
                 </div>
               </template>
               <template v-slot:[`item.createdAt`]="{ item }">
-                <span class="text-caption">
-                  {{ getDate(item.createdAt) }}
-                </span>
-                <span class="text-caption text--secondary">
-                  {{ getHour(item.createdAt) }}
-                </span>
+                <div style="display:flex!important;flex-direction:column;">
+                  <span class="text-caption">
+                    {{ getDate(item.createdAt) }}
+                  </span>
+                  <span style="line-height:1rem;" class="text-caption text--secondary">
+                    {{ getHour(item.createdAt) }}
+                  </span>
+                </div>
               </template>
             </v-data-table>
           </client-only>
