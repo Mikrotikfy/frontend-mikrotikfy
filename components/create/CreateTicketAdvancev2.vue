@@ -40,7 +40,7 @@
           outlined
           class="mt-4"
           hide-details="auto"
-          label="Describe el caso lo mas detalladamente posible"
+          label="Observaciones detalladas"
         />
       </v-card-text>
       <v-divider v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo" class="mb-5" />
@@ -85,17 +85,28 @@
           dense
           hide-details="auto"
         />
-        <v-text-field
-          v-model.number="specs.tvs"
-          label="Televisores"
-          prepend-icon="mdi-television"
-          class="mb-5"
-          type="number"
-          outlined
-          dense
-          required
-          hide-details="auto"
-        />
+        <v-row align="center" class="pa-3">
+          <v-text-field
+            v-model.number="specs.tvs"
+            label="Televisores"
+            prepend-icon="mdi-television"
+            class="mb-5"
+            type="number"
+            :disabled="specs.notvs"
+            outlined
+            dense
+            required
+            hide-details="auto"
+          />
+          <v-checkbox
+            v-model.number="specs.notvs"
+            label="No se puede verificar"
+            class="mb-5 ml-2 shrink mt-0"
+            small
+            required
+            hide-details="auto"
+          />
+        </v-row>
         <v-text-field
           v-model.number="specs.high"
           label="Altos"
@@ -185,7 +196,8 @@ export default {
       db: null,
       high: null,
       down: null,
-      tvs: null
+      tvs: null,
+      notvs: false
     }
   }),
   computed: {
@@ -211,7 +223,7 @@ export default {
     testTvSpecs () {
       const specs = this.ticket.client.tvspecs && this.ticket.client.tvspecs.length > 0
       if (specs) {
-        this.specs = this.ticket.client.tvspecs.at(-1)
+        this.specs = { ...this.ticket.client.tvspecs.at(-1) }
         delete this.specs.id
         this.specsString = JSON.stringify(this.specs)
       }
@@ -240,7 +252,7 @@ export default {
         })
         return
       }
-      if (!this.specs.tvs && this.$route.query.clienttype === 'TELEVISION') {
+      if (((!this.specs.tvs || this.specs.tvs === 0 || this.specs.tvs === '') && !this.specs.notvs) && this.$route.query.clienttype === 'TELEVISION') {
         this.$toast.error('Ingrese la cantidad de televisores del usuario', {
           duration: 3000
         })
@@ -296,18 +308,17 @@ export default {
                   operator: this.$store.state.auth.username,
                   telegramBots: this.telegramBots
                 })
+              } else {
+                this.$simpleTelegramCreateTicketAdvanceTv({
+                  ticket: this.ticket,
+                  client: this.ticket.client,
+                  status: this.closeticket,
+                  details: this.details,
+                  operator: this.$store.state.auth.username,
+                  telegramBots: this.telegramBots,
+                  specs: this.specs
+                })
               }
-              // } else {
-              //   this.$simpleTelegramCreateTicketAdvanceTv({
-              //     ticket: this.ticket,
-              //     client: this.ticket.client,
-              //     status: this.closeticket,
-              //     details: this.details,
-              //     operator: this.$store.state.auth.username,
-              //     telegramBots: this.telegramBots,
-              //     specs: this.specs
-              //   })
-              // }
               this.$store.dispatch('ticket/getTicketsFromDatabase', {
                 city: this.$route.query.city,
                 clienttype: this.$route.query.clienttype,
@@ -316,6 +327,10 @@ export default {
                 retired: false
               })
               this.$toast.success('Ticket Actualizado con Exito', { duration: 4000, position: 'bottom-center' })
+              this.details = ''
+              this.closeticket = false
+              this.officeescalated = false
+              this.technicianescalated = false
               this.loading = false
             }
           }).catch((error) => {
