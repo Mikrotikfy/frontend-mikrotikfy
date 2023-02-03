@@ -45,7 +45,7 @@ export const actions = {
       })
         .then((res) => {
           if (res.status === 200) {
-            this.$toast.success('Guardado con exito', { duration: 4000 })
+            this.$toast.success('Ficha tecnica actualizada con éxito.', { duration: 4000 })
           }
         })
     } catch (error) {

@@ -231,10 +231,6 @@
                     :clientid="item.client.id"
                     :name="item.client.name"
                   />
-                  <TvServiceStepper
-                    v-if="clienttype === 'TELEVISION'"
-                    :clientid="item.client.id"
-                  />
                   <TicketAdvanceHistory
                     :ticketid="item.id"
                     :name="item.client.name"

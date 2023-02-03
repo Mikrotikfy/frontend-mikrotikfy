@@ -28,121 +28,128 @@
 
     <v-card>
       <v-card-title>
-        <span class="headline">Crear Avance en Ticket</span>
+        <span>Crear Avance en Ticket {{ ticket.id }}</span>
         <v-spacer />
         <v-btn icon @click="dialog = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
-      <v-stepper
-        v-model="stepper"
-        vertical
-        class="transparent"
-      >
-        <v-stepper-step
-          :complete="stepper > 1"
-          step="1"
-          editable
+      <v-card-text>
+        <v-textarea
+          v-model="details"
+          outlined
+          class="mt-4"
+          hide-details="auto"
+          label="Describe el caso lo mas detalladamente posible"
+        />
+      </v-card-text>
+      <v-divider v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo" class="mb-5" />
+      <v-card-text v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo">
+        <NapActualInfo
+          :client="ticket.client"
+        />
+        <NapRemoveDialog
+          v-if="ticket.client.naps.length > 0 && ticket.tickettype.name === 'TRASLADO'"
+          :ticketindex="ticketindex"
+          :isticket="true"
+          :client="ticket.client"
+          :block="true"
+        />
+        <NapManageClient
+          :isticket="true"
+          :ticketindex="ticketindex"
+          :client="ticket.client"
+          :block="true"
+        />
+      </v-card-text>
+      <v-divider v-if="$route.query.clienttype === 'TELEVISION' && ticket.tickettype.requiresextrainfo" class="mb-5" />
+      <v-card-text v-if="$route.query.clienttype === 'TELEVISION'">
+        <v-select
+          v-model="specs.tvspectype"
+          :items="tvSpecTypes"
+          item-text="name"
+          item-value="id"
+          label="Calidad de señal"
+          prepend-icon="mdi-signal"
+          dense
+          class="mb-5"
+          outlined
+          hide-details
+        />
+        <v-text-field
+          v-model="specs.db"
+          label="Medida de DBs"
+          prepend-icon="mdi-volume-high"
+          class="mb-5"
+          outlined
+          dense
+          hide-details="auto"
+        />
+        <v-text-field
+          v-model.number="specs.tvs"
+          label="Televisores"
+          prepend-icon="mdi-television"
+          class="mb-5"
+          type="number"
+          outlined
+          dense
+          required
+          hide-details="auto"
+        />
+        <v-text-field
+          v-model.number="specs.high"
+          label="Altos"
+          prepend-icon="mdi-arrow-up-bold-box"
+          class="mb-5"
+          type="number"
+          outlined
+          dense
+          hide-details="auto"
+        />
+        <v-text-field
+          v-model.number="specs.down"
+          label="Bajos"
+          prepend-icon="mdi-arrow-down-bold-box"
+          class="mb-5"
+          type="number"
+          dense
+          outlined
+          hide-details="auto"
+        />
+      </v-card-text>
+      <v-divider />
+      <v-card-text>
+        <v-checkbox
+          v-if="$isAdmin()"
+          v-model="technicianescalated"
+          color="red"
+          label="Escalar a tecnico?"
+          class="ml-2"
+        />
+        <v-checkbox
+          v-if="$isAdmin()"
+          v-model="officeescalated"
+          color="red"
+          label="Escalar a oficina?"
+          class="ml-2"
+        />
+        <v-checkbox
+          v-model="closeticket"
+          color="red"
+          label="Cerrar Ticket?"
+          class="ml-2"
+        />
+        <v-btn
+          :color="closeticket ? 'red darken-4' : 'blue darken-4'"
+          block
+          :loading="loading"
+          :diabled="loading"
+          class="rounded-xl"
+          @click="createAdvance"
         >
-          Resumen del caso
-        </v-stepper-step>
-
-        <v-stepper-content step="1">
-          <v-textarea
-            v-model="details"
-            outlined
-            class="mt-4"
-            hide-details="auto"
-            label="Describe el caso lo mas detalladamente posible"
-          />
-          <v-btn
-            color="primary"
-            block
-            class="rounded-xl my-2"
-            @click="evaluateStep(1)"
-          >
-            Continuar
-          </v-btn>
-        </v-stepper-content>
-
-        <v-stepper-step
-          :complete="stepper > 2"
-          step="2"
-          editable
-        >
-          NAP y ONU
-        </v-stepper-step>
-
-        <v-stepper-content step="2">
-          <NapActualInfo
-            :client="ticket.client"
-          />
-          <NapRemoveDialog
-            v-if="ticket.client.naps.length > 0 && ticket.tickettype.name === 'TRASLADO'"
-            :ticketindex="ticketindex"
-            :isticket="true"
-            :client="ticket.client"
-            :block="true"
-          />
-          <NapManageClient
-            :isticket="true"
-            :ticketindex="ticketindex"
-            :client="ticket.client"
-            :block="true"
-          />
-          <v-btn
-            color="primary"
-            block
-            class="rounded-xl mt-4"
-            @click="evaluateStep(2)"
-          >
-            Continuar
-          </v-btn><br>
-          <small v-if="ticket.client.naps.length < 1">
-            <strong>Nota:</strong> Debes agregar al menos un NAP para continuar
-          </small>
-        </v-stepper-content>
-
-        <v-stepper-step
-          :complete="stepper > 3"
-          step="3"
-        >
-          Acciones
-        </v-stepper-step>
-
-        <v-stepper-content step="3">
-          <v-checkbox
-            v-if="$isAdmin()"
-            v-model="technicianescalated"
-            color="red"
-            label="Escalar a tecnico?"
-            class="ml-2"
-          />
-          <v-checkbox
-            v-if="$isAdmin()"
-            v-model="officeescalated"
-            color="red"
-            label="Escalar a oficina?"
-            class="ml-2"
-          />
-          <v-checkbox
-            v-model="closeticket"
-            color="red"
-            label="Cerrar Ticket?"
-            class="ml-2"
-          />
-          <v-btn
-            :color="closeticket ? 'red darken-4' : 'blue darken-4'"
-            block
-            :loading="loading"
-            :diabled="loading"
-            class="rounded-xl"
-            @click="evaluateStep(3)"
-          >
-            {{ closeticket ? technicianescalated ? 'Cerrar Ticket' : 'Cerrar Ticket' : technicianescalated ? 'Escalar caso' : 'Crear Avance' }}
-          </v-btn>
-        </v-stepper-content>
-      </v-stepper>
+          {{ closeticket ? technicianescalated ? 'Cerrar Ticket' : 'Cerrar Ticket' : technicianescalated ? 'Escalar caso' : 'Crear Avance' }}
+        </v-btn>
+      </v-card-text>
     </v-card>
   </v-dialog>
 </template>
@@ -171,42 +178,87 @@ export default {
     technicianescalated: false,
     officeescalated: false,
     closeticket: false,
-    loading: false
+    loading: false,
+    specsString: '',
+    specs: {
+      tvspectype: null,
+      db: null,
+      high: null,
+      down: null,
+      tvs: null
+    }
   }),
   computed: {
     telegramBots () {
       return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
+    },
+    tvSpecTypes () {
+      return this.$store.state.tv.spectypes
     }
+  },
+  mounted () {
+    this.getTvSpecTypes()
+    this.testTvSpecs()
   },
   methods: {
     initComponent () {
       this.dialog = true
       this.stepper = 1
     },
-    evaluateStep (step) {
-      switch (step) {
-        case 1:
-          if (this.details.length > 0) {
-            this.stepper++
-          } else {
-            this.$toast.error('Debes escribir un resumen del caso', { duration: 3000 })
-          }
-          break
-        case 2:
-          this.stepper++
-          break
-        case 3:
-          this.createAdvance({
-            ticket: this.ticket.id,
-            details: this.details,
-            technicianescalated: this.technicianescalated,
-            officeescalated: this.officeescalated,
-            closeticket: this.closeticket
-          })
-          break
+    getTvSpecTypes () {
+      this.$store.dispatch('tv/getTvSpecTypes', { token: this.$store.state.auth.token })
+    },
+    testTvSpecs () {
+      const specs = this.ticket.client.tvspecs && this.ticket.client.tvspecs.length > 0
+      if (specs) {
+        this.specs = this.ticket.client.tvspecs.at(-1)
+        delete this.specs.id
+        this.specsString = JSON.stringify(this.specs)
+      }
+    },
+    setNewSpecs () {
+      if (this.specsString !== JSON.stringify(this.specs) && this.$route.query.clienttype === 'TELEVISION') {
+        this.$store.dispatch('tv/saveSpecs', {
+          token: this.$store.state.auth.token,
+          clientid: this.ticket.client.id,
+          specs: this.specs
+        })
       }
     },
     async createAdvance () {
+      if (this.details.length < 1) {
+        this.$toast.error('Debes escribir un resumen del caso', { duration: 3000 })
+        return
+      }
+      if (!this.specs.quality === null && this.$route.query.clienttype === 'TELEVISION') {
+        this.$toast.error('Seleccione una calidad de señal', { duration: 3000 })
+        return
+      }
+      if (!this.specs.db && this.$route.query.clienttype === 'TELEVISION') {
+        this.$toast.error('Ingrese una medida de DBs', {
+          duration: 3000
+        })
+        return
+      }
+      if (!this.specs.tvs && this.$route.query.clienttype === 'TELEVISION') {
+        this.$toast.error('Ingrese la cantidad de televisores del usuario', {
+          duration: 3000
+        })
+        return
+      }
+      if (!this.specs.high && this.$route.query.clienttype === 'TELEVISION') {
+        this.$toast.error('Ingrese una medida de altos', {
+          duration: 3000
+        })
+        return
+      }
+      if (!this.specs.down && this.$route.query.clienttype === 'TELEVISION') {
+        this.$toast.error('Ingrese una medida de bajos', {
+          duration: 3000
+        })
+        return
+      }
+      this.setNewSpecs()
       this.loading = true
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticket.id}`, {
         method: 'PUT',
@@ -235,14 +287,27 @@ export default {
           }).then((input) => {
             if (input.status === 200) {
               this.dialog = false
-              this.$simpleTelegramCreateTicketAdvance({
-                ticket: this.ticket,
-                client: this.ticket.client,
-                status: this.closeticket,
-                details: this.details,
-                operator: this.$store.state.auth.username,
-                telegramBots: this.telegramBots
-              })
+              if (this.$route.query.clienttype === 'INTERNET') {
+                this.$simpleTelegramCreateTicketAdvance({
+                  ticket: this.ticket,
+                  client: this.ticket.client,
+                  status: this.closeticket,
+                  details: this.details,
+                  operator: this.$store.state.auth.username,
+                  telegramBots: this.telegramBots
+                })
+              }
+              // } else {
+              //   this.$simpleTelegramCreateTicketAdvanceTv({
+              //     ticket: this.ticket,
+              //     client: this.ticket.client,
+              //     status: this.closeticket,
+              //     details: this.details,
+              //     operator: this.$store.state.auth.username,
+              //     telegramBots: this.telegramBots,
+              //     specs: this.specs
+              //   })
+              // }
               this.$store.dispatch('ticket/getTicketsFromDatabase', {
                 city: this.$route.query.city,
                 clienttype: this.$route.query.clienttype,

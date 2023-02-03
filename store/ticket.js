@@ -129,6 +129,8 @@ export const actions = {
           'client.plan',
           'client.naps',
           'client.debtmovements',
+          'client.tvspecs',
+          'client.tvspecs.tvspectype',
           'city',
           'tickettype',
           'clienttype',
