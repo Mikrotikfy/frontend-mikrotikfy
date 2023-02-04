@@ -563,6 +563,11 @@ export const actions = {
       { text: 'Direccion', sortable: false, value: 'address' },
       { text: 'Barrio', value: 'neighborhood.name', sortable: false },
       { text: 'Telefono', sortable: false, value: 'phone' },
+      { text: 'Televisores', sortable: true, value: 'tvspec.tvs' },
+      { text: 'dBm', sortable: true, value: 'tvspec.db' },
+      { text: 'Altos', sortable: true, value: 'tvspec.high' },
+      { text: 'Bajos', sortable: true, value: 'tvspec.down' },
+      { text: 'Calidad', sortable: true, value: 'tvspec.tvspectype.name' },
       { text: '', value: 'actions', sortable: false }
     ]
 

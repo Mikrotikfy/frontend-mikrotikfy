@@ -232,8 +232,9 @@ export default {
       if (this.specsString !== JSON.stringify(this.specs) && this.$route.query.clienttype === 'TELEVISION') {
         this.$store.dispatch('tv/saveSpecs', {
           token: this.$store.state.auth.token,
-          clientid: this.ticket.client.id,
+          client: this.ticket.client,
           ticketdetail,
+          ticket: this.ticket,
           specs: this.specs
         })
       }
