@@ -33,7 +33,7 @@
           <v-card-text>
             <client-only>
               <v-data-table
-                :headers="headers"
+                :headers="$route.query.clienttype === 'INTERNET' ? headers : headersTV"
                 :items="tickets"
                 :items-per-page="itemsPerPage"
                 sort-by="createdAt"
@@ -113,6 +113,15 @@ export default {
     itemsPerPage: 10,
     tickets: [],
     headers: [
+      { text: 'Estado', sortable: true, value: 'active' },
+      { text: 'Cliente', sortable: true, value: 'client.name' },
+      { text: 'Tipo', sortable: true, value: 'tickettype.name' },
+      { text: 'Operador', sortable: false, value: 'assignated.username' },
+      { text: 'Detalles', sortable: true, value: 'details' },
+      { text: 'Creado', sortable: true, value: 'createdAt' },
+      { text: 'Acciones', sortable: true, value: 'actions' }
+    ],
+    headersTV: [
       { text: 'Estado', sortable: true, value: 'active' },
       { text: 'Cliente', sortable: true, value: 'client.name' },
       { text: 'Tipo', sortable: true, value: 'tickettype.name' },
