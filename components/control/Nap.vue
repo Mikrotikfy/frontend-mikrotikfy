@@ -7,7 +7,7 @@
         <v-icon class="mr-2">
           mdi-lan
         </v-icon>
-        Equipos asociados
+        Segmento de red
       </v-card-title>
       <v-card-text v-if="current.length > 0">
         Este cliente pertenece a las siguientes NAPS:

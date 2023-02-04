@@ -73,7 +73,7 @@
             <MiscAddresses v-if="currentEditClient.addresses" :client="currentEditClient" />
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="$route.query.clienttype === 'INTERNET'">
           <v-col cols="12" lg="4" md="4">
             <v-text-field
               v-model="currentEditClient.phone"
@@ -87,7 +87,7 @@
               @keyup.enter="$event.target.blur()"
             />
           </v-col>
-          <v-col v-if="$route.query.clienttype === 'INTERNET'" cols="6" lg="4" md="4">
+          <v-col cols="6" lg="4" md="4">
             <v-text-field
               v-model="currentEditClient.wifi_ssid"
               :disabled="!$isAdmin() || loading"
@@ -116,10 +116,9 @@
             />
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="clienttype.name === 'INTERNET'">
           <v-col cols="12" xs="12" sm="12" md="6" lg="6">
             <v-select
-              v-if="clienttype.name === 'INTERNET'"
               v-model="currentEditClient.technology"
               :disabled="!(!$isAdmin() || !$isBiller() || !$isTechnician()) || loading"
               item-text="name"
@@ -137,7 +136,6 @@
           </v-col>
           <v-col cols="12" xs="12" sm="12" md="6" lg="6">
             <v-text-field
-              v-if="clienttype.name === 'INTERNET'"
               v-model="currentEditClient.email"
               :disabled="!(!$isAdmin() || !$isBiller()) || loading"
               :rules="email"
@@ -151,10 +149,38 @@
             />
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="clienttype.name === 'TELEVISION'">
+          <v-col cols="12" xs="12" sm="12" md="6" lg="6">
+            <v-text-field
+              v-model="currentEditClient.email"
+              :disabled="!(!$isAdmin() || !$isBiller()) || loading"
+              :rules="email"
+              label="Correo Electronico"
+              autocomplete="off"
+              outlined
+              dense
+              hide-details="auto"
+              @blur="updateClient"
+              @keyup.enter="$event.target.blur()"
+            />
+          </v-col>
+          <v-col cols="12" xs="12" sm="12" md="6" lg="6">
+            <v-text-field
+              v-model="currentEditClient.phone"
+              label="Telefono"
+              required
+              outlined
+              dense
+              hide-details
+              :disabled="!(!$isAdmin() || !$isBiller()) || loading"
+              @blur="updateClient"
+              @keyup.enter="$event.target.blur()"
+            />
+          </v-col>
+        </v-row>
+        <v-row v-if="clienttype.name === 'INTERNET'">
           <v-col>
             <v-select
-              v-if="clienttype.name === 'INTERNET'"
               v-model="currentEditClient.newModel"
               :disabled="!$isAdmin() || loading"
               :items="idwith"
@@ -170,7 +196,6 @@
           </v-col>
           <v-col>
             <v-select
-              v-if="clienttype.name === 'INTERNET'"
               v-model="currentEditClient.ipmodel"
               :disabled="!$isAdmin() || loading"
               :items="ipmodelItems"
@@ -182,6 +207,63 @@
               dense
               hide-details
               @change="updateClient"
+            />
+          </v-col>
+        </v-row>
+        <v-row v-if="clienttype.name === 'TELEVISION' && currentEditClient.tvspecs">
+          <v-col>
+            <v-text-field
+              v-model="currentEditClient.tvspec.tvs"
+              disabled
+              label="Televisores"
+              autocomplete="off"
+              outlined
+              dense
+              hide-details="auto"
+            />
+          </v-col>
+          <v-col>
+            <v-text-field
+              v-model="currentEditClient.tvspec.db"
+              disabled
+              label="dBm"
+              autocomplete="off"
+              outlined
+              dense
+              hide-details="auto"
+            />
+          </v-col>
+          <v-col>
+            <v-text-field
+              v-model="currentEditClient.tvspec.high"
+              disabled
+              label="Altos"
+              autocomplete="off"
+              outlined
+              dense
+              hide-details="auto"
+            />
+          </v-col>
+          <v-col>
+            <v-text-field
+              v-model="currentEditClient.tvspec.down"
+              disabled
+              label="Bajos"
+              autocomplete="off"
+              outlined
+              dense
+              hide-details="auto"
+            />
+          </v-col>
+          <v-col>
+            <v-text-field
+              v-model="currentEditClient.tvspec.tvspectype.name"
+              disabled
+              label="Calidad de señal"
+              autocomplete="off"
+              outlined
+              dense
+              hide-details="auto"
             />
           </v-col>
         </v-row>
