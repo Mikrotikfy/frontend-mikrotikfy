@@ -21,7 +21,7 @@
     </v-tooltip>
     <v-dialog
       v-model="modal"
-      max-width="990"
+      max-width="1200"
     >
       <v-card
         :loading="loading"
@@ -118,6 +118,11 @@ export default {
       { text: 'Tipo', sortable: true, value: 'tickettype.name' },
       { text: 'Operador', sortable: false, value: 'assignated.username' },
       { text: 'Detalles', sortable: true, value: 'details' },
+      { text: 'Televisores', sortable: true, value: 'tvspec.tvs' },
+      { text: 'dBm', sortable: true, value: 'tvspec.db' },
+      { text: 'Altos', sortable: true, value: 'tvspec.high' },
+      { text: 'Bajos', sortable: true, value: 'tvspec.down' },
+      { text: 'Calidad', sortable: true, value: 'tvspec.tvspectype.name' },
       { text: 'Creado', sortable: true, value: 'createdAt' },
       { text: 'Acciones', sortable: true, value: 'actions' }
     ]
@@ -141,6 +146,8 @@ export default {
         populate: [
           'client',
           'tickettype',
+          'tvspec',
+          'tvspec.tvspectype',
           'assignated'
         ]
       },

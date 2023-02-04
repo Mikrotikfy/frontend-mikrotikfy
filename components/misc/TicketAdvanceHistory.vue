@@ -103,11 +103,11 @@ export default {
       { text: 'Tipo', sortable: true, value: 'ticket.tickettype.name' },
       { text: 'Creado por', sortable: false, value: 'operator.username' },
       { text: 'Detalles', sortable: true, value: 'details' },
-      { text: 'Televisores', sortable: true, value: 'ticket.client.tvspecs[0].tvs' },
-      { text: 'dBm', sortable: true, value: 'ticket.client.tvspecs[0].db' },
-      { text: 'Altos', sortable: true, value: 'ticket.client.tvspecs[0].high' },
-      { text: 'Bajos', sortable: true, value: 'ticket.client.tvspecs[0].down' },
-      { text: 'Calidad', sortable: true, value: 'ticket.client.tvspecs[0].tvspectype.name' },
+      { text: 'Televisores', sortable: true, value: 'tvspec.tvs' },
+      { text: 'dBm', sortable: true, value: 'tvspec.db' },
+      { text: 'Altos', sortable: true, value: 'tvspec.high' },
+      { text: 'Bajos', sortable: true, value: 'tvspec.down' },
+      { text: 'Calidad', sortable: true, value: 'tvspec.tvspectype.name' },
       { text: 'Avance creado el', sortable: true, value: 'createdAt' }
     ]
   }),
@@ -128,8 +128,8 @@ export default {
           'ticket',
           'ticket.client',
           'ticket.tickettype',
-          'ticket.client.tvspecs',
-          'ticket.client.tvspecs.tvspectype',
+          'tvspec',
+          'tvspec.tvspectype',
           'operator'
         ],
         sort: 'createdAt:DESC'
@@ -146,12 +146,6 @@ export default {
       })
         .then(res => res.json())
         .then((ticketdetails) => {
-          console.log(ticketdetails.data)
-          ticketdetails.data.map((ticketdetail) => {
-            ticketdetail.ticket.client.tvspecs = ticketdetail.ticket.client.tvspecs.sort((a, b) => {
-              return new Date(b.createdAt) - new Date(a.createdAt)
-            })
-          })
           this.ticketdetails = ticketdetails.data
         })
     },
