@@ -29,6 +29,7 @@ export const actions = {
     }
   },
   async saveSpecs ({ commit }, payload) {
+    payload.specs.tvspectype = payload.specs.tvspectype.id
     try {
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}tvspecs`, {
         method: 'POST',

@@ -72,6 +72,7 @@
           label="Calidad de señal"
           prepend-icon="mdi-signal"
           dense
+          return-object
           class="mb-5"
           outlined
           hide-details
