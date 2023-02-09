@@ -5,9 +5,11 @@
     </v-card-title>
     <v-card-text style="display:grid;place-items:center;">
       <v-data-table
-        :items="offerHistory"
+        :items="client.offermovements"
         :headers="headers"
         :page.sync="page"
+        sort-by="createdAt"
+        sort-desc
         :items-per-page="itemsPerPage"
         hide-default-footer
         @page-count="pageCount = $event"
@@ -26,22 +28,23 @@
 <script>
 export default {
   name: 'MiscOfferHistory',
+  props: {
+    client: {
+      type: Object,
+      required: true
+    }
+  },
   data () {
     return {
       page: 1,
-      itemsPerPage: 10,
+      itemsPerPage: 5,
       pageCount: 0,
       headers: [
         { text: 'Tarifa Asignada', value: 'offer.name', sortable: false },
-        { text: 'Fecha de asignacion', value: 'createdAt' },
+        { text: 'Fecha de asignacion', value: 'createdAt', sortable: false },
         { text: 'Quien lo hizo', value: 'technician.username', sortable: false },
         { text: 'Detalles', value: 'details', sortable: false }
       ]
-    }
-  },
-  computed: {
-    offerHistory () {
-      return this.$store.state.offer.offerHistory
     }
   },
   methods: {

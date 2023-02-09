@@ -27,8 +27,8 @@
                 mobile-breakpoint="100"
                 @page-count="pageCount = $event"
               >
-                <template v-if="clienttype.name === 'INTERNET'" v-slot:[`item.plan.name`]="props">
-                  <MainClientControl :client="props.item" :index="clients.map(function(x) {return x.id; }).indexOf(props.item.id)" />
+                <template v-slot:[`item.active`]="props">
+                  <MainClientControl v-if="clienttype.name === 'INTERNET'" :client="props.item" :index="clients.map(function(x) {return x.id; }).indexOf(props.item.id)" />
                 </template>
                 <template v-slot:[`item.code`]="{ item }">
                   <span v-if="clienttype.name === 'INTERNET'" :class="item.status === 'green' ? 'online-text' : 'offline-text'">
@@ -178,11 +178,9 @@ export default {
       await this.$store.dispatch('client/clearClientsFromDatatable')
       await this.getHeadersByClientType()
       const search = this.searchClientInput.trim()
-      const city = this.$route.query.city
-      const clienttype = this.$route.query.clienttype
-      this.result = 'Buscando...'
+      this.setSearchText()
       if (search) {
-        await this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search, city, clienttype, token: this.$store.state.auth.token, pagination: this.pagination })
+        await this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: this.pagination })
         this.pagination = { ...this.$store.state.client.pagination }
         this.loadingDataTable = false
         this.result = 'No se han encontrado resultados de' + ' ' + search
@@ -191,6 +189,9 @@ export default {
     async resetsearchfn () {
       await this.$store.dispatch('client/clearClientsFromDatatable')
       this.loadingDataTable = false
+    },
+    setSearchText () {
+      this.result = 'Buscando...'
     },
     clientCount () {
       return parseInt(localStorage.getItem('clientCount'))

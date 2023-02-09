@@ -1,5 +1,8 @@
 <template>
-  <div style="width:100%;">
+  <div v-if="!lastdebtmovement">
+    <h2>No hay movimientos aun...</h2>
+  </div>
+  <div v-else style="width:100%;">
     <div v-if="isInDebt !== null" class="mb-5" style="display:grid;place-items:center;">
       <v-alert
         text
@@ -69,6 +72,10 @@ export default {
     client: {
       type: Object,
       required: true
+    },
+    lastdebtmovement: {
+      type: Object,
+      default: () => ({})
     },
     index: {
       type: Number,
@@ -147,13 +154,10 @@ export default {
       })
     },
     async getLastDebtMovement () {
-      const res = await this.$store.dispatch('offer/getLastDebtMovement', {
-        client: this.client,
-        token: this.$store.state.auth.token
-      })
-      if (res) {
-        this.isInDebt = res.isindebt
-        this.isRetired = res.isretired
+      console.log(this.lastdebtmovement)
+      if (this.lastdebtmovement) {
+        this.isInDebt = this.lastdebtmovement.isindebt
+        this.isRetired = this.lastdebtmovement.isretired
       } else {
         await this.$store.dispatch('offer/setNewDebt', {
           token: this.$store.state.auth.token,
@@ -166,8 +170,15 @@ export default {
           client: this.client,
           token: this.$store.state.auth.token
         })
-        this.getLastDebtMovement()
+        this.resetSearch()
       }
+    },
+    async resetSearch () {
+      await this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search: this.$route.params.search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: { page: 1, pageSize: 500 } })
+      this.lastDebtMovement = await this.$store.dispatch('offer/getLastDebtMovement', {
+        token: this.$store.state.auth.token,
+        client: this.client
+      })
     },
     isInDebtByPlan (plan) {
       if (plan.name === 'RETIRADO' || plan.name === 'EN MORA') {

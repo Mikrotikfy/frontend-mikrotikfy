@@ -23,31 +23,29 @@
       :fullscreen="!$store.state.isDesktop"
       style="min-height: 500px;"
     >
-      <v-toolbar>
-        <v-btn
-          icon
-          @click="modal = false"
-        >
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </v-toolbar>
       <v-card>
         <v-card-title class="justify-center">
-          Centro de Control de Usuario | {{ client.name }}
+          <v-spacer />
+          <v-btn
+            icon
+            @click="modal = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </v-card-title>
         <v-divider />
         <v-row>
           <v-col cols="12" md="4" class="order-md-first order-lg-first">
-            <MiscOfferHistory style="border-right:1px solid grey;" />
+            <MiscOfferHistory :client="client" style="border-right:1px solid grey;" />
           </v-col>
           <v-col cols="12" md="4" class="order-first">
             <div style="display:grid;place-items:center;">
-              <MainClientControlDebt :client="client" :index="index" />
-              <MainClientControlOffer :client="client" :index="index" />
+              <MainClientControlDebt :client="client" :lastdebtmovement="lastDebtMovement" :index="index" />
+              <MainClientControlOffer :client="client" :lastoffermovement="lastOfferMovement" :index="index" @resetSearch="getMovements" />
             </div>
           </v-col>
           <v-col cols="12" md="4">
-            <MiscDebtHistory style="border-left:1px solid grey;" />
+            <MiscDebtHistory :client="client" style="border-left:1px solid grey;" />
           </v-col>
         </v-row>
       </v-card>
@@ -70,37 +68,25 @@ export default {
   data () {
     return {
       lastDebtMovement: null,
+      lastOfferMovement: null,
       modal: false
     }
   },
-  watch: {
-    async '$store.state.offer.newDebtHistory' () {
-      this.getData()
-      this.lastDebtMovement = await this.$store.dispatch('offer/getLastDebtMovement', {
+  async mounted () {
+    await this.getMovements()
+  },
+  methods: {
+    async initComponent () {
+      this.modal = true
+      this.lastOfferMovement = await this.$store.dispatch('offer/getLastOfferMovement', {
         token: this.$store.state.auth.token,
         client: this.client
       })
-    }
-  },
-  async mounted () {
-    this.lastDebtMovement = await this.$store.dispatch('offer/getLastDebtMovement', {
-      token: this.$store.state.auth.token,
-      client: this.client
-    })
-  },
-  methods: {
-    initComponent () {
-      this.modal = true
-      this.getData()
     },
-    getData () {
-      this.$store.dispatch('offer/getOfferHistory', {
-        client: this.client,
-        token: this.$store.state.auth.token
-      })
-      this.$store.dispatch('offer/getDebtHistory', {
-        client: this.client,
-        token: this.$store.state.auth.token
+    async getMovements () {
+      this.lastDebtMovement = await this.$store.dispatch('offer/getLastDebtMovement', {
+        token: this.$store.state.auth.token,
+        client: this.client
       })
     }
   }

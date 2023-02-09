@@ -4,11 +4,12 @@
       Asignar Tarifa
     </h2>
     <v-autocomplete
+      v-if="lastoffermovement"
       v-model="selected"
       :items="offers"
-      :disabled="isretired || !$isAdmin()"
-      :error="isretired"
-      :error-messages="isretired ? ['El cliente debe estar activo antes de modificar su tarifa.'] : []"
+      :disabled="lastoffermovement.isretired || !$isAdmin()"
+      :error="lastoffermovement.isretired"
+      :error-messages="lastoffermovement.isretired ? ['El cliente debe estar activo antes de modificar su tarifa.'] : []"
       label="Tarifa"
       item-text="name"
       item-value="id"
@@ -58,6 +59,10 @@ export default {
       type: Object,
       required: true
     },
+    lastoffermovement: {
+      type: Object,
+      default: () => (null)
+    },
     index: {
       type: Number,
       required: true
@@ -76,59 +81,35 @@ export default {
       return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
     }
   },
-  watch: {
-    '$store.state.offer.debtHistory' () {
-      this.getLastDebtMovement()
-    }
-  },
   async mounted () {
     await this.getOffers()
-    await this.initComponent()
+    await this.getLastOfferMovement()
   },
   methods: {
-    initComponent () {
-      this.getLastOfferMovement()
-      this.getLastDebtMovement()
-    },
-    setNewOffer () {
+    async setNewOffer () {
       const offer = this.selected
-      this.$store.dispatch('offer/setNewOffer', {
+      await this.$store.dispatch('offer/setNewOffer', {
         token: this.$store.state.auth.token,
         client: this.client,
         offer,
         technician: this.$store.state.auth
       })
-      this.$store.dispatch('client/setAuxPlan', {
+      await this.$store.dispatch('client/setAuxPlan', {
         token: this.$store.state.auth.token,
         clientId: this.client.id,
         plan: offer.plan,
         index: this.index
       })
+      this.resetSearch()
       this.dialog = false
     },
     async getLastOfferMovement () {
-      const res = await this.$store.dispatch('offer/getLastOfferMovement', {
-        token: this.$store.state.auth.token,
-        client: this.client
-      })
-      if (res) {
-        this.selected = res
+      console.log(this.lastoffermovement)
+      if (this.lastoffermovement) {
+        this.selected = { ...this.lastoffermovement }
       } else {
         await this.getOfferByPlanId()
         this.setNewOffer()
-      }
-    },
-    async getLastDebtMovement () {
-      const res = await this.$store.dispatch('offer/getLastDebtMovement', {
-        client: this.client,
-        token: this.$store.state.auth.token
-      })
-      if (res) {
-        if (res.isretired || res.isindebt) {
-          this.isretired = true
-        } else {
-          this.isretired = false
-        }
       }
     },
     setPlanFromModal () {
@@ -156,6 +137,10 @@ export default {
       this.offers = await this.$store.dispatch('offer/getOffers', {
         token: this.$store.state.auth.token
       })
+    },
+    async resetSearch () {
+      await this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search: this.$route.params.search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: { page: 1, pageSize: 500 } })
+      this.$emit('resetSearch')
     }
   }
 }

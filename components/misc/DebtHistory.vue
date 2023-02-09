@@ -5,9 +5,11 @@
     </v-card-title>
     <v-card-text style="display:grid;place-items:center;">
       <v-data-table
-        :items="debtHistory"
+        :items="client.debtmovements"
         :headers="headers"
         :page.sync="page"
+        sort-by="createdAt"
+        sort-desc
         :items-per-page="itemsPerPage"
         hide-default-footer
         @page-count="pageCount = $event"
@@ -34,22 +36,23 @@
 <script>
 export default {
   name: 'DebtHistory',
+  props: {
+    client: {
+      type: Object,
+      required: true
+    }
+  },
   data () {
     return {
       page: 1,
-      itemsPerPage: 10,
+      itemsPerPage: 5,
       pageCount: 0,
       headers: [
         { text: 'Estado', value: 'isindebt', sortable: false },
-        { text: 'Fecha de movimiento', value: 'createdAt' },
+        { text: 'Fecha de movimiento', value: 'createdAt', sortable: false },
         { text: 'Quien lo hizo', value: 'technician.username', sortable: false },
         { text: 'Detalles', value: 'comment', sortable: false }
       ]
-    }
-  },
-  computed: {
-    debtHistory () {
-      return this.$store.state.offer.debtHistory
     }
   },
   methods: {

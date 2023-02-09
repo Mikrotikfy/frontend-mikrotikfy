@@ -552,7 +552,7 @@ export const actions = {
       { text: 'Direccion', sortable: false, value: 'address' },
       { text: 'Barrio', value: 'neighborhood.name', sortable: false },
       { text: 'Telefono', sortable: false, value: 'phone' },
-      { text: 'Tarifa', value: 'plan.name', sortable: false },
+      { text: 'Tarifa', value: 'active', sortable: false },
       { text: 'Tecnologia', value: 'technology.name', sortable: false },
       { text: '', value: 'actions', sortable: false }
     ]
@@ -563,6 +563,7 @@ export const actions = {
       { text: 'Direccion', sortable: false, value: 'address' },
       { text: 'Barrio', value: 'neighborhood.name', sortable: false },
       { text: 'Telefono', sortable: false, value: 'phone' },
+      { text: 'Estado', sortable: false, value: 'active' },
       { text: 'Televisores', sortable: true, value: 'tvspec.tvs' },
       { text: 'dBm', sortable: true, value: 'tvspec.db' },
       { text: 'Altos', sortable: true, value: 'tvspec.high' },
