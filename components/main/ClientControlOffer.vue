@@ -4,12 +4,12 @@
       Asignar Tarifa
     </h2>
     <v-autocomplete
-      v-if="lastoffermovement"
+      v-if="client"
       v-model="selected"
       :items="offers"
-      :disabled="lastoffermovement.isretired || !$isAdmin()"
-      :error="lastoffermovement.isretired"
-      :error-messages="lastoffermovement.isretired ? ['El cliente debe estar activo antes de modificar su tarifa.'] : []"
+      :disabled="!client.active || !$isAdmin()"
+      :error="!client.active"
+      :error-messages="!client.active ? ['El cliente debe estar activo antes de modificar su tarifa.'] : []"
       label="Tarifa"
       item-text="name"
       item-value="id"
@@ -59,10 +59,6 @@ export default {
       type: Object,
       required: true
     },
-    lastoffermovement: {
-      type: Object,
-      default: () => (null)
-    },
     index: {
       type: Number,
       required: true
@@ -103,14 +99,8 @@ export default {
       this.resetSearch()
       this.dialog = false
     },
-    async getLastOfferMovement () {
-      console.log(this.lastoffermovement)
-      if (this.lastoffermovement) {
-        this.selected = { ...this.lastoffermovement }
-      } else {
-        await this.getOfferByPlanId()
-        this.setNewOffer()
-      }
+    getLastOfferMovement () {
+      this.selected = { ...this.client.offer }
     },
     setPlanFromModal () {
       this.$store.dispatch('client/setPlanFromModal', {

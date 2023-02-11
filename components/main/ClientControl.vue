@@ -6,12 +6,12 @@
           v-bind="attrs"
           small
           rounded
-          :color="$vuetify.theme.dark ? lastDebtMovement ? lastDebtMovement.isindebt ? 'red' : 'green darken-4' : 'white black--text' : 'primary'"
+          :color="$vuetify.theme.dark ? 'white black--text' : 'primary'"
           v-on="on"
           @click="initComponent()"
         >
           <span>
-            {{ lastDebtMovement ? lastDebtMovement.isretired ? 'RETIRADO' : lastDebtMovement.isindebt ? 'EN MORA' : `AL DIA | ${client.offer.plan.name}` : 'Control de Usuario' }}
+            {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : `${client.offer ? client.offer.plan.name : 'NO DEF.'}` }}
           </span>
         </v-btn>
       </template>
@@ -40,8 +40,8 @@
           </v-col>
           <v-col cols="12" md="4" class="order-first">
             <div style="display:grid;place-items:center;">
-              <MainClientControlDebt :client="client" :lastdebtmovement="lastDebtMovement" :index="index" />
-              <MainClientControlOffer :client="client" :lastoffermovement="lastOfferMovement" :index="index" @resetSearch="getMovements" />
+              <MainClientControlDebt :client="client" :index="index" />
+              <MainClientControlOffer :client="client" :index="index" />
             </div>
           </v-col>
           <v-col cols="12" md="4">
@@ -67,27 +67,12 @@ export default {
   },
   data () {
     return {
-      lastDebtMovement: null,
-      lastOfferMovement: null,
       modal: false
     }
   },
-  async mounted () {
-    await this.getMovements()
-  },
   methods: {
-    async initComponent () {
+    initComponent () {
       this.modal = true
-      this.lastOfferMovement = await this.$store.dispatch('offer/getLastOfferMovement', {
-        token: this.$store.state.auth.token,
-        client: this.client
-      })
-    },
-    async getMovements () {
-      this.lastDebtMovement = await this.$store.dispatch('offer/getLastDebtMovement', {
-        token: this.$store.state.auth.token,
-        client: this.client
-      })
     }
   }
 }

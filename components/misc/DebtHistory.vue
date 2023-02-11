@@ -9,6 +9,7 @@
         :headers="headers"
         :page.sync="page"
         sort-by="createdAt"
+        no-data-text="No hay historial de movimientos..."
         sort-desc
         :items-per-page="itemsPerPage"
         hide-default-footer

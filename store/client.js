@@ -500,6 +500,49 @@ export const actions = {
       throw new Error(`UPDATE USER ACTION ${error}`)
     })
   },
+  editDebt ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: { indebt: payload.indebt }
+        })
+      }).then((input) => {
+        resolve(input)
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error(error)
+        throw new Error(`UPDATE DEBT CLIENT ACTION ${error}`)
+      })
+    })
+  },
+  editClientStatus ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            indebt: payload.indebt,
+            active: payload.active
+          }
+        })
+      }).then((input) => {
+        resolve(input)
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error(error)
+        throw new Error(`UPDATE DEBT CLIENT ACTION ${error}`)
+      })
+    })
+  },
   updateClientPhone ({ commit }, { phone, client, token }) {
     // eslint-disable-next-line no-unreachable
     return new Promise((resolve, reject) => {
