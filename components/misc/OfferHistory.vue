@@ -43,7 +43,7 @@ export default {
       headers: [
         { text: 'Tarifa Asignada', value: 'offer.name', sortable: false },
         { text: 'Fecha de asignacion', value: 'createdAt', sortable: false },
-        { text: 'Quien lo hizo', value: 'technician.username', sortable: false },
+        { text: 'Quien', value: 'technician.username', sortable: false },
         { text: 'Detalles', value: 'details', sortable: false }
       ]
     }

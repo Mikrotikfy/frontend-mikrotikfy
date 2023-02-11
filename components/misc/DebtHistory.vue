@@ -18,9 +18,9 @@
         <template v-slot:[`item.isindebt`]="props">
           <v-chip
             rounded
-            :color="props.item.isindebt ? props.item.isretired ? 'yellow darken-4' : 'red' : 'green darken-3'"
+            :color="calculateClientStatusColor(props.item.isindebt, props.item.isretired)"
           >
-            {{ props.item.isindebt ? props.item.isretired ? 'RETIRADO' : 'EN MORA' : 'AL DIA' }}
+            {{ calculateClientStatus(props.item.isindebt, props.item.isretired) }}
           </v-chip>
         </template>
         <template v-slot:[`item.createdAt`]="props">
@@ -51,7 +51,7 @@ export default {
       headers: [
         { text: 'Estado', value: 'isindebt', sortable: false },
         { text: 'Fecha de movimiento', value: 'createdAt', sortable: false },
-        { text: 'Quien lo hizo', value: 'technician.username', sortable: false },
+        { text: 'Quien', value: 'technician.username', sortable: false },
         { text: 'Detalles', value: 'comment', sortable: false }
       ]
     }
@@ -61,6 +61,16 @@ export default {
       const dateObject = new Date(date)
       const humanDateFormat = dateObject.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
       return humanDateFormat
+    },
+    calculateClientStatus (indebt, isretired) {
+      if (indebt && !isretired) { return 'EN MORA' }
+      if (!indebt && !isretired) { return 'AL DIA' }
+      if (!indebt && isretired) { return 'RETIRADO' }
+    },
+    calculateClientStatusColor (indebt, isretired) {
+      if (indebt && !isretired) { return 'red' }
+      if (!indebt && !isretired) { return 'green darken-3' }
+      if (!indebt && isretired) { return 'yellow darken-4' }
     }
   }
 }

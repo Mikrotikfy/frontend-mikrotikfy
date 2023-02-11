@@ -15,7 +15,7 @@
         :color="!client.active ? 'green darken-4' : client.indebt ? 'blue darken-4' : 'red'"
         x-large
         rounded
-        @click="buttonHandler(!client.active ? 'rx' : client.indebt ? 'rx' : 'dx' )"
+        @click="buttonHandler(!client.active ? 'reconnect' : client.indebt ? 'reconnect' : 'disconnect' )"
       >
         <v-icon>{{ !client.active ? 'mdi-check-all' : client.indebt ? 'mdi-check-all' : 'mdi-cancel' }}</v-icon>
         {{ !client.active ? 'REACTIVAR' : client.indebt ? 'RECONECTAR' : 'CORTAR' }}
@@ -23,9 +23,9 @@
       <span v-if="!client.indebt && !!client.active" class="text-subtitle-2 grey--text lighten-2 mt-2">Para retirar el cliente es necesario antes cortarlo</span>
     </div>
     <div v-if="client.indebt && !!client.active" class="mb-5" style="display:grid;place-items:center;">
-      <v-btn color="yellow darken-4" x-large rounded @click="!client.active ? setRetired : reasonDialog = true">
+      <v-btn color="yellow darken-4" x-large rounded @click="!client.active ? buttonHandler('retire') : reasonDialog = true">
         <v-icon>mdi-cancel</v-icon>
-        {{ buttonHandler(!client.active ? 'rx' : 'rt') }}
+        {{ !client.active ? 'REACTIVAR' : 'RETIRAR' }}
       </v-btn>
     </div>
     <v-dialog
@@ -52,7 +52,7 @@
           <v-btn
             color="red"
             text
-            @click="setRetired"
+            @click="buttonHandler('retire')"
           >
             Retirar Cliente
           </v-btn>
@@ -95,24 +95,33 @@ export default {
   },
   methods: {
     buttonHandler (operation) {
+      this.$toast.info(operation, { duration: 1000 })
       switch (operation) {
-        case 'rx':
+        case 'reconnect':
           this.editClientStatus({
             active: true,
-            indebt: false
+            indebt: false,
+            comment: ''
           })
           break
-        case 'dx':
+        case 'disconnect':
           this.editClientStatus({
-            active: false,
-            indebt: true
+            active: true,
+            indebt: true,
+            comment: ''
           })
           break
-        case 'rt':
+        case 'retire':
+          if (this.reason === '') {
+            this.$toast.error('Debe ingresar una razon de retiro', { duration: 10000 })
+            break
+          }
           this.editClientStatus({
             active: false,
-            indebt: false
+            indebt: false,
+            comment: this.reason
           })
+          this.reasonDialog = false
           break
         default:
           break
@@ -131,7 +140,8 @@ export default {
         token: this.$store.state.auth.token,
         technician: this.$store.state.auth,
         isindebt: payload.indebt,
-        isretired: !payload.active
+        isretired: !payload.active,
+        comment: payload.comment
       })
       this.$simpleTelegramUpdateDebt({
         client: this.client,
@@ -145,75 +155,16 @@ export default {
         clientIndex: this.index,
         isOfferChange: false,
         kick: true,
-        newPlan: payload.indebt ? { id: 7 } : this.client.offer.plan,
+        newPlan: this.calculateClientNewPlan(payload.indebt, payload.active, this.client),
         operator: this.$store.state.auth.id,
         token: this.$store.state.auth.token
       })
       this.resetSearch()
     },
-    async setRetired () {
-      if (this.reason === '') {
-        this.$toast.error('Debe ingresar una razon de retiro', { duration: 10000 })
-        return
-      }
-      await this.$store.dispatch('client/retireClient', {
-        token: this.$store.state.auth.token,
-        client: this.client,
-        indebt: false,
-        active: false
-      })
-      await this.$store.dispatch('offer/setNewDebt', {
-        token: this.$store.state.auth.token,
-        city: this.city,
-        isindebt: this.isInDebt,
-        isretired: !this.isRetired,
-        client: this.client,
-        technician: this.$store.state.auth,
-        comment: this.reason
-      }).then(() => {
-        this.$simpleTelegramUpdateDebt({ client: this.client, operator: this.$store.state.auth.username, isInDebt: this.isInDebt, isRetired: !this.isRetired, telegramBots: this.telegramBots })
-        this.$store.dispatch('client/setPlanFromModal', {
-          clientId: this.client.id,
-          clientIndex: this.index,
-          isOfferChange: false,
-          kick: true,
-          newPlan: !this.isRetired === true ? { id: 8 } : this.$store.state.offer.offerHistory[0].offer.plan,
-          operator: this.$store.state.auth.id,
-          token: this.$store.state.auth.token
-        })
-        this.resetSearch()
-        this.reasonDialog = false
-      })
-    },
-    async undoRetire () {
-      await this.$store.dispatch('client/undoRetireClient', {
-        token: this.$store.state.auth.token,
-        client: this.client,
-        indebt: false,
-        active: true
-      })
-      await this.$store.dispatch('offer/setNewDebt', {
-        token: this.$store.state.auth.token,
-        city: this.city,
-        isindebt: false,
-        isretired: false,
-        client: this.client,
-        technician: this.$store.state.auth,
-        comment: ''
-      }).then(() => {
-        this.$simpleTelegramUpdateDebt({ client: this.client, operator: this.$store.state.auth.username, isInDebt: false, isRetired: false, telegramBots: this.telegramBots })
-        this.$store.dispatch('client/setPlanFromModal', {
-          clientId: this.client.id,
-          clientIndex: this.index,
-          isOfferChange: false,
-          kick: true,
-          newPlan: !this.isRetired === true ? { id: 8 } : this.$store.state.offer.offerHistory[0].offer.plan,
-          operator: this.$store.state.auth.id,
-          token: this.$store.state.auth.token
-        })
-        this.resetSearch()
-        this.reasonDialog = false
-      })
+    calculateClientNewPlan (indebt, active, client) {
+      if (indebt && active) { return { id: 7 } }
+      if (!indebt && !active) { return { id: 8 } }
+      if (!indebt && active) { return client.offer.plan }
     },
     async resetSearch () {
       await this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search: this.$route.params.search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: { page: 1, pageSize: 500 } })

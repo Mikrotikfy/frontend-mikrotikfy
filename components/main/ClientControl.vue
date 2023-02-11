@@ -11,7 +11,7 @@
           @click="initComponent()"
         >
           <span>
-            {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : `${client.offer ? client.offer.plan.name : 'NO DEF.'}` }}
+            {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : `${client.offer ? client.offer.plan ? client.offer.plan.name : 'NO DEF.' : 'NO DEF.'}` }}
           </span>
         </v-btn>
       </template>
@@ -34,20 +34,22 @@
           </v-btn>
         </v-card-title>
         <v-divider />
-        <v-row>
-          <v-col cols="12" md="4" class="order-md-first order-lg-first">
-            <MiscOfferHistory :client="client" style="border-right:1px solid grey;" />
-          </v-col>
-          <v-col cols="12" md="4" class="order-first">
-            <div style="display:grid;place-items:center;">
-              <MainClientControlDebt :client="client" :index="index" />
-              <MainClientControlOffer :client="client" :index="index" />
-            </div>
-          </v-col>
-          <v-col cols="12" md="4">
-            <MiscDebtHistory :client="client" style="border-left:1px solid grey;" />
-          </v-col>
-        </v-row>
+        <v-container>
+          <v-row>
+            <v-col cols="12" md="4" class="order-md-first order-lg-first">
+              <MiscOfferHistory :client="client" style="border-right:1px solid grey;" />
+            </v-col>
+            <v-col cols="12" md="4" class="order-first">
+              <div style="display:grid;place-items:center;">
+                <MainClientControlDebt :client="client" :index="index" />
+                <MainClientControlOffer :client="client" :index="index" />
+              </div>
+            </v-col>
+            <v-col cols="12" md="4">
+              <MiscDebtHistory :client="client" style="border-left:1px solid grey;" />
+            </v-col>
+          </v-row>
+        </v-container>
       </v-card>
     </v-dialog>
   </span>
