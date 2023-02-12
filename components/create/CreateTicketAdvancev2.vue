@@ -222,16 +222,16 @@ export default {
       this.$store.dispatch('tv/getTvSpecTypes', { token: this.$store.state.auth.token })
     },
     testTvSpecs () {
-      const specs = this.ticket.client.tvspecs && this.ticket.client.tvspecs.length > 0
-      if (specs) {
-        this.specs = { ...this.ticket.client.tvspecs.at(-1) }
+      const hasSpecs = this.ticket.client.tvspec
+      if (hasSpecs) {
+        this.specs = { ...this.ticket.client.tvspec }
         delete this.specs.id
         this.specsString = JSON.stringify(this.specs)
       }
     },
-    setNewSpecs (ticketdetail) {
+    async setNewSpecs (ticketdetail) {
       if (this.specsString !== JSON.stringify(this.specs) && this.$route.query.clienttype === 'TELEVISION') {
-        this.$store.dispatch('tv/saveSpecs', {
+        await this.$store.dispatch('tv/saveSpecs', {
           token: this.$store.state.auth.token,
           client: this.ticket.client,
           ticketdetail,
@@ -321,14 +321,6 @@ export default {
                   specs: this.specs
                 })
               }
-              this.$store.dispatch('ticket/getTicketsFromDatabase', {
-                city: this.$route.query.city,
-                clienttype: this.$route.query.clienttype,
-                token: this.$store.state.auth.token,
-                active: false,
-                retired: false
-              })
-              this.$toast.success('Ticket Actualizado con Exito', { duration: 4000, position: 'bottom-center' })
               this.details = ''
               this.closeticket = false
               this.officeescalated = false
@@ -337,8 +329,16 @@ export default {
             }
             return input.json()
           })
-            .then((res) => {
-              this.setNewSpecs(res.data)
+            .then(async (res) => {
+              await this.setNewSpecs(res.data)
+              await this.$store.dispatch('ticket/getTicketsFromDatabase', {
+                city: this.$route.query.city,
+                clienttype: this.$route.query.clienttype,
+                token: this.$store.state.auth.token,
+                active: false,
+                retired: false
+              })
+              this.$toast.success('Ticket Actualizado con Exito', { duration: 4000, position: 'bottom-center' })
             })
             .catch((error) => {
               this.$toast.error(error, { position: 'bottom-center' })

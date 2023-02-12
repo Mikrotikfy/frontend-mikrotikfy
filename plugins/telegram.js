@@ -17,7 +17,7 @@ function simpleTelegramCreate ({ client, operator, telegramBots }) {
   try {
     const bot = telegramBots.token
     const chatid = telegramBots.log
-    const message = `🔵 CREADO 🔵\n${client.code}\n${client.name}\n${client.dni}\n${client.address}\n${client.phone}\n${client.wifi_ssid}\n${client.wifi_password}\n${operator}`
+    const message = `🔵 CREADO 🔵\n${client.code}\n${client.name}\n${client.dni}\n${client.address}\n${client.neighborhood.name}\n${client.phone}\n${client.wifi_ssid}\n${client.wifi_password}\n${operator}`
     const req =
       'https://api.telegram.org/bot' +
       bot +
@@ -38,7 +38,7 @@ function simpleTelegramUpdate ({ client, operator, telegramBots }) {
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.log
-  const message = `✏️ ACTUALIZADO ✏️\n${client.code}\n${client.name}\n${client.dni}\n${client.address}\n${client.neighborhood.name}\n${client.phone}\n${client.city.name}\n${client.plan ? client.plan.name : client.offer.plan.name}\n${client.wifi_ssid}\n${client.wifi_password}\n${client.technology.name}\nNAP-ONU: ${client.nap_onu_address}\nPOTENCIA: ${client.opticalPower}dBm\n${operator}\n${client.createdAt}`
+  const message = `✏️ ACTUALIZADO ✏️\n${client.code}\n${client.name}\n${client.dni}\n${client.addresses.at(-1).address}\n${client.addresses.at(-1).neighborhood.name}\n${client.phone}\n${client.city.name}\n${client.plan ? client.plan.name : client.offer.plan.name}\n${client.wifi_ssid}\n${client.wifi_password}\n${client.technology.name}\n${operator}\n${client.createdAt}`
   const req =
     'https://api.telegram.org/bot' +
     bot +
@@ -56,7 +56,7 @@ function simpleTelegramUpdateTV ({ client, operator, telegramBots }) {
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.log
-  const message = `✏️ TELEVISION ACTUALIZADO ✏️\n${client.code}\n${client.name}\n${client.dni}\n${client.address}\n${client.neighborhood.name}\n${client.phone}\n${client.city.name}\n\n${client.createdAt}`
+  const message = `✏️ TELEVISION ACTUALIZADO ✏️\n${client.code}\n${client.name}\n${client.dni}\n${client.addresses.at(-1).address}\n${client.addresses.at(-1).neighborhood.name}\n${client.phone}\n${client.city.name}\n\n${client.createdAt}`
   const req =
     'https://api.telegram.org/bot' +
     bot +
@@ -157,8 +157,8 @@ function simpleTelegramCreateTicket ({ client, tickettype, details, neighborhood
   const line1 = 'ℹ NUEVO TICKET ℹ️'
   const line2 = client.code
   const line3 = sanitizeString(client.name)
-  const line4 = sanitizeString(client.address)
-  const line5 = neighborhood.name
+  const line4 = sanitizeString(client.addresses.at(-1).address)
+  const line5 = sanitizeString(client.addresses.at(-1).neighborhood.name)
   const line6 = client.phone
   const line7 = tickettype
   const line8 = sanitizeString(details)
@@ -188,8 +188,8 @@ function simpleTelegramCreateTicketAdvance ({ client, ticket, status, details, o
   }
   const line2 = sanitizeString(client.code)
   const line3 = sanitizeString(client.name)
-  const line4 = sanitizeString(client.address)
-  const line5 = sanitizeString(client.neighborhood.name)
+  const line4 = sanitizeString(client.addresses.at(-1).address)
+  const line5 = sanitizeString(client.addresses.at(-1).neighborhood.name)
   const line6 = sanitizeString(client.phone)
   const line7 = sanitizeString(ticket.tickettype.name)
   const line8 = sanitizeString(details)
@@ -214,6 +214,7 @@ function simpleTelegramCreateTicketAdvance ({ client, ticket, status, details, o
     })
 }
 function simpleTelegramCreateTicketAdvanceTv ({ client, ticket, status, details, specs, operator, telegramBots }) {
+  console.log(specs)
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.tvchat
@@ -225,8 +226,8 @@ function simpleTelegramCreateTicketAdvanceTv ({ client, ticket, status, details,
   }
   const line2 = sanitizeString(client.code)
   const line3 = sanitizeString(client.name)
-  const line4 = sanitizeString(client.address)
-  const line5 = sanitizeString(client.neighborhood.name)
+  const line4 = sanitizeString(client.addresses.at(-1).address)
+  const line5 = sanitizeString(client.addresses.at(-1).neighborhood.name)
   const line6 = sanitizeString(client.phone)
   const line7 = sanitizeString(ticket.tickettype.name)
   const line8 = `Calidad de señal: ${sanitizeString(specs.tvspectype.name)}`
@@ -260,7 +261,7 @@ function simpleTelegramCreateRequest ({ client, telegramBots, operator }) {
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.binnacle
-  const message = `SOLICITUD DE ACTIVACION\n${client.code}\n${client.name}\n${client.dni}\n${client.address}\n${client.neighborhood.name}\n${client.phone}\n\n${operator}\n${client.createdAt}`
+  const message = `SOLICITUD DE ACTIVACION\n${client.code}\n${client.name}\n${client.dni}\n${client.addresses.at(-1).address}\n${client.addresses.at(-1).neighborhood.name}\n${client.phone}\n\n${operator}\n${client.createdAt}`
   const req =
     'https://api.telegram.org/bot' +
     bot +
@@ -293,6 +294,7 @@ function simpleTelegramAdminCreate ({ client, telegramBots, operator }) {
 }
 
 function sanitizeString (str) {
+  console.log(str)
   const res1 = str.normalize('NFD').replace(/[\u0300-\u036F]/g, '')
   const res2 = res1.replace(/[^a-z0-9áéíóúñü \n@ñ,_-]/gim, '')
   return res2

@@ -228,6 +228,38 @@ export const actions = {
       throw new Error(`ACTION ${error}`)
     }
   },
+  createAddress ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}addresses`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              address: payload.address,
+              neighborhood: payload.neighborhood.id,
+              client: payload.client.id
+            }
+          })
+        }).then((input) => {
+          if (input.status === 200) {
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        }).catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error(error)
+          throw new Error(`CREATE ADDRESS ACTION ${error}`)
+        })
+      })
+    } catch (error) {
+      throw new Error(`CREATE ADDRESS ACTION ${error}`)
+    }
+  },
   async getUsersFromDatabaseByTypeAndCity ({ commit }, payload) {
     const qs = require('qs')
     const query = qs.stringify({
@@ -586,39 +618,5 @@ export const actions = {
   },
   updateClientDevices ({ commit }, { device, index }) {
     commit('updateClientDevices', { device, index })
-  },
-  getHeadersByClientType ({ commit }, { city, clienttype }) {
-    const internet = [
-      { text: 'Codigo', value: 'code', sortable: false },
-      { text: 'Nombre', value: 'name', sortable: false },
-      { text: 'Cedula', value: 'dni', sortable: false },
-      { text: 'Direccion', sortable: false, value: 'address' },
-      { text: 'Barrio', value: 'neighborhood.name', sortable: false },
-      { text: 'Telefono', sortable: false, value: 'phone' },
-      { text: 'Tarifa', value: 'active', sortable: false },
-      { text: 'Tecnologia', value: 'technology.name', sortable: false },
-      { text: '', value: 'actions', sortable: false }
-    ]
-    const television = [
-      { text: 'Codigo', value: 'code', sortable: false },
-      { text: 'Nombre', value: 'name', sortable: false },
-      { text: 'Cedula', value: 'dni', sortable: false },
-      { text: 'Direccion', sortable: false, value: 'address' },
-      { text: 'Barrio', value: 'neighborhood.name', sortable: false },
-      { text: 'Telefono', sortable: false, value: 'phone' },
-      { text: 'Estado', sortable: false, value: 'active' },
-      { text: 'Televisores', sortable: true, value: 'tvspec.tvs' },
-      { text: 'dBm', sortable: true, value: 'tvspec.db' },
-      { text: 'Altos', sortable: true, value: 'tvspec.high' },
-      { text: 'Bajos', sortable: true, value: 'tvspec.down' },
-      { text: 'Calidad', sortable: true, value: 'tvspec.tvspectype.name' },
-      { text: '', value: 'actions', sortable: false }
-    ]
-
-    if (clienttype === 'INTERNET') {
-      commit('getHeadersByClientType', internet)
-    } else if (clienttype === 'TELEVISION') {
-      commit('getHeadersByClientType', television)
-    }
   }
 }

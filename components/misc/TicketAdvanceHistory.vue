@@ -27,7 +27,7 @@
         :loading="loading"
       >
         <v-card-title class="headline">
-          Historial de Avances
+          Historial de Avances TK: {{ ticketid }}
         </v-card-title>
         <div v-if="!loading">
           <v-card-text>

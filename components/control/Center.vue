@@ -33,7 +33,7 @@
             </v-btn>
           </v-card-title>
           <v-row>
-            <v-col cols="12" xs="12" md="12" lg="8" xl="6">
+            <v-col cols="12" xs="12" md="12" lg="12" xl="6">
               <v-row class="flex-column">
                 <v-col>
                   <ControlInformation
@@ -49,7 +49,7 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="12" xs="12" md="12" lg="6" xl="6">
+            <v-col cols="12" xs="12" md="12" lg="12" xl="6">
               <v-row class="flex-column">
                 <v-col v-if="$route.query.clienttype === 'INTERNET'">
                   <ControlNap

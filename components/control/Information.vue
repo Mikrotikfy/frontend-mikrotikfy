@@ -13,7 +13,7 @@
               outlined
               dense
               hide-details
-              :disabled="(!$isAdmin() || !isBiller()) || loading"
+              :disabled="!(!$isAdmin() || !$isBiller()) || loading"
               @blur="updateClient"
               @keyup.enter="$event.target.blur()"
             />

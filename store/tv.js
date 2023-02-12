@@ -28,29 +28,35 @@ export const actions = {
       throw new Error(`TV SPEC TYPES ACTION ${error}`)
     }
   },
-  async saveSpecs ({ commit }, payload) {
-    payload.specs.tvspectype = payload.specs.tvspectype.id
+  saveSpecs ({ commit }, payload) {
     try {
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}tvspecs`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${payload.token}`
-        },
-        body: JSON.stringify({
-          data: {
-            client: payload.client.id,
-            ticketdetail: payload.ticketdetail.id,
-            ticket: payload.ticket.id,
-            ...payload.specs
-          }
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}tvspecs`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              client: payload.client.id,
+              ticketdetail: payload.ticketdetail.id,
+              ticket: payload.ticket.id,
+              db: payload.specs.db,
+              high: payload.specs.high,
+              down: payload.specs.down,
+              tvs: payload.specs.tvs,
+              tvspectype: payload.specs.tvspectype.id
+            }
+          })
         })
+          .then((res) => {
+            if (res.status === 200) {
+              this.$toast.success('Ficha tecnica actualizada con éxito.', { duration: 4000 })
+              resolve(res)
+            }
+          })
       })
-        .then((res) => {
-          if (res.status === 200) {
-            this.$toast.success('Ficha tecnica actualizada con éxito.', { duration: 4000 })
-          }
-        })
     } catch (error) {
       throw new Error(`TV SPECS SAVE ${error}`)
     }

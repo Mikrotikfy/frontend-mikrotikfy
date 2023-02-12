@@ -27,42 +27,6 @@ export const mutations = {
       throw new Error(`TICKETTYPE MUTATE ${error}`)
     }
   },
-  getHeadersByClienttype (state, clienttype) {
-    if (clienttype === 'INTERNET') {
-      state.headers = [
-        { text: 'TK #', sortable: false, value: 'id', width: '2%' },
-        { text: 'Estado', sortable: false, value: 'active', width: '5%' },
-        { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 100 },
-        { text: 'Canal', sortable: false, value: 'channel', width: 100, align: ' d-none d-lg-table-cell' },
-        { text: 'Observaciones', sortable: false, value: 'details', width: 150, align: ' d-none d-lg-table-cell' },
-        { text: 'Barrio', sortable: true, value: 'client.neighborhood.name', width: 150 },
-        { text: 'Dirección', sortable: false, value: 'client.address', width: 150, align: ' d-none d-lg-table-cell' },
-        { text: 'Código', sortable: false, value: 'client.code', width: 60, align: ' d-none d-lg-table-cell' },
-        { text: 'Cliente', sortable: false, value: 'client.name', width: 150 },
-        { text: 'Celular', sortable: false, value: 'client.phone', align: ' d-none d-lg-table-cell' },
-        { text: 'Tec.', sortable: false, value: 'client.technology.name', align: ' d-none d-lg-table-cell' },
-        { text: 'Por', sortable: false, value: 'assignated.username', width: 60, align: ' d-none d-lg-table-cell' },
-        { text: 'Creación', sortable: false, value: 'createdAt', width: 100, align: ' d-none d-lg-table-cell' },
-        { text: 'Acciones', sortable: false, value: 'actions', align: ' d-none d-lg-table-cell' }
-      ]
-    } else {
-      state.headers = [
-        { text: 'TK #', sortable: false, value: 'id', width: '2%' },
-        { text: 'Estado', sortable: false, value: 'active', width: '5%' },
-        { text: 'Tipo', sortable: false, value: 'tickettype.name' },
-        { text: 'Canal', sortable: false, value: 'channel', width: 100, align: ' d-none d-lg-table-cell' },
-        { text: 'Observaciones', sortable: false, value: 'details', width: 150, align: ' d-none d-lg-table-cell' },
-        { text: 'Barrio', sortable: true, value: 'client.neighborhood.name' },
-        { text: 'Dirección', sortable: false, value: 'client.address', align: ' d-none d-lg-table-cell' },
-        { text: 'Codigo', sortable: false, value: 'client.code', width: 60, align: ' d-none d-lg-table-cell' },
-        { text: 'Cliente', sortable: false, value: 'client.name' },
-        { text: 'Telefono', sortable: false, value: 'client.phone', align: ' d-none d-lg-table-cell' },
-        { text: 'Por', sortable: false, value: 'assignated.username', align: ' d-none d-lg-table-cell' },
-        { text: 'Creado el', sortable: false, value: 'createdAt', align: ' d-none d-lg-table-cell' },
-        { text: 'Acciones', sortable: false, value: 'actions', align: ' d-none d-lg-table-cell' }
-      ]
-    }
-  },
   updateTicketStatus (state, ticket) {
     try {
       state.tickets[ticket.editindex].active = !ticket.closeTicket
@@ -130,8 +94,8 @@ export const actions = {
           'client.plan',
           'client.naps',
           'client.debtmovements',
-          'client.tvspecs',
-          'client.tvspecs.tvspectype',
+          'client.tvspec',
+          'client.tvspec.tvspectype',
           'city',
           'tickettype',
           'clienttype',
@@ -160,7 +124,6 @@ export const actions = {
           })
           localStorage.setItem('tickets', JSON.stringify(ticketList))
           commit('getTicketsFromDatabase', ticketList)
-          commit('getHeadersByClienttype', clienttype)
           return ticketList
         })
     } catch (error) {

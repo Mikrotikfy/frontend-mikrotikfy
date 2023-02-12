@@ -403,6 +403,14 @@ export default {
         index: this.index
       })
     },
+    createAddress (client) {
+      this.$store.dispatch('client/createAddress', {
+        token: this.$store.state.auth.token,
+        client,
+        address: `${this.dir1} ${this.dir2} ${this.dir3} ${this.dir4}`,
+        neighborhood: this.Client.neighborhood
+      })
+    },
     async createClient () {
       if (
         (
@@ -435,6 +443,7 @@ export default {
         .then((client) => {
           this.createOfferMovement(client.data, this.Client.offer)
           this.createDebtMovement(client.data)
+          this.createAddress(client.data)
           this.$store.dispatch('client/createTicketForNewClient', {
             clienttype: this.$store.state.auth.clienttypes.find(ct => ct.name === this.$route.query.clienttype),
             city: this.Client.city,

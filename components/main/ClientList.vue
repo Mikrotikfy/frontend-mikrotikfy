@@ -1,10 +1,10 @@
 <template>
   <v-container fluid>
     <v-row v-if="clients.length < 1 && $route.params.search" class="justify-center">
-      <v-card :loading="loadingDataTable">
-        <v-card-title>
+      <v-card class="ma-4 rounded-xl" :loading="loadingDataTable">
+        <v-card-text class="ma-0 text-center">
           {{ result }}
-        </v-card-title>
+        </v-card-text>
       </v-card>
     </v-row>
     <v-row v-if="clients.length > 0" class="mt-0">
@@ -13,8 +13,7 @@
           <v-card-text>
             <client-only>
               <v-data-table
-                v-if="headers"
-                :headers="headers"
+                :headers="getHeadersByClienttype"
                 :items="clients"
                 :server-items-length="clientCount()"
                 :items-per-page.sync="itemsPerPage"
@@ -24,7 +23,7 @@
                 no-data-text="No hay resultados a la busqueda..."
                 loading-text="Cargando información de clientes..."
                 hide-default-footer
-                mobile-breakpoint="100"
+                mobile-breakpoint="600"
                 @page-count="pageCount = $event"
               >
                 <template v-slot:[`item.active`]="props">
@@ -141,6 +140,50 @@ export default {
     },
     clienttype () {
       return this.$store.state.clienttypes ? this.$store.state.clienttypes.find(type => type.name === this.$route.query.clienttype) : ''
+    },
+    getHeadersByClienttype () {
+      return this.$route.query.clienttype === 'INTERNET' ? this.$store.state.isDesktop ? [
+        { text: 'Codigo', value: 'code', sortable: false },
+        { text: 'Nombre', value: 'name', sortable: false },
+        { text: 'Cedula', value: 'dni', sortable: false },
+        { text: 'Direccion', sortable: false, value: 'address' },
+        { text: 'Barrio', value: 'neighborhood.name', sortable: false },
+        { text: 'Telefono', sortable: false, value: 'phone' },
+        { text: 'Tarifa', value: 'active', sortable: false },
+        { text: 'Tecnologia', value: 'technology.name', sortable: false },
+        { text: '', value: 'actions', sortable: false }
+      ] : [
+        { text: 'Codigo', value: 'code', sortable: false },
+        { text: 'Nombre', value: 'name', sortable: false },
+        { text: 'Direccion', sortable: false, value: 'address' },
+        { text: 'Barrio', value: 'neighborhood.name', sortable: false },
+        { text: 'Telefono', sortable: false, value: 'phone' },
+        { text: 'Tarifa', value: 'active', sortable: false },
+        { text: '', value: 'actions', sortable: false }
+      ] : this.$store.state.isDesktop ? [
+        { text: 'Codigo', value: 'code', sortable: false },
+        { text: 'Nombre', value: 'name', sortable: false },
+        { text: 'Cedula', value: 'dni', sortable: false },
+        { text: 'Direccion', sortable: false, value: 'address' },
+        { text: 'Barrio', value: 'neighborhood.name', sortable: false },
+        { text: 'Telefono', sortable: false, value: 'phone' },
+        { text: 'Estado', sortable: false, value: 'active' },
+        { text: 'Televisores', sortable: true, value: 'tvspec.tvs' },
+        { text: 'dBm', sortable: true, value: 'tvspec.db' },
+        { text: 'Altos', sortable: true, value: 'tvspec.high' },
+        { text: 'Bajos', sortable: true, value: 'tvspec.down' },
+        { text: 'Calidad', sortable: true, value: 'tvspec.tvspectype.name' },
+        { text: '', value: 'actions', sortable: false }
+      ] : [
+        { text: 'Codigo', value: 'code', sortable: false },
+        { text: 'Nombre', value: 'name', sortable: false },
+        { text: 'Cedula', value: 'dni', sortable: false },
+        { text: 'Direccion', sortable: false, value: 'address' },
+        { text: 'Barrio', value: 'neighborhood.name', sortable: false },
+        { text: 'Telefono', sortable: false, value: 'phone' },
+        { text: 'Estado', sortable: false, value: 'active' },
+        { text: '', value: 'actions', sortable: false }
+      ]
     }
   },
   watch: {
@@ -176,7 +219,6 @@ export default {
     async getClientBySearch () {
       this.loadingDataTable = true
       await this.$store.dispatch('client/clearClientsFromDatatable')
-      await this.getHeadersByClientType()
       const search = this.searchClientInput.trim()
       this.setSearchText()
       if (search) {
@@ -201,11 +243,6 @@ export default {
     },
     createClientSnack (value) {
       this.$toast.success('Cliente creado con exito', { duration: 4000, position: 'bottom-center' })
-    },
-    async getHeadersByClientType () {
-      const city = this.$route.query.city
-      const clienttype = this.$route.query.clienttype
-      await this.$store.dispatch('client/getHeadersByClientType', { city, clienttype, token: this.$store.state.auth.token })
     }
   }
 }
