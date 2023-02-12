@@ -69,9 +69,9 @@
       <v-menu offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on, attrs }">
           <v-btn
-            class="ml-2"
+            class="ml-2 elevation-0 grey darken-3"
             fab
-            small
+            x-small
             v-bind="attrs"
             v-on="on"
           >
