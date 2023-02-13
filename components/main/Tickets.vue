@@ -305,7 +305,6 @@
             <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.phone : '' }}</p>
             <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}</p>
             <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">TV: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.tvs : 'No reg.' : '' }}</p>
-            <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">dBm: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.db : '' : '' }}</p>
             <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Altos: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.high : '' : '' }}</p>
             <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Bajos: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.down : '' : '' }}</p>
             <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Calidad: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.tvspectype.name : '' : '' }}</p>
@@ -526,9 +525,9 @@ export default {
       return humanDateFormat
     },
     getTicketTypeColor (tickettype) {
-      if (tickettype === 'SIN SERVICIO') {
+      if (tickettype === 'SIN SERVICIO' || tickettype === 'SIN SEÑAL') {
         return 'red'
-      } else if (tickettype === 'SERVICIO LENTO') {
+      } else if (tickettype === 'SERVICIO LENTO' || tickettype === 'SEÑAL LLUVIOSA' || tickettype === 'TV DESPROGRAMADO') {
         return 'orange darken-2'
       } else if (tickettype === 'INTERMITENCIA') {
         return 'orange darken-4'

@@ -42,7 +42,6 @@ export const actions = {
               client: payload.client.id,
               ticketdetail: payload.ticketdetail.id,
               ticket: payload.ticket.id,
-              db: payload.specs.db,
               high: payload.specs.high,
               down: payload.specs.down,
               tvs: payload.specs.tvs,

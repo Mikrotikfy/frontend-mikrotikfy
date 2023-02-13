@@ -128,7 +128,6 @@ export default {
       { text: 'Operador', sortable: false, value: 'assignated.username' },
       { text: 'Detalles', sortable: true, value: 'details' },
       { text: 'Televisores', sortable: true, value: 'tvspec.tvs' },
-      { text: 'dBm', sortable: true, value: 'tvspec.db' },
       { text: 'Altos', sortable: true, value: 'tvspec.high' },
       { text: 'Bajos', sortable: true, value: 'tvspec.down' },
       { text: 'Calidad', sortable: true, value: 'tvspec.tvspectype.name' },

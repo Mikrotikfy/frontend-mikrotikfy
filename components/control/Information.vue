@@ -224,17 +224,6 @@
           </v-col>
           <v-col>
             <v-text-field
-              v-model="currentEditClient.tvspec.db"
-              disabled
-              label="dBm"
-              autocomplete="off"
-              outlined
-              dense
-              hide-details="auto"
-            />
-          </v-col>
-          <v-col>
-            <v-text-field
               v-model="currentEditClient.tvspec.high"
               disabled
               label="Altos"

@@ -214,7 +214,6 @@ function simpleTelegramCreateTicketAdvance ({ client, ticket, status, details, o
     })
 }
 function simpleTelegramCreateTicketAdvanceTv ({ client, ticket, status, details, specs, operator, telegramBots }) {
-  console.log(specs)
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.tvchat
@@ -231,7 +230,6 @@ function simpleTelegramCreateTicketAdvanceTv ({ client, ticket, status, details,
   const line6 = sanitizeString(client.phone)
   const line7 = sanitizeString(ticket.tickettype.name)
   const line8 = `Calidad de señal: ${sanitizeString(specs.tvspectype.name)}`
-  const line9 = `dBm: ${specs.db}`
   const line10 = `Altos: ${specs.high}`
   const line11 = `Bajos: ${specs.down}`
   const line12 = `Televisores: ${specs.tvs}`
@@ -243,7 +241,7 @@ function simpleTelegramCreateTicketAdvanceTv ({ client, ticket, status, details,
     line14 = 'CASO ACTIVO'
   }
   const line15 = operator
-  const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n\n${line8}\n${line9}\n${line10}\n${line11}\n${line12}\n\n${line13}\n\n${line14}\n${line15}`
+  const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n\n${line8}\n${line10}\n${line11}\n${line12}\n\n${line13}\n\n${line14}\n${line15}`
   const req =
     'https://api.telegram.org/bot' +
     bot +
@@ -294,7 +292,6 @@ function simpleTelegramAdminCreate ({ client, telegramBots, operator }) {
 }
 
 function sanitizeString (str) {
-  console.log(str)
   const res1 = str.normalize('NFD').replace(/[\u0300-\u036F]/g, '')
   const res2 = res1.replace(/[^a-z0-9áéíóúñü \n@ñ,_-]/gim, '')
   return res2

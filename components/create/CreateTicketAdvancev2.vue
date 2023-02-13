@@ -77,15 +77,6 @@
           outlined
           hide-details
         />
-        <v-text-field
-          v-model="specs.db"
-          label="Medida de DBs"
-          prepend-icon="mdi-volume-high"
-          class="mb-5"
-          outlined
-          dense
-          hide-details="auto"
-        />
         <v-row align="center" class="pa-3">
           <v-text-field
             v-model.number="specs.tvs"
@@ -247,12 +238,6 @@ export default {
       }
       if (!this.specs.quality === null && this.$route.query.clienttype === 'TELEVISION') {
         this.$toast.error('Seleccione una calidad de señal', { duration: 3000 })
-        return
-      }
-      if (!this.specs.db && this.$route.query.clienttype === 'TELEVISION') {
-        this.$toast.error('Ingrese una medida de DBs', {
-          duration: 3000
-        })
         return
       }
       if (((!this.specs.tvs || this.specs.tvs === 0 || this.specs.tvs === '') && !this.specs.notvs) && this.$route.query.clienttype === 'TELEVISION') {
