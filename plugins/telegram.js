@@ -4,6 +4,7 @@ export default (_, inject) => {
   inject('simpleTelegramUpdateTV', input => simpleTelegramUpdateTV(input))
   inject('simpleTelegramUpdatePlan', input => simpleTelegramUpdatePlan(input))
   inject('simpleTelegramCreateTicket', input => simpleTelegramCreateTicket(input))
+  inject('simpleTelegramCreateTicketTV', input => simpleTelegramCreateTicketTV(input))
   inject('simpleTelegramCreateTicketAdvance', input => simpleTelegramCreateTicketAdvance(input))
   inject('simpleTelegramCreateTicketAdvanceTv', input => simpleTelegramCreateTicketAdvanceTv(input))
   inject('simpleTelegramCreateRequest', input => simpleTelegramCreateRequest(input))
@@ -56,7 +57,7 @@ function simpleTelegramUpdateTV ({ client, operator, telegramBots }) {
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.log
-  const message = `✏️ TELEVISION ACTUALIZADO ✏️\n${client.code}\n${client.name}\n${client.dni}\n${client.addresses.at(-1).address}\n${client.addresses.at(-1).neighborhood.name}\n${client.phone}\n${client.city.name}\n\n${client.createdAt}`
+  const message = `✏️ TELEVISION ACTUALIZADO ✏️\n${client.code}\n${client.name}\n${client.dni}\n${client.addresses.at(-1).address}\n${client.addresses.at(-1).neighborhood.name}\n${client.phone}\n${client.city.name}\n\n${client.createdAt}\n${operator}`
   const req =
     'https://api.telegram.org/bot' +
     bot +
@@ -150,10 +151,36 @@ function simpleTelegramUpdateDebt ({ client, operator, isInDebt, isRetired, tele
     })
 };
 
-function simpleTelegramCreateTicket ({ client, tickettype, details, neighborhood, operator, telegramBots }) {
+function simpleTelegramCreateTicket ({ client, tickettype, details, operator, telegramBots }) {
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.chat
+  const line1 = 'ℹ NUEVO TICKET ℹ️'
+  const line2 = client.code
+  const line3 = sanitizeString(client.name)
+  const line4 = sanitizeString(client.addresses.at(-1).address)
+  const line5 = sanitizeString(client.addresses.at(-1).neighborhood.name)
+  const line6 = client.phone
+  const line7 = tickettype
+  const line8 = sanitizeString(details)
+  const line9 = operator
+  const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n\n${line8}\nInforma: ${line9}`
+  const req =
+    'https://api.telegram.org/bot' +
+    bot +
+    '/sendMessage?chat_id=' +
+    chatid +
+    '&text=' +
+    encodeURIComponent(message)
+  fetch(req)
+    .catch(function (err) {
+      return err
+    })
+};
+function simpleTelegramCreateTicketTV ({ client, tickettype, details, operator, telegramBots }) {
+  const fetch = require('node-fetch')
+  const bot = telegramBots.token
+  const chatid = telegramBots.tvchat
   const line1 = 'ℹ NUEVO TICKET ℹ️'
   const line2 = client.code
   const line3 = sanitizeString(client.name)

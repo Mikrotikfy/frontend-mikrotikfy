@@ -511,7 +511,11 @@ export default {
           }
           this.modal = false
           this.loading = false
-          this.$simpleTelegramCreateTicket({ client: this.client, tickettype: this.ticketPayload.type.name, details: this.ticketPayload.details, neighborhood: this.client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+          if (this.$route.query.clienttype === 'INTERNET') {
+            this.$simpleTelegramCreateTicket({ client: this.client, tickettype: this.ticketPayload.type.name, details: this.ticketPayload.details, neighborhood: this.client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+          } else {
+            this.$simpleTelegramCreateTicketTV({ client: this.client, tickettype: this.ticketPayload.type.name, details: this.ticketPayload.details, neighborhood: this.client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+          }
         } else {
           this.alertBox = true
           this.alertBoxColor = 'red darken-4'
