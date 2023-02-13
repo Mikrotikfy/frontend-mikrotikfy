@@ -141,7 +141,8 @@ export const actions = {
       pagination: {
         page: 1,
         pageSize: 1000
-      }
+      },
+      sort: 'createdAt:asc'
     },
     {
       encodeValuesOnly: true

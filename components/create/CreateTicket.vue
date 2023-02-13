@@ -50,7 +50,7 @@
               </v-card-title>
               <div v-if="!loading">
                 <v-card-text>
-                  <v-select
+                  <v-autocomplete
                     v-model="ticketPayload.type"
                     :items="tickettypes"
                     item-text="name"
