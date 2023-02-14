@@ -66,11 +66,13 @@ export default {
       if (indebt && !isretired) { return 'EN MORA' }
       if (!indebt && !isretired) { return 'AL DIA' }
       if (!indebt && isretired) { return 'RETIRADO' }
+      if (indebt && isretired) { return 'RETIRADO' }
     },
     calculateClientStatusColor (indebt, isretired) {
       if (indebt && !isretired) { return 'red' }
       if (!indebt && !isretired) { return 'green darken-3' }
       if (!indebt && isretired) { return 'yellow darken-4' }
+      if (indebt && isretired) { return 'yellow darken-4' }
     }
   }
 }
