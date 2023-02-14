@@ -6,7 +6,7 @@
           v-bind="attrs"
           small
           rounded
-          :color="$vuetify.theme.dark ? 'white black--text' : 'primary'"
+          :color="$vuetify.theme.dark ? client.indebt || !client.active ? 'red darken-4' : 'white black--text' : 'primary'"
           v-on="on"
           @click="initComponent()"
         >
