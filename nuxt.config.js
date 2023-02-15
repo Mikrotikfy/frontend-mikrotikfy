@@ -88,8 +88,18 @@ export default {
   ** Nuxt.js modules
   */
   modules: [
+    '@nuxtjs/onesignal',
     '@nuxtjs/toast'
   ],
+  oneSignal: {
+    init: {
+      appId: '2b515757-2bd9-49a3-8f7f-81f730c120ca',
+      allowLocalhostAsSecureOrigin: true,
+      welcomeNotification: {
+        disable: true
+      }
+    }
+  },
   toast: {
     position: 'bottom-center'
   },
