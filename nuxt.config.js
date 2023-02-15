@@ -61,6 +61,19 @@ export default {
     '@nuxtjs/vuetify',
     '@nuxtjs/pwa'
   ],
+  pwa: {
+    meta: {
+      name: 'ARNOProducciones API',
+      viewport: 'width=device-width, initial-scale=1',
+      author: 'Nicolas Echeverry',
+      description: 'Aplicativo de Gestion de la Informacion de ARNOP'
+    },
+    icon: {
+      fileName: 'icon.png',
+      sizes: [16, 120, 144, 152, 192, 384, 512],
+      purpose: ['maskable', 'any']
+    }
+  },
   webpackOptimisations: {
     features: {
       // Note: just an example of keys, these are all keys and their default
