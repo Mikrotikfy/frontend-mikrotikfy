@@ -68,6 +68,12 @@ export default {
       author: 'Nicolas Echeverry',
       description: 'Aplicativo de Gestion de la Informacion de ARNOP'
     },
+    manifest: {
+      name: 'ARNOProducciones API',
+      lang: 'es',
+      short_name: 'ARNOP API',
+      display: ''
+    },
     icon: {
       fileName: 'icon.png',
       sizes: [16, 120, 144, 152, 192, 384, 512],
