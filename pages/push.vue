@@ -6,11 +6,7 @@
       label="Mensaje"
     />
     <button
-      @click="send({
-        title: 'Notificación de prueba',
-        body: 'Esta es una notificación de prueba'
-      })
-      "
+      @click="send"
     >
       Enviar notis
     </button>
@@ -48,7 +44,7 @@ export default {
       // Crea el cuerpo de la solicitud
       const body = {
         app_id: appId,
-        contents: { es: this.message },
+        contents: { en: this.message },
         included_segments: ['All']
       }
 
