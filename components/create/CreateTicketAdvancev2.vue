@@ -295,6 +295,7 @@ export default {
                   operator: this.$store.state.auth.username,
                   telegramBots: this.telegramBots
                 })
+                this.$pushSend({ title: 'AVANCE INTERNET', message: `Ticket ${this.ticketPayload.type.name} creado para ${this.client.name}` })
               } else {
                 this.$simpleTelegramCreateTicketAdvanceTv({
                   ticket: this.ticket,
@@ -305,6 +306,7 @@ export default {
                   telegramBots: this.telegramBots,
                   specs: this.specs
                 })
+                this.$pushSend({ title: 'AVANCE TELEVISION', message: `Ticket ${this.ticketPayload.type.name} creado para ${this.client.name}` })
               }
               this.details = ''
               this.closeticket = false

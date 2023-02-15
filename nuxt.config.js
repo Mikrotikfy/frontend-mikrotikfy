@@ -44,7 +44,8 @@ export default {
   */
   plugins: [
     '~/plugins/role',
-    '~/plugins/telegram'
+    '~/plugins/telegram',
+    '~/plugins/push'
   ],
   /*
   ** Auto import components
