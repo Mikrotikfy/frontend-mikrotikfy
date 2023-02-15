@@ -70,9 +70,7 @@ export default {
     },
     manifest: {
       name: 'ARNOProducciones API',
-      lang: 'es',
-      short_name: 'ARNOP API',
-      display: ''
+      lang: 'es'
     },
     icon: {
       fileName: 'icon.png',
