@@ -210,16 +210,16 @@
                       v-bind="attrs"
                       v-on="on"
                       class="text-truncate" style="max-width:150px;"
-                      @click="copyToClipboard('Direccion', item.client.addresses.length > 0 ? item.client.addresses.at(-1).address : item.client.address)"
+                      @click="copyToClipboard('Direccion', item.client.addresses !== null ? item.client.addresses.at(-1).address : item.client.address)"
                     >
-                      {{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).address : item.client.address }}
+                      {{ item.client.addresses !== null ? item.client.addresses.at(-1).address : item.client.address }}
                     </div>
                   </template>
-                  <span>{{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).address : item.client.address }}</span>
+                  <span>{{ item.client.addresses !== null ? item.client.addresses.at(-1).address : item.client.address }}</span>
               </v-tooltip>
               </template>
               <template v-slot:[`item.client.neighborhood.name`]="{ item }">
-                  <strong>{{ item.client.addresses.length > 0 ? item.client.addresses.at(-1).neighborhood.name : item.client.neighborhood.name }}</strong>
+                  <strong>{{ item.client !== ? item.client.addresses !== null ? item.client.addresses.at(-1).neighborhood.name : item.client.neighborhood.name : 'No reg.' }}</strong>
               </template>
               <template v-slot:[`item.client.code`]="props">
                 <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`">{{props.item.client.code}}</nuxt-link>
@@ -300,8 +300,8 @@
             <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Reporto por: {{ editModalData.channel ? getChannelName(editModalData.channel) : '' }}</p>
             <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.code : '' }}</p>
             <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.name : '' }}</p>
-            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.addresses.length > 0 ? editModalData.client.addresses.at(-1).address : editModalData.client.address : '' }}</p>
-            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.addresses.length > 0 ? editModalData.client.addresses.at(-1).neighborhood.name : editModalData.client.neighborhood.name : '' }}</p>
+            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? 'addresses' in editModalData.client ? editModalData.client.addresses.at(-1).address : editModalData.client.address : '' }}</p>
+            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? 'addresses' in editModalData.client ? editModalData.client.addresses.at(-1).neighborhood.name : editModalData.client.neighborhood.name : '' }}</p>
             <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.phone : '' }}</p>
             <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}</p>
             <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">TV: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.tvs : 'No reg.' : '' }}</p>

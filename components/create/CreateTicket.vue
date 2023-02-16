@@ -162,7 +162,7 @@
                         dense
                         hide-details
                         :rules="phoneUpdate ? phoneRules : []"
-                        prepend-icon="mdi-cellphone"
+                        append-icon="mdi-cellphone"
                       />
                     </v-col>
                   </v-row>
@@ -186,29 +186,46 @@
                     :error="errors.details"
                     @focus="errors.details = false, alertBox = false"
                   />
+                  <v-text-field
+                    v-model="phoneUpdate"
+                    label="Actualizar celular (Opcional)"
+                    outlined
+                    dense
+                    hide-details
+                    :rules="phoneUpdate ? phoneRules : []"
+                    append-icon="mdi-cellphone"
+                  />
                   <div class="d-flex">
                     <v-col>
                       <p class="text-h6">Canal de reporte</p>
-                      <v-radio-group v-model="ticketPayload.channel">
+                      <v-radio-group
+                        v-model="ticketPayload.channel"
+                        :error="errors.channel"
+                      >
                         <v-radio
                           label="Telefónico"
                           value="phone"
+                          @change="errors.channel = false, alertBox = false"
                         />
                         <v-radio
                           label="En Oficina"
                           value="office"
+                          @change="errors.channel = false, alertBox = false"
                         />
                         <v-radio
                           label="Whatsapp"
                           value="whatsapp"
+                          @change="errors.channel = false, alertBox = false"
                         />
                         <v-radio
                           label="Correo Electronico"
                           value="email"
+                          @change="errors.channel = false, alertBox = false"
                         />
                         <v-radio
                           label="Otro"
                           value="other"
+                          @change="errors.channel = false, alertBox = false"
                         />
                       </v-radio-group>
                     </v-col>
@@ -243,7 +260,7 @@
                   x-large
                   :loading="loading"
                   :disabled="loading"
-                  @click="createTicket()"
+                  @click="ticketPayload.type.requiresvisit ? testClientAvailable() : createTicket()"
                 >
                   Crear Caso
                 </v-btn>
@@ -320,6 +337,51 @@
           </v-col>
         </v-row>
       </v-card>
+      <v-dialog
+        v-model="clientAvailableDialog"
+        transition="dialog-bottom-transition"
+        max-width="1100"
+      >
+        <v-card>
+          <v-card-title>
+            <h3 class="green--title darken-4 mt-4">¿Se encuentra el usuario disponible en la vivienda para atender al equipo técnico en el momento?</h3>
+          </v-card-title>
+          <v-card-actions>
+            <v-btn
+              class="red darken-4 mr-2"
+              :disabled="!clientAvailable"
+              @click="createTicket()"
+            >
+              Si, crear ticket
+            </v-btn>
+            <v-btn
+              text
+              class="mr-2"
+              :disabled="!clientAvailable"
+              @click="clientAvailable = !clientAvailable"
+            >
+              No, agendar a otra hora
+            </v-btn>
+            <v-text-field
+              v-if="!clientAvailable"
+              v-model="clientAvailableHour"
+              outlined
+              dense
+              style="max-width: 300px;"
+              hide-details="auto"
+              label="Escribe la hora de visita"
+              class="mr-2"
+            />
+            <v-btn
+              v-if="clientAvailableHour !== ''"
+              class="blue darken-4 mr-2"
+              @click="createTicket()"
+            >
+              Continuar y crear
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-dialog>
   </span>
 </template>
@@ -350,6 +412,9 @@ export default {
     loading: false,
     alertBox: false,
     phoneUpdate: null,
+    clientAvailable: true,
+    clientAvailableHour: '',
+    clientAvailableDialog: false,
     alertBoxColor: '',
     createdMessage: '',
     errors: {
@@ -435,6 +500,33 @@ export default {
       this.ticketPayload.city = this.client.city.id
       this.ticketPayload.assignated = this.assignated
     },
+    testClientAvailable () {
+      if (this.isEmpty(this.ticketPayload.type)) {
+        this.alertBox = true
+        this.alertBoxColor = 'red darken-4'
+        this.createdMessage = 'Selecciona un tipo de ticket antes de continuar'
+        this.loading = false
+        this.errors.type = true
+        return
+      }
+      if (this.ticketPayload.details === '') {
+        this.alertBox = true
+        this.alertBoxColor = 'red darken-4'
+        this.createdMessage = 'Por favor especifica los detalles del ticket antes de continuar'
+        this.loading = false
+        this.errors.details = true
+        return
+      }
+      if (this.ticketPayload.channel === null && (this.ticketPayload.type && this.ticketPayload.type.name !== 'TRASLADO')) {
+        this.alertBox = true
+        this.alertBoxColor = 'red darken-4'
+        this.createdMessage = 'Por favor especifica el canal de reporte del ticket antes de continuar'
+        this.loading = false
+        this.errors.channel = true
+        return
+      }
+      this.clientAvailableDialog = true
+    },
     async createTicket () {
       this.loading = true
       if (this.phoneUpdate) {
@@ -475,8 +567,11 @@ export default {
         this.alertBoxColor = 'red darken-4'
         this.createdMessage = 'Por favor especifica el canal de reporte del ticket antes de continuar'
         this.loading = false
-        this.errors.details = true
+        this.errors.channel = true
         return
+      }
+      if (this.clientAvailableHour !== '') {
+        this.ticketPayload.details = `Cliente disponible a las ${this.clientAvailableHour} \n ${this.ticketPayload.details}`
       }
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets`, {
         method: 'POST',

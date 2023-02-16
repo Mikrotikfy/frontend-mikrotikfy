@@ -25,7 +25,6 @@
               label="Codigo"
               hide-details="auto"
               required
-              disabled
               outlined
               dense
             />
@@ -378,7 +377,11 @@ export default {
         clienttype: this.$route.query.clienttype,
         city: this.$route.query.city
       })
-      this.Client.code = (parseInt(client[0].code) + 1).toString()
+      if (client.length > 0) {
+        this.Client.code = (parseInt(client[0].code) + 1).toString()
+      } else {
+        this.Client.code = '1'
+      }
     },
     async createDebtMovement (client) {
       await this.$store.dispatch('offer/setNewDebt', {

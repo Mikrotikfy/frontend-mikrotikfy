@@ -4,6 +4,7 @@ export default (_, inject) => {
 
 function pushSend (payload) {
   const fetch = require('node-fetch')
+  if (this.env.NODE_ENV !== 'production') { return }
   try {
     const appId = '2b515757-2bd9-49a3-8f7f-81f730c120ca'
 
