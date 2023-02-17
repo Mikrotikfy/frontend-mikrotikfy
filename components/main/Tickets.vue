@@ -542,16 +542,17 @@ export default {
       const addresses = client?.addresses
       if (!address && !addresses) { return 'Sin Dirección' }
       if (address && !addresses) { return client.address }
-      if (address && addresses) { return addresses.at(-1).address }
-      if (!address && addresses) { return addresses.at(-1).address }
+      if (address && addresses.length > 0) { return addresses.at(-1).address }
+      if (!address && addresses.length > 0) { return addresses.at(-1).address }
     },
     processAddressesNeighborhood ({ client }) {
+      console.log(client)
       const addresses = client.addresses
       const neighborhood = client.neighborhood
       if (!neighborhood && !addresses) { return 'Sin Barrio' }
       if (neighborhood && !addresses) { return neighborhood.name }
-      if (neighborhood && addresses) { return addresses.at(-1).neighborhood.name }
-      if (!neighborhood && addresses) { return addresses.at(-1).neighborhood.name }
+      if (neighborhood && addresses.length > 0) { return addresses.at(-1).neighborhood.name }
+      if (!neighborhood && addresses.length > 0) { return addresses.at(-1).neighborhood.name }
     },
     getColor (state, answered, escalated, escalatedoffice) {
       if (state && !answered) {

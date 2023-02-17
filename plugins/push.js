@@ -1,10 +1,10 @@
-export default (_, inject) => {
-  inject('pushSend', input => pushSend(input))
+export default (ctx, inject) => {
+  inject('pushSend', input => pushSend(input, ctx))
 }
 
-function pushSend (payload) {
+function pushSend (payload, ctx) {
   const fetch = require('node-fetch')
-  if (this.env.NODE_ENV !== 'production') { return }
+  if (ctx.env.NODE_ENV !== 'production') { return }
   try {
     const appId = '2b515757-2bd9-49a3-8f7f-81f730c120ca'
 
