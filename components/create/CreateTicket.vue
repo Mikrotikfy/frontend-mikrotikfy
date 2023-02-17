@@ -571,7 +571,7 @@ export default {
         return
       }
       if (this.clientAvailableHour !== '') {
-        this.ticketPayload.details = `Cliente disponible a las ${this.clientAvailableHour} \n ${this.ticketPayload.details}`
+        this.ticketPayload.details = `Cliente disponible desde las ${this.clientAvailableHour}\n${this.ticketPayload.details}`
       }
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets`, {
         method: 'POST',

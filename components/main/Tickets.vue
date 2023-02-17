@@ -210,16 +210,16 @@
                       v-bind="attrs"
                       v-on="on"
                       class="text-truncate" style="max-width:150px;"
-                      @click="copyToClipboard('Direccion', item.client.addresses !== null ? item.client.addresses.at(-1).address : item.client.address)"
+                      @click="copyToClipboard('Direccion', processAddresses(item))"
                     >
-                      {{ item.client.addresses !== null ? item.client.addresses.at(-1).address : item.client.address }}
+                      {{ processAddresses(item) }}
                     </div>
                   </template>
-                  <span>{{ item.client.addresses !== null ? item.client.addresses.at(-1).address : item.client.address }}</span>
+                  <span>{{ processAddresses(item) }}</span>
               </v-tooltip>
               </template>
               <template v-slot:[`item.client.neighborhood.name`]="{ item }">
-                  <strong>{{ item.client !== ? item.client.addresses !== null ? item.client.addresses.at(-1).neighborhood.name : item.client.neighborhood.name : 'No reg.' }}</strong>
+                  <strong>{{ processAddressesNeighborhood(item) }}</strong>
               </template>
               <template v-slot:[`item.client.code`]="props">
                 <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`">{{props.item.client.code}}</nuxt-link>
@@ -393,7 +393,7 @@ export default {
       return this.$store.state.cities ? this.$store.state.cities.find(c => c.id == this.$route.query.city) : ''
     },
     ticketList () {
-      return this.$store.state.ticket.tickets
+      return this.$store.state.ticket.tickets.filter(t => t.client !== null)
     },
     headers () {
       return this.$store.state.ticket.headers
@@ -536,6 +536,22 @@ export default {
       } else {
         return 'primary'
       }
+    },
+    processAddresses ({ client }) {
+      const address = client?.address
+      const addresses = client?.addresses
+      if (!address && !addresses) { return 'Sin Dirección' }
+      if (address && !addresses) { return client.address }
+      if (address && addresses) { return addresses.at(-1).address }
+      if (!address && addresses) { return addresses.at(-1).address }
+    },
+    processAddressesNeighborhood ({ client }) {
+      const addresses = client.addresses
+      const neighborhood = client.neighborhood
+      if (!neighborhood && !addresses) { return 'Sin Barrio' }
+      if (neighborhood && !addresses) { return neighborhood.name }
+      if (neighborhood && addresses) { return addresses.at(-1).neighborhood.name }
+      if (!neighborhood && addresses) { return addresses.at(-1).neighborhood.name }
     },
     getColor (state, answered, escalated, escalatedoffice) {
       if (state && !answered) {
