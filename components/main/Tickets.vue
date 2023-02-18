@@ -546,7 +546,6 @@ export default {
       if (!address && addresses.length > 0) { return addresses.at(-1).address }
     },
     processAddressesNeighborhood ({ client }) {
-      console.log(client)
       const addresses = client.addresses
       const neighborhood = client.neighborhood
       if (!neighborhood && !addresses) { return 'Sin Barrio' }
