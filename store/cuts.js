@@ -169,6 +169,74 @@ export const actions = {
         commit('getPlans', plans.data)
       })
   },
+  updateBillingPeriodAndDebt ({ commit }, payload) {
+    console.log(payload)
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              billingmonth: payload.billingmonth,
+              billingyear: payload.billingyear,
+              indebt: payload.indebt
+            }
+          })
+        })
+          .then(res => res.json())
+          .then((billingperiod) => {
+            resolve(billingperiod)
+          })
+      })
+    } catch (error) {
+      throw new Error(`UPDATE BILLING PERIOD ON CLIENT ACTION ${error}`)
+    }
+  },
+  getClientsByBillingPeriod ({ commit }, payload) {
+    try {
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          $and: [
+            { clienttype: { name: payload.clienttype } },
+            { city: { name: payload.city } },
+            { billingmonth: payload.month },
+            { billingyear: payload.year }
+          ]
+        },
+        pagination: {
+          pageSize: 500
+        },
+        populate: [
+          'addresses',
+          'addresses.neighborhood'
+        ],
+        sort: 'createdAt:desc'
+      },
+      {
+        encodeValuesOnly: true
+      })
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((clients) => {
+            resolve(clients.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`LAST DEBT HISTORY ACTION ${error}`)
+    }
+  },
   getBillingPeriod ({ commit }, payload) {
     try {
       const qs = require('qs')
@@ -267,7 +335,9 @@ export const actions = {
           body: JSON.stringify({
             data: {
               name: payload.name,
-              city: payload.city
+              city: payload.city,
+              month: payload.month,
+              year: payload.year
             }
           })
         })
@@ -279,6 +349,40 @@ export const actions = {
       })
     } catch (error) {
       throw new Error(`ADD BILLING PERIOD ACTION ${error}`)
+    }
+  },
+  getBillingPeriods ({ commit }, payload) {
+    try {
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          city: {
+            name: payload.city
+          }
+        },
+        pagination: {
+          pageSize: 12
+        },
+        sort: 'createdAt:desc'
+      },
+      {
+        encodeValuesOnly: true
+      })
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}billingperiods?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((billingperiods) => {
+            resolve(billingperiods.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`LAST DEBT HISTORY ACTION ${error}`)
     }
   },
   prepareClients ({ commit }, payload) {

@@ -113,7 +113,9 @@ export default {
       await this.$store.dispatch('cuts/addBillingPeriod', {
         city: this.city,
         token: this.$store.state.auth.token,
-        name: this.getMonthName()
+        name: this.getMonthName(),
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear()
       })
     },
     async applyOffers () {
@@ -162,6 +164,14 @@ export default {
     async cutsProcess () {
       for (let i = 0; i < this.validClients.length; i++) {
         const client = this.validClients[i]
+        this.$simpleTelegramUpdateDebt({ client, operator: this.$store.state.auth.username, isInDebt: true, isRetired: false, telegramBots: this.telegramBots })
+        await this.$store.dispatch('cuts/updateBillingPeriodAndDebt', {
+          token: this.$store.state.auth.token,
+          client,
+          billingmonth: new Date().getMonth() + 1,
+          billingyear: new Date().getFullYear(),
+          indebt: true
+        })
         await this.$store.dispatch('offer/setNewDebt', {
           token: this.$store.state.auth.token,
           city: this.city,
@@ -171,28 +181,26 @@ export default {
           client,
           comment: 'CORTE MORA EN LOTE',
           technician: this.$store.state.auth
-        }).then(async () => {
-          this.$simpleTelegramUpdateDebt({ client, operator: this.$store.state.auth.username, isInDebt: true, isRetired: false, telegramBots: this.telegramBots })
-          await this.$store.dispatch('client/setPlanFromModal', {
-            clientId: client.id,
-            clientIndex: null,
-            isOfferChange: false,
-            kick: this.kick,
-            isBulkDx: true,
-            newPlan: { id: 7 },
-            operator: this.$store.state.auth.id,
-            token: this.$store.state.auth.token
-          }).then((success) => {
-            if (success) {
-              this.$store.commit('cuts/addCut', {
-                client
-              })
-            } else {
-              this.$store.commit('cuts/addCutError', {
-                client
-              })
-            }
-          })
+        })
+        await this.$store.dispatch('client/setPlanFromModal', {
+          clientId: client.id,
+          clientIndex: null,
+          isOfferChange: false,
+          kick: this.kick,
+          isBulkDx: true,
+          newPlan: { id: 7 },
+          operator: this.$store.state.auth.id,
+          token: this.$store.state.auth.token
+        }).then((success) => {
+          if (success) {
+            this.$store.commit('cuts/addCut', {
+              client
+            })
+          } else {
+            this.$store.commit('cuts/addCutError', {
+              client
+            })
+          }
         })
       }
     },
