@@ -1,8 +1,27 @@
 <template>
   <v-card>
     <v-card-title class="justify-center">
-      Cortes por mes
+      Listado de usuarios cortados por mes
     </v-card-title>
+    <v-card-text class="d-flex">
+      <MiscPrintDx :clients="clients" />
+      <v-tooltip top>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="red darken-4"
+            class="rounded-xl"
+            v-bind="attrs"
+            :loading="loading"
+            :disabled="loading"
+            v-on="on"
+            @click="retire(selected)"
+          >
+            <v-icon>mdi-cancel</v-icon>
+          </v-btn>
+        </template>
+        <span>Retirar Usuarios</span>
+      </v-tooltip>
+    </v-card-text>
     <v-card-text>
       <v-expansion-panels
         v-model="panel"
@@ -17,10 +36,33 @@
             {{ months[billingperiod.month - 1].name }}
           </v-expansion-panel-header>
           <v-expansion-panel-content>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Realizar Busqueda"
+              style="max-width:500px;"
+              outlined
+              dense
+              hide-details
+            />
             <v-data-table
+              v-model="selected"
               :headers="headers"
               :items="clients"
-            />
+              :loading="loading"
+              :search="search"
+              show-select
+            >
+              <template v-slot:[`item.id`]="{ item }">
+                <v-btn
+                  small
+                  color="red darken-4"
+                  @click="retire([item])"
+                >
+                  <v-icon>mdi-cancel</v-icon>
+                </v-btn>
+              </template>
+            </v-data-table>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -35,13 +77,17 @@ export default {
       prepare: false,
       loading: false,
       billingperiods: [],
+      lastbillingperiod: {},
       clients: [],
+      search: '',
+      selected: [],
       headers: [
-        { text: 'Codigo', value: 'code' },
-        { text: 'Nombre', value: 'name' },
-        { text: 'Direccion', value: 'addresses[0].address' },
-        { text: 'Barrio', value: 'addresses[0].neighborhood.name' },
-        { text: 'Telefono', value: 'phone' }
+        { text: 'Codigo', value: 'code', sortable: false },
+        { text: 'Nombre', value: 'name', sortable: false },
+        { text: 'Direccion', value: 'addresses[0].address', sortable: false },
+        { text: 'Barrio', value: 'addresses[0].neighborhood.name', sortable: false },
+        { text: 'Telefono', value: 'phone', sortable: false },
+        { text: 'Acciones', value: 'id', sortable: false }
       ],
       months: [
         { id: 1, name: 'Enero' },
@@ -59,20 +105,27 @@ export default {
       ]
     }
   },
+  computed: {
+    city () {
+      return this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
+    }
+  },
   watch: {},
   mounted () {
-    this.loading = true
     this.getBillingPeriods()
   },
   methods: {
     async getClients (billingperiod) {
+      this.lastbillingperiod = billingperiod
+      this.loading = true
       await this.$store.dispatch('cuts/getClientsByBillingPeriod', {
         token: this.$store.state.auth.token,
         clienttype: this.$route.query.clienttype,
         city: this.$route.query.city,
         month: billingperiod.month,
         year: billingperiod.year,
-        indebt: true
+        indebt: true,
+        active: true
       }).then((clients) => {
         clients.forEach((client) => {
           client.addresses.sort((a, b) => {
@@ -80,6 +133,7 @@ export default {
           })
         })
         this.clients = clients
+        this.loading = false
       })
     },
     async getBillingPeriods () {
@@ -90,6 +144,35 @@ export default {
       }).then((billingperiods) => {
         this.billingperiods = billingperiods
       })
+    },
+    async retire (clients) {
+      if (clients.length < 1) {
+        this.$toast.error('Selecciona los clientes antes de retirar', { position: 'bottom-center' })
+        return
+      }
+      this.$toast.info('Aplicando cortes. Por favor espere...', { duration: 5000, position: 'bottom-center' })
+      this.loading = true
+      for (let i = 0; i < clients.length; i++) {
+        await this.$store.dispatch('cuts/retireClient', {
+          token: this.$store.state.auth.token,
+          client: clients[i],
+          active: false,
+          indebt: false
+        })
+        await this.$store.dispatch('offer/setNewDebt', {
+          token: this.$store.state.auth.token,
+          city: this.city,
+          isindebt: false,
+          isretired: true,
+          isBulkDx: false,
+          client: clients[i],
+          comment: 'RETIRO DESDE INTERFAZ CORTES',
+          technician: this.$store.state.auth
+        })
+      }
+      this.getClients(this.lastbillingperiod)
+      this.loading = false
+      this.$toast.info('Proceso finalizado correctamente', { duration: 5000, position: 'bottom-center' })
     }
   }
 }

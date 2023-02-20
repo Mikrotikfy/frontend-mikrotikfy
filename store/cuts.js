@@ -169,8 +169,32 @@ export const actions = {
         commit('getPlans', plans.data)
       })
   },
+  retireClient ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              active: payload.active,
+              indebt: payload.indebt
+            }
+          })
+        })
+          .then(res => res.json())
+          .then((client) => {
+            resolve(client)
+          })
+      })
+    } catch (error) {
+      throw new Error(`RETIRE CLIENT ACTION ${error}`)
+    }
+  },
   updateBillingPeriodAndDebt ({ commit }, payload) {
-    console.log(payload)
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
@@ -206,7 +230,8 @@ export const actions = {
             { city: { name: payload.city } },
             { billingmonth: payload.month },
             { billingyear: payload.year },
-            { indebt: payload.indebt }
+            { indebt: payload.indebt },
+            { active: payload.active }
           ]
         },
         pagination: {
