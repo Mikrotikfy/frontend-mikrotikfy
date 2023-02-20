@@ -15,10 +15,11 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
                     v-bind="attrs"
-                    class="my-2 mx-2"
+                    class="my-2 ml-2 mr-1"
                     color="white black--text"
                     dark
                     rounded
+                    small
                     :disabled="initialLoading"
                     :loading="initialLoading"
                     v-on="on"
@@ -37,13 +38,14 @@
                 <v-menu offset-y>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      color="primary"
+                      color="white black--text"
                       dark
-                      class="my-2 mx-2 rounded-xl"
+                      small
+                      class="my-2 mx-1 rounded-xl"
                       v-bind="attrs"
                       v-on="on"
                     >
-                      <v-icon>mdi-list-status</v-icon>
+                      <v-icon class="black--text">mdi-list-status</v-icon>
                       {{ $store.state.isDesktop ? 'Filtros' : '' }}
                     </v-btn>
                   </template>
