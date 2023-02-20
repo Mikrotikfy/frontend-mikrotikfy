@@ -301,4 +301,8 @@ body {
     display: block;
   }
 }
+
+.v-btn:before {
+    background-color: transparent !important;
+}
 </style>
