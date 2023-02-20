@@ -71,7 +71,8 @@ export default {
         clienttype: this.$route.query.clienttype,
         city: this.$route.query.city,
         month: billingperiod.month,
-        year: billingperiod.year
+        year: billingperiod.year,
+        indebt: true
       }).then((clients) => {
         clients.forEach((client) => {
           client.addresses.sort((a, b) => {

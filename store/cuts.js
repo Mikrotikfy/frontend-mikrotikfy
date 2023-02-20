@@ -205,7 +205,8 @@ export const actions = {
             { clienttype: { name: payload.clienttype } },
             { city: { name: payload.city } },
             { billingmonth: payload.month },
-            { billingyear: payload.year }
+            { billingyear: payload.year },
+            { indebt: payload.indebt }
           ]
         },
         pagination: {
