@@ -4,7 +4,7 @@
       Listado de usuarios cortados por mes
     </v-card-title>
     <v-card-text class="d-flex">
-      <MiscPrintDx :clients="clients" />
+      <MiscPrintDx :clients="selected" />
       <v-tooltip top>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
