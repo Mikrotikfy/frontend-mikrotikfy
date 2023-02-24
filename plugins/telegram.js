@@ -25,8 +25,15 @@ function simpleTelegramCreate ({ client, operator, telegramBots }) {
       '/sendMessage?chat_id=' +
       chatid +
       '&text=' +
-      encodeURIComponent(sanitizeString(message))
-    fetch(req)
+      encodeURIComponent(message)
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+
+    fetch(req, options)
       .catch(function (err) {
         return err
       })
@@ -46,8 +53,15 @@ function simpleTelegramUpdate ({ client, operator, telegramBots }) {
     '/sendMessage?chat_id=' +
     chatid +
     '&text=' +
-    encodeURIComponent(sanitizeString(message))
-  fetch(req)
+    encodeURIComponent(message)
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  fetch(req, options)
     .catch(function (err) {
       return err
     })
@@ -64,8 +78,15 @@ function simpleTelegramUpdateTV ({ client, operator, telegramBots }) {
     '/sendMessage?chat_id=' +
     chatid +
     '&text=' +
-    encodeURIComponent(sanitizeString(message))
-  fetch(req)
+    encodeURIComponent(message)
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  fetch(req, options)
     .catch(function (err) {
       return err
     })
@@ -92,8 +113,15 @@ function simpleTelegramUpdatePlan ({ client, operator, isRx, telegramBots }) {
     '/sendMessage?chat_id=' +
     chatid +
     '&text=' +
-    encodeURIComponent(sanitizeString(message))
-  fetch(req)
+    encodeURIComponent(message)
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  fetch(req, options)
     .catch(function (err) {
       return err
     })
@@ -104,9 +132,9 @@ function simpleTelegramUpdateOffer ({ client, operator, offer, telegramBots }) {
   const bot = telegramBots.token
   const chatid = telegramBots.binnacle
   const line0 = '📝 CAMBIO DE TARIFA 📝'
-  const line1 = sanitizeString(offer.name)
+  const line1 = offer.name
   const line2 = client.code
-  const line3 = sanitizeString(client.name)
+  const line3 = client.name
   const line4 = operator
   const message = `${line0}\n${line1}\n${line2}\n${line3}\n${line4}`
   const req =
@@ -116,7 +144,14 @@ function simpleTelegramUpdateOffer ({ client, operator, offer, telegramBots }) {
     chatid +
     '&text=' +
     encodeURIComponent(message)
-  fetch(req)
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  fetch(req, options)
     .catch(function (err) {
       return err
     })
@@ -135,7 +170,7 @@ function simpleTelegramUpdateDebt ({ client, operator, isInDebt, isRetired, tele
     line1 = '📶 RECONEXIÓN 📶'
   }
   const line2 = client.code
-  const line3 = sanitizeString(client.name)
+  const line3 = client.name
   const line4 = operator
   const message = `${line1}\n${line2}\n${line3}\n${line4}`
   const req =
@@ -145,7 +180,14 @@ function simpleTelegramUpdateDebt ({ client, operator, isInDebt, isRetired, tele
     chatid +
     '&text=' +
     encodeURIComponent(message)
-  fetch(req)
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  fetch(req, options)
     .catch(function (err) {
       return err
     })
@@ -157,12 +199,12 @@ function simpleTelegramCreateTicket ({ client, tickettype, details, operator, te
   const chatid = telegramBots.chat
   const line1 = 'ℹ NUEVO TICKET ℹ️'
   const line2 = client.code
-  const line3 = sanitizeString(client.name)
-  const line4 = sanitizeString(client.addresses.at(-1).address)
-  const line5 = sanitizeString(client.addresses.at(-1).neighborhood.name)
+  const line3 = client.name
+  const line4 = client.addresses.at(-1).address
+  const line5 = client.addresses.at(-1).neighborhood.name
   const line6 = client.phone
   const line7 = tickettype
-  const line8 = sanitizeString(details)
+  const line8 = details
   const line9 = operator
   const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n\n${line8}\nInforma: ${line9}`
   const req =
@@ -172,7 +214,14 @@ function simpleTelegramCreateTicket ({ client, tickettype, details, operator, te
     chatid +
     '&text=' +
     encodeURIComponent(message)
-  fetch(req)
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  fetch(req, options)
     .catch(function (err) {
       return err
     })
@@ -183,12 +232,12 @@ function simpleTelegramCreateTicketTV ({ client, tickettype, details, operator, 
   const chatid = telegramBots.tvchat
   const line1 = 'ℹ NUEVO TICKET ℹ️'
   const line2 = client.code
-  const line3 = sanitizeString(client.name)
-  const line4 = sanitizeString(client.addresses.at(-1).address)
-  const line5 = sanitizeString(client.addresses.at(-1).neighborhood.name)
+  const line3 = client.name
+  const line4 = client.addresses.at(-1).address
+  const line5 = client.addresses.at(-1).neighborhood.name
   const line6 = client.phone
   const line7 = tickettype
-  const line8 = sanitizeString(details)
+  const line8 = details
   const line9 = operator
   const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n\n${line8}\nInforma: ${line9}`
   const req =
@@ -198,7 +247,14 @@ function simpleTelegramCreateTicketTV ({ client, tickettype, details, operator, 
     chatid +
     '&text=' +
     encodeURIComponent(message)
-  fetch(req)
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  fetch(req, options)
     .catch(function (err) {
       return err
     })
@@ -213,13 +269,13 @@ function simpleTelegramCreateTicketAdvance ({ client, ticket, status, details, o
   } else {
     line1 = '✴️ AVANCE DE TICKET ✴️'
   }
-  const line2 = sanitizeString(client.code)
-  const line3 = sanitizeString(client.name)
-  const line4 = sanitizeString(client.addresses.at(-1).address)
-  const line5 = sanitizeString(client.addresses.at(-1).neighborhood.name)
-  const line6 = sanitizeString(client.phone)
-  const line7 = sanitizeString(ticket.tickettype.name)
-  const line8 = sanitizeString(details)
+  const line2 = client.code
+  const line3 = client.name
+  const line4 = client.addresses.at(-1).address
+  const line5 = client.addresses.at(-1).neighborhood.name
+  const line6 = client.phone
+  const line7 = ticket.tickettype.name
+  const line8 = details
   let line9 = ''
   if (status) {
     line9 = 'CASO CERRADO'
@@ -235,7 +291,14 @@ function simpleTelegramCreateTicketAdvance ({ client, ticket, status, details, o
     chatid +
     '&text=' +
     encodeURIComponent(message)
-  fetch(req)
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  fetch(req, options)
     .catch(function (err) {
       return err
     })
@@ -250,17 +313,17 @@ function simpleTelegramCreateTicketAdvanceTv ({ client, ticket, status, details,
   } else {
     line1 = '✴️ AVANCE DE TICKET ✴️'
   }
-  const line2 = sanitizeString(client.code)
-  const line3 = sanitizeString(client.name)
-  const line4 = sanitizeString(client.addresses.at(-1).address)
-  const line5 = sanitizeString(client.addresses.at(-1).neighborhood.name)
-  const line6 = sanitizeString(client.phone)
-  const line7 = sanitizeString(ticket.tickettype.name)
-  const line8 = `Calidad de señal: ${sanitizeString(specs.tvspectype.name)}`
+  const line2 = client.code
+  const line3 = client.name
+  const line4 = client.addresses.at(-1).address
+  const line5 = client.addresses.at(-1).neighborhood.name
+  const line6 = client.phone
+  const line7 = ticket.tickettype.name
+  const line8 = `Calidad de señal: ${specs.tvspectype.name}`
   const line10 = `Altos: ${specs.high}`
   const line11 = `Bajos: ${specs.down}`
   const line12 = `Televisores: ${specs.tvs}`
-  const line13 = `Observaciones: ${sanitizeString(details)}`
+  const line13 = `Observaciones: ${details}`
   let line14 = ''
   if (status) {
     line14 = 'CASO CERRADO'
@@ -276,7 +339,14 @@ function simpleTelegramCreateTicketAdvanceTv ({ client, ticket, status, details,
     chatid +
     '&text=' +
     encodeURIComponent(message)
-  fetch(req)
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  fetch(req, options)
     .catch(function (err) {
       return err
     })
@@ -293,8 +363,15 @@ function simpleTelegramCreateRequest ({ client, telegramBots, operator }) {
     '/sendMessage?chat_id=' +
     chatid +
     '&text=' +
-    encodeURIComponent(sanitizeString(message))
-  fetch(req)
+    encodeURIComponent(message)
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  fetch(req, options)
     .catch(function (err) {
       return err
     })
@@ -311,15 +388,16 @@ function simpleTelegramAdminCreate ({ client, telegramBots, operator }) {
     '/sendMessage?chat_id=' +
     chatid +
     '&text=' +
-    encodeURIComponent(sanitizeString(message))
-  fetch(req)
+    encodeURIComponent(message)
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  fetch(req, options)
     .catch(function (err) {
       return err
     })
-}
-
-function sanitizeString (str) {
-  const res1 = str.normalize('NFD').replace(/[\u0300-\u036F]/g, '')
-  const res2 = res1.replace(/[^a-z0-9áéíóúñü \n@ñ,_-]/gim, '')
-  return res2
 }
