@@ -157,14 +157,14 @@ function simpleTelegramUpdateOffer ({ client, operator, offer, telegramBots }) {
     })
 };
 
-function simpleTelegramUpdateDebt ({ client, operator, isInDebt, isRetired, telegramBots }) {
+function simpleTelegramUpdateDebt ({ client, operator, indebt, active, telegramBots }) {
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.binnacle
   let line1 = ''
-  if (isInDebt && !isRetired) {
+  if (indebt && active) {
     line1 = '🔴 DX POR MORA 🔴'
-  } else if (isInDebt && isRetired) {
+  } else if (!indebt && !active) {
     line1 = '✴️ RETIRO ✴️'
   } else {
     line1 = '📶 RECONEXIÓN 📶'

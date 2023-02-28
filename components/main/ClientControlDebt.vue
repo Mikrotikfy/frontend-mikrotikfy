@@ -146,8 +146,8 @@ export default {
       this.$simpleTelegramUpdateDebt({
         client: this.client,
         operator: this.$store.state.auth.username,
-        isInDebt: payload.indebt,
-        isRetired: !payload.active,
+        indebt: payload.indebt,
+        active: payload.active,
         telegramBots: this.telegramBots
       })
       this.$store.dispatch('client/setPlanFromModal', {
