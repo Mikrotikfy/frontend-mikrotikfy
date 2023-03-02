@@ -34,6 +34,21 @@
                 v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
                 :tickets="selected"
               />
+              <v-btn
+                v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
+                class="my-2 ml-2 mr-1"
+                color="white black--text"
+                dark
+                rounded
+                small
+                :disabled="initialLoading"
+                :loading="initialLoading"
+                @click="printOrder(selected, $route.query.clienttype)"
+              >
+                <v-icon>
+                  mdi-file-sign
+                </v-icon>
+              </v-btn>
               <div class="text-center">
                 <v-menu offset-y>
                   <template v-slot:activator="{ on, attrs }">
@@ -195,7 +210,7 @@
                     <div
                       v-bind="attrs"
                       v-on="on"
-                      class="text-truncate" style="max-width:150px;"
+                      class="text-truncate" style="max-width:130px;"
                     >
                       {{ showOnlyNameAndSecondName(item.client.name) }}
                     </div>
@@ -211,7 +226,7 @@
                     <div
                       v-bind="attrs"
                       v-on="on"
-                      class="text-truncate" style="max-width:150px;"
+                      class="text-truncate" style="max-width:130px;"
                       @click="copyToClipboard('Direccion', processAddresses(item))"
                     >
                       {{ processAddresses(item) }}
@@ -227,7 +242,7 @@
                 <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`">{{props.item.client.code}}</nuxt-link>
               </template>
               <template v-slot:[`item.assignated.username`]="{ item }">
-                <strong style="max-width:60px;"> {{ ucfirst(item.assignated.username) }}</strong>
+                <strong style="max-width:50px;"> {{ ucfirst(item.assignated.username) }}</strong>
               </template>
               <template v-slot:[`item.client.technology.name`]="props">
                 {{ props.item.client.technology !== null ? props.item.client.technology.name : 'No reg.' }}
@@ -409,13 +424,13 @@ export default {
     getHeadersByClienttype () {
       return this.$route.query.clienttype === 'INTERNET' ? this.$store.state.isDesktop ? [
         { text: 'Estado', sortable: false, value: 'active', width: '5%', hide: 'd-none d-lg-table-cell' },
-        { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 100 },
-        { text: 'Canal', sortable: false, value: 'channel', width: 100, align: ' d-none d-lg-table-cell' },
-        { text: 'Observaciones', sortable: false, value: 'details', width: 150, align: ' d-none d-lg-table-cell' },
-        { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
-        { text: 'Dirección', sortable: false, value: 'client.address', width: 150, align: ' d-none d-lg-table-cell' },
-        { text: 'Código', sortable: false, value: 'client.code', width: 60, align: ' d-none d-lg-table-cell' },
-        { text: 'Cliente', sortable: false, value: 'client.name', width: 150 },
+        { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
+        { text: 'Canal', sortable: false, value: 'channel', width: 80, align: ' d-none d-lg-table-cell' },
+        { text: 'Observaciones', sortable: false, value: 'details', width: 80, align: ' d-none d-lg-table-cell' },
+        { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 130 },
+        { text: 'Dirección', sortable: false, value: 'client.address', width: 130, align: ' d-none d-lg-table-cell' },
+        { text: 'Código', sortable: false, value: 'client.code', width: 50, align: ' d-none d-lg-table-cell' },
+        { text: 'Cliente', sortable: false, value: 'client.name', width: 130 },
         { text: 'Celular', sortable: false, value: 'client.phone', align: ' d-none d-lg-table-cell' },
         { text: 'Tec.', sortable: false, value: 'client.technology.name', align: ' d-none d-lg-table-cell' },
         { text: 'Por', sortable: false, value: 'assignated.username', width: 60, align: ' d-none d-lg-table-cell' },
@@ -462,6 +477,43 @@ export default {
     this.removeOldIntervalIfExists()
   },
   methods: {
+    printOrder (ticketsSelected, clienttype) {
+      if (ticketsSelected.length === 0) {
+        this.$toast.error('No hay clientes seleccionados', { duration: 3000 })
+        return
+      }
+      const clients = []
+      if (this.$route.query.clienttype === 'INTERNET') {
+        ticketsSelected.map((ticket) => {
+          clients.push({
+            id: ticket.client.id,
+            name: ticket.client.name,
+            address: ticket.client.address,
+            addresses: ticket.client.addresses,
+            phone: ticket.client.phone,
+            plan: ticket.client.plan,
+            technology: ticket.client.technology.name,
+            stratum: ticket.client.stratum
+          })
+        })
+      } else {
+        ticketsSelected.map((ticket) => {
+          clients.push({
+            id: ticket.client.id,
+            name: ticket.client.name,
+            address: ticket.client.address,
+            addresses: ticket.client.addresses,
+            phone: ticket.client.phone,
+            stratum: ticket.client.stratum
+          })
+        })
+      }
+      if (clienttype === 'INTERNET') {
+        this.$router.push({ name: 'format', query: { clientsInfo: JSON.stringify(clients) } })
+      } else {
+        this.$router.push({ name: 'tvformat', query: { clientsInfo: JSON.stringify(clients) } })
+      }
+    },
     initIntervalAndGetTickets () {
       this.removeOldIntervalIfExists()
       this.setGetTicketsInterval()

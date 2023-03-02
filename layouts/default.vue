@@ -272,6 +272,11 @@ body {
     background-position: center 0, 0 0, 0 0;
     background-size: cover;
 }
+@media print {
+  body {
+    background-color: #fff;
+  }
+}
 /* width */
 ::-webkit-scrollbar {
   width: 5px;

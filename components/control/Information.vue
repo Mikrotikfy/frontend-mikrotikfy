@@ -117,7 +117,7 @@
           </v-col>
         </v-row>
         <v-row v-if="clienttype.name === 'INTERNET'">
-          <v-col cols="12" xs="12" sm="12" md="6" lg="6">
+          <v-col cols="12" xs="12" sm="12" md="4" lg="4">
             <v-select
               v-model="currentEditClient.technology"
               :disabled="!(!$isAdmin() || !$isBiller() || !$isTechnician()) || loading"
@@ -134,7 +134,7 @@
               @change="updateClient"
             />
           </v-col>
-          <v-col cols="12" xs="12" sm="12" md="6" lg="6">
+          <v-col cols="12" xs="12" sm="12" md="4" lg="4">
             <v-text-field
               v-model="currentEditClient.email"
               :disabled="!(!$isAdmin() || !$isBiller()) || loading"
@@ -143,6 +143,20 @@
               autocomplete="off"
               outlined
               dense
+              hide-details="auto"
+              @blur="updateClient"
+              @keyup.enter="$event.target.blur()"
+            />
+          </v-col>
+          <v-col cols="12" xs="12" sm="12" md="4" lg="4">
+            <v-text-field
+              v-model.number="currentEditClient.stratum"
+              :disabled="!(!$isAdmin() || !$isBiller()) || loading"
+              label="Estrato"
+              autocomplete="off"
+              outlined
+              dense
+              type="number"
               hide-details="auto"
               @blur="updateClient"
               @keyup.enter="$event.target.blur()"
@@ -150,7 +164,7 @@
           </v-col>
         </v-row>
         <v-row v-if="clienttype.name === 'TELEVISION'">
-          <v-col cols="12" xs="12" sm="12" md="6" lg="6">
+          <v-col cols="12" xs="12" sm="12" md="4" lg="4">
             <v-text-field
               v-model="currentEditClient.email"
               :disabled="!(!$isAdmin() || !$isBiller()) || loading"
@@ -164,7 +178,21 @@
               @keyup.enter="$event.target.blur()"
             />
           </v-col>
-          <v-col cols="12" xs="12" sm="12" md="6" lg="6">
+          <v-col cols="12" xs="12" sm="12" md="4" lg="4">
+            <v-text-field
+              v-model.number="currentEditClient.stratum"
+              :disabled="!(!$isAdmin() || !$isBiller()) || loading"
+              label="Estrato"
+              autocomplete="off"
+              outlined
+              dense
+              type="number"
+              hide-details="auto"
+              @blur="updateClient"
+              @keyup.enter="$event.target.blur()"
+            />
+          </v-col>
+          <v-col cols="12" xs="12" sm="12" md="4" lg="4">
             <v-text-field
               v-model="currentEditClient.phone"
               label="Telefono"

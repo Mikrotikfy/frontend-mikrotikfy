@@ -20,7 +20,7 @@
       <span>Información de usuario</span>
     </v-tooltip>
     <v-dialog v-if="dialogEdit" v-model="dialogEdit" max-width="1100px" :retain-focus="false" fullscreen>
-      <v-card style="background-color:#181818;">
+      <v-card>
         <v-container fluid>
           <v-card-title>
             <v-icon class="mr-2">

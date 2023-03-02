@@ -195,6 +195,15 @@
               hide-details="auto"
             />
           </v-col>
+          <v-col>
+            <v-text-field
+              v-model="Client.stratum"
+              label="Estrato"
+              outlined
+              dense
+              hide-details="auto"
+            />
+          </v-col>
         </v-row>
         <v-row v-if="clienttype.name === 'INTERNET'">
           <v-col>
@@ -286,7 +295,8 @@ export default {
         newModel: 1,
         nap_onu_address: '',
         opticalPower: '',
-        ipmodel: 0
+        ipmodel: 0,
+        stratum: 0
       },
       dir1: '',
       dir2: '',
