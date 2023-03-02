@@ -492,8 +492,9 @@ export default {
             addresses: ticket.client.addresses,
             phone: ticket.client.phone,
             plan: ticket.client.plan,
-            technology: ticket.client.technology.name,
-            stratum: ticket.client.stratum
+            technology: ticket.client.technology,
+            stratum: ticket.client.stratum,
+            tickettype: ticket.tickettype.name
           })
         })
       } else {
@@ -504,14 +505,17 @@ export default {
             address: ticket.client.address,
             addresses: ticket.client.addresses,
             phone: ticket.client.phone,
-            stratum: ticket.client.stratum
+            stratum: ticket.client.stratum,
+            tickettype: ticket.tickettype.name
           })
         })
       }
       if (clienttype === 'INTERNET') {
-        this.$router.push({ name: 'format', query: { clientsInfo: JSON.stringify(clients) } })
+        const routeData = this.$router.resolve({ name: 'format', query: { clientsInfo: JSON.stringify(clients) } })
+        window.open(routeData.href, '_blank')
       } else {
-        this.$router.push({ name: 'tvformat', query: { clientsInfo: JSON.stringify(clients) } })
+        const routeData = this.$router.push({ name: 'tvformat', query: { clientsInfo: JSON.stringify(clients) } })
+        window.open(routeData.href, '_blank')
       }
     },
     initIntervalAndGetTickets () {

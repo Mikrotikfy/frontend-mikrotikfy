@@ -7,7 +7,11 @@
     >
       <v-row>
         <v-col cols="4" class="d-flex justify-start">
-          <MainLogoDark />
+          <v-img
+            src="cmas.png"
+            contain
+            max-width="200"
+          />
         </v-col>
         <v-col cols="8" class="d-flex align-end justify-center">
           <h2>ENTREGA DE SERVICIO TELEVISION</h2>
@@ -74,7 +78,7 @@
               <td style="border-right: 1px solid black;border-bottom: 1px solid black;grid-column: span 2;"></td>
               <td></td>
               <td style="border-left: 1px solid black;grid-column: span 2;">
-                INSTALACION
+                {{ clientInfo.tickettype }}
               </td>
               <td style="border-left: 1px solid black;"></td>
               <td></td>
@@ -334,8 +338,8 @@ export default {
   padding-left: 5px;
 }
 p {
-  font-size: 14px;
-  line-height: 1.1rem;
+  font-size: 16px;
+  line-height: 1.2rem;
   margin-bottom: 0 !important;
 }
 @media print {
