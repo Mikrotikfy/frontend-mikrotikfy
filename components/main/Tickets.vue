@@ -15,7 +15,7 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
                     v-bind="attrs"
-                    class="my-2 ml-2 mr-1"
+                    class="my-2 ml-2 mr-2"
                     color="white black--text"
                     dark
                     rounded
@@ -34,21 +34,9 @@
                 v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
                 :tickets="selected"
               />
-              <v-btn
+              <MiscPrintOrder
                 v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
-                class="my-2 ml-2 mr-1"
-                color="white black--text"
-                dark
-                rounded
-                small
-                :disabled="initialLoading"
-                :loading="initialLoading"
-                @click="printOrder(selected, $route.query.clienttype)"
-              >
-                <v-icon>
-                  mdi-file-sign
-                </v-icon>
-              </v-btn>
+              />
               <div class="text-center">
                 <v-menu offset-y>
                   <template v-slot:activator="{ on, attrs }">
@@ -477,47 +465,6 @@ export default {
     this.removeOldIntervalIfExists()
   },
   methods: {
-    printOrder (ticketsSelected, clienttype) {
-      if (ticketsSelected.length === 0) {
-        this.$toast.error('No hay clientes seleccionados', { duration: 3000 })
-        return
-      }
-      const clients = []
-      if (this.$route.query.clienttype === 'INTERNET') {
-        ticketsSelected.map((ticket) => {
-          clients.push({
-            id: ticket.client.id,
-            name: ticket.client.name,
-            address: ticket.client.address,
-            addresses: ticket.client.addresses,
-            phone: ticket.client.phone,
-            plan: ticket.client.plan,
-            technology: ticket.client.technology,
-            stratum: ticket.client.stratum,
-            tickettype: ticket.tickettype.name
-          })
-        })
-      } else {
-        ticketsSelected.map((ticket) => {
-          clients.push({
-            id: ticket.client.id,
-            name: ticket.client.name,
-            address: ticket.client.address,
-            addresses: ticket.client.addresses,
-            phone: ticket.client.phone,
-            stratum: ticket.client.stratum,
-            tickettype: ticket.tickettype.name
-          })
-        })
-      }
-      if (clienttype === 'INTERNET') {
-        const routeData = this.$router.resolve({ name: 'format', query: { clientsInfo: JSON.stringify(clients) } })
-        window.open(routeData.href, '_blank')
-      } else {
-        const routeData = this.$router.push({ name: 'tvformat', query: { clientsInfo: JSON.stringify(clients) } })
-        window.open(routeData.href, '_blank')
-      }
-    },
     initIntervalAndGetTickets () {
       this.removeOldIntervalIfExists()
       this.setGetTicketsInterval()
