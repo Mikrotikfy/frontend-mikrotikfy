@@ -24,15 +24,21 @@
 </template>
 <script>
 export default {
+  props: {
+    tickets: {
+      type: Array,
+      default: () => []
+    }
+  },
   methods: {
-    printOrder (ticketsSelected) {
-      if (ticketsSelected.length === 0) {
+    printOrder () {
+      if (this.tickets.length === 0) {
         this.$toast.error('No hay clientes seleccionados', { duration: 3000 })
         return
       }
       const clients = []
       if (this.$route.query.clienttype === 'INTERNET') {
-        ticketsSelected.map((ticket) => {
+        this.tickets.map((ticket) => {
           clients.push({
             id: ticket.client.id,
             name: ticket.client.name,
@@ -46,7 +52,7 @@ export default {
           })
         })
       } else {
-        ticketsSelected.map((ticket) => {
+        this.tickets.map((ticket) => {
           clients.push({
             id: ticket.client.id,
             name: ticket.client.name,

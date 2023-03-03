@@ -36,6 +36,7 @@
               />
               <MiscPrintOrder
                 v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
+                :tickets="selected"
               />
               <div class="text-center">
                 <v-menu offset-y>
