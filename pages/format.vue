@@ -247,9 +247,6 @@ export default {
 }
 </script>
 <style scoped>
-html {
-  font-size: 16px!important;
-}
 body {
   background-color:white!important;
 }
@@ -271,6 +268,14 @@ p {
   font-size: 16px;
   line-height: 1.5rem;
   margin-bottom: 0 !important;
+}
+h2 {
+  font-size: 1.5rem!important;
+  line-height: 1.5rem!important;
+}
+strong {
+  font-size: 1.2rem!important;
+  line-height: 1.5rem!important;
 }
 @media print {
     .pagebreak {
