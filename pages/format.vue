@@ -262,8 +262,8 @@ export default {
   padding-left: 5px;
 }
 p {
-  font-size: 14px;
-  line-height: 1.1rem;
+  font-size: 16px;
+  line-height: 1.5rem;
   margin-bottom: 0 !important;
 }
 @media print {

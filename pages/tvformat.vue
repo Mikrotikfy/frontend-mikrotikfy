@@ -264,7 +264,7 @@
         <v-col class="d-flex justify-start py-1 text-center" style="border: 1px solid black; height:50px;">
         </v-col>
       </v-row>
-      <v-row class="mt-10">
+      <v-row class="mt-15">
         <v-col class="d-flex justify-center py-1 text-start">
           <div>
             <v-row>
@@ -339,7 +339,7 @@ export default {
 }
 p {
   font-size: 16px;
-  line-height: 1.2rem;
+  line-height: 1.5rem;
   margin-bottom: 0 !important;
 }
 @media print {

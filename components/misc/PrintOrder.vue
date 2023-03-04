@@ -68,7 +68,7 @@ export default {
         const routeData = this.$router.resolve({ name: 'format', query: { clientsInfo: JSON.stringify(clients) } })
         window.open(routeData.href, '_blank')
       } else {
-        const routeData = this.$router.push({ name: 'tvformat', query: { clientsInfo: JSON.stringify(clients) } })
+        const routeData = this.$router.resolve({ name: 'tvformat', query: { clientsInfo: JSON.stringify(clients) } })
         window.open(routeData.href, '_blank')
       }
     }

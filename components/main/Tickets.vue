@@ -455,6 +455,7 @@ export default {
     $route () {
       this.initIntervalAndGetTickets()
       this.getTickettypes()
+      this.selected = []
     }
   },
   mounted () {
