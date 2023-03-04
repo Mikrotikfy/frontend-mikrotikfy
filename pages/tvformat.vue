@@ -327,6 +327,8 @@ export default {
 .tabla {
   width: 100%;
   border: 1px solid black;
+  font-size: 16px!important;
+  line-height: 2rem!important;
 }
 
 .tabla > tr {
@@ -338,8 +340,8 @@ export default {
   padding-left: 5px;
 }
 p {
-  font-size: 16px;
-  line-height: 1.5rem;
+  font-size: 16px!important;
+  line-height: 1.5rem!important;
   margin-bottom: 0 !important;
 }
 h2 {
@@ -347,7 +349,7 @@ h2 {
   line-height: 1.5rem!important;
 }
 strong {
-  font-size: 16px;
+  font-size: 16px!important;
   line-height: 1.5rem!important;
 }
 @media print {

@@ -254,6 +254,8 @@ body {
   width: 100%;
   border-collapse: collapse;
   border: 1px solid black;
+  font-size: 16px!important;
+  line-height: 2rem!important;
 }
 
 .tabla > tr {
@@ -266,7 +268,7 @@ body {
 }
 p {
   font-size: 16px;
-  line-height: 1.5rem;
+  line-height: 1.5rem!important;
   margin-bottom: 0 !important;
 }
 h2 {
