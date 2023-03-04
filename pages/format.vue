@@ -251,6 +251,8 @@ export default {
   width: 100%;
   border-collapse: collapse;
   border: 1px solid black;
+  line-height:1.5rem!important;
+  font-size:16px!important;
 }
 
 .tabla > tr {
@@ -262,8 +264,8 @@ export default {
   padding-left: 5px;
 }
 p {
-  font-size: 16px;
-  line-height: 1.5rem;
+  font-size: 16px!important;
+  line-height: 1.5rem!important;
   margin-bottom: 0 !important;
 }
 @media print {

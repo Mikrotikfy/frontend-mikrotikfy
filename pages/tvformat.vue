@@ -19,7 +19,7 @@
       </v-row>
       <v-row>
         <v-col class="py-1">
-          <table class="tabla" style="line-height:1rem;font-size:14px;">
+          <table class="tabla">
             <tr>
               <td style="border-right: 1px solid black; border-bottom: 1px solid black;">
                 CLIENTE:
@@ -327,6 +327,8 @@ export default {
 .tabla {
   width: 100%;
   border: 1px solid black;
+  line-height:1.5rem!important;
+  font-size:16px!important;
 }
 
 .tabla > tr {
@@ -338,7 +340,7 @@ export default {
   padding-left: 5px;
 }
 p {
-  font-size: 16px;
+  font-size: 16px!important;
   line-height: 1.5rem;
   margin-bottom: 0 !important;
 }
