@@ -247,6 +247,12 @@ export default {
 }
 </script>
 <style scoped>
+html {
+  font-size: 16px!important;
+}
+body {
+  background-color:white!important;
+}
 .tabla {
   width: 100%;
   border-collapse: collapse;
@@ -269,6 +275,7 @@ p {
 @media print {
     .pagebreak {
         page-break-after: always;
+        opacity: 0;
     }
 }
 </style>

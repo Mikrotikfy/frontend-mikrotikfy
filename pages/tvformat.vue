@@ -324,6 +324,9 @@ export default {
 }
 </script>
 <style scoped>
+html {
+  font-size: 16px!important;
+}
 .tabla {
   width: 100%;
   border: 1px solid black;
