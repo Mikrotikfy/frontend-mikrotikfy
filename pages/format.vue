@@ -239,9 +239,14 @@ export default {
   },
   methods: {
     getClientInfo () {
-      if (this.$route.query.clientsInfo) {
-        this.clientsInfo = JSON.parse(this.$route.query.clientsInfo)
+      if (localStorage.getItem('clientsInfo')) {
+        this.clientsInfo = JSON.parse(localStorage.getItem('clientsInfo'))
       }
+    }
+  },
+  head () {
+    return {
+      title: 'Imprimir Orden de Servicio'
     }
   }
 }

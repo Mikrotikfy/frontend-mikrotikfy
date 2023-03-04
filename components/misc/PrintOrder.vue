@@ -65,10 +65,14 @@ export default {
         })
       }
       if (this.$route.query.clienttype === 'INTERNET') {
-        const routeData = this.$router.resolve({ name: 'format', query: { clientsInfo: JSON.stringify(clients) } })
+        localStorage.removeItem('clientsInfo')
+        localStorage.setItem('clientsInfo', JSON.stringify(clients))
+        const routeData = this.$router.resolve({ name: 'format' })
         window.open(routeData.href, '_blank')
       } else {
-        const routeData = this.$router.resolve({ name: 'tvformat', query: { clientsInfo: JSON.stringify(clients) } })
+        localStorage.removeItem('clientsInfo')
+        localStorage.setItem('clientsInfo', JSON.stringify(clients))
+        const routeData = this.$router.resolve({ name: 'tvformat' })
         window.open(routeData.href, '_blank')
       }
     }

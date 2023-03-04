@@ -67,25 +67,26 @@ export default {
     return {
       modal: false,
       technician: null,
-      technicians: []
-    }
-  },
-  computed: {
-    clients () {
-      return JSON.parse(this.$route.query.clientsInfo) || []
-    },
-    clienttype () {
-      return this.$route.query.clienttype
+      technicians: [],
+      clients: [],
+      clienttype: ''
     }
   },
   mounted () {
     this.$vuetify.theme.dark = false
+    this.getClientDx()
+    this.clientsDxClienttype()
   },
   methods: {
-    async getTechnicians () {
-      this.technicians = await this.$store.dispatch('operator/getOperatorList', {
-        token: this.$store.state.auth.token
-      })
+    getClientDx () {
+      if (localStorage.getItem('clientsDx')) {
+        this.clients = JSON.parse(localStorage.getItem('clientsDx'))
+      }
+    },
+    clientsDxClienttype () {
+      if (localStorage.getItem('clientsDxClienttype')) {
+        this.clienttype = JSON.parse(localStorage.getItem('clientsDxClienttype'))
+      }
     },
     getDate (date) {
       const dateObject = new Date(date)

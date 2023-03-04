@@ -43,6 +43,7 @@ export default {
           this.clients.map((client) => {
             clients.push({
               id: client.id,
+              code: client.code,
               name: client.name,
               address: client.address,
               addresses: client.addresses,
@@ -56,6 +57,7 @@ export default {
           this.clients.map((client) => {
             clients.push({
               id: client.id,
+              code: client.code,
               name: client.name,
               address: client.address,
               addresses: client.addresses,
@@ -63,7 +65,11 @@ export default {
             })
           })
         }
-        const routeData = this.$router.resolve({ name: 'dxformat', query: { clientsInfo: JSON.stringify(clients), clienttype: this.$route.query.clienttype } })
+        localStorage.removeItem('clientsDx')
+        localStorage.setItem('clientsDx', JSON.stringify(clients))
+        localStorage.removeItem('clientsDxClienttype')
+        localStorage.setItem('clientsDxClienttype', JSON.stringify(this.$route.query.clienttype))
+        const routeData = this.$router.resolve({ name: 'dxformat' })
         window.open(routeData.href, '_blank')
       } else {
         this.$toast.error('Selecciona los clientes antes de imprimir', { position: 'bottom-center' })
