@@ -251,8 +251,6 @@ export default {
   width: 100%;
   border-collapse: collapse;
   border: 1px solid black;
-  line-height:1.5rem!important;
-  font-size:16px!important;
 }
 
 .tabla > tr {
@@ -263,13 +261,10 @@ export default {
 .tabla > tr > td {
   padding-left: 5px;
 }
-p, strong {
-  font-size: 16px!important;
+p {
+  font-size: 16px;
   line-height: 1.5rem;
   margin-bottom: 0 !important;
-}
-h2 {
-  font-size: 1.5rem!important;
 }
 @media print {
     .pagebreak {
