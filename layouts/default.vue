@@ -1,7 +1,7 @@
 <template>
   <v-app
     class="text-body-2"
-    :style="this.$vuetify.theme.dark ? 'background-color:rgb(20 20 20 / 68%);' : 'background-color:rgb(255 255 255 / 86%);'"
+    :style="this.$vuetify.theme.dark ? 'background-color:rgb(20 20 20 / 68%);' : ''"
   >
     <v-navigation-drawer
       v-model="drawer"
@@ -35,7 +35,7 @@
     <v-app-bar
       app
       dense
-      :class="this.$vuetify.theme.dark ? 'elevation-0 grey darken-4 no-printme' : 'elevation-0 no-printme'"
+      :class="this.$vuetify.theme.dark ? 'elevation-2 grey darken-4 no-printme' : 'elevation-2 no-printme'"
     >
       <v-app-bar-nav-icon v-if="!$store.state.isDesktop" @click.stop="drawer = !drawer" />
       <v-btn
@@ -69,7 +69,7 @@
       <v-menu offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on, attrs }">
           <v-btn
-            class="ml-2 elevation-0 grey darken-3"
+            class="ml-2 elevation-0"
             fab
             x-small
             v-bind="attrs"

@@ -109,7 +109,9 @@
             >
               <template v-slot:[`item.active`]="props">
                 <v-chip small :color="getColor(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice)" class="white--text">
-                  {{ getState(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice) }}
+                  <h5>
+                    {{ getState(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice) }}
+                  </h5>
                 </v-chip>
               </template>
               <template v-slot:[`item.tickettype.name`]="props">
@@ -121,8 +123,13 @@
                   save-text="Guardar"
                   @save="saveTickettypeFromModal(props.item.id, props.item.tickettype.id, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
                 >
-                  <v-chip small :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
-                    {{ props.item.tickettype.name }}
+                  <v-chip
+                    small
+                    :color="getTicketTypeColor(props.item.tickettype.name)"
+                  >
+                    <h5>
+                      {{ props.item.tickettype.name }}
+                    </h5>
                   </v-chip>
                   <template v-slot:input>
                     <v-select
@@ -139,7 +146,9 @@
                   </template>
                 </v-edit-dialog>
                 <v-chip v-else small :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
-                  {{ props.item.tickettype.name }}
+                  <h5>
+                    {{ props.item.tickettype.name }}
+                  </h5>
                 </v-chip>
               </template>
               <template v-if="!$store.state.isDesktop" v-slot:expanded-item="{ headers, item }">
@@ -156,7 +165,9 @@
                       small
                       :color="getChannelColor(item.tickettype, item.reboot, item.network, item.on)"
                       class="white--text">
-                    {{ item.channel ? getChannelName(item.channel) : 'No reg.' }}
+                    <h5>
+                      {{ item.channel ? getChannelName(item.channel) : 'No reg.' }}
+                    </h5>
                   </v-chip>
                   </template>
                   <span>
@@ -172,7 +183,9 @@
                   small
                   :color="getChannelColor(item.tickettype, item.reboot, item.network, item.on)"
                   class="white--text">
-                {{ item.channel ? getChannelName(item.channel) : 'No Aplica' }}
+                <h5>
+                  {{ item.channel ? getChannelName(item.channel) : 'N/A' }}
+                </h5>
               </v-chip>
               </template>
               <template v-if="clienttype === 'INTERNET'" v-slot:[`item.client.name`]="props">
@@ -185,7 +198,7 @@
                     <div
                       v-bind="attrs"
                       v-on="on"
-                      class="text-truncate" style="width:200px;"
+                      class="text-truncate" style="width:100px;"
                     >
                       {{ item.details }}
                     </div>
@@ -199,7 +212,7 @@
                     <div
                       v-bind="attrs"
                       v-on="on"
-                      class="text-truncate" style="max-width:130px;"
+                      class="text-truncate" style="max-width:200px;"
                     >
                       {{ showOnlyNameAndSecondName(item.client.name) }}
                     </div>
@@ -215,7 +228,7 @@
                     <div
                       v-bind="attrs"
                       v-on="on"
-                      class="text-truncate" style="max-width:130px;"
+                      class="text-truncate" style="max-width:180px;"
                       @click="copyToClipboard('Direccion', processAddresses(item))"
                     >
                       {{ processAddresses(item) }}
@@ -228,7 +241,13 @@
                   <strong>{{ processAddressesNeighborhood(item) }}</strong>
               </template>
               <template v-slot:[`item.client.code`]="props">
-                <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`">{{props.item.client.code}}</nuxt-link>
+                <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
+                  <strong>
+                    <h3>
+                      {{props.item.client.code}}
+                    </h3>
+                  </strong>
+                </nuxt-link>
               </template>
               <template v-slot:[`item.assignated.username`]="{ item }">
                 <strong style="max-width:50px;"> {{ ucfirst(item.assignated.username) }}</strong>
@@ -414,15 +433,15 @@ export default {
       return this.$route.query.clienttype === 'INTERNET' ? this.$store.state.isDesktop ? [
         { text: 'Estado', sortable: false, value: 'active', width: '5%', hide: 'd-none d-lg-table-cell' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
-        { text: 'Canal', sortable: false, value: 'channel', width: 80, align: ' d-none d-lg-table-cell' },
-        { text: 'Observaciones', sortable: false, value: 'details', width: 80, align: ' d-none d-lg-table-cell' },
-        { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 130 },
-        { text: 'Dirección', sortable: false, value: 'client.address', width: 130, align: ' d-none d-lg-table-cell' },
+        { text: 'Canal', sortable: false, value: 'channel', width: 60, align: ' d-none d-lg-table-cell' },
+        { text: 'Observaciones', sortable: false, value: 'details', width: 100, align: ' d-none d-lg-table-cell' },
+        { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
+        { text: 'Dirección', sortable: false, value: 'client.address', width: 180, align: ' d-none d-lg-table-cell' },
         { text: 'Código', sortable: false, value: 'client.code', width: 50, align: ' d-none d-lg-table-cell' },
-        { text: 'Cliente', sortable: false, value: 'client.name', width: 130 },
-        { text: 'Celular', sortable: false, value: 'client.phone', align: ' d-none d-lg-table-cell' },
-        { text: 'Tec.', sortable: false, value: 'client.technology.name', align: ' d-none d-lg-table-cell' },
-        { text: 'Por', sortable: false, value: 'assignated.username', width: 60, align: ' d-none d-lg-table-cell' },
+        { text: 'Cliente', sortable: false, value: 'client.name', width: 200 },
+        { text: 'Celular', sortable: false, value: 'client.phone', width: 80, align: ' d-none d-lg-table-cell' },
+        { text: 'Tec.', sortable: false, value: 'client.technology.name', width: 50, align: ' d-none d-lg-table-cell' },
+        { text: 'Por', sortable: false, value: 'assignated.username', width: 40, align: ' d-none d-lg-table-cell' },
         { text: 'Creación', sortable: false, value: 'createdAt', width: 100, align: ' d-none d-lg-table-cell' },
         { text: 'Acciones', sortable: false, value: 'actions', align: ' d-none d-lg-table-cell' }
       ] : [
@@ -433,13 +452,13 @@ export default {
       ] : this.$store.state.isDesktop ? [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name' },
-        { text: 'Canal', sortable: false, value: 'channel', width: 100, align: ' d-none d-lg-table-cell' },
-        { text: 'Observaciones', sortable: false, value: 'details', width: 150, align: ' d-none d-lg-table-cell' },
-        { text: 'Barrio', sortable: false, value: 'client.neighborhood.name' },
-        { text: 'Dirección', sortable: false, value: 'client.address', align: ' d-none d-lg-table-cell' },
+        { text: 'Canal', sortable: false, value: 'channel', width: 60, align: ' d-none d-lg-table-cell' },
+        { text: 'Observaciones', sortable: false, value: 'details', width: 100, align: ' d-none d-lg-table-cell' },
+        { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
+        { text: 'Dirección', sortable: false, value: 'client.address', width: 150, align: ' d-none d-lg-table-cell' },
         { text: 'Codigo', sortable: false, value: 'client.code', width: 60, align: ' d-none d-lg-table-cell' },
         { text: 'Cliente', sortable: false, value: 'client.name' },
-        { text: 'Telefono', sortable: false, value: 'client.phone', align: ' d-none d-lg-table-cell' },
+        { text: 'Celular', sortable: false, value: 'client.phone', align: ' d-none d-lg-table-cell' },
         { text: 'Por', sortable: false, value: 'assignated.username', align: ' d-none d-lg-table-cell' },
         { text: 'Creado el', sortable: false, value: 'createdAt', align: ' d-none d-lg-table-cell' },
         { text: 'Acciones', sortable: false, value: 'actions', align: ' d-none d-lg-table-cell' }
@@ -483,7 +502,7 @@ export default {
       }, 60000)
     },
     testPlanDx (client) {
-      return client.debtmovements.at(-1)?.isindebt || client.debtmovements?.at(-1)?.isretired
+      return client.indebt || !client.active
     },
     updateTickettypeFromModal (id, tickettype, index) {
       this.$store.commit('ticket/updateTickettype', { id, tickettype, index })
@@ -518,8 +537,8 @@ export default {
     },
     showOnlyNameAndSecondName (name) {
       const nameArray = name.split(' ')
-      if (nameArray.length > 2) {
-        return nameArray[0] + ' ' + nameArray[2]
+      if (nameArray.length > 3) {
+        return nameArray[0] + ' ' + nameArray[2] + ' ' + nameArray[3]
       } else {
         return name
       }
@@ -536,7 +555,7 @@ export default {
     },
     getTicketTypeColor (tickettype) {
       if (tickettype === 'SIN SERVICIO' || tickettype === 'SIN SEÑAL') {
-        return 'red'
+        return 'red white--text'
       } else if (tickettype === 'SERVICIO LENTO' || tickettype === 'SEÑAL LLUVIOSA' || tickettype === 'TV DESPROGRAMADO') {
         return 'orange darken-2'
       } else if (tickettype === 'INTERMITENCIA') {
@@ -580,15 +599,15 @@ export default {
     },
     getState (state, answered, escalated, escalatedoffice) {
       if (state && !answered) {
-        return 'Abierto'
+        return 'ABIERTO'
       } else if (answered && state && !escalated && !escalatedoffice) {
-        return 'Respondido'
+        return 'RESPOND.'
       } else if (answered && state && escalated) {
-        return 'Escalado a Tecnico'
+        return 'ESCALADO'
       } else if (answered && state && !escalated && escalatedoffice) {
-        return 'Escalado a Oficina'
+        return 'OFICINA'
       } else {
-        return 'Cerrado'
+        return 'CERRADO'
       }
     },
     getChannelColor (tickettype, reboot, network, on) {
@@ -603,15 +622,15 @@ export default {
     },
     getChannelName (channel) {
       if (channel === 'phone') {
-        return 'Telefonico'
+        return 'TELEF.'
       } else if (channel === 'office') {
-        return 'Oficina'
+        return 'OFICINA'
       } else if (channel === 'whatsapp') {
-        return 'Whatsapp'
+        return 'WHASTAPP'
       } else if (channel === 'email') {
-        return 'Email'
+        return 'EMAIL'
       } else {
-        return 'Email'
+        return 'OTRO'
       }
     },
     getResolution () {
