@@ -455,7 +455,6 @@ export default {
     $route () {
       this.initIntervalAndGetTickets()
       this.getTickettypes()
-      this.selected = []
     }
   },
   mounted () {
@@ -470,6 +469,7 @@ export default {
     initIntervalAndGetTickets () {
       this.removeOldIntervalIfExists()
       this.setGetTicketsInterval()
+      this.resetSelected()
       this.refreshTickets()
     },
     removeOldIntervalIfExists () {
@@ -497,6 +497,9 @@ export default {
         clienttype: this.$route.query.clienttype,
         token: this.$store.state.auth.token
       })
+    },
+    resetSelected () {
+      this.selected = []
     },
     async refreshTickets () {
       this.initialLoading = true
