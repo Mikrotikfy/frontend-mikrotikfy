@@ -150,15 +150,17 @@ export default {
         active: payload.active,
         telegramBots: this.telegramBots
       })
-      this.$store.dispatch('client/setPlanFromModal', {
-        clientId: this.client.id,
-        clientIndex: this.index,
-        isOfferChange: false,
-        kick: true,
-        newPlan: this.calculateClientNewPlan(payload.indebt, payload.active, this.client),
-        operator: this.$store.state.auth.id,
-        token: this.$store.state.auth.token
-      })
+      if (this.$route.query.clienttype === 'INTERNET') {
+        this.$store.dispatch('client/setPlanFromModal', {
+          clientId: this.client.id,
+          clientIndex: this.index,
+          isOfferChange: false,
+          kick: true,
+          newPlan: this.calculateClientNewPlan(payload.indebt, payload.active, this.client),
+          operator: this.$store.state.auth.id,
+          token: this.$store.state.auth.token
+        })
+      }
       this.resetSearch()
     },
     calculateClientNewPlan (indebt, active, client) {

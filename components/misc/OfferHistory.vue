@@ -1,5 +1,5 @@
 <template>
-  <v-card class="elevation-0" style="height:100%;">
+  <v-card v-if="$route.query.clienttype === 'INTERNET'" class="elevation-0" style="height:100%;">
     <v-card-title class="justify-center">
       Historial de tarifas
     </v-card-title>
@@ -24,6 +24,11 @@
         :length="pageCount"
       />
     </v-card-text>
+  </v-card>
+  <v-card v-else class="elevation-0" style="height:100%;">
+    <v-card-title class="d-flex justify-center">
+      No Aplica para TV
+    </v-card-title>
   </v-card>
 </template>
 <script>

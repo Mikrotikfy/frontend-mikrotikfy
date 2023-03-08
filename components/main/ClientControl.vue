@@ -10,8 +10,11 @@
           v-on="on"
           @click="initComponent()"
         >
-          <span>
+          <span v-if="$route.query.clienttype === 'INTERNET'">
             {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : `${client.offer ? client.offer.plan ? client.offer.plan.name : 'NO DEF.' : 'NO DEF.'}` }}
+          </span>
+          <span v-else>
+            {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : 'AL DIA' }}
           </span>
         </v-btn>
       </template>
@@ -42,7 +45,7 @@
             <v-col cols="12" md="4" class="order-first">
               <div style="display:grid;place-items:center;">
                 <MainClientControlDebt :client="client" :index="index" />
-                <MainClientControlOffer :client="client" :index="index" />
+                <MainClientControlOffer v-if="$route.query.clienttype === 'INTERNET'" :client="client" :index="index" />
               </div>
             </v-col>
             <v-col cols="12" md="4">

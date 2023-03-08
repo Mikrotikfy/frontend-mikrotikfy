@@ -27,7 +27,7 @@
                 @page-count="pageCount = $event"
               >
                 <template v-slot:[`item.active`]="props">
-                  <MainClientControl v-if="clienttype.name === 'INTERNET'" :client="props.item" :index="clients.map(function(x) {return x.id; }).indexOf(props.item.id)" />
+                  <MainClientControl :client="props.item" :index="clients.map(function(x) {return x.id; }).indexOf(props.item.id)" />
                 </template>
                 <template v-slot:[`item.code`]="{ item }">
                   <span v-if="clienttype.name === 'INTERNET'" :class="item.status === 'green' ? 'online-text' : 'offline-text'">
