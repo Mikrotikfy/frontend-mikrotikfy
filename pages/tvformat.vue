@@ -361,5 +361,11 @@ strong {
     .pagebreak {
         page-break-after: always;
     }
+    * {
+    -webkit-print-color-adjust: exact !important;
+      color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    @page { margin: 0; }
 }
 </style>

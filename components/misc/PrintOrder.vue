@@ -12,7 +12,7 @@
         v-on="on"
         :disabled="initialLoading"
         :loading="initialLoading"
-        @click="printOrder(selected)"
+        @click="printOrder()"
       >
           <v-icon>
             mdi-file-sign
