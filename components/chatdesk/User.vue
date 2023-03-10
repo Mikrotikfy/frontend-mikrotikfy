@@ -1,13 +1,13 @@
 <template>
   <div ref="scroll" style="overflow-y:scroll;height: calc(95vh - 200px);" @scroll="scroll($event)">
-    <v-list three-line>
+    <v-list two-line>
       <v-list-item-group
         v-model="selectedItem"
-        color="success"
       >
         <v-list-item
           v-for="(item, index) in whatsappContacts"
           :key="index"
+          class="mb-1 mr-2"
           @click="openChat(item)"
         >
           <v-list-item-avatar>
@@ -20,14 +20,17 @@
           </v-list-item-content>
 
           <v-list-item-action>
-            <v-list-item-action-text class="d-flex mt-4 align-center">
-              <v-icon
-                v-if="!item.read"
-                color="green lighten-1"
-              >
-                mdi-circle
-              </v-icon>
+            <v-list-item-action-text>
+              <span
+                :class="item.pendingmessages && !item.read ? 'green--text font-weight-bold lighten-1' : ''"
+              >{{ hourMinutes12Hour(item.lastmessage) }}</span>
             </v-list-item-action-text>
+            <span
+              v-if="item.pendingmessages && !item.read"
+              style="background-color: #4caf50; border-radius: 50%; padding: 0px 7px 0 6px; color: black; font-weight: bold;"
+            >
+              {{ item.pendingmessages }}
+            </span>
           </v-list-item-action>
         </v-list-item>
       </v-list-item-group>
@@ -168,11 +171,20 @@ export default {
       return unixTimestamp
     },
     getMessage (message) {
-      const type = message.payload.entry[0].changes[0].value.messages[0].type
-
-      if (type === 'text') {
-        return message.payload.entry[0].changes[0].value.messages[0].text.body
+      if (message && message.payload && message.payload.entry) {
+        // eslint-disable-next-line no-var
+        var type = message.payload.entry[0].changes[0].value.messages[0].type
+        if (type === 'text') {
+          return message.payload.entry[0].changes[0].value.messages[0].text.body
+        }
+      } else {
+        // eslint-disable-next-line no-var
+        type = message.payload.type
+        if (type === 'text') {
+          return message.payload.text.body
+        }
       }
+
       if (type === 'image') {
         return '*Envió una imagen'
       }
@@ -191,7 +203,38 @@ export default {
       await this.$store.dispatch('menu/getMenuFromDatabase', {
         token: this.$store.state.auth.token
       })
+    },
+    hourMinutes12Hour (unixTime) {
+      const dateObj = new Date(unixTime) // Convertimos segundos a milisegundos
+      const hours = dateObj.getHours()
+      const minutes = dateObj.getMinutes()
+      const ampm = hours >= 12 ? 'p.m.' : 'a.m.' // Definimos si es am o pm
+
+      // Convertimos la hora a un formato de 12 horas
+      const hours12 = hours % 12 || 12
+
+      // Concatenamos las horas, minutos y am/pm en un string
+      let timeString = `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`
+
+      // Verificamos si la fecha actual es 24 horas mayor que el tiempo Unix ingresado
+      const now = new Date().getTime() / 1000 // Convertimos milisegundos a segundos
+      if (now - unixTime >= 86400) { // 86400 segundos = 24 horas
+        const day = dateObj.getDate()
+        const month = dateObj.getMonth() + 1
+        timeString = `${day}/${month}`
+      }
+
+      return timeString
     }
   }
 }
 </script>
+<style scoped>
+.theme--dark.v-list-item--active::before {
+    opacity: 0.24;
+    border-radius: 10px;
+}
+.v-list-item--link:before {
+    border-radius: 10px;
+}
+</style>

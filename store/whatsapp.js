@@ -312,5 +312,26 @@ export const actions = {
           resolve(whatsappContacts)
         })
     })
+  },
+  updateLastmessage ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsappcontacts/${payload.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            lastmessage: new Date(),
+            lastwhatsapp: payload.lastWhatsapp.id
+          }
+        })
+      })
+        .then(response => response.json())
+        .then((res) => {
+          resolve(res)
+        })
+    })
   }
 }

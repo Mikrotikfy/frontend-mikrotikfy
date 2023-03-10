@@ -86,22 +86,56 @@ export default {
         token: this.$store.state.auth.token
       })
     },
-    createMenssageOnDatabase () {
+    async createMenssageOnDatabase () {
       const messageText = {
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to: this.$route.query.phone,
         type: 'text',
-        text: { // the text object
-          preview_url: false,
-          body: this.operatorTextInput
-        }
+        entry: [
+          {
+            id: '111317255027818',
+            changes: [
+              {
+                field: 'messages',
+                value: {
+                  contacts: [
+                    {
+                      wa_id: '1',
+                      profile: {
+                        name: 'ARNOP'
+                      }
+                    }
+                  ],
+                  messages: [
+                    {
+                      to: this.$route.query.phone,
+                      text: {
+                        body: this.operatorTextInput
+                      },
+                      type: 'text',
+                      timestamp: '1665783062'
+                    }
+                  ],
+                  metadata: {
+                    phone_number_id: '100480202798133',
+                    display_phone_number: '573508106069'
+                  },
+                  messaging_product: 'whatsapp'
+                }
+              }
+            ]
+          }
+        ],
+        object: 'whatsapp_business_account'
       }
-      this.$store.dispatch('whatsapp/createMessage', {
+      const message = await this.$store.dispatch('whatsapp/createMessage', {
         token: this.$store.state.auth.token,
         to: this.$route.query.phone,
         phone: this.$route.query.phone,
         payload: messageText
+      })
+      this.$store.dispatch('whatsapp/updateLastmessage', {
+        token: this.$store.state.auth.token,
+        id: this.currentContact.id,
+        lastWhatsapp: message.data
       })
     },
     async sendWhatsappMessage () {

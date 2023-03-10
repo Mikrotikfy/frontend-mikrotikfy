@@ -1,5 +1,7 @@
 <template>
-  <div>
+  <v-toolbar
+    class="elevation-1 rounded-xl"
+  >
     <v-list-item
       v-if="$route.query.phone"
       class="pa-0"
@@ -12,7 +14,7 @@
         <v-list-item-title v-text="currentContact ? currentContact.name + ' - ' + currentContact.phone.slice(2) : ''" />
       </v-list-item-content>
     </v-list-item>
-  </div>
+  </v-toolbar>
 </template>
 <script>
 export default {

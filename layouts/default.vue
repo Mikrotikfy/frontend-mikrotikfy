@@ -284,13 +284,14 @@ body {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px grey;
+  box-shadow: inset 0 0 5px rgb(45, 45, 45);
   border-radius: 10px;
+  padding:1px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: rgb(60, 60, 60);
+  background: rgb(92, 92, 92);
   border-radius: 10px;
 }
 
