@@ -151,6 +151,43 @@
                   </h5>
                 </v-chip>
               </template>
+              <template v-slot:[`item.technician`]="props">
+                <v-edit-dialog
+                  v-if="$isAdmin() || $isBiller()"
+                  ref="dialog"
+                  large
+                  cancel-text="Cancelar"
+                  save-text="Guardar"
+                  @save="saveAssignatedFromModal(props.item.id, props.item.technician.id, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+                >
+                  <v-chip
+                    small
+                    :color="props.item.technician ? 'primary' : 'grey darken-3'"
+                  >
+                    <h5>
+                      {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
+                    </h5>
+                  </v-chip>
+                  <template v-slot:input>
+                    <v-autocomplete
+                      :value="props.item.technician"
+                      item-text="username"
+                      item-value="id"
+                      :items="technicians"
+                      return-object
+                      single-line
+                      label="Asignar a Tecnico"
+                      dense
+                      @change="updateAssignatedFromModal(props.item.id, $event, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+                    />
+                  </template>
+                </v-edit-dialog>
+                <v-chip v-else small :color="props.item.technician ? 'primary' : 'grey darken-3'">
+                  <h5>
+                    {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
+                  </h5>
+                </v-chip>
+              </template>
               <template v-if="!$store.state.isDesktop" v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length">
                   <span class="grey--text">Avance:</span> {{ item.details ? item.details : 'no hay' }}
@@ -409,7 +446,8 @@ export default {
       expanded: [],
       singleExpand: true,
       selected: [],
-      interval: null
+      interval: null,
+      technicians: []
     }
   },
   computed: {
@@ -434,6 +472,7 @@ export default {
         { text: 'Estado', sortable: false, value: 'active', width: '5%', hide: 'd-none d-lg-table-cell' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
         { text: 'Canal', sortable: false, value: 'channel', width: 60, align: ' d-none d-lg-table-cell' },
+        { text: 'Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' },
         { text: 'Observaciones', sortable: false, value: 'details', width: 100, align: ' d-none d-lg-table-cell' },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 180, align: ' d-none d-lg-table-cell' },
@@ -447,12 +486,14 @@ export default {
       ] : [
         { text: 'Estado', sortable: false, value: 'active', width: '5%', hide: 'd-none d-lg-table-cell' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 100 },
+        { text: 'Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
         { text: 'Cliente', sortable: false, value: 'client.name', width: 150 }
       ] : this.$store.state.isDesktop ? [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name' },
         { text: 'Canal', sortable: false, value: 'channel', width: 60, align: ' d-none d-lg-table-cell' },
+        { text: 'Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' },
         { text: 'Observaciones', sortable: false, value: 'details', width: 100, align: ' d-none d-lg-table-cell' },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 150, align: ' d-none d-lg-table-cell' },
@@ -465,6 +506,7 @@ export default {
       ] : [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name' },
+        { text: 'Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name' },
         { text: 'Cliente', sortable: false, value: 'client.name' }
       ]
@@ -479,6 +521,7 @@ export default {
   mounted () {
     this.getResolution()
     this.getTickettypes()
+    this.getTechnicians()
     this.initIntervalAndGetTickets()
   },
   destroyed () {
@@ -510,8 +553,21 @@ export default {
     saveTickettypeFromModal (ticketid, tickettypeid, index) {
       this.$store.dispatch('ticket/saveTickettype', { ticketid, tickettypeid, index, token: this.$store.state.auth.token })
     },
+    updateAssignatedFromModal (id, technician, index) {
+      this.$store.commit('ticket/updateAssignated', { id, technician, index })
+    },
+    saveAssignatedFromModal (ticketid, technicianid, index) {
+      this.$store.dispatch('ticket/saveAssignated', { ticketid, technicianid, index, token: this.$store.state.auth.token })
+    },
     getTickettypes () {
       this.$store.dispatch('ticket/getTickettypes', {
+        city: this.$route.query.city,
+        clienttype: this.$route.query.clienttype,
+        token: this.$store.state.auth.token
+      })
+    },
+    async getTechnicians () {
+      this.technicians = await this.$store.dispatch('operator/getOperatorList', {
         city: this.$route.query.city,
         clienttype: this.$route.query.clienttype,
         token: this.$store.state.auth.token

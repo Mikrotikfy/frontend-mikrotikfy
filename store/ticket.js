@@ -13,6 +13,9 @@ export const mutations = {
   updateTickettype (state, payload) {
     state.tickets[payload.index].tickettype = payload.tickettype
   },
+  updateAssignated (state, payload) {
+    state.tickets[payload.index].technician = payload.technician
+  },
   getTicketsFromDatabase (state, ticketList) {
     try {
       state.tickets = ticketList
@@ -100,6 +103,7 @@ export const actions = {
           'tickettype',
           'clienttype',
           'assignated',
+          'technician',
           'ticketdetails',
           'ticketdetails.operator'
         ],
@@ -175,6 +179,24 @@ export const actions = {
       .then(res => res.json())
       .then((_) => {
         this.$toast.info('Tipo de Ticket actualizado con exito', { duration: 4000, position: 'bottom-center' })
+      })
+  },
+  async saveAssignated ({ _ }, payload) {
+    await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${payload.ticketid}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${payload.token}`
+      },
+      body: JSON.stringify({
+        data: {
+          technician: payload.technicianid
+        }
+      })
+    })
+      .then(res => res.json())
+      .then((_) => {
+        this.$toast.info('Asignado de Ticket actualizado con exito', { duration: 4000, position: 'bottom-center' })
       })
   }
 }
