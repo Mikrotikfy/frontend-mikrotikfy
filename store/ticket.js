@@ -14,7 +14,7 @@ export const mutations = {
     state.tickets[payload.index].tickettype = payload.tickettype
   },
   updateAssignated (state, payload) {
-    state.tickets[payload.index].technician = payload.technician
+    state.tickets[payload.index].technician = { ...payload.technician }
   },
   getTicketsFromDatabase (state, ticketList) {
     try {

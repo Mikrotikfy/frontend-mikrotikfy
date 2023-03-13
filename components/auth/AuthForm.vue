@@ -232,7 +232,8 @@ export default {
               cities: userCities,
               clienttypes: userClienttypes,
               menu: userMenus.sort((a, b) => a.priority - b.priority),
-              role: userData.role
+              role: userData.role,
+              telegramchatid: userData.telegramchatid
             }
             Cookie.set('auth', auth, { expires: 7 })
             Cookie.set('token', response.jwt, { expires: 7 })

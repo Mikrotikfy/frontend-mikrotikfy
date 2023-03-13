@@ -158,7 +158,7 @@
                   large
                   cancel-text="Cancelar"
                   save-text="Guardar"
-                  @save="saveAssignatedFromModal(props.item.id, props.item.technician.id, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+                  @save="saveAssignatedFromModal(props.item, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
                 >
                   <v-chip
                     small
@@ -170,6 +170,7 @@
                   </v-chip>
                   <template v-slot:input>
                     <v-autocomplete
+                      v-model="currentTechnician"
                       :value="props.item.technician"
                       item-text="username"
                       item-value="id"
@@ -447,7 +448,8 @@ export default {
       singleExpand: true,
       selected: [],
       interval: null,
-      technicians: []
+      technicians: [],
+      currentTechnician: null
     }
   },
   computed: {
@@ -466,6 +468,9 @@ export default {
     },
     tickettypes () {
       return this.$store.state.ticket.tickettypes
+    },
+    telegramBots () {
+      return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
     },
     getHeadersByClienttype () {
       return this.$route.query.clienttype === 'INTERNET' ? this.$store.state.isDesktop ? [
@@ -554,10 +559,36 @@ export default {
       this.$store.dispatch('ticket/saveTickettype', { ticketid, tickettypeid, index, token: this.$store.state.auth.token })
     },
     updateAssignatedFromModal (id, technician, index) {
-      this.$store.commit('ticket/updateAssignated', { id, technician, index })
+      if (this.currentTechnician.telegramchatid) {
+        this.$store.commit('ticket/updateAssignated', { id, technician, index })
+      }
     },
-    saveAssignatedFromModal (ticketid, technicianid, index) {
-      this.$store.dispatch('ticket/saveAssignated', { ticketid, technicianid, index, token: this.$store.state.auth.token })
+    saveAssignatedFromModal (ticket, index) {
+      if (this.currentTechnician.telegramchatid && this.currentTechnician.phone) {
+        this.$store.dispatch('ticket/saveAssignated', {
+          ticketid: ticket.id,
+          technicianid: this.currentTechnician,
+          index,
+          token: this.$store.state.auth.token
+        })
+        this.$simpleTelegramSendToChat({
+          client: ticket.client,
+          tickettype: ticket.tickettype.name,
+          details: ticket.details,
+          neighborhood: ticket.client.neighborhood,
+          operator: this.$store.state.auth.username,
+          user: this.currentTechnician,
+          telegramBots: this.telegramBots
+        })
+        this.$simpleWhatsappSendToChat({
+          tickettype: ticket.tickettype.name,
+          client: ticket.client,
+          user: this.currentTechnician,
+          token: this.$config.META_TOKEN
+        })
+      } else {
+        this.$toast.error('El técnico no tiene un chat de telegram asociado o un numero de telefono de whatsapp valido', { duration: 5000 })
+      }
     },
     getTickettypes () {
       this.$store.dispatch('ticket/getTickettypes', {

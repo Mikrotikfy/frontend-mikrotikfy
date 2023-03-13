@@ -10,8 +10,6 @@
         rounded
         small
         v-on="on"
-        :disabled="initialLoading"
-        :loading="initialLoading"
         @click="printOrder()"
       >
           <v-icon>
