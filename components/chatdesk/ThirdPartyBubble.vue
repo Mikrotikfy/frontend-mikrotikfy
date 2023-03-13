@@ -1,7 +1,7 @@
 <template>
   <span
     class="green darken-4 darken-4 rounded-lg pa-2 text-subtitle-1"
-    style="height:fit-content;width:fit-content;min-width: 150px;max-width:50%;overflow-wrap:break-word;position:relative;"
+    style="height:fit-content;width:fit-content;min-width: 150px;max-width:50%;overflow-wrap:anywhere;position:relative;"
   >
     <ChatdeskMessageText
       v-if="payload.entry[0].changes[0].value.messages[0].type === 'text'"

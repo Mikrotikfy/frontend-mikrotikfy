@@ -217,8 +217,8 @@ export default {
       let timeString = `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`
 
       // Verificamos si la fecha actual es 24 horas mayor que el tiempo Unix ingresado
-      const now = new Date().getTime() / 1000 // Convertimos milisegundos a segundos
-      if (now - unixTime >= 86400) { // 86400 segundos = 24 horas
+      const now = new Date().getTime() // Convertimos milisegundos a segundos
+      if (now - unixTime >= 86400 * 1000) { // 86400 segundos = 24 horas
         const day = dateObj.getDate()
         const month = dateObj.getMonth() + 1
         timeString = `${day}/${month}`
