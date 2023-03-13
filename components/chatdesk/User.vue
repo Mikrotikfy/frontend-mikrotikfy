@@ -204,27 +204,20 @@ export default {
         token: this.$store.state.auth.token
       })
     },
-    hourMinutes12Hour (unixTime) {
-      const dateObj = new Date(unixTime) // Convertimos segundos a milisegundos
-      const hours = dateObj.getHours()
-      const minutes = dateObj.getMinutes()
-      const ampm = hours >= 12 ? 'p.m.' : 'a.m.' // Definimos si es am o pm
-
-      // Convertimos la hora a un formato de 12 horas
-      const hours12 = hours % 12 || 12
-
-      // Concatenamos las horas, minutos y am/pm en un string
-      let timeString = `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`
-
-      // Verificamos si la fecha actual es 24 horas mayor que el tiempo Unix ingresado
-      const now = new Date().getTime() // Convertimos milisegundos a segundos
-      if (now - unixTime >= 86400 * 1000) { // 86400 segundos = 24 horas
-        const day = dateObj.getDate()
-        const month = dateObj.getMonth() + 1
-        timeString = `${day}/${month}`
+    hourMinutes12Hour (dateString) {
+      const date = new Date(dateString)
+      const hours = date.getHours()
+      const suffix = hours < 12 ? 'a.m.' : 'p.m.'
+      if (Date.now() - date.getTime() > 24 * 60 * 60 * 1000) {
+        const formattedDate = date.toLocaleDateString('es-ES', {
+          day: 'numeric',
+          month: 'numeric'
+        })
+        return `${formattedDate}`
+      } else {
+        const formattedTime = `${(hours % 12) || 12}:${date.getMinutes().toString().padStart(2, '0')} ${suffix}`
+        return `${formattedTime}`
       }
-
-      return timeString
     }
   }
 }
