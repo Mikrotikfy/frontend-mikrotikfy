@@ -90,3 +90,5 @@ sw.*
 # Vim swap files
 *.swp
 utilsLocal/
+localhost.key.pem
+localhost.pem

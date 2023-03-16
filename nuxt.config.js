@@ -1,5 +1,8 @@
+import path from 'path'
+import fs from 'fs'
 import colors from 'vuetify/es5/util/colors'
 require('dotenv').config()
+
 export default {
   /*
   ** Nuxt target
@@ -28,6 +31,13 @@ export default {
   css: [
     '~/assets/main.css'
   ],
+
+  server: process.env.NODE_ENV !== 'production' ? {
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, 'localhost.key.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, 'localhost.pem'))
+    }
+  } : {},
 
   publicRuntimeConfig: {
     API_STRAPI_ENDPOINT: process.env.API_STRAPI_ENDPOINT || 'http://localhost:1337/api/',
@@ -62,6 +72,19 @@ export default {
     '@nuxtjs/pwa'
   ],
   pwa: {
+    workbox: {
+      offlineStrategy: 'StaleWhileRevalidate',
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/(localhost:3000|admin\.arnoproducciones\.com)/,
+          handler: 'StaleWhileRevalidate',
+          method: 'GET',
+          strategyOptions: {
+            cacheName: 'api-cache-SWV'
+          }
+        }
+      ]
+    },
     meta: {
       name: 'ARNOProducciones API',
       viewport: 'width=device-width, initial-scale=1',
@@ -72,12 +95,12 @@ export default {
       name: 'ARNOProducciones API',
       lang: 'es',
       short_name: 'ARNOP API',
-      display: 'fullscreen'
+      start_url: '/',
+      display: 'standalone'
     },
     icon: {
       fileName: 'icon.png',
-      sizes: [16, 120, 144, 152, 192, 384, 512],
-      purpose: ['maskable', 'any']
+      sizes: [16, 120, 144, 152, 192, 384, 512]
     }
   },
   webpackOptimisations: {
