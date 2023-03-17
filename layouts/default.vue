@@ -120,7 +120,7 @@
         dense
         type="error"
       >
-        Estas sin acceso a internet. Verifica la conexión WIFI o de datos.
+        Estas sin acceso a internet. Podras ver los datos que tengas en cache.
       </v-alert>
       <nuxt />
     </v-main>

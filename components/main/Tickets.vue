@@ -8,7 +8,9 @@
           fluid
           class="rounded-xl"
         >
-          <v-card-text class="py-4">
+          <v-card-text
+            class="py-4"
+          >
             <v-row>
               <v-tooltip top>
                 <!-- eslint-disable -->
@@ -83,6 +85,7 @@
         <v-card
           fluid
           class="rounded-xl"
+          :style="$route.query.clienttype === 'INTERNET' ? 'border-top: 2px solid cyan;' : 'border-top: 2px solid yellow;'"
         >
         <v-card-text>
           <client-only>

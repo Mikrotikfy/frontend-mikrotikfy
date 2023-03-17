@@ -49,8 +49,12 @@
                 <strong class="green--text darken-4 text-decoration-underline">{{ 'CX: ' + item.details.split('CX:')[1] }}</strong>
               </h5>
               <h5>{{ item.phone }}</h5>
-              <h5 style="color:#c9c9c9;">OBSERVACIONES</h5>
-              <h5 style="color:#c9c9c9;">FIRMA CLIENTE</h5>
+              <h5 style="color:#c9c9c9;">
+                OBSERVACIONES
+              </h5>
+              <h5 style="color:#c9c9c9;">
+                FIRMA CLIENTE
+              </h5>
             </div>
             <div
               v-if="ticketListForPrint.length <= 4"
