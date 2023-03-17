@@ -11,31 +11,7 @@ export const mutations = {
   }
 }
 export const actions = {
-  removeAlertOnMenu ({ commit }, payload) {
-    try {
-      return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}menus/${payload.menuId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${payload.token}`
-          },
-          body: JSON.stringify({
-            data: {
-              alert: false
-            }
-          })
-        })
-          .then(res => res.json())
-          .then((menu) => {
-            resolve(menu.data)
-          })
-      })
-    } catch (error) {
-      throw new Error(`MENU ACTION ${error}`)
-    }
-  },
-  getMenuFromDatabase ({ commit }, payload) {
+  getMenuFromDatabase ({ dispatch }, payload) {
     try {
       const qs = require('qs')
       const query = qs.stringify({
@@ -55,8 +31,36 @@ export const actions = {
           .then(res => res.json())
           .then((menu) => {
             const menuList = menu.menus.sort((a, b) => a.priority - b.priority)
-            commit('getMenuFromDatabase', menuList)
+            dispatch('offline/menuloc/saveMenusToIndexedDB', menuList, { root: true })
             resolve(menuList)
+          })
+      })
+        .catch((error) => {
+          dispatch('offline/menuloc/getMenusFromIndexedDB', payload, { root: true })
+          throw new Error(`MENU ACTION ${error}`)
+        })
+    } catch (error) {
+      throw new Error(`MENU ACTION ${error}`)
+    }
+  },
+  removeAlertOnMenu ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}menus/${payload.menuId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              alert: false
+            }
+          })
+        })
+          .then(res => res.json())
+          .then((menu) => {
+            resolve(menu.data)
           })
       })
     } catch (error) {

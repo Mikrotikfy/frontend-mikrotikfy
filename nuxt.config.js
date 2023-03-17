@@ -55,7 +55,8 @@ export default {
   plugins: [
     '~/plugins/role',
     '~/plugins/telegram',
-    '~/plugins/push'
+    '~/plugins/push',
+    { src: '~/plugins/db.js', mode: 'client' }
   ],
   /*
   ** Auto import components
@@ -74,9 +75,10 @@ export default {
   pwa: {
     workbox: {
       offlineStrategy: 'StaleWhileRevalidate',
+      offlineAssets: ['/favicon.ico', '/icon.png', '/star-bg.svg'],
       runtimeCaching: [
         {
-          urlPattern: /^https:\/\/(localhost:3000|admin\.arnoproducciones\.com)/,
+          urlPattern: /^https?:\/\/(localhost:3000|admin\.arnoproducciones\.com)/,
           handler: 'StaleWhileRevalidate',
           method: 'GET',
           strategyOptions: {
@@ -131,7 +133,7 @@ export default {
   ** Nuxt.js modules
   */
   modules: [
-    '@nuxtjs/onesignal',
+    // '@nuxtjs/onesignal',
     '@nuxtjs/toast'
   ],
   oneSignal: {

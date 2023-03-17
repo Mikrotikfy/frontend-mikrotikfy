@@ -39,7 +39,7 @@ export const mutations = {
   }
 }
 export const actions = {
-  async getTicketsFromDatabase ({ commit }, { city, clienttype, token, active, retired }) {
+  async getTicketsFromDatabase ({ dispatch }, { city, clienttype, token, active, retired }) {
     try {
       let filters = null
       if (retired) {
@@ -126,9 +126,13 @@ export const actions = {
             }
             return ticket
           })
-          localStorage.setItem('tickets', JSON.stringify(ticketList))
-          commit('getTicketsFromDatabase', ticketList)
-          return ticketList
+          console.log('getting from cloud database')
+          dispatch('offline/ticketloc/saveTicketsToIndexedDB', ticketList, { root: true })
+        })
+        .catch((error) => {
+          console.log('getting from indexed local database')
+          dispatch('offline/ticketloc/getTicketsFromIndexedDB', error, { root: true })
+          throw new Error(`TICKET ACTION ${error}`)
         })
     } catch (error) {
       throw new Error(`TICKET ACTION ${error}`)
