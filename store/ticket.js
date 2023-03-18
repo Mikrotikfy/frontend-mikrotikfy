@@ -39,103 +39,106 @@ export const mutations = {
   }
 }
 export const actions = {
-  async getTicketsFromDatabase ({ dispatch }, { city, clienttype, token, active, retired }) {
-    try {
-      let filters = null
-      if (retired) {
-        filters = {
-          city: {
-            name: {
-              $eq: city
+  async getTicketsFromDatabase ({ dispatch, commit }, { city, clienttype, token, active, retired }) {
+    const isConnected = await this.$checkInternetConnection()
+    if (isConnected) {
+      try {
+        let filters = null
+        if (retired) {
+          filters = {
+            city: {
+              name: {
+                $eq: city
+              }
+            },
+            active: {
+              $eq: !active
+            },
+            tickettype: {
+              name: {
+                $eq: 'RETIRO'
+              }
+            },
+            clienttype: {
+              name: {
+                $eq: clienttype
+              }
             }
-          },
-          active: {
-            $eq: !active
-          },
-          tickettype: {
-            name: {
-              $eq: 'RETIRO'
-            }
-          },
-          clienttype: {
-            name: {
-              $eq: clienttype
+          }
+        } else {
+          filters = {
+            city: {
+              name: {
+                $eq: city
+              }
+            },
+            active: {
+              $eq: !active
+            },
+            tickettype: {
+              name: {
+                $ne: 'RETIRO'
+              }
+            },
+            clienttype: {
+              name: {
+                $eq: clienttype
+              }
             }
           }
         }
-      } else {
-        filters = {
-          city: {
-            name: {
-              $eq: city
-            }
-          },
-          active: {
-            $eq: !active
-          },
-          tickettype: {
-            name: {
-              $ne: 'RETIRO'
-            }
-          },
-          clienttype: {
-            name: {
-              $eq: clienttype
-            }
+        const qs = require('qs')
+        const query = qs.stringify({
+          filters,
+          populate: [
+            'client',
+            'client.addresses',
+            'client.addresses.neighborhood',
+            'client.neighborhood',
+            'client.technology',
+            'client.plan',
+            'client.naps',
+            'client.debtmovements',
+            'client.tvspec',
+            'client.tvspec.tvspectype',
+            'city',
+            'tickettype',
+            'clienttype',
+            'assignated',
+            'technician',
+            'ticketdetails',
+            'ticketdetails.operator'
+          ],
+          sort: ['createdAt:desc']
+        },
+        {
+          encodeValuesOnly: true
+        })
+        await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets?${query}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
           }
-        }
-      }
-      const qs = require('qs')
-      const query = qs.stringify({
-        filters,
-        populate: [
-          'client',
-          'client.addresses',
-          'client.addresses.neighborhood',
-          'client.neighborhood',
-          'client.technology',
-          'client.plan',
-          'client.naps',
-          'client.debtmovements',
-          'client.tvspec',
-          'client.tvspec.tvspectype',
-          'city',
-          'tickettype',
-          'clienttype',
-          'assignated',
-          'technician',
-          'ticketdetails',
-          'ticketdetails.operator'
-        ],
-        sort: ['createdAt:desc']
-      },
-      {
-        encodeValuesOnly: true
-      })
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets?${query}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        }
-      })
-        .then(res => res.json())
-        .then((tickets) => {
-          const ticketList = tickets.data.map((ticket) => {
-            if (ticket.ticketdetails.length > 0) {
-              ticket.details = ticket.ticketdetails.slice(-1)[0].operator.username + ': ' + ticket.ticketdetails.slice(-1)[0].details
-            }
-            return ticket
+        })
+          .then(res => res.json())
+          .then((tickets) => {
+            const ticketList = tickets.data.map((ticket) => {
+              if (ticket.ticketdetails.length > 0) {
+                ticket.details = ticket.ticketdetails.slice(-1)[0].operator.username + ': ' + ticket.ticketdetails.slice(-1)[0].details
+              }
+              return ticket
+            })
+            commit('ticket/getTicketsFromDatabase', ticketList, { root: true }) // get tickets from database
+            dispatch('offline/ticketloc/saveTicketsToIndexedDB', ticketList, { root: true }) // save tickets to indexedDB
           })
-          console.log('getting from cloud database')
-          dispatch('offline/ticketloc/saveTicketsToIndexedDB', ticketList, { root: true })
-        })
-        .catch((error) => {
-          console.log('getting from indexed local database')
-          dispatch('offline/ticketloc/getTicketsFromIndexedDB', error, { root: true })
-          throw new Error(`TICKET ACTION ${error}`)
-        })
-    } catch (error) {
-      throw new Error(`TICKET ACTION ${error}`)
+          .catch((error) => {
+            throw new Error(`TICKET ACTION ${error}`)
+          })
+      } catch (error) {
+        throw new Error(`TICKET ACTION ${error}`)
+      }
+    } else { // if not connected to internet
+      dispatch('offline/ticketloc/getTicketsFromIndexedDB', isConnected, { root: true })
     }
   },
   async getTickettypes ({ commit }, payload) {

@@ -11,36 +11,41 @@ export const mutations = {
   }
 }
 export const actions = {
-  getMenuFromDatabase ({ dispatch }, payload) {
-    try {
-      const qs = require('qs')
-      const query = qs.stringify({
-        populate: ['menus']
-      },
-      {
-        encodeValuesOnly: true
-      })
-      return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}users/${payload.userId}?${query}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${payload.token}`
-          }
+  async getMenuFromDatabase ({ dispatch, commit }, payload) {
+    const isConnected = await this.$checkInternetConnection()
+    if (isConnected) {
+      try {
+        const qs = require('qs')
+        const query = qs.stringify({
+          populate: ['menus']
+        },
+        {
+          encodeValuesOnly: true
         })
-          .then(res => res.json())
-          .then((menu) => {
-            const menuList = menu.menus.sort((a, b) => a.priority - b.priority)
-            dispatch('offline/menuloc/saveMenusToIndexedDB', menuList, { root: true })
-            resolve(menuList)
+        return new Promise((resolve, reject) => {
+          fetch(`${this.$config.API_STRAPI_ENDPOINT}users/${payload.userId}?${query}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${payload.token}`
+            }
           })
-      })
-        .catch((error) => {
-          dispatch('offline/menuloc/getMenusFromIndexedDB', payload, { root: true })
-          throw new Error(`MENU ACTION ${error}`)
+            .then(res => res.json())
+            .then((menu) => {
+              const menuList = menu.menus.sort((a, b) => a.priority - b.priority)
+              commit('getMenuFromDatabase', menuList) // get menu from database
+              dispatch('offline/menuloc/saveMenusToIndexedDB', menuList, { root: true }) // save menu to indexedDB
+              resolve(menuList)
+            })
         })
-    } catch (error) {
-      throw new Error(`MENU ACTION ${error}`)
+          .catch((error) => {
+            throw new Error(`MENU ACTION ${error}`)
+          })
+      } catch (error) {
+        throw new Error(`MENU ACTION ${error}`)
+      }
+    } else { // if not connected to internet
+      dispatch('offline/menuloc/getMenusFromIndexedDB', payload, { root: true })
     }
   },
   removeAlertOnMenu ({ commit }, payload) {

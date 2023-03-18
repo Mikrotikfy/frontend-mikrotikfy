@@ -201,16 +201,12 @@ export default {
     }
   },
   mounted () {
-    this.getTvSpecTypes()
     this.testTvSpecs()
   },
   methods: {
     initComponent () {
       this.dialog = true
       this.stepper = 1
-    },
-    getTvSpecTypes () {
-      this.$store.dispatch('tv/getTvSpecTypes', { token: this.$store.state.auth.token })
     },
     testTvSpecs () {
       const hasSpecs = this.ticket.client.tvspec

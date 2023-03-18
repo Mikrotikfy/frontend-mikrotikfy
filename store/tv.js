@@ -11,21 +11,27 @@ export const mutations = {
   }
 }
 export const actions = {
-  async getTvSpecTypes ({ commit }, payload) {
-    try {
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}tvspectypes`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${payload.token}`
-        }
-      })
-        .then(res => res.json())
-        .then((spectypes) => {
-          commit('getTvSpecTypes', spectypes.data)
+  async getTvSpecTypes ({ commit, dispatch }, payload) {
+    const isConnected = await this.$checkInternetConnection()
+    if (isConnected) {
+      try {
+        await fetch(`${this.$config.API_STRAPI_ENDPOINT}tvspectypes`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
         })
-    } catch (error) {
-      throw new Error(`TV SPEC TYPES ACTION ${error}`)
+          .then(res => res.json())
+          .then((spectypes) => {
+            commit('getTvSpecTypes', spectypes.data) // get tvspec types from database
+            dispatch('offline/tvloc/saveTvSpecTypesToIndexedDB', spectypes.data, { root: true }) // save tvspec types to indexedDB
+          })
+      } catch (error) {
+        throw new Error(`TV SPEC TYPES ACTION ${error}`)
+      }
+    } else {
+      dispatch('offline/tvloc/getTvSpecTypesFromIndexedDB', payload, { root: true })
     }
   },
   saveSpecs ({ commit }, payload) {

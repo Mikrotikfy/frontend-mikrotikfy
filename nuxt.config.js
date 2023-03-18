@@ -9,6 +9,7 @@ export default {
   ** See https://nuxtjs.org/api/configuration-target
   */
   target: 'server',
+
   /*
   ** Headers of the page
   ** See https://nuxtjs.org/api/configuration-head
@@ -56,6 +57,7 @@ export default {
     '~/plugins/role',
     '~/plugins/telegram',
     '~/plugins/push',
+    '~/plugins/check-internet-connection.js',
     { src: '~/plugins/db.js', mode: 'client' }
   ],
   /*
