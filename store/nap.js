@@ -1,5 +1,6 @@
 export const state = () => ({
-  naps: []
+  naps: [],
+  clientNapData: []
 })
 export const mutations = {
   napList (state, napPayload) {
@@ -23,6 +24,13 @@ export const mutations = {
       })
     } catch (error) {
       throw new Error(`CURRENTNAPS MUTATE ${error}`)
+    }
+  },
+  getClientNapData (state, clientNapData) {
+    try {
+      state.clientNapData = clientNapData
+    } catch (error) {
+      throw new Error(`CLIENTNAPDATA MUTATE ${error}`)
     }
   }
 }
@@ -160,6 +168,7 @@ export const actions = {
         })
           .then(res => res.json())
           .then((clientNapData) => {
+            commit('getClientNapData', clientNapData.data)
             resolve(clientNapData.data)
           })
       })

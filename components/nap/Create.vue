@@ -97,7 +97,7 @@ export default {
     nap: {
       code: '',
       address: '',
-      city: '',
+      city: null,
       neighborhood: '',
       technology: '',
       naptype: ''
@@ -119,8 +119,13 @@ export default {
       return this.$store.state.technologies
     }
   },
+  watch: {
+    '$route.query.city' () {
+      this.setCity()
+    }
+  },
   mounted () {
-    this.nap.city = this.$store.state.cities.find(c => c.name === this.$route.query.city).id
+    this.setCity()
     this.getNapTypes()
   },
   methods: {
@@ -156,6 +161,9 @@ export default {
           this.alertBoxColor = 'red darken-4'
           this.createdMessage = 'Error al obtener los tipos de Nap.'
         })
+    },
+    setCity () {
+      this.nap.city = this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
     }
   }
 }

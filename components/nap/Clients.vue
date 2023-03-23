@@ -126,6 +126,10 @@ export default {
   watch: {
     napdata () {
       this.getNapClients()
+    },
+    '$route.query.city' () {
+      this.napClientsList = []
+      this.clientList = []
     }
   },
   methods: {
@@ -146,7 +150,7 @@ export default {
       })
         .then(res => res.json())
         .then((clients) => {
-          this.napClientsList = clients.data
+          this.napClientsList = clients.data.clients
           this.loading = false
         })
     },

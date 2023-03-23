@@ -77,10 +77,18 @@ export default {
       return this.$store.state.nap.naps
     }
   },
+  watch: {
+    '$route.query.city' () {
+      this.getNaps()
+    }
+  },
   mounted () {
-    this.$store.dispatch('nap/getNaps', { city: this.$route.query.city, token: this.$store.state.auth.token })
+    this.getNaps()
   },
   methods: {
+    getNaps () {
+      this.$store.dispatch('nap/getNaps', { city: this.$route.query.city, token: this.$store.state.auth.token })
+    },
     showNapInfo (nap) {
       this.$emit('showNapInfo', nap)
     },

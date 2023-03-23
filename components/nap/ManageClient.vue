@@ -95,13 +95,15 @@ export default {
       modal: false,
       selected: null,
       current: [],
-      waitingForClientNapData: true,
-      clientNapData: []
+      waitingForClientNapData: true
     }
   },
   computed: {
     naps () {
       return this.$store.state.nap.naps
+    },
+    clientNapData () {
+      return this.$store.state.nap.clientNapData
     }
   },
   methods: {
@@ -128,7 +130,7 @@ export default {
       this.modal = false
     },
     async getClientNapData () {
-      this.clientNapData = await this.$store.dispatch('nap/getClientNapData', {
+      await this.$store.dispatch('nap/getClientNapData', {
         token: this.$store.state.auth.token,
         client: this.client
       })

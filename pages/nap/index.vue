@@ -47,6 +47,11 @@ export default {
       return this.$store.state.cities ? this.$store.state.cities.find(c => c.name == this.$route.query.city) : ''
     }
   },
+  watch: {
+    '$route.query.city' () {
+      this.napData = {}
+    }
+  },
   methods: {
     showNapInfo (data) {
       this.napData = data
