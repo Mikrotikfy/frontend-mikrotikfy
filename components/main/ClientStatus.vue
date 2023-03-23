@@ -143,6 +143,11 @@ export default {
     showInfo: false,
     online: false
   }),
+  computed: {
+    clientForDeviceManipulation () {
+      return this.$store.state.client.clientForDeviceManipulation
+    }
+  },
   methods: {
     async initComponent () {
       this.loading = true
@@ -164,12 +169,12 @@ export default {
     },
     async searchDeviceByClient (mac = 'default') {
       const macOfCurrentDevice = mac.replace(/:/g, '')
-      const client = await this.$store.dispatch('client/clientForDeviceManipulation', {
+      await this.$store.dispatch('client/clientForDeviceManipulation', {
         clientid: this.clientid,
         token: this.$store.state.auth.token
       })
-      if (!client) { return }
-      const devices = client.mac_addresses.map((device) => {
+      if (!this.clientForDeviceManipulation) { return }
+      const devices = this.clientForDeviceManipulation.mac_addresses.map((device) => {
         device.mac_address = device.mac_address.replace(/:/g, '')
         return device
       })

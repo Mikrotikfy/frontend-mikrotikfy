@@ -67,8 +67,8 @@ export default {
   data () {
     return {
       offers: [],
-      selected: null,
       dialog: false,
+      selected: null,
       isretired: false
     }
   },
@@ -113,12 +113,6 @@ export default {
         token: this.$store.state.auth.token
       })
       this.$simpleTelegramUpdateOffer({ client: this.client, operator: this.$store.state.auth.username, offer: this.selected, telegramBots: this.telegramBots })
-    },
-    async getOfferByPlanId () {
-      this.selected = await this.$store.dispatch('offer/getOfferByPlanId', {
-        token: this.$store.state.auth.token,
-        client: this.client
-      })
     },
     confirm () {
       this.dialog = true

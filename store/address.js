@@ -1,5 +1,15 @@
-export const state = () => ({})
-export const mutations = {}
+export const state = () => ({
+  clientAddresses: []
+})
+export const mutations = {
+  getAddresByClientId (state, addressList) {
+    try {
+      state.clientAddresses = addressList
+    } catch (error) {
+      throw new Error(`ADDRESSES MUTATE ${error}`)
+    }
+  }
+}
 export const actions = {
   addAddress ({ commit }, payload) {
     try {
@@ -55,6 +65,7 @@ export const actions = {
         })
           .then(res => res.json())
           .then((addresses) => {
+            commit('getAddresByClientId', addresses.data)
             resolve(addresses.data)
           })
       })

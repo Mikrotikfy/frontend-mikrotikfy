@@ -109,7 +109,6 @@ export default {
       modal: false,
       address: '',
       neighborhood: null,
-      neighborhoods: [],
       dir1: '',
       dir2: '',
       dir3: '#',
@@ -129,13 +128,18 @@ export default {
       ]
     }
   },
+  computed: {
+    neighborhoods () {
+      return this.$store.state.neighborhood.Allneighborhoods
+    }
+  },
   methods: {
     genAddress () {
       this.address = `${this.dir1} ${this.dir2} ${this.dir3} ${this.dir4}`
     },
     async initComponent () {
       this.modal = true
-      this.neighborhoods = await this.$store.dispatch('neighborhood/getAll', {
+      await this.$store.dispatch('neighborhood/getAll', {
         city: this.$route.query.city,
         token: this.$store.state.auth.token
       })

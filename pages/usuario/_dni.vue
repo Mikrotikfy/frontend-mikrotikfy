@@ -86,7 +86,6 @@ export default {
   data () {
     return {
       dni: '',
-      clients: [],
       valid_dni: [
         value => !!value || 'Debes especificar la cedula',
         (value) => {
@@ -146,12 +145,17 @@ export default {
       ]
     }
   },
+  computed: {
+    clients () {
+      return this.$store.state.client.clientsByDni
+    }
+  },
   mounted () {
     this.getAccount()
   },
   methods: {
     async getAccount () {
-      this.clients = await this.$store.dispatch('client/getByDni', {
+      await this.$store.dispatch('client/getByDni', {
         dni: this.$route.params.dni
       })
     },
@@ -162,7 +166,7 @@ export default {
       if (this.dni !== this.$route.params.dni) {
         this.$router.push({ path: `/usuario/${this.dni}` })
       }
-      this.clients = await this.$store.dispatch('client/getByDni', {
+      await this.$store.dispatch('client/getByDni', {
         dni: this.dni
       })
     }

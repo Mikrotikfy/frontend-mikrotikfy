@@ -57,14 +57,18 @@ export default {
   },
   data () {
     return {
-      modal: false,
-      addresses: []
+      modal: false
+    }
+  },
+  computed: {
+    addresses () {
+      return this.$store.state.address.clientAddresses
     }
   },
   methods: {
     async initComponent () {
       this.modal = true
-      this.addresses = await this.$store.dispatch('address/getAddresByClientId', {
+      await this.$store.dispatch('address/getAddresByClientId', {
         clientId: this.client.id,
         token: this.$store.state.auth.token
       })

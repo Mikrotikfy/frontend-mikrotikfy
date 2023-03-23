@@ -3,6 +3,7 @@ export const state = () => ({
   debtHistory: [],
   newDebtHistory: [],
   newOfferHistory: [],
+  currentOffer: null,
   lastDebtMovement: null,
   lastOfferMovement: null,
   offers: []
@@ -42,6 +43,20 @@ export const mutations = {
       state.newDebtHistory.push(offer)
     } catch (error) {
       throw new Error(`NEW OFFER MUTATE ${error}`)
+    }
+  },
+  getOfferByPlanId (state, offer) {
+    try {
+      state.currentOffer = offer
+    } catch (error) {
+      throw new Error(`GET OFFER BY PLAN ID MUTATE ${error}`)
+    }
+  },
+  getOffers (state, offers) {
+    try {
+      state.offers = offers
+    } catch (error) {
+      throw new Error(`GET OFFERS MUTATE ${error}`)
     }
   }
 }
@@ -137,6 +152,7 @@ export const actions = {
         })
           .then(res => res.json())
           .then((offers) => {
+            commit('getOffers', offers.data)
             resolve(offers.data)
           })
       })
@@ -291,6 +307,7 @@ export const actions = {
         })
           .then(res => res.json())
           .then((offers) => {
+            commit('getOfferByPlanId', offers.data[0])
             resolve(offers.data[0])
           })
       })

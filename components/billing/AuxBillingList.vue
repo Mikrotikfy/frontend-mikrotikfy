@@ -132,7 +132,6 @@ export default {
     modal: false,
     loading: false,
     billData: null,
-    clientData: null,
     months: [
       {
         text: 'Enero',
@@ -184,6 +183,11 @@ export default {
       }
     ]
   }),
+  computed: {
+    clientData () {
+      return this.$store.state.billing.billsForCurrentClient
+    }
+  },
   methods: {
     async initComponent () {
       this.modal = true
@@ -198,7 +202,7 @@ export default {
       return hours > 24
     },
     async getBillsByClientId () {
-      this.clientData = await this.$store.dispatch('billing/getBillsByClientId', {
+      await this.$store.dispatch('billing/getBillsByClientId', {
         client: this.client,
         token: this.$store.state.auth.token
       })

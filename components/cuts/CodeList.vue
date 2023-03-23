@@ -35,7 +35,8 @@ export default {
   data () {
     return {
       codes: null,
-      usePlan: false
+      usePlan: false,
+      plan: null
     }
   },
   computed: {

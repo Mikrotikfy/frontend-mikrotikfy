@@ -39,8 +39,12 @@ export default {
     return {
       kick: false,
       applyOffer: false,
-      offer: null,
-      offers: []
+      offer: null
+    }
+  },
+  computed: {
+    offers () {
+      return this.$store.state.offer.offers
     }
   },
   watch: {
@@ -65,7 +69,7 @@ export default {
   },
   methods: {
     async getOffers () {
-      this.offers = await this.$store.dispatch('offer/getOffers', {
+      await this.$store.dispatch('offer/getOffers', {
         token: this.$store.state.auth.token
       })
     }

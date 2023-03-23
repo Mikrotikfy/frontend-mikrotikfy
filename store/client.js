@@ -1,6 +1,8 @@
 export const state = () => ({
   clients: [],
   clienttypes: [],
+  clientsByDni: [],
+  clientForDeviceManipulation: null,
   headers: null
 })
 export const mutations = {
@@ -89,6 +91,20 @@ export const mutations = {
       state.clients[payload.index].plan = payload.plan
     } catch (error) {
       throw new Error(`SET AUX PLAN MUTATE ${error}`)
+    }
+  },
+  getByDni (state, payload) {
+    try {
+      state.clientsByDni = payload
+    } catch (error) {
+      throw new Error(`GET BY DNI MUTATE ${error}`)
+    }
+  },
+  clientForDeviceManipulation (state, payload) {
+    try {
+      state.clientForDeviceManipulation = payload
+    } catch (error) {
+      throw new Error(`CLIENT FOR DEVICE MANIPULATION MUTATE ${error}`)
     }
   }
 }
@@ -357,6 +373,7 @@ export const actions = {
           .then(res => res.json())
           .then((client) => {
             resolve(client.data)
+            commit('getByDni', client.data)
           })
       })
     } catch (error) {
@@ -382,6 +399,7 @@ export const actions = {
         })
           .then(res => res.json())
           .then((client) => {
+            commit('clientForDeviceManipulation', client.data)
             resolve(client.data)
           })
       })

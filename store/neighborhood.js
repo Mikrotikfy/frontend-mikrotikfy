@@ -1,5 +1,6 @@
 export const state = () => ({
-  neighborhoods: []
+  neighborhoods: [],
+  Allneighborhoods: []
 })
 export const mutations = {
   getNeighborhoodsFromDatabase (state, neighborhoodList) {
@@ -7,6 +8,13 @@ export const mutations = {
       state.neighborhoods = neighborhoodList
     } catch (error) {
       throw new Error(`NEIGHBORHOOD MUTATE ${error}`)
+    }
+  },
+  getAll (state, neighborhoodList) {
+    try {
+      state.Allneighborhoods = neighborhoodList
+    } catch (error) {
+      throw new Error(`GETALL NEIGHBORHOOD MUTATE ${error}`)
     }
   }
 }
@@ -54,6 +62,7 @@ export const actions = {
         })
           .then(res => res.json())
           .then((neighborhoods) => {
+            commit('getAll', neighborhoods.data)
             resolve(neighborhoods.data)
           })
       })

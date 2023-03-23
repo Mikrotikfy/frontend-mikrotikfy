@@ -4,6 +4,7 @@ export const state = () => ({
     clientId: null,
     bills: []
   },
+  billsForCurrentClient: [],
   total: 0,
   month: null,
   headers: [],
@@ -64,6 +65,13 @@ export const mutations = {
       type: 'RECAUDO',
       date: new Date()
     })
+  },
+  getBillsByClientId (state, bills) {
+    try {
+      state.billsForCurrentClient = bills
+    } catch (error) {
+      throw new Error(`BILLING CLIENTS MUTATE ${error}`)
+    }
   },
   getClientsBySearch (state, clients) {
     try {
@@ -254,6 +262,7 @@ export const actions = {
         })
           .then(res => res.json())
           .then((res) => {
+            commit('getBillsByClientId', res.data)
             resolve(res.data)
           })
       })

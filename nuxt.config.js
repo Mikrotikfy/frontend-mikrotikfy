@@ -76,18 +76,17 @@ export default {
   ],
   pwa: {
     workbox: {
+      config: {
+        debug: true
+      },
       offlineStrategy: 'StaleWhileRevalidate',
       offlineAssets: ['/favicon.ico', '/icon.png', '/star-bg.svg'],
-      runtimeCaching: [
-        {
-          urlPattern: /^https?:\/\/(localhost:3000|admin\.arnoproducciones\.com)/,
-          handler: 'StaleWhileRevalidate',
-          method: 'GET',
-          strategyOptions: {
-            cacheName: 'api-cache-SWV'
-          }
-        }
-      ]
+      cacheNames: {
+        prefix: 'arnop-api',
+        suffix: 'v1.0.0',
+        precache: 'precache',
+        runtime: 'runtime-cache'
+      }
     },
     meta: {
       name: 'ARNOProducciones API',
