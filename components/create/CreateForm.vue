@@ -369,6 +369,9 @@ export default {
     },
     clienttype () {
       return this.$store.state.clienttypes.find(ct => ct.name === this.$route.query.clienttype)
+    },
+    currentClientCode () {
+      return this.$store.state.client.currentClientCode
     }
   },
   async mounted () {
@@ -382,13 +385,13 @@ export default {
   },
   methods: {
     async getCode () {
-      const client = await this.$store.dispatch('client/getCode', {
+      await this.$store.dispatch('client/getCode', {
         token: this.$store.state.auth.token,
         clienttype: this.$route.query.clienttype,
         city: this.$route.query.city
       })
-      if (client.length > 0) {
-        this.Client.code = (parseInt(client[0].code) + 1).toString()
+      if (this.currentClientCode) {
+        this.Client.code = (parseInt(this.currentClientCode) + 1).toString()
       } else {
         this.Client.code = '1'
       }

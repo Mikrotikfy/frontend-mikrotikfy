@@ -17,9 +17,10 @@ export default {
       default: () => ({})
     }
   },
-  data () {
-    return {
-      ipmodel: null
+  data () {},
+  computed: {
+    ipmodel () {
+      return this.$store.state.ipmodel.ipModel
     }
   },
   mounted () {
@@ -27,7 +28,7 @@ export default {
   },
   methods: {
     async getIpModel () {
-      this.ipmodel = await this.$store.dispatch('ipmodel/getIpModel', {
+      await this.$store.dispatch('ipmodel/getIpModel', {
         clientId: this.client.id,
         city: this.$route.query.city,
         token: this.$store.state.auth.token

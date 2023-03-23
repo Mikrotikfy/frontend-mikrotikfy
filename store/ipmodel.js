@@ -1,6 +1,7 @@
 export const state = () => ({
   lastIpModel: null,
-  currentClientHasStaticIp: false
+  currentClientHasStaticIp: false,
+  ipModel: null
 })
 export const mutations = {
   getLast (state, lastIpModel) {
@@ -16,6 +17,9 @@ export const mutations = {
     } else {
       state.currentClientHasStaticIp = false
     }
+  },
+  getIpModel (state, ipModel) {
+    state.ipModel = ipModel
   }
 }
 export const actions = {
@@ -43,6 +47,7 @@ export const actions = {
         })
           .then(res => res.json())
           .then((client) => {
+            commit('getIpModel', client.data[0])
             resolve(client.data[0])
           })
       })

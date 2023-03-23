@@ -32,7 +32,6 @@ export default {
   data () {
     return {
       offer: null,
-      offers: [],
       loading: false
     }
   },
@@ -42,6 +41,9 @@ export default {
     },
     clientsByPlan () {
       return this.$store.state.cuts.clientsByPlan
+    },
+    offers () {
+      return this.$store.state.offer.offers
     }
   },
   watch: {
@@ -49,10 +51,15 @@ export default {
       this.$store.commit('cuts/setOfferForBulkProcess', this.offer)
     }
   },
-  async mounted () {
-    this.offers = await this.$store.dispatch('offer/getOffers', {
-      token: this.$store.state.auth.token
-    })
+  mounted () {
+    this.getOffers()
+  },
+  methods: {
+    async getOffers () {
+      await this.$store.dispatch('offer/getOffers', {
+        token: this.$store.state.auth.token
+      })
+    }
   }
 }
 </script>

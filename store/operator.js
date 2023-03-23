@@ -1,3 +1,11 @@
+export const state = () => ({
+  operators: []
+})
+export const mutations = {
+  getOperatorList (state, payload) {
+    state.operators = payload
+  }
+}
 export const actions = {
   getOperatorList ({ commit }, payload) {
     const qs = require('qs')
@@ -21,6 +29,7 @@ export const actions = {
         })
           .then(res => res.json())
           .then((operators) => {
+            commit('getOperatorList', operators)
             resolve(operators)
           })
       })

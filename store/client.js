@@ -2,23 +2,13 @@ export const state = () => ({
   clients: [],
   clienttypes: [],
   clientsByDni: [],
+  currentClientCode: null,
   clientForDeviceManipulation: null,
   headers: null
 })
 export const mutations = {
   setActiveFromModal (state, payload) {
     state.clients[payload.index].active = payload.active
-  },
-  clearClientsFromDatatable (state) {
-    state.clients = []
-  },
-  getUsersFromDatabase (state, clientsList) {
-    try {
-      state.clients = clientsList.data.results
-      state.pagination = clientsList.data.pagination
-    } catch (error) {
-      throw new Error(`MUTATE SEARCH CLIENT${error}`)
-    }
   },
   getUsersFromDatabaseByTypeAndCity (state, clientsList) {
     try {
@@ -27,13 +17,13 @@ export const mutations = {
       throw new Error(`MUTATE OLT CLIENT${error}`)
     }
   },
-  // getClientTypesFromDatabase (state, clienttypesList) {
-  //   try {
-  //     state.clienttypes = clienttypesList
-  //   } catch (error) {
-  //     throw new Error(`MUTATE CLIENT TYPES${error}`)
-  //   }
-  // },
+  getClientTypesFromDatabase (state, clienttypesList) {
+    try {
+      state.clienttypes = clienttypesList
+    } catch (error) {
+      throw new Error(`MUTATE CLIENT TYPES${error}`)
+    }
+  },
   updateFromModal (state, client) {
     try {
       state.clients[client.index].plan = client.newPlan
@@ -106,6 +96,13 @@ export const mutations = {
     } catch (error) {
       throw new Error(`CLIENT FOR DEVICE MANIPULATION MUTATE ${error}`)
     }
+  },
+  getCode (state, payload) {
+    try {
+      state.currentClientCode = payload[0].code
+    } catch (error) {
+      throw new Error(`GET CODE MUTATE ${error}`)
+    }
   }
 }
 export const actions = {
@@ -151,13 +148,6 @@ export const actions = {
       throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
     }
   },
-  async clearClientsFromDatatable ({ commit }) {
-    try {
-      await commit('clearClientsFromDatatable', true)
-    } catch (error) {
-      throw new Error(`CLEAR CLIENT ACTION ${error}`)
-    }
-  },
   async insertClient ({ commit }, client) {
     try {
       // Object.assign(state.clients[0], client)
@@ -193,6 +183,7 @@ export const actions = {
         })
           .then(res => res.json())
           .then((client) => {
+            commit('getCode', client.data)
             resolve(client.data)
           })
       })
@@ -200,7 +191,7 @@ export const actions = {
       throw new Error(`ACTION GET CODE FROM LAST CLIENT ${error}`)
     }
   },
-  getClientTypesFromDatabase (_, token) {
+  getClientTypesFromDatabase ({ commit }, token) {
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}clienttypes`, {
@@ -212,34 +203,11 @@ export const actions = {
         })
           .then(res => res.json())
           .then((clienttypes) => {
+            commit('getClientTypesFromDatabase', clienttypes.data)
             resolve(clienttypes.data)
             localStorage.setItem('clienttypes', JSON.stringify(clienttypes.data))
           })
       })
-    } catch (error) {
-      throw new Error(`ACTION ${error}`)
-    }
-  },
-  async getUsersFromDatabaseBySearch ({ commit }, payload) {
-    const qs = require('qs')
-    const pagination = qs.stringify({
-      pagination: payload.pagination
-    },
-    {
-      encodeValuesOnly: true
-    })
-    try {
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}searchclient?search=${payload.search}&city=${payload.city}&clienttype=${payload.clienttype}&${pagination}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${payload.token}`
-        }
-      })
-        .then(res => res.json())
-        .then((clients) => {
-          commit('getUsersFromDatabase', clients)
-        })
     } catch (error) {
       throw new Error(`ACTION ${error}`)
     }

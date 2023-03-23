@@ -451,7 +451,6 @@ export default {
       singleExpand: true,
       selected: [],
       interval: null,
-      technicians: [],
       currentTechnician: null
     }
   },
@@ -474,6 +473,9 @@ export default {
     },
     telegramBots () {
       return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
+    },
+    technicians () {
+      return this.$store.state.operator.operators
     },
     getHeadersByClienttype () {
       return this.$route.query.clienttype === 'INTERNET' ? this.$store.state.isDesktop ? [
@@ -605,7 +607,7 @@ export default {
       this.$store.dispatch('tv/getTvSpecTypes', { token: this.$store.state.auth.token })
     },
     async getTechnicians () {
-      this.technicians = await this.$store.dispatch('operator/getOperatorList', {
+      await this.$store.dispatch('operator/getOperatorList', {
         city: this.$route.query.city,
         clienttype: this.$route.query.clienttype,
         token: this.$store.state.auth.token

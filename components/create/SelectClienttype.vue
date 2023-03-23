@@ -34,8 +34,12 @@ export default {
   data () {
     return {
       clienttype: null,
-      clienttypes: null,
       loading: false
+    }
+  },
+  computed: {
+    clienttypes () {
+      return this.$store.state.client.clienttypes
     }
   },
   watch: {
@@ -55,7 +59,7 @@ export default {
       this.clienttype = this.clienttypes.find(clienttype => clienttype.name === this.$route.query.clienttype)
     },
     async getClientTypes () {
-      this.clienttypes = await this.$store.dispatch('client/getClientTypesFromDatabase', this.$store.state.auth.token)
+      await this.$store.dispatch('client/getClientTypesFromDatabase', this.$store.state.auth.token)
       this.setClienttype()
     }
   }

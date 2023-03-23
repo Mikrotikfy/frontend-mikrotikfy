@@ -30,8 +30,12 @@ export default {
   data () {
     return {
       modal: false,
-      technician: null,
-      technicians: []
+      technician: null
+    }
+  },
+  computed: {
+    technicians () {
+      return this.$store.state.operator.operators
     }
   },
   methods: {
@@ -76,7 +80,7 @@ export default {
       }
     },
     async getTechnicians () {
-      this.technicians = await this.$store.dispatch('operator/getOperatorList', {
+      await this.$store.dispatch('operator/getOperatorList', {
         token: this.$store.state.auth.token
       })
     },
