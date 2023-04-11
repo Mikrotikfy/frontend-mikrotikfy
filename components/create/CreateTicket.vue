@@ -538,7 +538,7 @@ export default {
         })
         if (res.status === 200) {
           this.$toast.info('El celular del cliente ha sido actualizado', { duration: 5000 })
-          this.$store.dispatch('clients/getUsersFromDatabaseBySearch', { search: this.$route.params.search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: { page: 1, pageSize: 500 } })
+          this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search: this.$route.params.search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: { page: 1, pageSize: 500 } })
         } else {
           this.$toast.error('Ha ocurrido un error al actualizar el celular del cliente')
         }

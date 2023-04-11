@@ -114,7 +114,7 @@ export default {
   },
   computed: {
     clients () {
-      return this.$store.state.clients.clients
+      return this.$store.state.client.clients
     },
     headers () {
       return this.$store.state.client.headers
@@ -217,18 +217,18 @@ export default {
     },
     async getClientBySearch () {
       this.loadingDataTable = true
-      await this.$store.dispatch('clients/clearClientsFromDatatable')
+      await this.$store.dispatch('client/clearClientsFromDatatable')
       const search = this.searchClientInput.trim()
       this.setSearchText()
       if (search) {
-        await this.$store.dispatch('clients/getUsersFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: this.pagination })
+        await this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: this.pagination })
         this.pagination = { ...this.$store.state.client.pagination }
         this.loadingDataTable = false
         this.result = 'No se han encontrado resultados de' + ' ' + search
       }
     },
     async resetsearchfn () {
-      await this.$store.dispatch('clients/clearClientsFromDatatable')
+      await this.$store.dispatch('client/clearClientsFromDatatable')
       this.loadingDataTable = false
     },
     setSearchText () {
