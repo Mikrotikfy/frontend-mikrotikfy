@@ -63,6 +63,39 @@
                     {{ getDate(item.createdAt) }}
                   </span>
                 </template>
+                <template v-slot:[`item.channel`]="{ item }">
+                  <v-tooltip v-if="item.tickettype.requireverification" bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-chip
+                        v-bind="attrs"
+                        small
+                        :color="getChannelColor(item.tickettype, item.reboot, item.network, item.on)"
+                        class="white--text"
+                        v-on="on"
+                      >
+                        <h5>
+                          {{ item.channel ? getChannelName(item.channel) : 'No reg.' }}
+                        </h5>
+                      </v-chip>
+                    </template>
+                    <span>
+                      <ul>
+                        <li :class="item.reboot ? 'green darken-4 px-2 rounded-xl mb-2' : 'red darken-4 px-2 rounded-xl mb-2'">Se reinicio el Router/ONU? {{ item.reboot ? 'SI': 'NO' }}</li>
+                        <li :class="item.network ? 'green darken-4 px-2 rounded-xl mb-2' : 'red darken-4 px-2 rounded-xl mb-2'">Se verifico conexion a la red WiFi? {{ item.network ? 'SI': 'NO' }}</li>
+                        <li :class="item.on ? 'green darken-4 px-2 rounded-xl mb-2' : 'red darken-4 px-2 rounded-xl mb-2'">El equipo esta encendido? {{ item.on ? 'SI': 'NO' }}</li>
+                      </ul>
+                    </span>
+                  </v-tooltip>
+                  <v-chip
+                    v-else
+                    small
+                    :color="getChannelColor(item.tickettype, item.reboot, item.network, item.on)"
+                    class="white--text">
+                    <h5>
+                      {{ item.channel ? getChannelName(item.channel) : 'N/A' }}
+                    </h5>
+                  </v-chip>
+                </template>
               </v-data-table>
             </client-only>
             <div class="text-center pt-2">
@@ -118,6 +151,7 @@ export default {
       { text: 'Tipo', sortable: true, value: 'tickettype.name' },
       { text: 'Operador', sortable: false, value: 'assignated.username' },
       { text: 'Detalles', sortable: true, value: 'details' },
+      { text: 'Canal', sortable: false, value: 'channel', width: 60, align: ' d-none d-lg-table-cell' },
       { text: 'Creado', sortable: true, value: 'createdAt' },
       { text: 'Acciones', sortable: true, value: 'actions' }
     ],
@@ -131,6 +165,7 @@ export default {
       { text: 'Altos', sortable: true, value: 'tvspec.high' },
       { text: 'Bajos', sortable: true, value: 'tvspec.down' },
       { text: 'Calidad', sortable: true, value: 'tvspec.tvspectype.name' },
+      { text: 'Canal', sortable: false, value: 'channel', width: 60, align: ' d-none d-lg-table-cell' },
       { text: 'Creado', sortable: true, value: 'createdAt' },
       { text: 'Acciones', sortable: true, value: 'actions' }
     ]
@@ -191,6 +226,29 @@ export default {
         return 'Abierto'
       } else {
         return 'Cerrado'
+      }
+    },
+    getChannelColor (tickettype, reboot, network, on) {
+      if (!tickettype.requireverification) {
+        return 'grey darken-4'
+      }
+      if (reboot && network && on) {
+        return 'green darken-4'
+      } else {
+        return 'red darken-4'
+      }
+    },
+    getChannelName (channel) {
+      if (channel === 'phone') {
+        return 'TELEF.'
+      } else if (channel === 'office') {
+        return 'OFICINA'
+      } else if (channel === 'whatsapp') {
+        return 'WHASTAPP'
+      } else if (channel === 'email') {
+        return 'EMAIL'
+      } else {
+        return 'OTRO'
       }
     }
   }

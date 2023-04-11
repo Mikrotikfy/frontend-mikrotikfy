@@ -197,38 +197,6 @@
                   <span class="grey--text">Avance:</span> {{ item.details ? item.details : 'no hay' }}
                 </td>
               </template>
-              <template v-slot:[`item.channel`]="{ item }">
-                <v-tooltip v-if="item.tickettype.requireverification" bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-chip
-                      v-bind="attrs"
-                      v-on="on"
-                      small
-                      :color="getChannelColor(item.tickettype, item.reboot, item.network, item.on)"
-                      class="white--text">
-                    <h5>
-                      {{ item.channel ? getChannelName(item.channel) : 'No reg.' }}
-                    </h5>
-                  </v-chip>
-                  </template>
-                  <span>
-                    <ul>
-                      <li :class="item.reboot ? 'green darken-4 px-2 rounded-xl mb-2' : 'red darken-4 px-2 rounded-xl mb-2'">Se reinicio el Router/ONU? {{ item.reboot ? 'SI': 'NO' }}</li>
-                      <li :class="item.network ? 'green darken-4 px-2 rounded-xl mb-2' : 'red darken-4 px-2 rounded-xl mb-2'">Se verifico conexion a la red WiFi? {{ item.network ? 'SI': 'NO' }}</li>
-                      <li :class="item.on ? 'green darken-4 px-2 rounded-xl mb-2' : 'red darken-4 px-2 rounded-xl mb-2'">El equipo esta encendido? {{ item.on ? 'SI': 'NO' }}</li>
-                    </ul>
-                  </span>
-              </v-tooltip>
-              <v-chip
-                  v-else
-                  small
-                  :color="getChannelColor(item.tickettype, item.reboot, item.network, item.on)"
-                  class="white--text">
-                <h5>
-                  {{ item.channel ? getChannelName(item.channel) : 'N/A' }}
-                </h5>
-              </v-chip>
-              </template>
               <template v-if="clienttype === 'INTERNET'" v-slot:[`item.client.name`]="props">
                 <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA O RETIRADO <span class="text-decoration-line-through">{{props.item.client.name}}</span></span>
                 <span v-else>{{props.item.client.name}}</span>
@@ -481,7 +449,6 @@ export default {
       return this.$route.query.clienttype === 'INTERNET' ? this.$store.state.isDesktop ? [
         { text: 'Estado', sortable: false, value: 'active', width: '5%', hide: 'd-none d-lg-table-cell' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
-        { text: 'Canal', sortable: false, value: 'channel', width: 60, align: ' d-none d-lg-table-cell' },
         { text: 'Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' },
         { text: 'Observaciones', sortable: false, value: 'details', width: 100, align: ' d-none d-lg-table-cell' },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
@@ -502,7 +469,6 @@ export default {
       ] : this.$store.state.isDesktop ? [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name' },
-        { text: 'Canal', sortable: false, value: 'channel', width: 60, align: ' d-none d-lg-table-cell' },
         { text: 'Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' },
         { text: 'Observaciones', sortable: false, value: 'details', width: 100, align: ' d-none d-lg-table-cell' },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
@@ -705,29 +671,6 @@ export default {
         return 'OFICINA'
       } else {
         return 'CERRADO'
-      }
-    },
-    getChannelColor (tickettype, reboot, network, on) {
-      if (!tickettype.requireverification) {
-        return 'grey darken-4'
-      }
-      if (reboot && network && on) {
-        return 'green darken-4'
-      } else {
-        return 'red darken-4'
-      }
-    },
-    getChannelName (channel) {
-      if (channel === 'phone') {
-        return 'TELEF.'
-      } else if (channel === 'office') {
-        return 'OFICINA'
-      } else if (channel === 'whatsapp') {
-        return 'WHASTAPP'
-      } else if (channel === 'email') {
-        return 'EMAIL'
-      } else {
-        return 'OTRO'
       }
     },
     getResolution () {
