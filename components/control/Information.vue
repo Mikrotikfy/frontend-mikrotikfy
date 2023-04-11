@@ -6,7 +6,6 @@
           <v-col>
             <v-text-field
               v-model="currentEditClient.code"
-              type="number"
               label="Codigo"
               autocomplete="off"
               required
