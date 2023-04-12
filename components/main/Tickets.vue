@@ -331,8 +331,11 @@
         >
           <div>
             <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.tickettype ? editModalData.tickettype.name : '' }}</p>
-            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Reporto por: {{ editModalData.channel ? getChannelName(editModalData.channel) : '' }}</p>
-            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.code : '' }}</p>
+            <nuxt-link :to="`/clients/${editModalData.client ? editModalData.client.code : ''}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
+              <strong>
+                <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.code : '' }}</p>
+              </strong>
+            </nuxt-link>
             <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.name : '' }}</p>
             <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? 'addresses' in editModalData.client ? editModalData.client.addresses.at(-1).address : editModalData.client.address : '' }}</p>
             <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? 'addresses' in editModalData.client ? editModalData.client.addresses.at(-1).neighborhood.name : editModalData.client.neighborhood.name : '' }}</p>
@@ -463,9 +466,10 @@ export default {
       ] : [
         { text: 'Estado', sortable: false, value: 'active', width: '5%', hide: 'd-none d-lg-table-cell' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 100 },
-        { text: 'Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
-        { text: 'Cliente', sortable: false, value: 'client.name', width: 150 }
+        { text: 'Dirección', sortable: false, value: 'client.address', width: 180, align: ' d-none d-lg-table-cell' },
+        { text: 'Cliente', sortable: false, value: 'client.name', width: 150 },
+        { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' }
       ] : this.$store.state.isDesktop ? [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name' },
@@ -482,9 +486,10 @@ export default {
       ] : [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name' },
-        { text: 'Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name' },
-        { text: 'Cliente', sortable: false, value: 'client.name' }
+        { text: 'Dirección', sortable: false, value: 'client.address', width: 180, align: ' d-none d-lg-table-cell' },
+        { text: 'Cliente', sortable: false, value: 'client.name' },
+        { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' }
       ]
     }
   },
@@ -715,6 +720,9 @@ export default {
   }
   .printme {
     display: block;
+  }
+  .ticket-row {
+    background-color: red;
   }
 }
 </style>
