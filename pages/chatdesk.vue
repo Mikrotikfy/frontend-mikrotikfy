@@ -1,6 +1,6 @@
 <template>
-  <v-container style="max-width:1650px;">
-    <span class="d-flex">
+  <v-container class="fill-height pa-0" style="max-width:1650px;">
+    <span class="d-flex fill-height">
       <v-col cols="3" class="pr-0">
         <v-card style="border-radius:20px 0px 0px 20px;height:100%;max-height:100%;" class="elevation-0">
           <v-card-title>

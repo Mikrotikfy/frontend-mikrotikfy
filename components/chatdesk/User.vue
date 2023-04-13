@@ -1,5 +1,5 @@
 <template>
-  <div ref="scroll" style="overflow-y:scroll;height: calc(95vh - 200px);" @scroll="scroll($event)">
+  <div ref="scroll" style="overflow-y:scroll;height: calc(95vh - 120px);" @scroll="scroll($event)">
     <v-list two-line>
       <v-list-item-group
         v-model="selectedItem"
