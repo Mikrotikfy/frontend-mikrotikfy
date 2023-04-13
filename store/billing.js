@@ -1,9 +1,7 @@
 export const state = () => ({
   clients: [],
-  billingInfo: {
-    clientId: null,
-    bills: []
-  },
+  currentClient: null,
+  invoices: null,
   billsForCurrentClient: [],
   total: 0,
   month: null,
@@ -87,62 +85,61 @@ export const mutations = {
       throw new Error(`GET BILLING HEADERS BY CLIENT TYPE MUTATE ${error}`)
     }
   },
-  getBillingInfoByClientId (state, billingInfo) {
-    try {
-      const data = {
-        clientId: billingInfo.clientid,
-        clientName: billingInfo.clientname,
-        bills: [
-          { // ESTO ES UNA FACTURA
-            id: 1,
-            active: true,
-            payed: false,
-            createdAt: new Date('Sat Jan 25 2022 12:47:26 GMT-0500'),
-            details: 'FEBRERO',
-            type: { // ESTE ES EL TIPO DE MOVIMIENTO
-              id: 1,
-              name: 'MENSUALIDAD', // tipos de movimiento son: 'MENSUALIDAD', 'COBRO ROUTER', 'TRASLADO', 'DESCUENTO', ETC...
-              billingMonth: 2,
-              price: 50000
-            },
-            deposits: [ // ESTOS SON LOS ABONOS
-              {
-                id: 1,
-                amount: 10000,
-                details: 'Pago de factura',
-                date: new Date('Sat Jan 26 2022 12:47:26 GMT-0500')
-              },
-              {
-                id: 2,
-                amount: 10000,
-                details: 'Pago de factura',
-                date: new Date('Sat Jan 27 2022 12:47:26 GMT-0500')
-              }
-            ]
-          },
-          { // ESTO ES UNA FACTURA
-            id: 2,
-            active: true,
-            payed: false,
-            createdAt: new Date('Sat Jan 25 2022 12:47:26 GMT-0500'),
-            details: '',
-            type: { // ESTE ES EL TIPO DE MOVIMIENTO
-              id: 1,
-              name: 'CAMBIO ROUTER', // tipos de movimiento son: 'MENSUALIDAD', 'COBRO ROUTER', 'TRASLADO', 'DESCUENTO', ETC...
-              billingMonth: null,
-              price: 80000
-            },
-            deposits: [ // ESTOS SON LOS ABONOS
-            ]
-          }
-        ]
-      }
-      const filtered = data.bills.filter(item => billingInfo.showArchive ? item.active === false : item.active === true)
-      data.bills = filtered
-      state.billingInfo = data
-    } catch (error) {
-      throw new Error(`GET BILLING INFO BY CLIENT ID MUTATE ${error}`)
-    }
+  getBillingInfoByClientId (state, data) {
+    // try {
+    // const data = {
+    //   clientId: billingInfo.clientid,
+    //   clientName: billingInfo.clientname,
+    //   bills: [
+    //     { // ESTO ES UNA FACTURA
+    //       id: 1,
+    //       active: true,
+    //       payed: false,
+    //       createdAt: new Date('Sat Jan 25 2022 12:47:26 GMT-0500'),
+    //       details: 'FEBRERO',
+    //       type: { // ESTE ES EL TIPO DE MOVIMIENTO
+    //         id: 1,
+    //         name: 'MENSUALIDAD', // tipos de movimiento son: 'MENSUALIDAD', 'COBRO ROUTER', 'TRASLADO', 'DESCUENTO', ETC...
+    //         billingMonth: 2,
+    //         price: 50000
+    //       },
+    //       deposits: [ // ESTOS SON LOS ABONOS
+    //         {
+    //           id: 1,
+    //           amount: 10000,
+    //           details: 'Pago de factura',
+    //           date: new Date('Sat Jan 26 2022 12:47:26 GMT-0500')
+    //         },
+    //         {
+    //           id: 2,
+    //           amount: 10000,
+    //           details: 'Pago de factura',
+    //           date: new Date('Sat Jan 27 2022 12:47:26 GMT-0500')
+    //         }
+    //       ]
+    //     },
+    //     { // ESTO ES UNA FACTURA
+    //       id: 2,
+    //       active: true,
+    //       payed: false,
+    //       createdAt: new Date('Sat Jan 25 2022 12:47:26 GMT-0500'),
+    //       details: '',
+    //       type: { // ESTE ES EL TIPO DE MOVIMIENTO
+    //         id: 1,
+    //         name: 'CAMBIO ROUTER', // tipos de movimiento son: 'MENSUALIDAD', 'COBRO ROUTER', 'TRASLADO', 'DESCUENTO', ETC...
+    //         billingMonth: null,
+    //         price: 80000
+    //       },
+    //       deposits: [ // ESTOS SON LOS ABONOS
+    //       ]
+    //     }
+    //   ]
+    // }
+    // } catch (error) {
+    //   throw new Error(`GET BILLING INFO BY CLIENT ID MUTATE ${error}`)
+    // }
+    state.currentClient = data.client
+    state.invoices = data.invoices
   }
 }
 export const actions = {
@@ -164,31 +161,34 @@ export const actions = {
   },
   getBillingInfoByClientId ({ commit }, payload) {
     try {
-      commit('getBillingInfoByClientId', payload)
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          client: payload.client.id
+        },
+        populate: ['offer', 'client', 'invoice_type', 'invoice_movements']
+      },
+      {
+        encodeValuesOnly: true
+      })
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}invoices?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((invoices) => {
+            console.log(invoices)
+            commit('getBillingInfoByClientId', { invoices: invoices.data, showArchive: payload.showArchive, client: payload.client })
+            resolve(invoices)
+          })
+      })
     } catch (error) {
       throw new Error(`GET BILLING INFO BY CLIENT ID ACTION ${error}`)
     }
-    // const clientId = payload.clientId
-    // const qs = require('qs')
-    // const query = qs.stringify({
-    //   filters: {},
-    //   populate: []
-    // },
-    // {
-    //   encodeValuesOnly: true
-    // })
-    // await fetch(`${this.$config.API_STRAPI_ENDPOINT}contenttype`, {
-    //   method: 'GET',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Authorization: `Bearer ${payload.token}`
-    //   },
-    //   body: JSON.stringify({})
-    // })
-    //   .then(res => res.json())
-    //   .then((res) => {
-
-    //   })
   },
   async getClientsBySearch ({ commit }, payload) {
     try {

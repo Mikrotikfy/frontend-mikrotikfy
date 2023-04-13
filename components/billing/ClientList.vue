@@ -79,8 +79,7 @@ export default {
     showBillingInfo (item) {
       this.selected = item
       this.$store.dispatch('billing/getBillingInfoByClientId', {
-        clientid: item.id,
-        clientname: item.name,
+        client: item,
         showArchive: this.$store.state.billing.showArchive,
         token: this.$store.state.auth.token
       })

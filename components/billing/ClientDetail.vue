@@ -1,14 +1,14 @@
 <template>
-  <div>
+  <div v-if="invoices">
     <span ref="clientP" class="ml-2 hideMe rounded-xl px-2">
-      Usuario: {{ billingInfo.clientId }} {{ billingInfo.clientName }}
+      Usuario: {{ currentClient.id }} {{ currentClient.name }}
     </span>
     <client-only>
       <v-data-table
         ref="billDataTable"
         v-model="selected"
         :headers="headers"
-        :items.sync="billingInfo.bills"
+        :items.sync="invoices"
         :items-per-page.sync="itemsPerPage"
         :page.sync="page"
         :options.sync="options"
@@ -26,7 +26,7 @@
       >
         <template v-slot:[`item.type.name`]="props">
           <v-chip
-            :color="caculateDebt(props.item.type.price, props.item.deposits) > 0 ? 'orange' : 'green'"
+            :color="caculateDebt(props.item.balance, props.item.invoice_movements) > 0 ? 'orange' : 'green'"
             text
             small
             label
@@ -35,10 +35,10 @@
           </v-chip>
         </template>
         <template v-slot:[`item.type.price`]="props">
-          <strong> ${{ Number(props.item.type.price).toLocaleString('es') }} </strong>
+          <strong> ${{ Number(props.item.balance).toLocaleString('es') }} </strong>
         </template>
         <template v-slot:[`item.debt`]="props">
-          <strong class="text-h5"> ${{ Number(caculateDebt(props.item.type.price, props.item.deposits)).toLocaleString('es') }} </strong>
+          <strong class="text-h5"> ${{ Number(caculateDebt(props.item.balance, props.item.invoice_movements)).toLocaleString('es') }} </strong>
         </template>
         <template v-slot:[`item.details`]="props">
           <BillingDetails :billinginfo="props" />
@@ -54,13 +54,13 @@
         <template v-slot:[`item.actions`]="props">
           <span class="d-flex justify-end" :data-index="props.index">
             <BillingPayBill
-              v-if="!props.item.pay && selected.length < 2"
+              v-if="!props.item.payed && selected.length < 2"
               :bill="props.item"
               :index="props.index"
-              :debt="caculateDebt(props.item.type.price, props.item.deposits)"
+              :debt="caculateDebt(props.item.balance, props.item.invoice_movements)"
               class="mr-2"
             />
-            <BillingDepositHistory v-if="props.item.type === 'FACTURACION'" :bill="props.item" class="mr-2" />
+            <BillingDepositHistory v-if="props.item.concept === 'FACTURACION'" :bill="props.item" class="mr-2" />
             <BillingCancelBill :bill="props.item" />
           </span>
         </template>
@@ -80,7 +80,7 @@ export default {
       loadingDataTable: false,
       headers: [
         { text: 'ID', value: 'id', sortable: false },
-        { text: 'Tipo de movimiento', value: 'type.name', sortable: false },
+        { text: 'Concepto', value: 'concept', sortable: false },
         { text: 'Detalles', value: 'details', sortable: false },
         { text: 'Saldo Pendiente', sortable: false, value: 'debt' },
         { text: 'Fecha', value: 'createdAt', sortable: false },
@@ -89,14 +89,16 @@ export default {
     }
   },
   computed: {
-    billingInfo () {
-      return this.$store.state.billing.billingInfo
+    invoices () {
+      return this.$store.state.billing.invoices
+    },
+    currentClient () {
+      return this.$store.state.billing.currentClient
     }
   },
   watch: {
-    '$store.state.billing.billingInfo': {
+    '$store.state.billing.invoices': {
       handler () {
-        this.changeClient()
         this.selectLastBill()
       }
     },
@@ -111,18 +113,23 @@ export default {
   },
   methods: {
     changeClient () {
-      this.$refs.clientP.classList.remove('hideMe')
+      this.$refs.clientP.$el.$refs.classList.remove('hideMe')
       setTimeout(() => {
         this.$refs.clientP.classList.add('hideMe')
       }, 100)
     },
     selectLastBill () {
       this.selected = []
-      const bill = this.billingInfo.bills.filter(item => item.active)
+      const bill = this.invoices.filter(item => item.active)
       this.selected.push(bill[0])
     },
-    caculateDebt (price, deposits) {
-      return price - deposits.reduce((total, curr) => { return total + curr.amount }, 0)
+    caculateDebt (price, invoiceMovements) {
+      console.log(price, invoiceMovements)
+      if (invoiceMovements.length === 0) {
+        return price
+      } else {
+        return price - invoiceMovements.reduce((total, curr) => { return total + curr.amount }, 0)
+      }
     }
   }
 }
