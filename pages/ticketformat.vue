@@ -38,6 +38,7 @@
                   {{ item.tickettype.name }}
                 </strong>
               </h5>
+              <h5>{{ item.id }}</h5>
               <h5>{{ item.code }}</h5>
               <h5>{{ item.name }}</h5>
               <h5 v-if="item.tickettype.name !== 'TRASLADO'">
@@ -61,6 +62,7 @@
               class="parent"
             >
               <span style="color:#c9c9c9;"><strong>Tipo de ticket</strong></span>
+              <span style="color:#c9c9c9;">ID</span>
               <span style="color:#c9c9c9;">Código</span>
               <span style="color:#c9c9c9;">Nombre</span>
               <span style="color:#c9c9c9;">
@@ -74,6 +76,7 @@
               class="parent"
             >
               <span style="color:#c9c9c9;"><strong>Tipo de ticket</strong></span>
+              <span style="color:#c9c9c9;">ID</span>
               <span style="color:#c9c9c9;">Código</span>
               <span style="color:#c9c9c9;">Nombre</span>
               <span style="color:#c9c9c9;">
@@ -158,7 +161,7 @@ export default {
 .parent {
   display: grid;
   width: 100%;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr) minmax(0, 4fr) minmax(0, 4fr) minmax(0, 2fr) minmax(0, 4fr) minmax(0, 4fr);
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) minmax(0, 2fr) minmax(0, 4fr) minmax(0, 4fr) minmax(0, 2fr) minmax(0, 4fr) minmax(0, 4fr);
   grid-gap: 0px;
 }
 .parent > h6, h5, h4, span {
