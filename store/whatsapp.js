@@ -293,7 +293,7 @@ export const actions = {
       throw new Error(`WHATSAPP CONTACTS ACTION ${error}`)
     }
   },
-  setReadToTrue ({ commit }, payload) {
+  setReadToTrueAndResetPendingMessages ({ commit }, payload) {
     return new Promise((resolve, reject) => {
       fetch(`${this.$config.API_STRAPI_ENDPOINT}whatsappcontacts/${payload.id}`, {
         method: 'PUT',
@@ -303,7 +303,8 @@ export const actions = {
         },
         body: JSON.stringify({
           data: {
-            read: true
+            read: true,
+            pendingmessages: 0
           }
         })
       })

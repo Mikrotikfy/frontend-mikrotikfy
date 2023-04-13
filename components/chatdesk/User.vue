@@ -155,12 +155,12 @@ export default {
     async openChat (item) {
       this.$router.push({ path: `/chatdesk?phone=${item.phone}&city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}` })
       if (!item.read) {
-        await this.setReadToTrue(item)
+        await this.setReadToTrueAndResetPendingMessages(item)
         this.getWhatsappContacts()
       }
     },
-    async setReadToTrue (item) {
-      await this.$store.dispatch('whatsapp/setReadToTrue', {
+    async setReadToTrueAndResetPendingMessages (item) {
+      await this.$store.dispatch('whatsapp/setReadToTrueAndResetPendingMessages', {
         id: item.id,
         token: this.$store.state.auth.token
       })
