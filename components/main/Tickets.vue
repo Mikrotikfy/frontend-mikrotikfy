@@ -119,7 +119,7 @@
               </template>
               <template v-slot:[`item.tickettype.name`]="props">
                 <v-edit-dialog
-                  v-if="$isAdmin()"
+                  v-if="$isAdmin() || $isBiller()"
                   ref="dialog"
                   large
                   cancel-text="Cancelar"
