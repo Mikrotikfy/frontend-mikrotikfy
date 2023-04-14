@@ -18,9 +18,8 @@ export default {
         if (item.payed) {
           return total
         } else {
-          return (total + item.value) - (item.invoice_movements.reduce((total, curr) => {
-            return total + curr.amount
-          }, 0))
+          console.log(total, item.balance)
+          return total + item.balance
         }
       }, 0)
     }
