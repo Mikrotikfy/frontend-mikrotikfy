@@ -143,11 +143,59 @@ export const mutations = {
   }
 }
 export const actions = {
-  addMovement ({ commit }, payload) {
-    commit('addMovement', payload)
+  updateInvoice ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}invoices/${payload.invoice.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              payed: payload.payed,
+              balance: payload.balance
+            }
+          })
+        })
+          .then(res => res.json())
+          .then(({ data: invoiceMovement }) => {
+            this.$toast.info('Estado de cuenta actualizado', { duration: 3000 })
+            resolve(invoiceMovement)
+          })
+      })
+    } catch (error) {
+      throw new Error(`UPDATE BILLING INFO BY CLIENT ID ACTION ${error}`)
+    }
   },
-  addDeposit ({ commit }, payload) {
-    commit('addDeposit', payload)
+  createInvoiceMovement ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}invoice-movements`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              invoice: payload.invoice.id,
+              amount: payload.amount,
+              details: payload.details,
+              biller: payload.biller.id
+            }
+          })
+        })
+          .then(res => res.json())
+          .then(({ data: invoiceMovement }) => {
+            this.$toast.info('Movimiento creado exitosamente', { duration: 3000 })
+            resolve(invoiceMovement)
+          })
+      })
+    } catch (error) {
+      throw new Error(`GET BILLING INFO BY CLIENT ID ACTION ${error}`)
+    }
   },
   editBill ({ commit }, payload) {
     commit('editBill', payload)
@@ -181,7 +229,6 @@ export const actions = {
         })
           .then(res => res.json())
           .then((invoices) => {
-            console.log(invoices)
             commit('getBillingInfoByClientId', { invoices: invoices.data, showArchive: payload.showArchive, client: payload.client })
             resolve(invoices)
           })

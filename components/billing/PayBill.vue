@@ -14,36 +14,34 @@
       width="550"
     >
       <v-card>
-        <v-card-title>
-          <span class="headline">Abonar a Factura</span>
-        </v-card-title>
         <v-card-text>
-          <v-switch
-            v-model="billingInfo.payBill.isComplete"
-            label="Pago completo"
-          />
           <v-text-field
             v-model.number="billingInfo.payBill.amount"
             :disabled="billingInfo.payBill.isComplete"
             type="number"
-            label="Abono parcial de"
-            required
-            :rules="!billingInfo.payBill.isComplete ? [v => !!v || 'Este campo es requerido'] : []"
-            @keyup.enter="addAmount"
+            label="Abono parcial"
+            prepend-inner-icon="mdi-currency-usd"
+            outlined
+            class="mt-4"
+            @keyup.enter="createInvoiceMovement"
           />
           <v-text-field
             v-model="billingInfo.payBill.details"
             label="Observaciones (OPCIONAL)"
-            @keyup.enter="addAmount"
+            prepend-inner-icon="mdi-comment-text-outline"
+            outlined
+            @keyup.enter="createInvoiceMovement"
           />
         </v-card-text>
         <v-card-actions>
           <v-btn
             ref="cbtn"
-            color="red darken-1"
-            @click.enter="addAmount"
+            block
+            class="rounded-xl mb-4"
+            :color="billingInfo.payBill.amount > 0 ? 'yellow darken-4' : 'primary' "
+            @click.enter="createInvoiceMovement"
           >
-            Continuar
+            {{ billingInfo.payBill.amount > 0 ? 'Abonar' : 'Pago Completo' }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -53,15 +51,15 @@
 <script>
 export default {
   props: {
-    bill: {
-      type: Object,
-      required: true
-    },
     index: {
       type: Number,
       required: true
     },
-    debt: {
+    invoice: {
+      type: Object,
+      required: true
+    },
+    balance: {
       type: Number,
       required: true
     }
@@ -71,7 +69,6 @@ export default {
       dialog: false,
       billingInfo: {
         payBill: {
-          isComplete: true,
           amount: null,
           details: null
         }
@@ -80,41 +77,38 @@ export default {
   },
   methods: {
     init () {
-      if (this.debt < 1) {
+      if (this.balance < 1) {
         this.$toast.info('No hay nada para recarudar. el usuario esta al dia', { duration: 2000 })
         return
       }
       this.dialog = true
-      this.billingInfo.payBill.isComplete = true
       this.billingInfo.payBill.amount = null
       this.billingInfo.payBill.details = null
       setTimeout(() => {
         this.$refs.cbtn.$el.focus()
-      })
+      }, 200)
     },
-    addAmount () {
-      if (this.billingInfo.payBill.amount > this.debt || this.bill.amount > this.debt) {
+    createInvoiceMovement () {
+      if (this.billingInfo.payBill.amount && this.billingInfo.payBill.amount > this.balance) {
         this.$toast.error('El valor a recaudar no puede ser mayor al saldo', { duration: 2000 })
         this.error = true
         return
       }
-      if ((!this.debt || !this.billingInfo.payBill.amount) && !this.billingInfo.payBill.isComplete) {
-        this.$toast.error('Debe ingresar un valor', { duration: 2000 })
-        return
-      }
-      this.$store.dispatch('billing/addDeposit', {
-        index: this.index,
-        client: this.$store.state.billing.billingInfo.clientId,
-        amount: this.billingInfo.payBill.isComplete ? this.debt : this.billingInfo.payBill.amount,
-        billingMonth: this.bill.billingMonth,
-        details: this.billingInfo.payBill.details,
-        createdAt: Date.now()
-      })
-      this.$store.dispatch('billing/editBill', {
-        index: this.index,
-        payed: this.billingInfo.payBill.isComplete ? true : this.billingInfo.payBill.amount === this.debt,
+      this.$store.dispatch('billing/createInvoiceMovement', {
+        token: this.$store.state.auth.token,
+        biller: this.$store.state.auth,
+        invoice: this.invoice,
+        amount: this.billingInfo.payBill.amount || this.balance,
         details: this.billingInfo.payBill.details
       })
+      this.$store.dispatch('billing/updateInvoice', {
+        token: this.$store.state.auth.token,
+        index: this.index,
+        invoice: this.invoice,
+        payed: this.billingInfo.payBill.amount === this.balance || !this.billingInfo.payBill.amount,
+        balance: this.billingInfo.payBill.amount ? this.balance - this.billingInfo.payBill.amount : this.balance - this.invoice.balance
+      })
+      this.$emit('updateInvoiceList')
       this.$store.commit('billing/resetSelected')
       this.amount = null
       this.dialog = false

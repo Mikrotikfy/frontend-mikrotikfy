@@ -14,11 +14,11 @@ export default {
   },
   computed: {
     totalamount () {
-      return this.$store.state.billing.billingInfo?.bills?.reduce((total, item) => {
+      return this.$store.state.billing.invoices?.reduce((total, item) => {
         if (item.payed) {
           return total
         } else {
-          return (total + item.type.price) - (item.deposits.reduce((total, curr) => {
+          return (total + item.value) - (item.invoice_movements.reduce((total, curr) => {
             return total + curr.amount
           }, 0))
         }

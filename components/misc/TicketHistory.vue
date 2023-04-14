@@ -90,7 +90,8 @@
                     v-else
                     small
                     :color="getChannelColor(item.tickettype, item.reboot, item.network, item.on)"
-                    class="white--text">
+                    class="white--text"
+                  >
                     <h5>
                       {{ item.channel ? getChannelName(item.channel) : 'N/A' }}
                     </h5>

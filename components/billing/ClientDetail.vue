@@ -24,44 +24,36 @@
         @page-count="pageCount = $event"
         @current-items="$vuetify.goTo(0)"
       >
-        <template v-slot:[`item.type.name`]="props">
+        <template v-slot:[`item.concept`]="props">
           <v-chip
-            :color="caculateDebt(props.item.balance, props.item.invoice_movements) > 0 ? 'orange' : 'green'"
+            :color="props.item.balance > 0 ? 'orange' : 'green'"
             text
             small
             label
           >
-            {{ props.item.type.name }}
+            {{ props.item.concept }}
           </v-chip>
         </template>
-        <template v-slot:[`item.type.price`]="props">
-          <strong> ${{ Number(props.item.balance).toLocaleString('es') }} </strong>
+        <template v-slot:[`item.value`]="props">
+          <strong> ${{ Number(props.item.value).toLocaleString('es') }} </strong>
         </template>
         <template v-slot:[`item.debt`]="props">
-          <strong class="text-h5"> ${{ Number(caculateDebt(props.item.balance, props.item.invoice_movements)).toLocaleString('es') }} </strong>
+          <strong class="text-h5"> ${{ Number(props.item.balance).toLocaleString('es') }} </strong>
         </template>
         <template v-slot:[`item.details`]="props">
           <BillingDetails :billinginfo="props" />
-        </template>
-        <template v-slot:[`item.createdAt`]="props">
-          <span>{{ props.item.createdAt.toLocaleString('es-ES', {
-            month: 'long',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-          }) }} </span>
         </template>
         <template v-slot:[`item.actions`]="props">
           <span class="d-flex justify-end" :data-index="props.index">
             <BillingPayBill
               v-if="!props.item.payed && selected.length < 2"
-              :bill="props.item"
+              :invoice="props.item"
               :index="props.index"
-              :debt="caculateDebt(props.item.balance, props.item.invoice_movements)"
+              :balance="props.item.balance"
               class="mr-2"
+              @updateInvoiceList="updateInvoiceList(props.item)"
             />
             <BillingDepositHistory v-if="props.item.concept === 'FACTURACION'" :bill="props.item" class="mr-2" />
-            <BillingCancelBill :bill="props.item" />
           </span>
         </template>
       </v-data-table>
@@ -82,8 +74,8 @@ export default {
         { text: 'ID', value: 'id', sortable: false },
         { text: 'Concepto', value: 'concept', sortable: false },
         { text: 'Detalles', value: 'details', sortable: false },
+        { text: 'Valor Inicial', value: 'value', sortable: false },
         { text: 'Saldo Pendiente', sortable: false, value: 'debt' },
-        { text: 'Fecha', value: 'createdAt', sortable: false },
         { text: 'Acciones', value: 'actions', sortable: false, class: 'text-right' }
       ]
     }
@@ -112,6 +104,13 @@ export default {
     }
   },
   methods: {
+    updateInvoiceList ({ client }) {
+      this.$store.dispatch('billing/getBillingInfoByClientId', {
+        client,
+        showArchive: this.$store.state.billing.showArchive,
+        token: this.$store.state.auth.token
+      })
+    },
     changeClient () {
       this.$refs.clientP.$el.$refs.classList.remove('hideMe')
       setTimeout(() => {
@@ -124,7 +123,6 @@ export default {
       this.selected.push(bill[0])
     },
     caculateDebt (price, invoiceMovements) {
-      console.log(price, invoiceMovements)
       if (invoiceMovements.length === 0) {
         return price
       } else {
