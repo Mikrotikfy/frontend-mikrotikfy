@@ -18,7 +18,6 @@ export default {
         if (item.payed) {
           return total
         } else {
-          console.log(total, item.balance)
           return total + item.balance
         }
       }, 0)
