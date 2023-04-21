@@ -66,7 +66,7 @@
             </tr>
             <tr>
               <td>EQUIPO EN COMODATO</td>
-              <td></td>
+              <td style="border-left: 1px solid black; grid-column: span 6;">{{ clientInfo.tickettype }}</td>
               <td></td>
               <td></td>
               <td></td>
