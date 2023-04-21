@@ -7,7 +7,9 @@
           :block="block"
           :text="!block"
           :x-small="!block"
-          :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
+          :color="$vuetify.theme.dark && !block ? 'white' : 'white black--text'"
+          class="rounded-xl"
+          :large="block"
           v-on="on"
           @click="initComponent()"
         >

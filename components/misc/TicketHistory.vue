@@ -7,7 +7,9 @@
           :block="block"
           :text="!block"
           :x-small="!block"
-          :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
+          :color="$vuetify.theme.dark && !block ? 'white' : 'white black--text'"
+          class="rounded-xl"
+          :large="block"
           v-on="on"
           @click="initComponent()"
         >
@@ -64,7 +66,7 @@
                   </span>
                 </template>
                 <template v-slot:[`item.channel`]="{ item }">
-                  <v-tooltip v-if="item.tickettype.requireverification" bottom>
+                  <v-tooltip v-if="item.tickettype ? item.tickettype.requireverification : false" bottom>
                     <template v-slot:activator="{ on, attrs }">
                       <v-chip
                         v-bind="attrs"
@@ -152,6 +154,7 @@ export default {
       { text: 'Tipo', sortable: true, value: 'tickettype.name' },
       { text: 'Operador', sortable: false, value: 'assignated.username' },
       { text: 'Detalles', sortable: true, value: 'details' },
+      { text: 'Potencia Optica', sortable: true, value: 'opticalpower' },
       { text: 'Canal', sortable: false, value: 'channel', width: 60, align: ' d-none d-lg-table-cell' },
       { text: 'Creado', sortable: true, value: 'createdAt' },
       { text: 'Acciones', sortable: true, value: 'actions' }
@@ -193,7 +196,8 @@ export default {
           'tvspec',
           'tvspec.tvspectype',
           'assignated'
-        ]
+        ],
+        sort: 'createdAt:desc'
       },
       {
         encodeValuesOnly: true
@@ -230,13 +234,17 @@ export default {
       }
     },
     getChannelColor (tickettype, reboot, network, on) {
-      if (!tickettype.requireverification) {
-        return 'grey darken-4'
-      }
-      if (reboot && network && on) {
-        return 'green darken-4'
+      if (tickettype) {
+        if (!tickettype.requireverification) {
+          return 'grey darken-4'
+        }
+        if (reboot && network && on) {
+          return 'green darken-4'
+        } else {
+          return 'red darken-4'
+        }
       } else {
-        return 'red darken-4'
+        return 'grey darken-4'
       }
     },
     getChannelName (channel) {

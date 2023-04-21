@@ -13,6 +13,8 @@
             :text="!block"
             :x-small="!block"
             :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
+            class="rounded-xl"
+            :large="block"
             v-on="{ ...dialog, ...tooltip }"
             @click="initComponent()"
           >
@@ -153,13 +155,15 @@
           class="ml-2"
         />
         <v-btn
-          :color="closeticket ? 'red darken-4' : 'blue darken-4'"
+          :color="closeticket ? 'red darken-4' : 'primary'"
           block
           :loading="loading"
           :diabled="loading"
           class="rounded-xl"
+          large
           @click="createAdvance"
         >
+          <v-icon>mdi-plus</v-icon>
           {{ closeticket ? technicianescalated ? 'Cerrar Ticket' : 'Cerrar Ticket' : technicianescalated ? 'Escalar caso' : 'Crear Avance' }}
         </v-btn>
       </v-card-text>
@@ -282,7 +286,13 @@ export default {
           Authorization: `Bearer ${this.$store.state.auth.token}`
         },
         body: JSON.stringify({
-          data: { active: !this.closeticket, escalated: this.technicianescalated, escalatedoffice: this.officeescalated, answered: true }
+          data: {
+            active: !this.closeticket,
+            escalated: this.technicianescalated,
+            escalatedoffice: this.officeescalated,
+            answered: true,
+            opticalpower: this.ticket.client.opticalpower
+          }
         })
       }).then(async (input) => {
         if (input.status === 200) {
