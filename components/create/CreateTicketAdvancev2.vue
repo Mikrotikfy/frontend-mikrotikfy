@@ -42,6 +42,16 @@
           hide-details="auto"
           label="Observaciones detalladas"
         />
+        <v-text-field
+          v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo"
+          v-model.number="opticalpower"
+          label="Potencia Óptica en dBm"
+          prepend-inner-icon="mdi-lan"
+          class="mt-5"
+          hide-details="auto"
+          outlined
+          type="number"
+        />
       </v-card-text>
       <v-divider v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo" class="mb-5" />
       <v-card-text v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo">
@@ -178,6 +188,7 @@ export default {
     dialog: false,
     stepper: 1,
     details: '',
+    opticalpower: null,
     technicianescalated: false,
     officeescalated: false,
     closeticket: false,
@@ -202,6 +213,7 @@ export default {
   },
   mounted () {
     this.testTvSpecs()
+    this.setOpticalPower()
   },
   methods: {
     initComponent () {
@@ -215,6 +227,9 @@ export default {
         delete this.specs.id
         this.specsString = JSON.stringify(this.specs)
       }
+    },
+    setOpticalPower () {
+      this.opticalpower = this.ticket.client.opticalpower
     },
     async setNewSpecs (ticketdetail) {
       if (this.specsString !== JSON.stringify(this.specs) && this.$route.query.clienttype === 'TELEVISION') {
@@ -232,6 +247,7 @@ export default {
         this.$toast.error('Debes escribir un resumen del caso', { duration: 3000 })
         return
       }
+
       if (this.$route.query.clienttype === 'TELEVISION' && this.$isTechnician()) {
         if (this.closeticket && this.specs.quality === null) {
           this.$toast.error('Seleccione una calidad de señal', { duration: 3000 })
@@ -256,7 +272,9 @@ export default {
           return
         }
       }
+
       this.loading = true
+
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticket.id}`, {
         method: 'PUT',
         headers: {
@@ -268,6 +286,18 @@ export default {
         })
       }).then(async (input) => {
         if (input.status === 200) {
+          await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${this.ticket.client.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${this.$store.state.auth.token}`
+            },
+            body: JSON.stringify({
+              data: {
+                opticalpower: this.opticalpower
+              }
+            })
+          })
           await fetch(`${this.$config.API_STRAPI_ENDPOINT}ticketdetails`, {
             method: 'POST',
             headers: {
