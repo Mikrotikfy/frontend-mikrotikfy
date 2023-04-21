@@ -106,29 +106,6 @@ export default {
       sizes: [16, 120, 144, 152, 192, 384, 512]
     }
   },
-  webpackOptimisations: {
-    features: {
-      // Note: just an example of keys, these are all keys and their default
-      debug: true,
-      postcssNoPolyfills: true,
-      esbuildLoader: true,
-      esbuildMinifier: true,
-      imageFileLoader: true,
-      webpackOptimisations: true,
-      cacheLoader: true,
-      hardSourcePlugin: false,
-      parallelPlugin: false
-    }
-  },
-  apollo: {
-    clientConfigs: {
-      default: {
-        httpEndpoint: process.env.API_ENDPOINT,
-        authenticationType: 'Bearer',
-        tokenName: 'token'
-      }
-    }
-  },
 
   /*
   ** Nuxt.js modules
@@ -137,15 +114,6 @@ export default {
     // '@nuxtjs/onesignal',
     '@nuxtjs/toast'
   ],
-  oneSignal: {
-    init: {
-      appId: '2b515757-2bd9-49a3-8f7f-81f730c120ca',
-      allowLocalhostAsSecureOrigin: true,
-      welcomeNotification: {
-        disable: true
-      }
-    }
-  },
   toast: {
     position: 'bottom-center'
   },
