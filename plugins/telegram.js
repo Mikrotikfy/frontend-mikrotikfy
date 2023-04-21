@@ -396,14 +396,14 @@ function simpleTelegramCreateTicketAdvanceTv ({ client, ticket, status, details,
   }
   const line2 = client.code
   const line3 = client.name
-  const line4 = client.addresses.at(-1).address
-  const line5 = client.addresses.at(-1).neighborhood.name
+  const line4 = client.addresses ? client.addresses.at(-1) ? client.addresses.at(-1).address : 'Sin Direccion' : 'No especificado'
+  const line5 = client.addresses ? client.addresses.at(-1) ? client.addresses.at(-1).neighborhood.name : 'Sin Barrio' : 'No especificado'
   const line6 = client.phone
   const line7 = ticket.tickettype.name
-  const line8 = `Calidad de señal: ${specs.tvspectype.name}`
-  const line10 = `Altos: ${specs.high}`
-  const line11 = `Bajos: ${specs.down}`
-  const line12 = `Televisores: ${specs.tvs}`
+  const line8 = `Calidad de señal: ${specs.tvspectype ? specs.tvspectype.name : 'No especificado'}`
+  const line10 = `Altos: ${specs.high ? specs.high : 'No especificado'}`
+  const line11 = `Bajos: ${specs.down ? specs.down : 'No especificado'}`
+  const line12 = `Televisores: ${specs.tvs ? specs.tvs : 'No especificado'}`
   const line13 = `Observaciones: ${details}`
   let line14 = ''
   if (status) {

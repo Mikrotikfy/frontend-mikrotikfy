@@ -51,7 +51,7 @@ export const actions = {
               high: payload.specs.high,
               down: payload.specs.down,
               tvs: payload.specs.tvs,
-              tvspectype: payload.specs.tvspectype.id
+              tvspectype: payload.specs.tvspectype ? payload.specs.tvspectype.id : null
             }
           })
         })

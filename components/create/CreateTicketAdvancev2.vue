@@ -232,27 +232,29 @@ export default {
         this.$toast.error('Debes escribir un resumen del caso', { duration: 3000 })
         return
       }
-      if (!this.specs.quality === null && this.$route.query.clienttype === 'TELEVISION') {
-        this.$toast.error('Seleccione una calidad de señal', { duration: 3000 })
-        return
-      }
-      if (((!this.specs.tvs || this.specs.tvs === 0 || this.specs.tvs === '') && !this.specs.notvs) && this.$route.query.clienttype === 'TELEVISION') {
-        this.$toast.error('Ingrese la cantidad de televisores del usuario', {
-          duration: 3000
-        })
-        return
-      }
-      if (!this.specs.high && this.$route.query.clienttype === 'TELEVISION') {
-        this.$toast.error('Ingrese una medida de altos', {
-          duration: 3000
-        })
-        return
-      }
-      if (!this.specs.down && this.$route.query.clienttype === 'TELEVISION') {
-        this.$toast.error('Ingrese una medida de bajos', {
-          duration: 3000
-        })
-        return
+      if (this.$route.query.clienttype === 'TELEVISION' && this.$isTechnician()) {
+        if (this.closeticket && this.specs.quality === null) {
+          this.$toast.error('Seleccione una calidad de señal', { duration: 3000 })
+          return
+        }
+        if (((!this.specs.tvs || this.specs.tvs === 0 || this.specs.tvs === '') && this.closeticket && !this.specs.notvs)) {
+          this.$toast.error('Ingrese la cantidad de televisores del usuario', {
+            duration: 3000
+          })
+          return
+        }
+        if (this.closeticket && !this.specs.high) {
+          this.$toast.error('Ingrese una medida de altos', {
+            duration: 3000
+          })
+          return
+        }
+        if (this.closeticket && !this.specs.down) {
+          this.$toast.error('Ingrese una medida de bajos', {
+            duration: 3000
+          })
+          return
+        }
       }
       this.loading = true
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticket.id}`, {
@@ -322,7 +324,9 @@ export default {
               this.$toast.success('Ticket Actualizado con Exito', { duration: 4000, position: 'bottom-center' })
             })
             .catch((error) => {
-              this.$toast.error(error, { position: 'bottom-center' })
+              this.$toast.error(error, { duration: 5000, position: 'bottom-center' })
+              console.log(error)
+              this.loading = false
             })
         }
       }).catch((error) => {
