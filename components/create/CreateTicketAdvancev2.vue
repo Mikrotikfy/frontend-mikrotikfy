@@ -134,6 +134,10 @@
       </v-card-text>
       <v-divider />
       <v-card-text>
+        <MiscSignature />
+      </v-card-text>
+      <v-divider />
+      <v-card-text>
         <v-checkbox
           v-if="$isAdmin()"
           v-model="technicianescalated"

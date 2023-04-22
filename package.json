@@ -24,7 +24,8 @@
     "node-fetch": "2.6.1",
     "nuxt": "^2.15.4",
     "nuxt-i18n": "^6.27.0",
-    "quagga": "^0.12.1"
+    "quagga": "^0.12.1",
+    "signature_pad": "^4.1.5"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^3.1.0",
