@@ -82,226 +82,221 @@
     </v-row>
     <v-row class="mt-0 pt-0">
       <v-col>
-        <v-card
-          fluid
-          class="rounded-xl"
-          :style="$route.query.clienttype === 'INTERNET' ? 'border-top: 2px solid cyan;' : 'border-top: 2px solid yellow;'"
-        >
-        <v-card-text>
-          <client-only>
-            <v-data-table
-              v-model="selected"
-              :show-select="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop ? true : false"
-              :key="key"
-              :headers="getHeadersByClienttype"
-              :items="ticketList"
-              :search="search"
-              :items-per-page="itemsPerPage"
-              :page.sync="page"
-              :loading="initialLoading"
-              :expanded.sync="expanded"
-              sort-by="createdAt"
-              calculate-widths
-              sort-desc
-              no-data-text="No hay Tickets abiertos aún..."
-              loading-text="Cargando información de tickets..."
-              hide-default-footer
-              mobile-breakpoint="600"
-              @page-count="pageCount = $event"
-              @click:row="showTicketInfo({ item: $event, index: ticketList.indexOf($event) })"
-            >
-              <template v-slot:[`item.active`]="props">
-                <v-chip small :color="getColor(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice)" class="white--text">
-                  <h5>
-                    {{ getState(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice) }}
-                  </h5>
-                </v-chip>
-              </template>
-              <template v-slot:[`item.tickettype.name`]="props">
-                <v-edit-dialog
-                  v-if="$isAdmin() || $isBiller()"
-                  ref="dialog"
-                  large
-                  cancel-text="Cancelar"
-                  save-text="Guardar"
-                  @save="saveTickettypeFromModal(props.item.id, props.item.tickettype.id, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+        <client-only>
+          <v-data-table
+            v-model="selected"
+            :show-select="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop ? true : false"
+            :key="key"
+            :headers="getHeadersByClienttype"
+            :items="ticketList"
+            :item-class="rowStyles"
+            :search="search"
+            :items-per-page="itemsPerPage"
+            :page.sync="page"
+            :loading="initialLoading"
+            :class="$store.state.isDesktop ? 'rounded-xl' : 'transparent'"
+            :style="$route.query.clienttype === 'INTERNET' ? 'border-top: 2px solid cyan;' : 'border-top: 2px solid yellow;'"
+            sort-by="createdAt"
+            calculate-widths
+            sort-desc
+            no-data-text="No hay Tickets abiertos aún..."
+            loading-text="Cargando información de tickets..."
+            hide-default-footer
+            mobile-breakpoint="600"
+            @page-count="pageCount = $event"
+            @click:row="showTicketInfo({ item: $event, index: ticketList.indexOf($event) })"
+          >
+            <template v-slot:[`item.active`]="props">
+              <v-chip small :color="getColor(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice)" class="white--text">
+                <h5>
+                  {{ getState(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice) }}
+                </h5>
+              </v-chip>
+            </template>
+            <template v-slot:[`item.tickettype.name`]="props">
+              <v-edit-dialog
+                v-if="$isAdmin() || $isBiller()"
+                ref="dialog"
+                large
+                cancel-text="Cancelar"
+                save-text="Guardar"
+                @save="saveTickettypeFromModal(props.item.id, props.item.tickettype.id, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+              >
+                <v-chip
+                  small
+                  :color="getTicketTypeColor(props.item.tickettype.name)"
                 >
-                  <v-chip
-                    small
-                    :color="getTicketTypeColor(props.item.tickettype.name)"
-                  >
-                    <h5>
-                      {{ props.item.tickettype.name }}
-                    </h5>
-                  </v-chip>
-                  <template v-slot:input>
-                    <v-select
-                      :value="props.item.tickettype"
-                      item-text="name"
-                      item-value="id"
-                      :items="tickettypes"
-                      return-object
-                      single-line
-                      label="Establecer tipo"
-                      dense
-                      @change="updateTickettypeFromModal(props.item.id, $event, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
-                    />
-                  </template>
-                </v-edit-dialog>
-                <v-chip v-else small :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
                   <h5>
                     {{ props.item.tickettype.name }}
                   </h5>
                 </v-chip>
-              </template>
-              <template v-slot:[`item.technician`]="props">
-                <v-edit-dialog
-                  v-if="$isAdmin() || $isBiller()"
-                  ref="dialog"
-                  large
-                  cancel-text="Cancelar"
-                  save-text="Guardar"
-                  @save="saveAssignatedFromModal(props.item, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+                <template v-slot:input>
+                  <v-select
+                    :value="props.item.tickettype"
+                    item-text="name"
+                    item-value="id"
+                    :items="tickettypes"
+                    return-object
+                    single-line
+                    label="Establecer tipo"
+                    dense
+                    @change="updateTickettypeFromModal(props.item.id, $event, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+                  />
+                </template>
+              </v-edit-dialog>
+              <v-chip v-else small :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
+                <h5>
+                  {{ props.item.tickettype.name }}
+                </h5>
+              </v-chip>
+            </template>
+            <template v-slot:[`item.technician`]="props">
+              <v-edit-dialog
+                v-if="$isAdmin() || $isBiller()"
+                ref="dialog"
+                large
+                cancel-text="Cancelar"
+                save-text="Guardar"
+                @save="saveAssignatedFromModal(props.item, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+              >
+                <v-chip
+                  small
+                  :color="props.item.technician ? 'primary' : 'grey darken-3'"
                 >
-                  <v-chip
-                    small
-                    :color="props.item.technician ? 'primary' : 'grey darken-3'"
-                  >
-                    <h5>
-                      {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
-                    </h5>
-                  </v-chip>
-                  <template v-slot:input>
-                    <v-autocomplete
-                      v-model="currentTechnician"
-                      :value="props.item.technician"
-                      item-text="username"
-                      item-value="id"
-                      :items="technicians"
-                      return-object
-                      single-line
-                      label="Asignar a Tecnico"
-                      dense
-                      @change="updateAssignatedFromModal(props.item.id, $event, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
-                    />
-                  </template>
-                </v-edit-dialog>
-                <v-chip v-else small :color="props.item.technician ? 'primary' : 'grey darken-3'">
                   <h5>
                     {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
                   </h5>
                 </v-chip>
-              </template>
-              <template v-if="!$store.state.isDesktop" v-slot:expanded-item="{ headers, item }">
-                <td :colspan="headers.length">
-                  <span class="grey--text">Avance:</span> {{ item.details ? item.details : 'no hay' }}
-                </td>
-              </template>
-              <template v-if="clienttype === 'INTERNET'" v-slot:[`item.client.name`]="props">
-                <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA O RETIRADO <span class="text-decoration-line-through">{{props.item.client.name}}</span></span>
-                <span v-else>{{props.item.client.name}}</span>
-              </template>
-              <template v-slot:[`item.details`]="{ item }">
-                <v-tooltip bottom max-width="400">
-                  <template v-slot:activator="{ on, attrs }">
-                    <div
-                      v-bind="attrs"
-                      v-on="on"
-                      class="text-truncate" style="width:100px;"
-                    >
-                      {{ item.details }}
-                    </div>
-                  </template>
-                  <span>{{ item.details }}</span>
-              </v-tooltip>
-              </template>
-              <template v-slot:[`item.client.name`]="{ item }">
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <div
-                      v-bind="attrs"
-                      v-on="on"
-                      class="text-truncate" style="max-width:200px;"
-                    >
-                      {{ showOnlyNameAndSecondName(item.client.name) }}
-                    </div>
-                  </template>
-                  <span>{{ item.client.name }}</span>
-              </v-tooltip>
-              </template>
-              <template v-slot:[`item.client.address`]="{ item }">
-                  <v-tooltip
-                    bottom
+                <template v-slot:input>
+                  <v-autocomplete
+                    v-model="currentTechnician"
+                    :value="props.item.technician"
+                    item-text="username"
+                    item-value="id"
+                    :items="technicians"
+                    return-object
+                    single-line
+                    label="Asignar a Tecnico"
+                    dense
+                    @change="updateAssignatedFromModal(props.item.id, $event, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+                  />
+                </template>
+              </v-edit-dialog>
+              <v-chip v-else small :color="props.item.technician ? 'primary' : 'grey darken-3'">
+                <h5>
+                  {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
+                </h5>
+              </v-chip>
+            </template>
+            <template v-if="!$store.state.isDesktop" v-slot:expanded-item="{ headers, item }">
+              <td :colspan="headers.length">
+                <span class="grey--text">Avance:</span> {{ item.details ? item.details : 'no hay' }}
+              </td>
+            </template>
+            <template v-if="clienttype === 'INTERNET'" v-slot:[`item.client.name`]="props">
+              <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA O RETIRADO <span class="text-decoration-line-through">{{props.item.client.name}}</span></span>
+              <span v-else>{{props.item.client.name}}</span>
+            </template>
+            <template v-slot:[`item.details`]="{ item }">
+              <v-tooltip bottom max-width="400">
+                <template v-slot:activator="{ on, attrs }">
+                  <div
+                    v-bind="attrs"
+                    v-on="on"
+                    :class="$store.state.isDesktop ? 'text-truncate' : ''"
+                    :style="$store.state.isDesktop ? 'width:100px;' : ''"
                   >
-                  <template v-slot:activator="{ on, attrs }">
-                    <div
-                      v-bind="attrs"
-                      v-on="on"
-                      class="text-truncate" style="max-width:180px;"
-                      @click="copyToClipboard('Direccion', processAddresses(item))"
-                    >
-                      {{ processAddresses(item) }}
-                    </div>
-                  </template>
-                  <span>{{ processAddresses(item) }}</span>
-              </v-tooltip>
-              </template>
-              <template v-slot:[`item.client.neighborhood.name`]="{ item }">
-                  <strong>{{ processAddressesNeighborhood(item) }}</strong>
-              </template>
-              <template v-slot:[`item.client.code`]="props">
-                <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
-                  <strong>
-                    <h3>
-                      {{props.item.client.code}}
-                    </h3>
-                  </strong>
-                </nuxt-link>
-              </template>
-              <template v-slot:[`item.assignated.username`]="{ item }">
-                <strong style="max-width:50px;"> {{ ucfirst(item.assignated.username) }}</strong>
-              </template>
-              <template v-slot:[`item.client.technology.name`]="props">
-                {{ props.item.client.technology !== null ? props.item.client.technology.name : 'No reg.' }}
-              </template>
-              <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="{ item, index }">
-                <div class="d-flex">
-                  <CreateTicketAdvancev2
-                    :ticket="item"
-                    :ticketindex="index"
-                    @updateTicketStatus="updateTicketStatus($event)"
-                  />
-                  <ClientStatus
-                      v-if="clienttype === 'INTERNET'"
-                      :name="item.client.name"
-                      :clientid="item.client.id"
-                      :code="item.client.code"
-                      :role="$store.state.auth.allowed_components"
-                    />
-                  <TicketHistory
+                    {{ item.details }}
+                  </div>
+                </template>
+                <span>{{ item.details }}</span>
+            </v-tooltip>
+            </template>
+            <template v-slot:[`item.client.name`]="{ item }">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <div
+                    v-bind="attrs"
+                    v-on="on"
+                    class="text-truncate" style="max-width:200px;"
+                  >
+                    {{ showOnlyNameAndSecondName(item.client.name) }}
+                  </div>
+                </template>
+                <span>{{ item.client.name }}</span>
+            </v-tooltip>
+            </template>
+            <template v-slot:[`item.client.address`]="{ item }">
+                <v-tooltip
+                  bottom
+                >
+                <template v-slot:activator="{ on, attrs }">
+                  <div
+                    v-bind="attrs"
+                    v-on="on"
+                    class="text-truncate" style="max-width:180px;"
+                    @click="copyToClipboard('Direccion', processAddresses(item))"
+                  >
+                    {{ processAddresses(item) }}
+                  </div>
+                </template>
+                <span>{{ processAddresses(item) }}</span>
+            </v-tooltip>
+            </template>
+            <template v-slot:[`item.client.neighborhood.name`]="{ item }">
+                <strong>{{ processAddressesNeighborhood(item) }}</strong>
+            </template>
+            <template v-slot:[`item.client.code`]="props">
+              <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
+                <strong>
+                  <h3>
+                    {{props.item.client.code}}
+                  </h3>
+                </strong>
+              </nuxt-link>
+            </template>
+            <template v-slot:[`item.assignated.username`]="{ item }">
+              <strong style="max-width:50px;"> {{ ucfirst(item.assignated.username) }}</strong>
+            </template>
+            <template v-slot:[`item.client.technology.name`]="props">
+              {{ props.item.client.technology !== null ? props.item.client.technology.name : 'No reg.' }}
+            </template>
+            <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="{ item, index }">
+              <div class="d-flex">
+                <CreateTicketAdvancev2
+                  :ticket="item"
+                  :ticketindex="index"
+                  @updateTicketStatus="updateTicketStatus($event)"
+                />
+                <ClientStatus
+                    v-if="clienttype === 'INTERNET'"
+                    :name="item.client.name"
                     :clientid="item.client.id"
-                    :name="item.client.name"
+                    :code="item.client.code"
+                    :role="$store.state.auth.allowed_components"
                   />
-                  <TicketAdvanceHistory
-                    :ticketid="item.id"
-                    :name="item.client.name"
-                  />
-                </div>
-              </template>
-              <template v-slot:[`item.createdAt`]="{ item }">
-                <div style="display:flex!important;flex-direction:column;">
-                  <span class="text-caption" style="white-space:nowrap;">
-                    {{ getDate(item.createdAt) }}
-                  </span>
-                  <span style="line-height:1rem;" class="text-caption text--secondary">
-                    {{ getHour(item.createdAt) }}
-                  </span>
-                </div>
-              </template>
-            </v-data-table>
-          </client-only>
-          </v-card-text>
-        </v-card>
+                <TicketHistory
+                  :clientid="item.client.id"
+                  :name="item.client.name"
+                />
+                <TicketAdvanceHistory
+                  :ticketid="item.id"
+                  :name="item.client.name"
+                />
+              </div>
+            </template>
+            <template v-slot:[`item.createdAt`]="{ item }">
+              <div style="display:flex!important;flex-direction:column;">
+                <span class="text-caption" style="white-space:nowrap;">
+                  {{ getDate(item.createdAt) }}
+                </span>
+                <span style="line-height:1rem;" class="text-caption text--secondary">
+                  {{ getHour(item.createdAt) }}
+                </span>
+              </div>
+            </template>
+          </v-data-table>
+        </client-only>
       </v-col>
     </v-row>
     <v-row v-if="pageCount > 1">
@@ -452,46 +447,48 @@ export default {
     },
     getHeadersByClienttype () {
       return this.$route.query.clienttype === 'INTERNET' ? this.$store.state.isDesktop ? [
-        { text: 'Estado', sortable: false, value: 'active', width: '5%', hide: 'd-none d-lg-table-cell' },
+        { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
-        { text: 'Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' },
-        { text: 'Observaciones', sortable: false, value: 'details', width: 100, align: ' d-none d-lg-table-cell' },
+        { text: 'Asignado', sortable: false, value: 'technician', width: 60 },
+        { text: 'Observaciones', sortable: false, value: 'details', width: 100 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
-        { text: 'Dirección', sortable: false, value: 'client.address', width: 180, align: ' d-none d-lg-table-cell' },
-        { text: 'Código', sortable: false, value: 'client.code', width: 50, align: ' d-none d-lg-table-cell' },
+        { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
+        { text: 'Código', sortable: false, value: 'client.code', width: 50 },
         { text: 'Cliente', sortable: false, value: 'client.name', width: 200 },
-        { text: 'Celular', sortable: false, value: 'client.phone', width: 80, align: ' d-none d-lg-table-cell' },
-        { text: 'Tec.', sortable: false, value: 'client.technology.name', width: 50, align: ' d-none d-lg-table-cell' },
-        { text: 'Por', sortable: false, value: 'assignated.username', width: 40, align: ' d-none d-lg-table-cell' },
-        { text: 'Creación', sortable: false, value: 'createdAt', width: 100, align: ' d-none d-lg-table-cell' },
-        { text: 'Acciones', sortable: false, value: 'actions', align: ' d-none d-lg-table-cell' }
+        { text: 'Celular', sortable: false, value: 'client.phone', width: 80 },
+        { text: 'Tec.', sortable: false, value: 'client.technology.name', width: 50 },
+        { text: 'Por', sortable: false, value: 'assignated.username', width: 40 },
+        { text: 'Creación', sortable: false, value: 'createdAt', width: 100 },
+        { text: 'Acciones', sortable: false, value: 'actions' }
       ] : [
         { text: 'Estado', sortable: false, value: 'active', width: '5%', hide: 'd-none d-lg-table-cell' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 100 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
-        { text: 'Dirección', sortable: false, value: 'client.address', width: 180, align: ' d-none d-lg-table-cell' },
+        { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
         { text: 'Cliente', sortable: false, value: 'client.name', width: 150 },
-        { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' }
+        { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
+        { text: 'Avance', sortable: false, value: 'details', width: 300 }
       ] : this.$store.state.isDesktop ? [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name' },
-        { text: 'Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' },
-        { text: 'Observaciones', sortable: false, value: 'details', width: 100, align: ' d-none d-lg-table-cell' },
+        { text: 'Asignado', sortable: false, value: 'technician', width: 60 },
+        { text: 'Observaciones', sortable: false, value: 'details', width: 100 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
-        { text: 'Dirección', sortable: false, value: 'client.address', width: 150, align: ' d-none d-lg-table-cell' },
-        { text: 'Codigo', sortable: false, value: 'client.code', width: 60, align: ' d-none d-lg-table-cell' },
+        { text: 'Dirección', sortable: false, value: 'client.address', width: 150 },
+        { text: 'Codigo', sortable: false, value: 'client.code', width: 60 },
         { text: 'Cliente', sortable: false, value: 'client.name' },
-        { text: 'Celular', sortable: false, value: 'client.phone', align: ' d-none d-lg-table-cell' },
-        { text: 'Por', sortable: false, value: 'assignated.username', align: ' d-none d-lg-table-cell' },
-        { text: 'Creado el', sortable: false, value: 'createdAt', align: ' d-none d-lg-table-cell' },
-        { text: 'Acciones', sortable: false, value: 'actions', align: ' d-none d-lg-table-cell' }
+        { text: 'Celular', sortable: false, value: 'client.phone' },
+        { text: 'Por', sortable: false, value: 'assignated.username' },
+        { text: 'Creado el', sortable: false, value: 'createdAt' },
+        { text: 'Acciones', sortable: false, value: 'actions' }
       ] : [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name' },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name' },
-        { text: 'Dirección', sortable: false, value: 'client.address', width: 180, align: ' d-none d-lg-table-cell' },
+        { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
         { text: 'Cliente', sortable: false, value: 'client.name' },
-        { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60, align: ' d-none d-lg-table-cell' }
+        { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
+        { text: 'Avance', sortable: false, value: 'details', width: 300 }
       ]
     }
   },
@@ -613,6 +610,9 @@ export default {
         return name
       }
     },
+    rowStyles (item) {
+      return ['mb-4', 'rounded-xl', 'grey darken-4']
+    },
     getDate (date) {
       const dateObject = new Date(date)
       const humanDateFormat = dateObject.toLocaleString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -709,7 +709,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
   .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td {
     font-size: 12px;
   }
@@ -727,4 +727,8 @@ export default {
     background-color: red;
   }
 }
+.theme--dark.v-data-table > .v-data-table__wrapper > table > tbody > tr:not(:last-child) > td:last-child, .theme--dark.v-data-table > .v-data-table__wrapper > table > tbody > tr:not(:last-child) > th:last-child {
+    border-bottom: none !important;
+}
+
 </style>
