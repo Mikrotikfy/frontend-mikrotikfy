@@ -134,7 +134,9 @@
       </v-card-text>
       <v-divider />
       <v-card-text>
-        <MiscSignature />
+        <MiscSignature
+          :ticket="ticket"
+        />
       </v-card-text>
       <v-divider />
       <v-card-text>
@@ -369,7 +371,6 @@ export default {
             })
             .catch((error) => {
               this.$toast.error(error, { duration: 5000, position: 'bottom-center' })
-              console.log(error)
               this.loading = false
             })
         }

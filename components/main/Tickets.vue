@@ -350,6 +350,28 @@
             <span class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1 text--secondary">
               {{ getHour(editModalData ? editModalData.createdAt : '') }}
             </span>
+            <v-expansion-panels v-if="editModalData.signed">
+              <v-expansion-panel>
+                <v-expansion-panel-header>
+                  Firma del Cliente
+                </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                  <div class="white">
+                    {{ `${$config.CDN_STRAPI_ENDPOINT}${editModalData.signature}`}}
+                    <v-img
+                      :src="`${$config.CDN_STRAPI_ENDPOINT}${editModalData.signature}`"
+                      aspect-ratio="1"
+                      contain
+                      style="transform: rotateZ(-90deg);"
+                      :width="clientWidth - 200"
+                    />
+                  </div>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
+            <p v-else class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+              Ticket no firmado por usuario aun...
+            </p>
           </div>
           <div v-if="editModalData.client !== undefined" style="
             display:grid;
@@ -358,7 +380,7 @@
           ">
             <CreateTicketAdvancev2
               :ticket="editModalData"
-              :ticketindex="editModalData.index"
+              :ticketindex="editModalData.editindex"
               :block="true"
               @updateTicketStatus="updateTicketStatus($event)"
             />
@@ -444,6 +466,9 @@ export default {
     },
     technicians () {
       return this.$store.state.operator.operators
+    },
+    clientWidth () {
+      return this.$store.state.clientWidth
     },
     getHeadersByClienttype () {
       return this.$route.query.clienttype === 'INTERNET' ? this.$store.state.isDesktop ? [

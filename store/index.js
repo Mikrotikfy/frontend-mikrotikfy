@@ -10,12 +10,20 @@ export const state = () => {
     technologies: null,
     devicebrands: null,
     neighborhoods: null,
-    isDesktop: null
+    isDesktop: null,
+    clientWidth: null,
+    clientHeight: null
   }
 }
 export const mutations = {
   isDesktop (state, isDesktop) {
     state.isDesktop = isDesktop
+  },
+  clientWidth (state, clientWidth) {
+    state.clientWidth = clientWidth
+  },
+  clientHeight (state, clientHeight) {
+    state.clientHeight = clientHeight
   },
   setAuth (state, auth) {
     state.auth = auth

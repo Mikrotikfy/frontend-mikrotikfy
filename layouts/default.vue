@@ -232,13 +232,16 @@ export default {
       }
     },
     isDesktopScreen () {
-      const res = document.body.clientWidth
-      if (res < 960) {
+      const width = document.body.clientWidth
+      const height = document.body.clientHeight
+      if (width < 960) {
         this.isDesktop = false
       } else {
         this.isDesktop = true
       }
       this.$store.commit('isDesktop', this.isDesktop)
+      this.$store.commit('clientWidth', width)
+      this.$store.commit('clientHeight', height)
     },
     logout (params) {
       Cookie.remove('auth')
