@@ -34,13 +34,13 @@
               <canvas
                 ref="canvasEl"
                 :width="clientWidth - 30"
-                :height="clientHeight - 100"
+                :height="clientHeight - 200"
                 style="background-color: #fff;aspect-ratio:9/16"
               />
             </client-only>
           </v-card-text>
         </div>
-        <v-card-actions>
+        <v-card-actions class="d-block">
           <v-btn
             color="primary"
             class="rounded-xl"
@@ -48,6 +48,14 @@
             @click="saveSignature"
           >
             Guardar Firma
+          </v-btn>
+          <v-btn
+            color="red"
+            class="rounded-xl mt-4   ml-0"
+            block
+            @click="clearSignature"
+          >
+            Limpiar Firma
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -80,6 +88,7 @@ export default {
   data: () => ({
     modal: false,
     loading: false,
+    signaturInstance: null,
     signature: '',
     signed: false
   }),
@@ -93,25 +102,34 @@ export default {
   },
   methods: {
     initComponent () {
+      this.signed = this.ticket.signed
       this.modal = true
 
       setTimeout(() => {
-        const signaturePad = new SignaturePad(this.$refs.canvasEl, {
+        this.signaturInstance = new SignaturePad(this.$refs.canvasEl, {
           minWidth: 1,
           maxWidth: 1,
           penColor: 'rgb(0,0,0)'
         })
-        signaturePad.addEventListener('endStroke', () => {
-          this.signature = signaturePad.toDataURL()
+        this.signaturInstance.addEventListener('endStroke', () => {
+          this.signature = this.signaturInstance.toDataURL()
         }, { once: false })
       }, 500)
     },
     async saveSignature () {
+      if (!this.signature) {
+        this.$toast.error('No se ha detectado firma', { duration: 3000, position: 'top-center' })
+        return
+      }
       await fetch(this.signature)
         .then(res => res.blob())
         .then((blob) => {
           this.uploadImageToStrapi(blob, this.ticket.id, 'image/png')
         })
+    },
+    clearSignature () {
+      this.signaturInstance.clear()
+      this.signature = ''
     },
     async updateClientAndTicket (uploadedImage) {
       await this.$store.dispatch('signature/updateSignatureOnClient', {
