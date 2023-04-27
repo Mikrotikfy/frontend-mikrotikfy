@@ -315,63 +315,65 @@
     >
       <v-card>
         <v-card-title>
-          Información de Ticket
+          Información de Ticket {{ editModalData.id }}
           <v-spacer />
           <v-btn icon @click="infoModal = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
         <v-card-text
-          class="d-flex flex-column justify-space-between"
-          style="height:calc(100vh - 64px);"
+          class="d-flex flex-column justify-space-between px-2"
+          style="height:calc(100vh - 128px);"
         >
           <div style="flex: 1;">
-            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.tickettype ? editModalData.tickettype.name : '' }}</p>
-            <nuxt-link :to="`/clients/${editModalData.client ? editModalData.client.code : ''}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
-              <strong>
-                <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.code : '' }}</p>
-              </strong>
-            </nuxt-link>
-            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.name : '' }}</p>
-            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? 'addresses' in editModalData.client ? editModalData.client.addresses.at(-1).address : editModalData.client.address : '' }}</p>
-            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? 'addresses' in editModalData.client ? editModalData.client.addresses.at(-1).neighborhood.name : editModalData.client.neighborhood.name : '' }}</p>
-            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.phone : '' }}</p>
-            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}</p>
-            <p v-if="$route.query.clienttype === 'INTERNET'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Potencia Óptica: {{ editModalData.client ? editModalData.client.opticalpower ? editModalData.client.opticalpower : 'No reg.' : '' }}</p>
-            <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">TV: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.tvs : 'No reg.' : '' }}</p>
-            <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Altos: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.high : '' : '' }}</p>
-            <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Bajos: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.down : '' : '' }}</p>
-            <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Calidad: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.tvspectype.name : '' : '' }}</p>
-            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData ? editModalData.details : '' }}</p>
-            <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">{{ editModalData.assignated ? ucfirst(editModalData.assignated.username) : '' }}</p>
-            <span class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
-              {{ getDate(editModalData ? editModalData.createdAt : '') }}
-            </span>
-            <span class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1 text--secondary">
-              {{ getHour(editModalData ? editModalData.createdAt : '') }}
-            </span>
-            <v-expansion-panels v-if="editModalData.signed">
-              <v-expansion-panel>
-                <v-expansion-panel-header>
-                  Firma del Cliente
-                </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <div class="white">
-                    {{ `${$config.CDN_STRAPI_ENDPOINT}${editModalData.signature}`}}
-                    <v-img
-                      :src="`${$config.CDN_STRAPI_ENDPOINT}${editModalData.signature}`"
-                      aspect-ratio="1"
-                      contain
-                      style="transform: rotateZ(-90deg);"
-                      :width="clientWidth - 200"
-                    />
-                  </div>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
-            <p v-else class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
-              Ticket no firmado por usuario aun...
-            </p>
+            <div class="elevation-5 rounded-xl py-2 px-4 grey darken-3">
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Tipo Ticket: </strong>{{ editModalData.tickettype ? editModalData.tickettype.name : '' }}</p>
+              <nuxt-link :to="`/clients/${editModalData.client ? editModalData.client.code : ''}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
+                <strong>
+                  <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Código: </strong>{{ editModalData.client ? editModalData.client.code : '' }}</p>
+                </strong>
+              </nuxt-link>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Cliente: </strong>{{ editModalData.client ? editModalData.client.name : '' }}</p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Direccion: </strong>{{ editModalData.client ? 'addresses' in editModalData.client ? editModalData.client.addresses.at(-1).address : editModalData.client.address : '' }}</p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Barrio: </strong>{{ editModalData.client ? 'addresses' in editModalData.client ? editModalData.client.addresses.at(-1).neighborhood.name : editModalData.client.neighborhood.name : '' }}</p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Celular: </strong><a :href="`tel:${editModalData.client ? editModalData.client.phone : ''}`"><strong>{{ editModalData.client ? editModalData.client.phone : '' }}</strong></a></p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Tecnología: </strong>{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}</p>
+              <p v-if="$route.query.clienttype === 'INTERNET'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Potencia Óptica: </strong>{{ editModalData.client ? editModalData.client.opticalpower ? editModalData.client.opticalpower : 'No reg.' : '' }} dBm</p>
+              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">TV: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.tvs : 'No reg.' : '' }}</p>
+              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Altos: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.high : '' : '' }}</p>
+              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Bajos: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.down : '' : '' }}</p>
+              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Calidad: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.tvspectype.name : '' : '' }}</p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Avance: </strong><code>{{ editModalData ? editModalData.details : '' }}</code></p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Creado por: </strong>{{ editModalData.assignated ? ucfirst(editModalData.assignated.username) : '' }}</p>
+              <span class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                {{ getDate(editModalData ? editModalData.createdAt : '') }}
+              </span>
+              <span class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1 text--secondary">
+                {{ getHour(editModalData ? editModalData.createdAt : '') }}
+              </span>
+              <v-expansion-panels v-if="editModalData.signed">
+                <v-expansion-panel>
+                  <v-expansion-panel-header>
+                    Firma del Cliente
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content>
+                    <div class="white">
+                      {{ `${$config.CDN_STRAPI_ENDPOINT}${editModalData.signature}`}}
+                      <v-img
+                        :src="`${$config.CDN_STRAPI_ENDPOINT}${editModalData.signature}`"
+                        aspect-ratio="1"
+                        contain
+                        style="transform: rotateZ(-90deg);"
+                        :width="clientWidth - 200"
+                      />
+                    </div>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
+              <p v-else class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                Ticket no firmado por usuario aun...
+              </p>
+            </div>
           </div>
           <div v-if="editModalData.client !== undefined" style="
             display:grid;

@@ -8,7 +8,6 @@
           :disabled="(ticket.signed || signed)"
           :color="$vuetify.theme.dark && !block ? 'white black--text' : 'white black--text'"
           class="rounded-xl mt-4"
-          large
           v-on="on"
           @click="initComponent()"
         >
@@ -26,15 +25,22 @@
       :fullscreen="!$store.state.isDesktop"
     >
       <v-card
+        v-resize="onResize"
         :loading="loading"
       >
+        <v-toolbar dense class="elevation-0 transparent">
+          <v-spacer />
+          <v-btn icon @click="modal = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar>
         <div v-if="!loading">
-          <v-card-text>
+          <v-card-text class="pt-0">
             <client-only>
               <canvas
                 ref="canvasEl"
-                :width="clientWidth - 30"
-                :height="clientHeight - 200"
+                :width="windowSize.x - 30"
+                :height="windowSize.y - 250"
                 style="background-color: #fff;aspect-ratio:9/16"
               />
             </client-only>
@@ -90,16 +96,12 @@ export default {
     loading: false,
     signaturInstance: null,
     signature: '',
-    signed: false
-  }),
-  computed: {
-    clientWidth () {
-      return this.$store.state.clientWidth
-    },
-    clientHeight () {
-      return this.$store.state.clientHeight
+    signed: false,
+    windowSize: {
+      x: 0,
+      y: 0
     }
-  },
+  }),
   methods: {
     initComponent () {
       this.signed = this.ticket.signed
@@ -129,6 +131,9 @@ export default {
         .then((blob) => {
           this.uploadImageToStrapi(blob, this.ticket.id, 'image/png')
         })
+    },
+    onResize () {
+      this.windowSize = { x: window.innerWidth, y: window.innerHeight }
     },
     clearSignature () {
       this.signaturInstance.clear()

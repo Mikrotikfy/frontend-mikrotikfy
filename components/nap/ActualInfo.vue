@@ -1,6 +1,6 @@
 <template>
   <v-alert
-    :type="client.naps.length > 0 ? 'success' : 'error'"
+    :color="client.naps.length > 0 ? 'success' : 'error'"
     dense
     outlined
   >

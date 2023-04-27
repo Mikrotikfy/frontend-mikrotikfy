@@ -24,25 +24,33 @@
     <v-dialog
       v-model="modal"
       max-width="1200"
+      :fullscreen="!$store.state.isDesktop"
     >
       <v-card
         :loading="loading"
       >
-        <v-card-title class="headline">
-          Historial de Avances TK: {{ ticketid }}
+        <v-card-title>
+          Historial de Avances {{ ticketid }}
+          <v-spacer />
+          <v-btn icon @click="modal = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </v-card-title>
         <div v-if="!loading">
           <v-card-text>
             <client-only>
               <v-data-table
                 :headers="$route.query.clienttype === 'INTERNET' ? headers : headersTV"
+                :page.sync="page"
                 :items="ticketdetails"
                 :items-per-page="itemsPerPage"
-                :page.sync="page"
+                :item-class="rowStyles"
                 no-data-text="No hay avances para mostrar aun..."
                 loading-text="Cargando información de tickets..."
                 hide-default-footer
-                mobile-breakpoint="1024"
+                sort-desc
+                sort-by="createdAt"
+                mobile-breakpoint="600"
                 @page-count="pageCount = $event"
               >
                 <template v-slot:[`item.createdAt`]="{ item }">
@@ -55,15 +63,6 @@
             </div>
           </v-card-text>
         </div>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            text
-            @click="modal = false"
-          >
-            Cerrar
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </span>
@@ -149,6 +148,9 @@ export default {
         .then((ticketdetails) => {
           this.ticketdetails = ticketdetails.data
         })
+    },
+    rowStyles (item) {
+      return ['mb-4', 'rounded-xl', 'grey darken-4']
     },
     getDate (date) {
       const dateObject = new Date(date)

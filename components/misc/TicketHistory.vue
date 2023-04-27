@@ -24,12 +24,17 @@
     <v-dialog
       v-model="modal"
       max-width="1200"
+      :fullscreen="!$store.state.isDesktop"
     >
       <v-card
         :loading="loading"
       >
-        <v-card-title class="headline">
-          Historial de Tickets de {{ name }}
+        <v-card-title>
+          Historial de Tickets
+          <v-spacer />
+          <v-btn icon @click="modal = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </v-card-title>
         <div v-if="!loading">
           <v-card-text>
@@ -38,6 +43,7 @@
                 :headers="$route.query.clienttype === 'INTERNET' ? headers : headersTV"
                 :items="tickets"
                 :items-per-page="itemsPerPage"
+                :item-class="rowStyles"
                 sort-by="createdAt"
                 calculate-widths
                 sort-desc
@@ -46,7 +52,7 @@
                 loading-text="Cargando información de tickets..."
                 dense
                 hide-default-footer
-                mobile-breakpoint="100"
+                mobile-breakpoint="600"
                 @page-count="pageCount = $event"
               >
                 <template v-slot:[`item.actions`]="props">
@@ -106,15 +112,6 @@
             </div>
           </v-card-text>
         </div>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            text
-            @click="modal = false"
-          >
-            Cerrar
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </span>
@@ -213,6 +210,9 @@ export default {
         .then((tickets) => {
           this.tickets = tickets.data
         })
+    },
+    rowStyles (item) {
+      return ['mb-4', 'rounded-xl', 'grey darken-4']
     },
     getDate (date) {
       const dateObject = new Date(date)

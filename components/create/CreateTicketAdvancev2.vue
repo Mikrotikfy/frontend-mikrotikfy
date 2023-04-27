@@ -67,12 +67,12 @@
           :client="ticket.client"
           :block="true"
         />
-        <NapManageClient
+        <!-- <NapManageClient
           :isticket="true"
           :ticketindex="ticketindex"
           :client="ticket.client"
           :block="true"
-        />
+        /> -->
       </v-card-text>
       <v-divider v-if="$route.query.clienttype === 'TELEVISION' && ticket.tickettype.requiresextrainfo" class="mb-5" />
       <v-card-text v-if="$route.query.clienttype === 'TELEVISION'">
@@ -169,8 +169,8 @@
           large
           @click="createAdvance"
         >
-          <v-icon>mdi-plus</v-icon>
-          {{ closeticket ? technicianescalated ? 'Cerrar Ticket' : 'Cerrar Ticket' : technicianescalated ? 'Escalar caso' : 'Crear Avance' }}
+          <v-icon>{{ closeticket ? 'mdi-check' : 'mdi-plus' }}</v-icon>
+          {{ closeticket ? technicianescalated ? 'Cerrar Ticket' : 'Cerrar Ticket' : technicianescalated || officeescalated ? 'Escalar caso' : 'Crear Avance' }}
         </v-btn>
       </v-card-text>
     </v-card>
