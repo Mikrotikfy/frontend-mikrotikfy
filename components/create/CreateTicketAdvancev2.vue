@@ -135,7 +135,9 @@
       <v-divider />
       <v-card-text>
         <MiscSignature
+          :key="ticket.id"
           :ticket="ticket"
+          :ticketindex="ticketindex"
         />
       </v-card-text>
       <v-divider />

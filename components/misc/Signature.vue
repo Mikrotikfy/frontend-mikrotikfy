@@ -5,7 +5,7 @@
         <v-btn
           v-bind="attrs"
           block
-          :disabled="(ticket.signed || signed)"
+          :disabled="(signed || ticket.signed)"
           :color="$vuetify.theme.dark && !block ? 'white black--text' : 'white black--text'"
           class="rounded-xl mt-4"
           v-on="on"
@@ -13,7 +13,7 @@
         >
           <v-icon>mdi-pencil-box-outline</v-icon>
           <span>
-            {{ ticket.signed || signed ? 'Ya firmado' : 'Firma de usuario' }}
+            {{ signed || ticket.signed ? 'Ya firmado' : 'Firma de usuario' }}
           </span>
         </v-btn>
       </template>
@@ -89,6 +89,10 @@ export default {
     ticket: {
       type: Object,
       default: () => ({})
+    },
+    ticketindex: {
+      type: Number,
+      default: -1
     }
   },
   data: () => ({
@@ -104,7 +108,6 @@ export default {
   }),
   methods: {
     initComponent () {
-      this.signed = this.ticket.signed
       this.modal = true
 
       setTimeout(() => {
@@ -123,8 +126,8 @@ export default {
         this.$toast.error('No se ha detectado firma', { duration: 3000, position: 'top-center' })
         return
       }
-      this.signed = true
       this.modal = false
+      this.signed = true
       this.$toast.info('Firma guardada', { duration: 4000 })
       fetch(this.signature)
         .then(res => res.blob())
