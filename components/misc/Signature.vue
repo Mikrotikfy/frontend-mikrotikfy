@@ -116,12 +116,15 @@ export default {
         }, { once: false })
       }, 500)
     },
-    async saveSignature () {
+    saveSignature () {
       if (!this.signature) {
         this.$toast.error('No se ha detectado firma', { duration: 3000, position: 'top-center' })
         return
       }
-      await fetch(this.signature)
+      this.signed = true
+      this.modal = false
+      this.$toast.info('Firma guardada', { duration: 4000 })
+      fetch(this.signature)
         .then(res => res.blob())
         .then((blob) => {
           this.uploadImageToStrapi(blob, this.ticket.id, 'image/png')
@@ -142,8 +145,6 @@ export default {
         ticket: this.ticket,
         signature: uploadedImage.url
       })
-      this.signed = true
-      this.modal = false
     },
     async uploadImageToStrapi (imageBlob, imageName, imageType) {
       const formData = new FormData()
