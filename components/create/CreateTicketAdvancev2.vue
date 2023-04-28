@@ -67,12 +67,12 @@
           :client="ticket.client"
           :block="true"
         />
-        <!-- <NapManageClient
+        <NapManageClient
           :isticket="true"
           :ticketindex="ticketindex"
           :client="ticket.client"
           :block="true"
-        /> -->
+        />
       </v-card-text>
       <v-divider v-if="$route.query.clienttype === 'TELEVISION' && ticket.tickettype.requiresextrainfo" class="mb-5" />
       <v-card-text v-if="$route.query.clienttype === 'TELEVISION'">
@@ -136,6 +136,11 @@
       <v-card-text>
         <MiscSignature
           :key="ticket.id"
+          :ticket="ticket"
+          :ticketindex="ticketindex"
+        />
+        <MiscPhoto
+          :key="ticket.id + 1"
           :ticket="ticket"
           :ticketindex="ticketindex"
         />

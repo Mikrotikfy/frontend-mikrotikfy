@@ -112,7 +112,8 @@ export default {
   */
   modules: [
     // '@nuxtjs/onesignal',
-    '@nuxtjs/toast'
+    '@nuxtjs/toast',
+    'vue-web-cam/nuxt'
   ],
   toast: {
     position: 'bottom-center'
