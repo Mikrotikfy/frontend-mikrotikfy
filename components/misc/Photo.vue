@@ -42,7 +42,6 @@
                   :width="windowSize.width - 50"
                   :height="windowSize.height - 250"
                   :autoplay="true"
-                  selectFirstDevice
                   :resolution="{
                     width: 1920,
                     height: 1080
@@ -59,6 +58,16 @@
                   fab
                   large
                   @click="takePicture"
+                />
+                <v-select
+                  v-model="selectedCamera"
+                  :items="cameras"
+                  item-text="label"
+                  item-value="id"
+                  outlined
+                  label="Selecciona una camara"
+                  class="mt-4"
+                  @change="changeCamera"
                 />
               </div>
             </client-only>
@@ -121,6 +130,9 @@ export default {
     loading: false,
     imageData: null,
     imageMimeType: null,
+    deviceId: null,
+    selectedCamera: null,
+    cameras: [],
     windowSize: {
       width: 0,
       height: 0
@@ -137,7 +149,12 @@ export default {
       this.$toast.error('Error al cargar la cámara: ' + err, { duration: 5000 })
     },
     showCameras (cameras) {
-      console.log('Cámaras disponibles', cameras)
+      this.cameras = cameras
+      this.selectedCamera = cameras[0]
+      this.$refs.webcam.changeCamera(this.selectedCamera.id)
+    },
+    changeCamera () {
+      this.$refs.webcam.changeCamera(this.selectedCamera.id)
     },
     takePicture () {
       const camera = this.$refs.webcam
