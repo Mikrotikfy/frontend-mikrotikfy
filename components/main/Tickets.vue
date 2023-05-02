@@ -120,11 +120,13 @@
                 large
                 cancel-text="Cancelar"
                 save-text="Guardar"
+                class="w-100"
                 @save="saveTickettypeFromModal(props.item.id, props.item.tickettype.id, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
               >
                 <v-chip
                   small
                   :color="getTicketTypeColor(props.item.tickettype.name)"
+                  style="width: 100%;justify-content:center;"
                 >
                   <h5>
                     {{ props.item.tickettype.name }}
@@ -139,6 +141,7 @@
                     return-object
                     single-line
                     label="Establecer tipo"
+                    outlined
                     dense
                     @change="updateTickettypeFromModal(props.item.id, $event, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
                   />
@@ -161,7 +164,7 @@
               >
                 <v-chip
                   small
-                  :color="props.item.technician ? 'primary' : 'grey darken-3'"
+                  :color="props.item.technician ? 'primary' : $vuetify.theme.dark ? 'grey darken-3' : ''"
                 >
                   <h5>
                     {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
@@ -176,6 +179,7 @@
                     :items="technicians"
                     return-object
                     single-line
+                    outlined
                     label="Asignar a Tecnico"
                     dense
                     @change="updateAssignatedFromModal(props.item.id, $event, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
@@ -235,7 +239,6 @@
                     v-bind="attrs"
                     v-on="on"
                     class="text-truncate" style="max-width:180px;"
-                    @click="copyToClipboard('Direccion', processAddresses(item))"
                   >
                     {{ processAddresses(item) }}
                   </div>
@@ -638,7 +641,11 @@ export default {
       }
     },
     rowStyles (item) {
-      return ['mb-4', 'rounded-xl', 'grey darken-4']
+      if (this.$vuetify.theme.dark) {
+        return ['mb-4', 'rounded-xl', 'grey darken-4']
+      } else {
+        return ['mb-4', 'rounded-xl']
+      }
     },
     getDate (date) {
       const dateObject = new Date(date)
@@ -757,5 +764,7 @@ export default {
 .theme--dark.v-data-table > .v-data-table__wrapper > table > tbody > tr:not(:last-child) > td:last-child, .theme--dark.v-data-table > .v-data-table__wrapper > table > tbody > tr:not(:last-child) > th:last-child {
     border-bottom: none !important;
 }
-
+.v-small-dialog__activator__content {
+  width: 100% !important;;
+}
 </style>
