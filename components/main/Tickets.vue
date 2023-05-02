@@ -334,8 +334,8 @@
                 </strong>
               </nuxt-link>
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Cliente: </strong>{{ editModalData.client ? editModalData.client.name : '' }}</p>
-              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Direccion: </strong>{{ editModalData.client ? 'addresses' in editModalData.client ? editModalData.client.addresses.at(-1).address : editModalData.client.address : '' }}</p>
-              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Barrio: </strong>{{ editModalData.client ? 'addresses' in editModalData.client ? editModalData.client.addresses.at(-1).neighborhood.name : editModalData.client.neighborhood.name : '' }}</p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Direccion: </strong>{{ processAddresses(editModalData) }}</p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Barrio: </strong>{{ processAddressesNeighborhood(editModalData) }}</p>
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Celular: </strong><a :href="`tel:${editModalData.client ? editModalData.client.phone : ''}`"><strong>{{ editModalData.client ? editModalData.client.phone : '' }}</strong></a></p>
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Tecnología: </strong>{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}</p>
               <p v-if="$route.query.clienttype === 'INTERNET'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Potencia Óptica: </strong>{{ editModalData.client ? editModalData.client.opticalpower ? editModalData.client.opticalpower : 'No reg.' : '' }} dBm</p>
@@ -664,6 +664,7 @@ export default {
       }
     },
     processAddresses ({ client }) {
+      if (!client) { return 'Sin Direccion' }
       const address = client?.address
       const addresses = client?.addresses
       if (!address && !addresses) { return 'Sin Dirección' }
@@ -672,7 +673,8 @@ export default {
       if (!address && addresses.length > 0) { return addresses.at(-1).address }
     },
     processAddressesNeighborhood ({ client }) {
-      const addresses = client.addresses
+      if (!client) { return 'Sin Barrio' }
+      const addresses = client.addresses3
       const neighborhood = client.neighborhood
       if (!neighborhood && !addresses) { return 'Sin Barrio' }
       if (neighborhood && !addresses) { return neighborhood.name }
