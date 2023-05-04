@@ -67,7 +67,7 @@
                   outlined
                   label="Selecciona una camara"
                   class="mt-4"
-                  @change="changeCamera"
+                  @change="changeCamera($event)"
                 />
               </div>
             </client-only>
@@ -151,10 +151,11 @@ export default {
     showCameras (cameras) {
       this.cameras = cameras
       this.selectedCamera = cameras[0]
-      this.$refs.webcam.changeCamera(this.selectedCamera.id)
+      this.$refs.webcam.changeCamera(this.selectedCamera.deviceId)
     },
-    changeCamera () {
-      this.$refs.webcam.changeCamera(this.selectedCamera.id)
+    changeCamera (e) {
+      const newCam = this.cameras.find(cam => cam.label === e)
+      this.$refs.webcam.changeCamera(newCam.deviceId)
     },
     takePicture () {
       const camera = this.$refs.webcam
