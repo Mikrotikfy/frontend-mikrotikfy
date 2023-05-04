@@ -111,6 +111,11 @@
               <span>Cerrar sesión</span>
             </v-tooltip>
           </v-list-item>
+          <v-list-item>
+            <p class="text--secondary text-caption">
+              Version API: {{ this.$config.API_VERSION }}
+            </p>
+          </v-list-item>
         </v-list>
       </v-menu>
     </v-app-bar>

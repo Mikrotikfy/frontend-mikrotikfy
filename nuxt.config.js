@@ -46,7 +46,8 @@ export default {
     META_ENDPOINT: process.env.NODE_ENV === 'production' ? process.env.META_PROD_ENDPOINT : process.env.META_DEV_ENDPOINT,
     META_TEMPLATE: process.env.NODE_ENV === 'production' ? process.env.META_PROD_TEMPLATE : process.env.META_DEV_TEMPLATE,
     META_TOKEN: process.env.META_TOKEN || '',
-    CORS_PROXY: process.env.CORS_PROXY || ''
+    CORS_PROXY: process.env.CORS_PROXY || '',
+    API_VERSION: process.env.npm_package_version || 'Indefinida | error de compilacion'
   },
 
   /*
