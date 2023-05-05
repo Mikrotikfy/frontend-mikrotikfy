@@ -48,6 +48,16 @@
                     {{ item.technology ? item.technology.name : 'No Reg.' }}
                   </strong>
                 </template>
+                <template v-slot:[`item.update_password`]="{ item, index }">
+                  <v-checkbox
+                    v-if="clienttype.name === 'INTERNET'"
+                    :input-value="item.update_password"
+                    :disabled="!item.active || item.indebt"
+                    hide-details
+                    class="mt-0"
+                    @click="updatePassword(item, item.update_password, index)"
+                  />
+                </template>
                 <template v-slot:[`item.actions`]="{ item, index }">
                   <div style="white-space:nowrap">
                     <CreateTicket
@@ -107,6 +117,7 @@ export default {
         page: 1,
         pageSize: 500
       },
+      update_password: false,
       refreshLoading: false,
       searchClientInput: '',
       result: ''
@@ -142,7 +153,7 @@ export default {
       return this.$store.state.clienttypes ? this.$store.state.clienttypes.find(type => type.name === this.$route.query.clienttype) : ''
     },
     getHeadersByClienttype () {
-      return this.$route.query.clienttype === 'INTERNET' ? this.$store.state.isDesktop ? [
+      return this.$route.query.clienttype === 'INTERNET' ? this.$store.state.isDesktop ? this.$isAdmin() ? [
         { text: 'Codigo', value: 'code', sortable: false },
         { text: 'Nombre', value: 'name', sortable: false },
         { text: 'Cedula', value: 'dni', sortable: false },
@@ -151,7 +162,18 @@ export default {
         { text: 'Telefono', sortable: false, value: 'phone' },
         { text: 'Tarifa', value: 'active', sortable: false },
         { text: 'Tecnologia', value: 'technology.name', sortable: false },
-        { text: '', value: 'actions', sortable: false }
+        { text: 'Clave', value: 'update_password', sortable: false },
+        { text: 'Acciones', value: 'actions', sortable: false }
+      ] : [
+        { text: 'Codigo', value: 'code', sortable: false },
+        { text: 'Nombre', value: 'name', sortable: false },
+        { text: 'Cedula', value: 'dni', sortable: false },
+        { text: 'Direccion', sortable: false, value: 'address' },
+        { text: 'Barrio', value: 'neighborhood.name', sortable: false },
+        { text: 'Telefono', sortable: false, value: 'phone' },
+        { text: 'Tarifa', value: 'active', sortable: false },
+        { text: 'Tecnologia', value: 'technology.name', sortable: false },
+        { text: 'Acciones', value: 'actions', sortable: false }
       ] : [
         { text: 'Codigo', value: 'code', sortable: false },
         { text: 'Nombre', value: 'name', sortable: false },
@@ -159,7 +181,7 @@ export default {
         { text: 'Barrio', value: 'neighborhood.name', sortable: false },
         { text: 'Telefono', sortable: false, value: 'phone' },
         { text: 'Tarifa', value: 'active', sortable: false },
-        { text: '', value: 'actions', sortable: false }
+        { text: 'Acciones', value: 'actions', sortable: false }
       ] : this.$store.state.isDesktop ? [
         { text: 'Codigo', value: 'code', sortable: false },
         { text: 'Nombre', value: 'name', sortable: false },
@@ -172,7 +194,7 @@ export default {
         { text: 'Altos', sortable: true, value: 'tvspec.high' },
         { text: 'Bajos', sortable: true, value: 'tvspec.down' },
         { text: 'Calidad', sortable: true, value: 'tvspec.tvspectype.name' },
-        { text: '', value: 'actions', sortable: false }
+        { text: 'Acciones', value: 'actions', sortable: false }
       ] : [
         { text: 'Codigo', value: 'code', sortable: false },
         { text: 'Nombre', value: 'name', sortable: false },
@@ -181,7 +203,7 @@ export default {
         { text: 'Barrio', value: 'neighborhood.name', sortable: false },
         { text: 'Telefono', sortable: false, value: 'phone' },
         { text: 'Estado', sortable: false, value: 'active' },
-        { text: '', value: 'actions', sortable: false }
+        { text: 'Acciones', value: 'actions', sortable: false }
       ]
     }
   },
@@ -212,6 +234,10 @@ export default {
     }.bind(this)
   },
   methods: {
+    updatePassword (client, updatePasswordStatus, index) {
+      const updatePassword = !updatePasswordStatus
+      this.$store.dispatch('client/updatePassword', { client, updatePassword, index, token: this.$store.state.auth.token })
+    },
     redirectToBilling () {
       this.$router.push({ path: `/billing/${this.$route.params.search}`, query: { city: this.$route.query.city, clienttype: this.$route.query.clienttype } })
     },

@@ -7,6 +7,13 @@ export const state = () => ({
   headers: null
 })
 export const mutations = {
+  updateClientPassword (state, payload) {
+    try {
+      state.clients[payload.index].update_password = !state.clients[payload.index].update_password
+    } catch (error) {
+      throw new Error(`MUTATE UPDATE CLIENT PASSWORD ${error}`)
+    }
+  },
   clearClientsFromDatatable (state) {
     state.clients = []
   },
@@ -117,6 +124,38 @@ export const mutations = {
   }
 }
 export const actions = {
+  updatePassword ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              update_password: payload.updatePassword
+            }
+          })
+        }).then((input) => {
+          if (input.status === 200) {
+            commit('updateClient', { client: payload.client, index: payload.index })
+            this.$toast.info('Cambio de clave confirmado', { duration: 4000, position: 'bottom-center' })
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        }).catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error(error)
+          throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
+        })
+      })
+    } catch (error) {
+      throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
+    }
+  },
   async clearClientsFromDatatable ({ commit }) {
     try {
       await commit('clearClientsFromDatatable', true)
