@@ -1,16 +1,23 @@
-export default function ({ route, redirect }) {
-  if (!route.query.city) {
-    if (route.path === '/') {
-      return redirect('/clients?city=MARIQUITA')
-    }
-    const path = route.path
-    return redirect(path + '?city=MARIQUITA')
+export default function ({ route, redirect, store }) {
+  const { query, path, name } = route
+  const { clienttype } = query
+  const auth = store.state.auth
+  const userHasPreferredCity = auth && auth.preferredcity
+  let userPreferredCity = null
+  if (userHasPreferredCity) {
+    userPreferredCity = auth.preferredcity.name
   }
-  if (!route.query.clienttype) {
-    if (route.path === '/') {
-      return redirect('/clients?city=MARIQUITA&clienttype=INTERNET')
-    }
-    const path = route.path
-    return redirect(path + '?city=MARIQUITA&clienttype=INTERNET')
+
+  const newQuery = {
+    city: userPreferredCity || 'MARIQUITA',
+    clienttype: clienttype || 'INTERNET'
+  }
+  if (path === '/') {
+    redirect({ path: '/clients', query: newQuery })
+  }
+
+  if (name === 'tickets' && !query.view) {
+    newQuery.view = 'RV'
+    return redirect({ path, query: newQuery })
   }
 }

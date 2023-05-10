@@ -174,7 +174,7 @@ export default {
       this.loginSuccessful = true
       const qs = require('qs')
       const query = qs.stringify({
-        populate: ['role', 'cities', 'cities.mikrotiks', 'clienttypes', 'menus']
+        populate: ['role', 'cities', 'cities.mikrotiks', 'clienttypes', 'menus', 'preferredcity']
       },
       {
         encodeValuesOnly: true
@@ -229,6 +229,7 @@ export default {
               id: userData.id,
               token: response.jwt,
               username: userData.username,
+              preferredcity: userData.preferredcity,
               cities: userCities,
               clienttypes: userClienttypes,
               menu: userMenus.sort((a, b) => a.priority - b.priority),
@@ -246,7 +247,7 @@ export default {
               this.$store.dispatch('neighborhood/getNeighborhoodsFromDatabase'),
               this.$store.dispatch('telegram/getTelegramBotsFromDatabase', { token: response.jwt, city: userCities[0].name })
             ]).then(() => {
-              window.location.href = `/clients?city=${userCities[0].name}&clienttype=INTERNET`
+              window.location.href = `/clients?city=${userData && userData.preferredcity ? userData.preferredcity.name : userCities[0].name}&clienttype=INTERNET`
             }).catch((e) => {
               this.errorMessages = e
               this.loginFailed = true
