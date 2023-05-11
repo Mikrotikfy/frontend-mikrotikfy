@@ -363,7 +363,10 @@
           style="height:calc(100vh - 128px);"
         >
           <div>
-            <div class="elevation-5 rounded-xl py-2 px-4 grey darken-3">
+            <div
+              class="elevation-5 rounded-xl py-2 px-4"
+              :class="$vuetify.theme.dark ? 'grey darken-3' : 'white'"
+            >
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
                 <strong>Tipo Ticket: </strong>{{ editModalData.tickettype ? editModalData.tickettype.name : '' }}
               </p>
