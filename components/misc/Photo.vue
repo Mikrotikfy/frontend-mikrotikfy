@@ -156,7 +156,7 @@ export default {
     },
     showCameras (cameras) {
       this.cameras = cameras
-      this.selectedCamera = cameras[0]
+      this.selectedCamera = cameras.length > 1 ? cameras[1] : cameras[0]
       this.$refs.webcam.changeCamera(this.selectedCamera.deviceId)
     },
     changeCamera (e) {
