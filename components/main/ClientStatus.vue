@@ -7,7 +7,7 @@
           :block="block"
           :text="!block"
           :x-small="!block"
-          :color="$vuetify.theme.dark && !block ? 'white' : 'white black--text'"
+          :color="$vuetify.theme.dark && !block ? 'white' : 'green darken-4 white--text'"
           class="rounded-xl"
           :large="block"
           v-on="on"

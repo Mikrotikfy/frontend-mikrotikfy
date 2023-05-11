@@ -228,12 +228,22 @@
                 </h5>
               </v-chip>
             </template>
-            <template v-if="clienttype === 'INTERNET'" v-slot:[`item.client.name`]="props">
+            <!-- <template v-if="clienttype === 'INTERNET'" v-slot:[`item.client.name`]="props">
               <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA O RETIRADO <span class="text-decoration-line-through">
-                {{ props.item.client.name }}
+                <div
+                  style="width:220px;"
+                >
+                  {{ props.item.client.name }}
+                </div>
               </span></span>
-              <span v-else>{{ props.item.client.name }}</span>
-            </template>
+              <span v-else>
+                <div
+                  style="width:220px;"
+                >
+                  {{ props.item.client.name }}
+                </div>
+              </span>
+            </template> -->
             <template v-slot:[`item.details`]="{ item }">
               <v-tooltip bottom max-width="400">
                 <template v-slot:activator="{ on, attrs }">
@@ -345,10 +355,10 @@
           </v-btn>
         </v-card-title>
         <v-card-text
-          class="d-flex flex-column justify-space-between px-2"
+          class="d-flex flex-column px-2"
           style="height:calc(100vh - 128px);"
         >
-          <div style="flex: 1;">
+          <div>
             <div class="elevation-5 rounded-xl py-2 px-4 grey darken-3">
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
                 <strong>Tipo Ticket: </strong>{{ editModalData.tickettype ? editModalData.tickettype.name : '' }}
@@ -374,19 +384,23 @@
                 <strong>Tecnología: </strong>{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}
               </p>
               <p v-if="$route.query.clienttype === 'INTERNET'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
-                <strong>Potencia Óptica: </strong>{{ editModalData.client ? editModalData.client.opticalpower ? editModalData.client.opticalpower : 'No reg.' : '' }} dBm
+                <strong>Potencia Óptica: </strong>{{ editModalData.client && editModalData.client.opticalpower ? editModalData.client.opticalpower : 'No reg.' }}
               </p>
+
               <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
-                TV: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.tvs : 'No reg.' : '' }}
+                TV: {{ editModalData.client && editModalData.client.tvspec ? editModalData.client.tvspec.tvs : 'No reg.' }}
               </p>
+
               <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
-                Altos: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.high : '' : '' }}
+                Altos: {{ editModalData.client && editModalData.client.tvspec ? editModalData.client.tvspec.high : '' }}
               </p>
+
               <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
-                Bajos: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.down : '' : '' }}
+                Bajos: {{ editModalData.client && editModalData.client.tvspec ? editModalData.client.tvspec.down : '' }}
               </p>
+
               <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
-                Calidad: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.tvspectype.name : '' : '' }}
+                Calidad: {{ editModalData.client && editModalData.client.tvspec && editModalData.client.tvspec.tvspectype ? editModalData.client.tvspec.tvspectype.name : '' }}
               </p>
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
                 <strong>Avance: </strong><code>{{ editModalData ? editModalData.details : '' }}</code>
@@ -431,6 +445,7 @@
               grid-template-rows: 1fr 1fr 1fr 1fr;
               row-gap: 10px;
             "
+            class="mt-2"
           >
             <CreateTicketAdvancev2
               :ticket="editModalData"
@@ -526,7 +541,7 @@ export default {
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
         { text: 'Asignado', sortable: false, value: 'technician', width: 60 },
         { text: 'Observaciones', sortable: false, value: 'details', width: 100 },
-        { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
+        { text: 'Barrio', sortable: false, value: 'client.neighborhood.name' },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
         { text: 'Código', sortable: false, value: 'client.code', width: 50 },
         { text: 'Cliente', sortable: false, value: 'client.name', width: 200 },
@@ -541,8 +556,7 @@ export default {
         { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
-        { text: 'Cliente', sortable: false, value: 'client.name', width: 150 },
-        { text: 'Avance', sortable: false, value: 'details', width: 300 }
+        { text: 'Cliente', sortable: false, value: 'client.name' }
       ] : this.$store.state.isDesktop ? [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name' },
@@ -562,8 +576,7 @@ export default {
         { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name' },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
-        { text: 'Cliente', sortable: false, value: 'client.name' },
-        { text: 'Avance', sortable: false, value: 'details', width: 300 }
+        { text: 'Cliente', sortable: false, value: 'client.name' }
       ]
     }
   },
