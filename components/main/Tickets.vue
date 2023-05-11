@@ -9,49 +9,64 @@
           class="rounded-xl"
         >
           <v-card-text
-            class="py-4"
+            class="pa-1"
           >
-            <v-row>
-              <v-tooltip top>
-                <!-- eslint-disable -->
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    v-bind="attrs"
-                    class="my-2 ml-2 mr-2"
-                    color="white black--text"
-                    dark
-                    rounded
-                    small
-                    :disabled="initialLoading"
-                    :loading="initialLoading"
-                    v-on="on"
-                    @click="initIntervalAndGetTickets()"
-                  >
-                    <v-icon>mdi-reload</v-icon>
-                  </v-btn>
-                </template>
-                <span>Refrescar Tickets</span>
-              </v-tooltip>
-              <MiscPrintTicket
-                v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
-                :tickets="selected"
-              />
-              <MiscPrintOrder
-                v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
-                :tickets="selected"
-              />
-              <div class="text-center">
+            <v-slide-group>
+              <v-slide-item
+                v-slot="{ active, toggle }"
+              >
+                <v-btn
+                  class="my-2 ml-2 mr-1"
+                  color="white black--text"
+                  :input-value="active"
+                  dark
+                  rounded
+                  small
+                  :disabled="initialLoading"
+                  :loading="initialLoading"
+                  @click="initIntervalAndGetTickets(), toggle"
+                >
+                  <v-icon>mdi-reload</v-icon>
+                </v-btn>
+              </v-slide-item>
+              <v-slide-item
+                v-slot="{ active, toggle }"
+              >
+                <MiscPrintTicket
+                  v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
+                  :tickets="selected"
+                  :input-value="active"
+                  @click="toggle"
+                />
+              </v-slide-item>
+              <v-slide-item
+                v-slot="{ active, toggle }"
+              >
+                <MiscPrintOrder
+                  v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
+                  :tickets="selected"
+                  :input-value="active"
+                  @click="toggle"
+                />
+              </v-slide-item>
+              <v-slide-item
+                v-slot="{ active, toggle }"
+              >
                 <v-menu offset-y>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
                       color="white black--text"
                       dark
                       small
-                      class="my-2 mx-1 rounded-xl"
+                      class="my-2 mr-1 rounded-xl"
                       v-bind="attrs"
+                      :input-value="active"
                       v-on="on"
+                      @click="toggle"
                     >
-                      <v-icon class="black--text">mdi-list-status</v-icon>
+                      <v-icon class="black--text">
+                        mdi-list-status
+                      </v-icon>
                       {{ $store.state.isDesktop ? 'Filtros' : '' }}
                     </v-btn>
                   </template>
@@ -74,8 +89,21 @@
                     </v-list-item>
                   </v-list>
                 </v-menu>
-              </div>
-            </v-row>
+              </v-slide-item>
+              <v-slide-item
+                v-for="type in types"
+                :key="type"
+              >
+                <v-btn
+                  class="black--text rounded-xl mr-1 my-2"
+                  :class="type === $route.query.view ? 'primary white--text' : 'grey'"
+                  small
+                  @click="changeView(type)"
+                >
+                  {{ calculateQuantity(type) }} {{ type }}
+                </v-btn>
+              </v-slide-item>
+            </v-slide-group>
           </v-card-text>
         </v-card>
       </v-col>
@@ -84,9 +112,9 @@
       <v-col>
         <client-only>
           <v-data-table
+            :key="key"
             v-model="selected"
             :show-select="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop ? true : false"
-            :key="key"
             :headers="getHeadersByClienttype"
             :items="ticketList"
             :item-class="rowStyles"
@@ -102,7 +130,7 @@
             no-data-text="No hay Tickets abiertos aún..."
             loading-text="Cargando información de tickets..."
             hide-default-footer
-            mobile-breakpoint="600"
+            mobile-breakpoint="100"
             @page-count="pageCount = $event"
             @click:row="showTicketInfo({ item: $event, index: ticketList.indexOf($event) })"
           >
@@ -192,11 +220,6 @@
                 </h5>
               </v-chip>
             </template>
-            <template v-if="!$store.state.isDesktop" v-slot:expanded-item="{ headers, item }">
-              <td :colspan="headers.length">
-                <span class="grey--text">Avance:</span> {{ item.details ? item.details : 'no hay' }}
-              </td>
-            </template>
             <template v-if="clienttype === 'INTERNET'" v-slot:[`item.client.name`]="props">
               <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA O RETIRADO <span class="text-decoration-line-through">{{props.item.client.name}}</span></span>
               <span v-else>{{props.item.client.name}}</span>
@@ -216,44 +239,31 @@
                 <span>{{ item.details }}</span>
             </v-tooltip>
             </template>
-            <template v-slot:[`item.client.name`]="{ item }">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <div
-                    v-bind="attrs"
-                    v-on="on"
-                    class="text-truncate" style="max-width:200px;"
-                  >
-                    {{ showOnlyNameAndSecondName(item.client.name) }}
-                  </div>
-                </template>
-                <span>{{ item.client.name }}</span>
-            </v-tooltip>
-            </template>
             <template v-slot:[`item.client.address`]="{ item }">
-                <v-tooltip
-                  bottom
-                >
+              <v-tooltip
+                bottom
+              >
                 <template v-slot:activator="{ on, attrs }">
                   <div
                     v-bind="attrs"
+                    style="max-width:180px;"
+                    class="text-truncate"
                     v-on="on"
-                    class="text-truncate" style="max-width:180px;"
                   >
                     {{ processAddresses(item) }}
                   </div>
                 </template>
                 <span>{{ processAddresses(item) }}</span>
-            </v-tooltip>
+              </v-tooltip>
             </template>
             <template v-slot:[`item.client.neighborhood.name`]="{ item }">
-                <strong>{{ processAddressesNeighborhood(item) }}</strong>
+              <strong>{{ processAddressesNeighborhood(item) }}</strong>
             </template>
             <template v-slot:[`item.client.code`]="props">
               <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
                 <strong>
                   <h3>
-                    {{props.item.client.code}}
+                    {{ props.item.client.code }}
                   </h3>
                 </strong>
               </nuxt-link>
@@ -272,12 +282,12 @@
                   @updateTicketStatus="updateTicketStatus($event)"
                 />
                 <ClientStatus
-                    v-if="clienttype === 'INTERNET'"
-                    :name="item.client.name"
-                    :clientid="item.client.id"
-                    :code="item.client.code"
-                    :role="$store.state.auth.allowed_components"
-                  />
+                  v-if="clienttype === 'INTERNET'"
+                  :name="item.client.name"
+                  :clientid="item.client.id"
+                  :code="item.client.code"
+                  :role="$store.state.auth.allowed_components"
+                />
                 <TicketHistory
                   :clientid="item.client.id"
                   :name="item.client.name"
@@ -330,24 +340,50 @@
         >
           <div style="flex: 1;">
             <div class="elevation-5 rounded-xl py-2 px-4 grey darken-3">
-              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Tipo Ticket: </strong>{{ editModalData.tickettype ? editModalData.tickettype.name : '' }}</p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                <strong>Tipo Ticket: </strong>{{ editModalData.tickettype ? editModalData.tickettype.name : '' }}
+              </p>
               <nuxt-link :to="`/clients/${editModalData.client ? editModalData.client.code : ''}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
                 <strong>
                   <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Código: </strong>{{ editModalData.client ? editModalData.client.code : '' }}</p>
                 </strong>
               </nuxt-link>
-              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Cliente: </strong>{{ editModalData.client ? editModalData.client.name : '' }}</p>
-              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Direccion: </strong>{{ processAddresses(editModalData) }}</p>
-              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Barrio: </strong>{{ processAddressesNeighborhood(editModalData) }}</p>
-              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Celular: </strong><a :href="`tel:${editModalData.client ? editModalData.client.phone : ''}`"><strong>{{ editModalData.client ? editModalData.client.phone : '' }}</strong></a></p>
-              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Tecnología: </strong>{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}</p>
-              <p v-if="$route.query.clienttype === 'INTERNET'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Potencia Óptica: </strong>{{ editModalData.client ? editModalData.client.opticalpower ? editModalData.client.opticalpower : 'No reg.' : '' }} dBm</p>
-              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">TV: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.tvs : 'No reg.' : '' }}</p>
-              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Altos: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.high : '' : '' }}</p>
-              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Bajos: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.down : '' : '' }}</p>
-              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">Calidad: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.tvspectype.name : '' : '' }}</p>
-              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Avance: </strong><code>{{ editModalData ? editModalData.details : '' }}</code></p>
-              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Creado por: </strong>{{ editModalData.assignated ? ucfirst(editModalData.assignated.username) : '' }}</p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                <strong>Cliente: </strong>{{ editModalData.client ? editModalData.client.name : '' }}
+              </p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                <strong>Direccion: </strong>{{ processAddresses(editModalData) }}
+              </p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                <strong>Barrio: </strong>{{ processAddressesNeighborhood(editModalData) }}
+              </p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                <strong>Celular: </strong><a :href="`tel:${editModalData.client ? editModalData.client.phone : ''}`"><strong>{{ editModalData.client ? editModalData.client.phone : '' }}</strong></a>
+              </p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                <strong>Tecnología: </strong>{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}
+              </p>
+              <p v-if="$route.query.clienttype === 'INTERNET'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                <strong>Potencia Óptica: </strong>{{ editModalData.client ? editModalData.client.opticalpower ? editModalData.client.opticalpower : 'No reg.' : '' }} dBm
+              </p>
+              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                TV: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.tvs : 'No reg.' : '' }}
+              </p>
+              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                Altos: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.high : '' : '' }}
+              </p>
+              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                Bajos: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.down : '' : '' }}
+              </p>
+              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                Calidad: {{ editModalData.client ? editModalData.client.tvspec ? editModalData.client.tvspec.tvspectype.name : '' : '' }}
+              </p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                <strong>Avance: </strong><code>{{ editModalData ? editModalData.details : '' }}</code>
+              </p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                <strong>Creado por: </strong>{{ editModalData.assignated ? ucfirst(editModalData.assignated.username) : '' }}
+              </p>
               <span class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
                 {{ getDate(editModalData ? editModalData.createdAt : '') }}
               </span>
@@ -361,7 +397,7 @@
                   </v-expansion-panel-header>
                   <v-expansion-panel-content>
                     <div class="white">
-                      {{ `${$config.CDN_STRAPI_ENDPOINT}${editModalData.signature}`}}
+                      {{ `${$config.CDN_STRAPI_ENDPOINT}${editModalData.signature}` }}
                       <v-img
                         :src="`${$config.CDN_STRAPI_ENDPOINT}${editModalData.signature}`"
                         aspect-ratio="1"
@@ -378,11 +414,14 @@
               </p>
             </div>
           </div>
-          <div v-if="editModalData.client !== undefined" style="
-            display:grid;
-            grid-template-rows: 1fr 1fr 1fr 1fr;
-            row-gap: 10px;
-          ">
+          <div
+            v-if="editModalData.client !== undefined"
+            style="
+              display:grid;
+              grid-template-rows: 1fr 1fr 1fr 1fr;
+              row-gap: 10px;
+            "
+          >
             <CreateTicketAdvancev2
               :ticket="editModalData"
               :ticketindex="editModalData.editindex"
@@ -390,13 +429,13 @@
               @updateTicketStatus="updateTicketStatus($event)"
             />
             <ClientStatus
-                v-if="clienttype === 'INTERNET'"
-                :block="true"
-                :name="editModalData.client.name"
-                :clientid="editModalData.client.id"
-                :code="editModalData.client.code"
-                :role="this.$store.state.auth.allowed_components"
-              />
+              v-if="clienttype === 'INTERNET'"
+              :block="true"
+              :name="editModalData.client.name"
+              :clientid="editModalData.client.id"
+              :code="editModalData.client.code"
+              :role="this.$store.state.auth.allowed_components"
+            />
             <TicketAdvanceHistory
               :block="true"
               :ticketid="editModalData.id"
@@ -446,7 +485,8 @@ export default {
       singleExpand: true,
       selected: [],
       interval: null,
-      currentTechnician: null
+      currentTechnician: null,
+      types: ['RV', 'CX', 'TR', 'DX']
     }
   },
   computed: {
@@ -454,8 +494,11 @@ export default {
       // eslint-disable-next-line eqeqeq
       return this.$store.state.cities ? this.$store.state.cities.find(c => c.id == this.$route.query.city) : ''
     },
-    ticketList () {
+    tickets () {
       return this.$store.state.ticket.tickets.filter(t => t.client !== null)
+    },
+    ticketList () {
+      return this.$store.state.ticket.ticketList.filter(t => t.client !== null)
     },
     headers () {
       return this.$store.state.ticket.headers
@@ -493,10 +536,10 @@ export default {
       ] : [
         { text: 'Estado', sortable: false, value: 'active', width: '5%', hide: 'd-none d-lg-table-cell' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 100 },
+        { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
         { text: 'Cliente', sortable: false, value: 'client.name', width: 150 },
-        { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
         { text: 'Avance', sortable: false, value: 'details', width: 300 }
       ] : this.$store.state.isDesktop ? [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
@@ -514,10 +557,10 @@ export default {
       ] : [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name' },
+        { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name' },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
         { text: 'Cliente', sortable: false, value: 'client.name' },
-        { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
         { text: 'Avance', sortable: false, value: 'details', width: 300 }
       ]
     }
@@ -539,11 +582,12 @@ export default {
     this.removeOldIntervalIfExists()
   },
   methods: {
-    initIntervalAndGetTickets () {
+    async initIntervalAndGetTickets () {
       this.removeOldIntervalIfExists()
       this.setGetTicketsInterval()
       this.resetSelected()
-      this.refreshTickets()
+      await this.refreshTickets()
+      this.setView()
     },
     removeOldIntervalIfExists () {
       if (this.interval) {
@@ -554,6 +598,37 @@ export default {
       this.interval = setInterval(() => {
         this.refreshTickets()
       }, 60000)
+    },
+    async refreshTickets () {
+      this.initialLoading = true
+      await this.$store.dispatch('ticket/getTicketsFromDatabase', { city: this.$route.query.city, clienttype: this.clienttype, token: this.$store.state.auth.token, active: this.showClosedValue, retired: this.showRetired })
+      this.initialLoading = false
+    },
+    setView () {
+      const view = window.localStorage.getItem('view') || 'RV'
+      if (view) {
+        this.view = view
+        this.$store.commit('ticket/changeView', view)
+      }
+    },
+    changeView (view) {
+      window.localStorage.setItem('view', view)
+      this.$router.push({ query: { city: this.$route.query.city, clienttype: this.$route.query.clienttype, view } })
+      this.$store.commit('ticket/changeView', view)
+    },
+    calculateQuantity (type) {
+      switch (type) {
+        case 'RV':
+          return this.tickets.filter(ticket => ticket.tickettype.name !== 'CONEXION NUEVA' && ticket.tickettype.name !== 'TRASLADO' && ticket.tickettype.name !== 'RETIRO').length
+        case 'TR':
+          return this.tickets.filter(ticket => ticket.tickettype.name === 'TRASLADO').length
+        case 'CX':
+          return this.tickets.filter(ticket => ticket.tickettype.name === 'CONEXION NUEVA').length
+        case 'DX':
+          return this.tickets.filter(ticket => ticket.tickettype.name === 'RETIRO').length
+        default:
+          return 0
+      }
     },
     testPlanDx (client) {
       return client.indebt || !client.active
@@ -577,21 +652,21 @@ export default {
           index,
           token: this.$store.state.auth.token
         })
-        this.$simpleTelegramSendToChat({
-          client: ticket.client,
-          tickettype: ticket.tickettype.name,
-          details: ticket.details,
-          neighborhood: ticket.client.neighborhood,
-          operator: this.$store.state.auth.username,
-          user: this.currentTechnician,
-          telegramBots: this.telegramBots
-        })
-        this.$simpleWhatsappSendToChat({
-          tickettype: ticket.tickettype.name,
-          client: ticket.client,
-          user: this.currentTechnician,
-          token: this.$config.META_TOKEN
-        })
+        // this.$simpleTelegramSendToChat({
+        //   client: ticket.client,
+        //   tickettype: ticket.tickettype.name,
+        //   details: ticket.details,
+        //   neighborhood: ticket.client.neighborhood,
+        //   operator: this.$store.state.auth.username,
+        //   user: this.currentTechnician,
+        //   telegramBots: this.telegramBots
+        // })
+        // this.$simpleWhatsappSendToChat({
+        //   tickettype: ticket.tickettype.name,
+        //   client: ticket.client,
+        //   user: this.currentTechnician,
+        //   token: this.$config.META_TOKEN
+        // })
         this.currentTechnician = {}
       } else {
         this.$toast.error('El técnico no tiene un chat de telegram asociado o un numero de telefono de whatsapp valido', { duration: 5000 })
@@ -616,12 +691,6 @@ export default {
     },
     resetSelected () {
       this.selected = []
-    },
-    async refreshTickets () {
-      this.initialLoading = true
-      await this.$store.dispatch('ticket/getTicketsFromDatabase', { city: this.$route.query.city, clienttype: this.clienttype, token: this.$store.state.auth.token, active: this.showClosedValue, retired: this.showRetired })
-      this.expanded = this.ticketList
-      this.initialLoading = false
     },
     updateTicketStatus ({ editindex, closeTicket }) {
       this.$store.commit('ticket/updateTicketStatus', { editindex, closeTicket })

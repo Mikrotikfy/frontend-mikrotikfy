@@ -1,5 +1,6 @@
 export const state = () => ({
   tickets: [],
+  ticketList: [],
   tickettypes: [],
   headers: []
 })
@@ -35,6 +36,25 @@ export const mutations = {
       state.tickets[ticket.editindex].active = !ticket.closeTicket
     } catch (error) {
       throw new Error(`TICKET MUTATE ${error}`)
+    }
+  },
+  changeView (state, payload) {
+    if (payload === 'RV') {
+      state.ticketList = state.tickets.filter((ticket) => {
+        return ticket.tickettype.name !== 'CONEXION NUEVA' && ticket.tickettype.name !== 'TRASLADO' && ticket.tickettype.name !== 'RETIRO'
+      })
+    } else if (payload === 'CX') {
+      state.ticketList = state.tickets.filter((ticket) => {
+        return ticket.tickettype.name === 'CONEXION NUEVA'
+      })
+    } else if (payload === 'TR') {
+      state.ticketList = state.tickets.filter((ticket) => {
+        return ticket.tickettype.name === 'TRASLADO'
+      })
+    } else if (payload === 'DX') {
+      state.ticketList = state.tickets.filter((ticket) => {
+        return ticket.tickettype.name === 'RETIRO'
+      })
     }
   }
 }
