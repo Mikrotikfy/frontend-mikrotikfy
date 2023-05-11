@@ -23,7 +23,7 @@
                 no-data-text="No hay resultados a la busqueda..."
                 loading-text="Cargando información de clientes..."
                 hide-default-footer
-                mobile-breakpoint="600"
+                mobile-breakpoint="100"
                 @page-count="pageCount = $event"
               >
                 <template v-slot:[`item.active`]="props">
@@ -38,10 +38,10 @@
                   </span>
                 </template>
                 <template v-slot:[`item.address`]="{ item }">
-                  {{ item.addresses.length > 0 ? item.addresses.at(-1).address : item.address }}
+                  {{ processAddresses(item) }}
                 </template>
                 <template v-slot:[`item.neighborhood.name`]="{ item }">
-                  {{ item.addresses.length > 0 ? item.addresses.at(-1).neighborhood.name : item.neighborhood.name }}
+                  {{ processAddressesNeighborhood(item) }}
                 </template>
                 <template v-slot:[`item.technology.name`]="{ item }">
                   <strong>
@@ -268,6 +268,26 @@ export default {
     },
     createClientSnack (value) {
       this.$toast.success('Cliente creado con exito', { duration: 4000, position: 'bottom-center' })
+    },
+    processAddresses (client) {
+      if (!client) { return 'Sin Direccion' }
+      const address = client?.address
+      const addresses = client?.addresses
+      if (!address && !addresses) { return 'Sin Dirección' }
+      if (address && !addresses) { return client.address }
+      if (address && addresses.length > 0) { return addresses.at(-1).address }
+      if (!address && addresses.length > 0) { return addresses.at(-1).address }
+    },
+    processAddressesNeighborhood (client) {
+      if (!client) { return 'Sin Barrio' }
+      const addresses = client.addresses3
+      const neighborhood = client.neighborhood
+      if (!neighborhood && !addresses) { return 'Sin Barrio' }
+      if (neighborhood && !addresses) { return neighborhood.name }
+      if (neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
+      if (neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
+      if (!neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
+      if (!neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
     }
   }
 }

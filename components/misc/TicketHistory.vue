@@ -52,7 +52,7 @@
                 loading-text="Cargando información de tickets..."
                 dense
                 hide-default-footer
-                mobile-breakpoint="600"
+                mobile-breakpoint="100"
                 @page-count="pageCount = $event"
               >
                 <template v-slot:[`item.actions`]="props">

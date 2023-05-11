@@ -15,80 +15,88 @@
               <v-slide-item
                 v-slot="{ active, toggle }"
               >
-                <v-btn
-                  class="my-2 ml-2 mr-1"
-                  color="white black--text"
-                  :input-value="active"
-                  dark
-                  rounded
-                  small
-                  :disabled="initialLoading"
-                  :loading="initialLoading"
-                  @click="initIntervalAndGetTickets(), toggle"
-                >
-                  <v-icon>mdi-reload</v-icon>
-                </v-btn>
+                <div>
+                  <v-btn
+                    class="my-2 ml-2 mr-1"
+                    color="white black--text"
+                    :input-value="active"
+                    dark
+                    rounded
+                    small
+                    :disabled="initialLoading"
+                    :loading="initialLoading"
+                    @click="initIntervalAndGetTickets(), toggle"
+                  >
+                    <v-icon>mdi-reload</v-icon>
+                  </v-btn>
+                </div>
               </v-slide-item>
               <v-slide-item
                 v-slot="{ active, toggle }"
               >
-                <MiscPrintTicket
-                  v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
-                  :tickets="selected"
-                  :input-value="active"
-                  @click="toggle"
-                />
+                <div>
+                  <MiscPrintTicket
+                    v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
+                    :tickets="selected"
+                    :input-value="active"
+                    @click="toggle"
+                  />
+                </div>
               </v-slide-item>
               <v-slide-item
                 v-slot="{ active, toggle }"
               >
-                <MiscPrintOrder
-                  v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
-                  :tickets="selected"
-                  :input-value="active"
-                  @click="toggle"
-                />
+                <div>
+                  <MiscPrintOrder
+                    v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
+                    :tickets="selected"
+                    :input-value="active"
+                    @click="toggle"
+                  />
+                </div>
               </v-slide-item>
               <v-slide-item
                 v-slot="{ active, toggle }"
               >
-                <v-menu offset-y>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      color="white black--text"
-                      dark
-                      small
-                      class="my-2 mr-1 rounded-xl"
-                      v-bind="attrs"
-                      :input-value="active"
-                      v-on="on"
-                      @click="toggle"
-                    >
-                      <v-icon class="black--text">
-                        mdi-list-status
-                      </v-icon>
-                      {{ $store.state.isDesktop ? 'Filtros' : '' }}
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-checkbox
-                        v-model="showClosedValue"
-                        class="mr-4"
-                        label="Mostrar cerrados"
-                        @change="initIntervalAndGetTickets()"
-                      />
-                    </v-list-item>
-                    <v-list-item>
-                      <v-checkbox
-                        v-model="showRetired"
-                        class="mr-4"
-                        label="Mostrar retiros"
-                        @change="initIntervalAndGetTickets()"
-                      />
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+                <div>
+                  <v-menu offset-y>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        color="white black--text"
+                        dark
+                        small
+                        class="my-2 mr-1 rounded-xl"
+                        v-bind="attrs"
+                        :input-value="active"
+                        v-on="on"
+                        @click="toggle"
+                      >
+                        <v-icon class="black--text">
+                          mdi-list-status
+                        </v-icon>
+                        {{ $store.state.isDesktop ? 'Filtros' : '' }}
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item>
+                        <v-checkbox
+                          v-model="showClosedValue"
+                          class="mr-4"
+                          label="Mostrar cerrados"
+                          @change="initIntervalAndGetTickets()"
+                        />
+                      </v-list-item>
+                      <v-list-item>
+                        <v-checkbox
+                          v-model="showRetired"
+                          class="mr-4"
+                          label="Mostrar retiros"
+                          @change="initIntervalAndGetTickets()"
+                        />
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </div>
               </v-slide-item>
               <v-slide-item
                 v-for="type in types"
@@ -283,18 +291,18 @@
                   :ticketindex="index"
                   @updateTicketStatus="updateTicketStatus($event)"
                 />
-                <ClientStatus
+                <MainClientStatus
                   v-if="clienttype === 'INTERNET'"
                   :name="item.client.name"
                   :clientid="item.client.id"
                   :code="item.client.code"
                   :role="$store.state.auth.allowed_components"
                 />
-                <TicketHistory
+                <MiscTicketHistory
                   :clientid="item.client.id"
                   :name="item.client.name"
                 />
-                <TicketAdvanceHistory
+                <MiscTicketAdvanceHistory
                   :ticketid="item.id"
                   :name="item.client.name"
                 />
@@ -430,7 +438,7 @@
               :block="true"
               @updateTicketStatus="updateTicketStatus($event)"
             />
-            <ClientStatus
+            <MainClientStatus
               v-if="clienttype === 'INTERNET'"
               :block="true"
               :name="editModalData.client.name"
@@ -438,12 +446,12 @@
               :code="editModalData.client.code"
               :role="this.$store.state.auth.allowed_components"
             />
-            <TicketAdvanceHistory
+            <MiscTicketAdvanceHistory
               :block="true"
               :ticketid="editModalData.id"
               :name="editModalData.client.name"
             />
-            <TicketHistory
+            <MiscTicketHistory
               :clientid="editModalData.client.id"
               :name="editModalData.client.name"
               :block="true"
@@ -456,16 +464,8 @@
 </template>
 
 <script>
-import TicketAdvanceHistory from '../misc/TicketAdvanceHistory'
-import TicketHistory from '../misc/TicketHistory'
-import ClientStatus from '../main/ClientStatus'
 export default {
   name: 'Tickets',
-  components: {
-    TicketAdvanceHistory,
-    TicketHistory,
-    ClientStatus
-  },
   data () {
     return {
       key: 0,

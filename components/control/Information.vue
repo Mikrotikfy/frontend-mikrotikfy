@@ -50,7 +50,7 @@
         <v-row>
           <v-col cols="6" lg="6" md="6">
             <v-text-field
-              :value="currentEditClient.addresses.length > 0 ? currentEditClient.addresses.at(-1).address : currentEditClient.address"
+              :value="processAddresses(currentEditClient)"
               disabled
               label="Direccion"
               outlined
@@ -60,7 +60,7 @@
           </v-col>
           <v-col cols="6" lg="6" md="6" class="d-flex">
             <v-text-field
-              :value="currentEditClient.addresses.length > 0 ? currentEditClient.addresses.at(-1).neighborhood.name : currentEditClient.neighborhood.name"
+              :value="processAddressesNeighborhood(currentEditClient)"
               disabled
               class="mr-3"
               label="Barrio"
@@ -405,6 +405,26 @@ export default {
       const dateObject = new Date(date)
       const humanDateFormat = dateObject.toLocaleString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })
       return humanDateFormat
+    },
+    processAddresses (client) {
+      if (!client) { return 'Sin Direccion' }
+      const address = client?.address
+      const addresses = client?.addresses
+      if (!address && !addresses) { return 'Sin Dirección' }
+      if (address && !addresses) { return client.address }
+      if (address && addresses.length > 0) { return addresses.at(-1).address }
+      if (!address && addresses.length > 0) { return addresses.at(-1).address }
+    },
+    processAddressesNeighborhood (client) {
+      if (!client) { return 'Sin Barrio' }
+      const addresses = client.addresses3
+      const neighborhood = client.neighborhood
+      if (!neighborhood && !addresses) { return 'Sin Barrio' }
+      if (neighborhood && !addresses) { return neighborhood.name }
+      if (neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
+      if (neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
+      if (!neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
+      if (!neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
     }
   }
 }

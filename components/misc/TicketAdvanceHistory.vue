@@ -50,7 +50,7 @@
                 hide-default-footer
                 sort-desc
                 sort-by="createdAt"
-                mobile-breakpoint="600"
+                mobile-breakpoint="100"
                 @page-count="pageCount = $event"
               >
                 <template v-slot:[`item.createdAt`]="{ item }">
