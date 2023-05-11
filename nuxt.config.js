@@ -33,13 +33,6 @@ export default {
     '~/assets/main.css'
   ],
 
-  server: process.env.NODE_ENV !== 'production' ? {
-    https: {
-      key: fs.readFileSync(path.resolve(__dirname, 'localhost.key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, 'localhost.pem'))
-    }
-  } : {},
-
   publicRuntimeConfig: {
     API_STRAPI_ENDPOINT: process.env.API_STRAPI_ENDPOINT || 'http://localhost:1337/api/',
     CDN_STRAPI_ENDPOINT: process.env.CDN_STRAPI_ENDPOINT || 'http://localhost:1337',
@@ -84,7 +77,7 @@ export default {
       offlineAssets: ['/favicon.ico', '/icon.png', '/star-bg.svg'],
       cacheNames: {
         prefix: 'arnop-api',
-        suffix: 'v1.0.0',
+        suffix: process.env.npm_package_version,
         precache: 'precache',
         runtime: 'runtime-cache'
       }
