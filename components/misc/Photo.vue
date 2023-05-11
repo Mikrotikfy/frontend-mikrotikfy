@@ -46,7 +46,6 @@
                     width: 1920,
                     height: 1080
                   }"
-                  @started="onCamReady"
                   @error="errorShow"
                   @notsupported="errorShow"
                   @cameras="showCameras"
@@ -141,9 +140,6 @@ export default {
   methods: {
     initComponent () {
       this.modal = true
-    },
-    onCamReady () {
-      console.log('La cámara está lista')
     },
     errorShow (err) {
       this.$toast.error('Error al cargar la cámara: ' + err, { duration: 5000 })

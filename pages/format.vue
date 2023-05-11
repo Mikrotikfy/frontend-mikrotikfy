@@ -66,7 +66,9 @@
             </tr>
             <tr>
               <td>EQUIPO EN COMODATO</td>
-              <td style="border-left: 1px solid black; grid-column: span 6;">{{ clientInfo.tickettype }}</td>
+              <td style="border-left: 1px solid black; grid-column: span 6;">
+                {{ clientInfo.tickettype }}
+              </td>
               <td></td>
               <td></td>
               <td></td>
@@ -291,7 +293,6 @@ strong {
     }
     * {
     -webkit-print-color-adjust: exact !important;
-      color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
     @page { margin: 0; }

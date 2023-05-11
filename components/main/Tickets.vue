@@ -221,23 +221,25 @@
               </v-chip>
             </template>
             <template v-if="clienttype === 'INTERNET'" v-slot:[`item.client.name`]="props">
-              <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA O RETIRADO <span class="text-decoration-line-through">{{props.item.client.name}}</span></span>
-              <span v-else>{{props.item.client.name}}</span>
+              <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA O RETIRADO <span class="text-decoration-line-through">
+                {{ props.item.client.name }}
+              </span></span>
+              <span v-else>{{ props.item.client.name }}</span>
             </template>
             <template v-slot:[`item.details`]="{ item }">
               <v-tooltip bottom max-width="400">
                 <template v-slot:activator="{ on, attrs }">
                   <div
                     v-bind="attrs"
-                    v-on="on"
                     :class="$store.state.isDesktop ? 'text-truncate' : ''"
                     :style="$store.state.isDesktop ? 'width:100px;' : ''"
+                    v-on="on"
                   >
                     {{ item.details }}
                   </div>
                 </template>
                 <span>{{ item.details }}</span>
-            </v-tooltip>
+              </v-tooltip>
             </template>
             <template v-slot:[`item.client.address`]="{ item }">
               <v-tooltip
