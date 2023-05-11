@@ -25,7 +25,7 @@
     >
       <v-card>
         <v-card-title>
-          <v-icon>mdi-plus-box-multiple-outline</v-icon>
+          <v-icon  class="mr-2">mdi-plus-box-multiple-outline</v-icon>
           Crear Tickets Masivamente
         </v-card-title>
         <v-card-text>

@@ -113,7 +113,8 @@
               </v-slide-item>
             </v-slide-group>
             <v-spacer v-if="$store.state.isDesktop" />
-            <MiscCreateBulkTickets v-if="$store.state.isDesktop" @endProcess="initIntervalAndGetTickets" />
+            <MiscCreateBulkTickets v-if="$store.state.isDesktop && selected.length < 1" @endProcess="initIntervalAndGetTickets" />
+            <MiscCloseBulkTickets v-if="$store.state.isDesktop && selected.length > 0" :selected="selected" @endProcess="initIntervalAndGetTickets" />
           </v-card-text>
         </v-card>
       </v-col>
