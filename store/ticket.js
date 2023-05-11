@@ -41,7 +41,7 @@ export const mutations = {
   changeView (state, payload) {
     if (payload === 'RV') {
       state.ticketList = state.tickets.filter((ticket) => {
-        return ticket.tickettype.name !== 'CONEXION NUEVA' && ticket.tickettype.name !== 'TRASLADO' && ticket.tickettype.name !== 'RETIRO'
+        return ticket.tickettype.name !== 'CONEXION NUEVA' && ticket.tickettype.name !== 'TRASLADO' && ticket.tickettype.name !== 'DX VOLUNTARIA' && ticket.tickettype.name !== 'DX POR MORA'
       })
     } else if (payload === 'CX') {
       state.ticketList = state.tickets.filter((ticket) => {
@@ -53,7 +53,11 @@ export const mutations = {
       })
     } else if (payload === 'DX') {
       state.ticketList = state.tickets.filter((ticket) => {
-        return ticket.tickettype.name === 'RETIRO'
+        return ticket.tickettype.name === 'DX POR MORA' || ticket.tickettype.name === 'DX VOLUNTARIA'
+      })
+    } else if (payload === 'TODOS') {
+      state.ticketList = state.tickets.filter((ticket) => {
+        return ticket.tickettype.name !== 'DX POR MORA' && ticket.tickettype.name !== 'DX VOLUNTARIA'
       })
     }
   }

@@ -9,7 +9,7 @@
           class="rounded-xl"
         >
           <v-card-text
-            class="pa-1"
+            class="pa-1 d-flex"
           >
             <v-slide-group>
               <v-slide-item
@@ -112,6 +112,8 @@
                 </v-btn>
               </v-slide-item>
             </v-slide-group>
+            <v-spacer v-if="$store.state.isDesktop" />
+            <MiscCreateBulkTickets v-if="$store.state.isDesktop" @endProcess="initIntervalAndGetTickets" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -503,7 +505,7 @@ export default {
       selected: [],
       interval: null,
       currentTechnician: null,
-      types: ['RV', 'CX', 'TR', 'DX']
+      types: ['TODOS', 'RV', 'CX', 'TR', 'DX']
     }
   },
   computed: {
@@ -620,7 +622,7 @@ export default {
       this.initialLoading = false
     },
     setView () {
-      const view = window.localStorage.getItem('view') || 'RV'
+      const view = window.localStorage.getItem('view') || 'TODOS'
       if (view) {
         this.view = view
         this.$store.commit('ticket/changeView', view)
@@ -634,13 +636,15 @@ export default {
     calculateQuantity (type) {
       switch (type) {
         case 'RV':
-          return this.tickets.filter(ticket => ticket.tickettype.name !== 'CONEXION NUEVA' && ticket.tickettype.name !== 'TRASLADO' && ticket.tickettype.name !== 'RETIRO').length
+          return this.tickets.filter(ticket => ticket.tickettype.name !== 'CONEXION NUEVA' && ticket.tickettype.name !== 'TRASLADO' && ticket.tickettype.name !== 'DX VOLUNTARIA' && ticket.tickettype.name !== 'DX POR MORA').length
         case 'TR':
           return this.tickets.filter(ticket => ticket.tickettype.name === 'TRASLADO').length
         case 'CX':
           return this.tickets.filter(ticket => ticket.tickettype.name === 'CONEXION NUEVA').length
         case 'DX':
-          return this.tickets.filter(ticket => ticket.tickettype.name === 'RETIRO').length
+          return this.tickets.filter(ticket => ticket.tickettype.name === 'DX POR MORA' || ticket.tickettype.name === 'DX VOLUNTARIA').length
+        case 'TODOS':
+          return this.tickets.filter(ticket => ticket.tickettype.name !== 'DX POR MORA' && ticket.tickettype.name !== 'DX VOLUNTARIA').length
         default:
           return 0
       }
@@ -742,9 +746,9 @@ export default {
       return humanDateFormat
     },
     getTicketTypeColor (tickettype) {
-      if (tickettype === 'SIN SERVICIO' || tickettype === 'SIN SEÑAL') {
+      if (tickettype === 'SIN SERVICIO' || tickettype === 'SIN SEÑAL' || tickettype === 'DX POR MORA') {
         return 'red white--text'
-      } else if (tickettype === 'SERVICIO LENTO' || tickettype === 'SEÑAL LLUVIOSA' || tickettype === 'TV DESPROGRAMADO') {
+      } else if (tickettype === 'SERVICIO LENTO' || tickettype === 'SEÑAL LLUVIOSA' || tickettype === 'TV DESPROGRAMADO' || tickettype === 'DX VOLUNTARIA') {
         return 'orange darken-2'
       } else if (tickettype === 'INTERMITENCIA') {
         return 'orange darken-4'
