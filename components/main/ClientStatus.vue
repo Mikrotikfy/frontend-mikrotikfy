@@ -13,7 +13,7 @@
           v-on="on"
           @click="initComponent"
         >
-          <v-icon>mdi-wifi-check</v-icon>
+          <v-icon :class="block ? 'mr-1' : ''">mdi-wifi-check</v-icon>
           <span v-if="block">
             Ver Estado
           </span>

@@ -13,7 +13,7 @@
           v-on="on"
           @click="initComponent()"
         >
-          <v-icon>mdi-history</v-icon>
+          <v-icon :class="block ? 'mr-1' : ''">mdi-history</v-icon>
           <span v-if="block">
             Historial de Tickets
           </span>

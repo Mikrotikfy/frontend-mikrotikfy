@@ -148,7 +148,6 @@ export default {
     initComponent () {
       this.modal = true
       if (this.cameras.length > 0) {
-        console.log(this.cameras)
         this.$refs.webcam.changeCamera(this.cameras[0].deviceId)
       }
     },
@@ -174,7 +173,6 @@ export default {
       this.windowSize = { width: window.innerWidth, height: window.innerHeight }
     },
     savePhoto () {
-      this.modal = false
       this.$toast.info('Foto puesta en cola para subir...', { duration: 4000 })
       fetch(this.imageData)
         .then(res => res.blob())
@@ -186,7 +184,7 @@ export default {
       const formData = new FormData()
       formData.append('files', imageBlob, `${imageName}_${imageType}`)
       formData.append('ref', 'api::ticket.ticket')
-      formData.append('refId', '5626')
+      formData.append('refId', this.ticket.id)
       formData.append('field', 'media')
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}upload`, {
         method: 'POST',

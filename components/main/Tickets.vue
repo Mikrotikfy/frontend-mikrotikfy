@@ -319,6 +319,7 @@
                   :ticketid="item.id"
                   :name="item.client.name"
                 />
+                <MiscPhotoGallery :ticket="item" />
               </div>
             </template>
             <template v-slot:[`item.createdAt`]="{ item }">
@@ -472,6 +473,10 @@
             <MiscTicketHistory
               :clientid="editModalData.client.id"
               :name="editModalData.client.name"
+              :block="true"
+            />
+            <MiscPhotoGallery
+              :ticket="editModalData"
               :block="true"
             />
           </div>

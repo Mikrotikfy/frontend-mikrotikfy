@@ -13,7 +13,7 @@
           v-on="on"
           @click="initComponent()"
         >
-          <v-icon>mdi-note-outline</v-icon>
+          <v-icon :class="block ? 'mr-1' : ''">mdi-note-outline</v-icon>
           <span v-if="block">
             Ver Avances
           </span>
