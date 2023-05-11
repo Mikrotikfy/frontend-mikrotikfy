@@ -29,7 +29,7 @@
       >
         <v-toolbar dense class="elevation-0 transparent">
           <v-spacer />
-          <v-btn icon @click="modal = false">
+          <v-btn icon @click="modal = false, $refs.webcam.stop()">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
@@ -137,9 +137,20 @@ export default {
       height: 0
     }
   }),
+  watch: {
+    modal (val) {
+      if (!val) {
+        this.$refs.webcam.stop()
+      }
+    }
+  },
   methods: {
     initComponent () {
       this.modal = true
+      if (this.cameras.length > 0) {
+        console.log(this.cameras)
+        this.$refs.webcam.changeCamera(this.cameras[0].deviceId)
+      }
     },
     errorShow (err) {
       this.$toast.error('Error al cargar la cámara: ' + err, { duration: 5000 })
