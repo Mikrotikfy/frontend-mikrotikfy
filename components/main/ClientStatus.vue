@@ -23,7 +23,7 @@
     </v-tooltip>
     <v-dialog
       v-model="modal"
-      max-width="590"
+      max-width="890"
     >
       <v-card
         :loading="loading"
@@ -50,10 +50,11 @@
               dense
               outlined
               type="error"
-              class="my-4"
+              class=""
             >
-              Fuera de linea desde <strong>{{ clientData.offlineTime }}</strong> <br>
-              Razón de la desconexión: <strong>{{ clientData.disconnectReason }}</strong> <br>
+              Lleva fuera de linea <strong>{{ formatTimeOffLineSince(clientData.offlineTime) }}</strong> <br>
+              Desde <strong>{{ formatTimeOffLine(clientData.offlineTime) }}</strong> <br>
+              Razón de la desconexión: <strong>{{ disconnectReason(clientData.disconnectReason) }}</strong> <br>
               Última MAC conocida: <strong>{{ clientData.lastCallerId }}</strong> <br>
               Última Mikrotik conocida: <strong>{{ clientData.mikrotik }}</strong>
             </v-alert>
@@ -67,7 +68,6 @@
               <v-icon>mdi-lightbulb-alert-outline</v-icon>
               Error de conexión con las Mikrotik. Suele deberse a fallas en el internet. Por favor reportar al webmaster
             </v-alert>
-            <v-divider class="my-4" />
             <div v-if="clientData && clientData.online">
               <v-row>
                 <v-col>
@@ -75,13 +75,13 @@
                   <v-spacer />
                   <h3>Mac: {{ clientData.mac_address }}</h3>
                   <v-spacer />
-                  <h3>Uptime: {{ clientData.uptime }}</h3>
+                  <h3>En Linea: {{ formatTimeOnline(clientData.uptime) }}</h3>
                   <v-spacer />
                 </v-col>
                 <v-col>
                   <h3>Descarga: <strong>{{ formatBytes(clientData.download) }}</strong></h3>
                   <h3>Subida: <strong>{{ formatBytes(clientData.upload) }}</strong></h3>
-                  <h3>Mikrotik: {{ clientData.mikrotik }}</h3>
+                  <h3>Equipo RouterBoard: {{ clientData.mikrotik }}</h3>
                 </v-col>
               </v-row>
             </div>
@@ -177,7 +177,8 @@ export default {
       })
       if (!this.clientForDeviceManipulation) { return }
       const devices = this.clientForDeviceManipulation.mac_addresses.map((device) => {
-        device.mac_address = device.mac_address.replace(/:/g, '')
+        const newDevice = { ...device }
+        newDevice.mac_address = newDevice.mac_address.replace(/:/g, '')
         return device
       })
       if (devices.length === 0) {
@@ -211,6 +212,81 @@ export default {
       const i = Math.floor(Math.log(bytes) / Math.log(k))
 
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
+    },
+    formatTimeOnline (string) {
+      const time = string.split('h')
+      const hours = time[0]
+      const minutes = time[1].split('m')[0]
+      const seconds = time[1].split('m')[1].split('s')[0]
+      return `${hours} horas, ${minutes} minutos y ${seconds} segundos`
+    },
+    formatTimeOffLine (fecha) {
+      const meses = [
+        'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+      ]
+
+      const partes = fecha.split(' ')
+      const fechaPartes = partes[0].split('/')
+      let mes = fechaPartes[0]
+
+      // Convertir el formato de mes en inglés a su equivalente en español
+      if (mes.length === 3) {
+        mes = meses.find(mesEspanol => mesEspanol.startsWith(mes.toLowerCase()))
+      } else {
+        mes = meses[Number(mes) - 1]
+      }
+
+      const dia = fechaPartes[1]
+      const año = fechaPartes[2]
+      const hora = partes[1].split(':')[0]
+      const minutos = partes[1].split(':')[1]
+      const ampm = Number(hora) >= 12 ? 'pm' : 'am'
+
+      const formatoFecha = `${mes.charAt(0).toUpperCase() + mes.slice(1)} ${dia} de ${año}`
+      const formatoHora = `${Number(hora) > 12 ? Number(hora) - 12 : hora}:${minutos} ${ampm}`
+
+      return `${formatoFecha} ${formatoHora}`
+    },
+    formatTimeOffLineSince (fecha) {
+      const fechaActual = new Date()
+      const fechaCadena = new Date(fecha)
+      const diferenciaMilisegundos = Math.abs(fechaCadena - fechaActual)
+      const segundos = Math.floor(diferenciaMilisegundos / 1000)
+      const minutos = Math.floor(segundos / 60)
+      const horas = Math.floor(minutos / 60)
+      const dias = Math.floor(horas / 24)
+
+      const diferencia = {
+        dias,
+        horas: horas % 24,
+        minutos: minutos % 60,
+        segundos: segundos % 60
+      }
+
+      const formatoDiferencia = `${diferencia.dias <= 1 ? '' : diferencia.dias} ${diferencia.dias <= 1 ? '' : 'dias'} ${diferencia.horas} horas ${diferencia.minutos} minutos`
+
+      return formatoDiferencia
+    },
+    disconnectReason (string) {
+      let traduccion = ''
+
+      switch (string) {
+        case 'hung-up':
+          traduccion = 'Perdida de potencia optica o fallo en cable UTP'
+          break
+        case 'peer request':
+          traduccion = 'Usuario desconecto el equipo'
+          break
+        case 'nas request':
+          traduccion = 'El usuario fue pateado'
+          break
+        default:
+          traduccion = 'Razón desconocida'
+          break
+      }
+
+      return traduccion
     }
   }
 }
