@@ -635,6 +635,7 @@ export default {
       if (view) {
         this.view = view
         this.$store.commit('ticket/changeView', view)
+        this.$router.push({ query: { city: this.$route.query.city, clienttype: this.$route.query.clienttype, view } })
       }
     },
     changeView (view) {

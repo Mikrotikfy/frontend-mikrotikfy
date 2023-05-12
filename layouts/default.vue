@@ -46,7 +46,7 @@
         elevation="0"
         rounded
         small
-        :to="`${$route.path}?city=${$route.query.city}&clienttype=${clienttype.name}`"
+        :to="`${$route.path}?city=${$route.query.city}&clienttype=${clienttype.name}${$route.name === 'tickets' ? `&view=${$route.query.view}` : ''}`"
       >
         <v-icon :class="!$store.state.isDesktop ? '' : 'mr-2'">
           {{ clienttype.icon }}
@@ -61,7 +61,7 @@
           class="ml-2 rounded-xl elevation-0"
           small
           :color="city.name === $route.query.city ? $vuetify.theme.dark ? 'primary white--text' : 'primary white--text' : 'white black--text'"
-          :to="`${$route.path}?city=${city.name}&clienttype=${$route.query.clienttype}`"
+          :to="`${$route.path}?city=${city.name}&clienttype=${$route.query.clienttype}${$route.name === 'tickets' ? `&view=${$route.query.view}` : ''}`"
         >
           {{ !$store.state.isDesktop ? city.name.charAt(0) : city.name }}
         </v-btn>
