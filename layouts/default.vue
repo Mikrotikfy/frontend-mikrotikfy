@@ -78,7 +78,7 @@
             <v-icon>mdi-account</v-icon>
           </v-btn>
         </template>
-        <v-list>
+        <v-list width="300">
           <v-list-item>
             <v-icon
               :class="$nuxt.isOffline ? 'red--text darken-4 px-2 py-3 justify-center align-center d-flex' : 'green--text darken-4 px-2 py-3 justify-center align-center d-flex'"
@@ -109,6 +109,22 @@
                 </v-btn>
               </template>
               <span>Cerrar sesión</span>
+            </v-tooltip>
+          </v-list-item>
+          <v-list-item>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  large
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="clearCache()"
+                >
+                  <v-icon>mdi-broom</v-icon>
+                </v-btn>
+              </template>
+              <span>Borrar Cache</span>
             </v-tooltip>
           </v-list-item>
           <v-list-item>
@@ -255,6 +271,10 @@ export default {
       sessionStorage.clear()
       this.$store.commit('setAuth', null)
       window.location.href = params ? '/login?sessionExpired=true' : '/login'
+    },
+    clearCache () {
+      CacheStorage.delete(`arnop-api-precache-${this.$config.API_VERSION}`)
+      CacheStorage.delete(`arnop-api-runtime-cache-${this.$config.API_VERSION}`)
     }
   }
 }
