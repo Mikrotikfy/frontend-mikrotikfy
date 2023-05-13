@@ -45,6 +45,20 @@
               @keyup="calculateSsid"
             />
           </v-col>
+          <v-col>
+            <v-select
+              v-model="Client.corporate"
+              :items="[{ id: 1, name: 'CEDULA', value: false }, { id: 2, name: 'NIT', value: true }]"
+              autocomplete="off"
+              hide-details="auto"
+              required
+              item-text="name"
+              item-value="value"
+              label="Tipo de Documento"
+              outlined
+              dense
+            />
+          </v-col>
         </v-row>
         <v-row>
           <v-col>
@@ -279,6 +293,7 @@ export default {
         code: '',
         name: '',
         dni: '',
+        corporate: null,
         address: '',
         neighborhood: null,
         city: '',
@@ -432,13 +447,13 @@ export default {
         (
           this.$route.query.clienttype === 'INTERNET' &&
           (
-            this.Client.code === '' || this.Client.offer === null || this.Client.name === '' || this.Client.dni === '' || this.Client.neighborhood === null || this.Client.city === '' || this.Client.phone === '' || this.Client.email === null
+            this.Client.code === '' || this.Client.offer === null || this.Client.name === '' || this.Client.dni === '' || this.Client.corporate === null || this.Client.neighborhood === null || this.Client.city === '' || this.Client.phone === '' || this.Client.email === null
           )
         ) ||
         (
           this.$route.query.clienttype === 'TELEVISION' &&
           (
-            this.Client.code === '' || this.Client.name === '' || this.Client.dni === '' || this.Client.neighborhood === null || this.Client.city === '' || this.Client.phone === '' || this.Client.email === null
+            this.Client.code === '' || this.Client.name === '' || this.Client.dni === '' || this.Client.corporate === null || this.Client.neighborhood === null || this.Client.city === '' || this.Client.phone === '' || this.Client.email === null
           )
         )
       ) {

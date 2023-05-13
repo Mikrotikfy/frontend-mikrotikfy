@@ -32,6 +32,22 @@
               @keyup.enter="$event.target.blur()"
             />
           </v-col>
+          <v-col>
+            <v-select
+              v-model="currentEditClient.corporate"
+              :disabled="!(!$isAdmin() || !$isBiller() || !$isTechnician()) || loading"
+              :items="[{ id: 1, name: 'CEDULA', value: false }, { id: 2, name: 'NIT', value: true }]"
+              autocomplete="off"
+              hide-details="auto"
+              required
+              item-text="name"
+              item-value="value"
+              label="Tipo de Documento"
+              outlined
+              dense
+              @change="updateClient"
+            />
+          </v-col>
         </v-row>
         <v-text-field
           :value="currentEditClient.name ? currentEditClient.name.toUpperCase() : ''"

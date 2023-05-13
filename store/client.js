@@ -7,6 +7,13 @@ export const state = () => ({
   headers: null
 })
 export const mutations = {
+  updateDniType (state, payload) {
+    try {
+      state.clients[payload.index].corporate = !state.clients[payload.index].corporate
+    } catch (error) {
+      throw new Error(`MUTATE UPDATE DNI TYPE ${error}`)
+    }
+  },
   updateClientPassword (state, payload) {
     try {
       state.clients[payload.index].update_password = !state.clients[payload.index].update_password
@@ -124,6 +131,38 @@ export const mutations = {
   }
 }
 export const actions = {
+  updateDniType ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              corporate: payload.corporate
+            }
+          })
+        }).then((input) => {
+          if (input.status === 200) {
+            commit('updateDniType', { corporate: payload.corporate, index: payload.index })
+            this.$toast.info('Cambio de tipo correcto.', { duration: 4000, position: 'bottom-center' })
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        }).catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error(error)
+          throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
+        })
+      })
+    } catch (error) {
+      throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
+    }
+  },
   updatePassword ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {

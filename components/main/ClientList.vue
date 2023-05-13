@@ -37,6 +37,16 @@
                     {{ item.code }}
                   </span>
                 </template>
+                <template v-slot:[`item.dni`]="{ item, index }">
+                  {{ item.dni }}
+                  <v-chip
+                    x-small
+                    :color="item.corporate === null ? 'grey darken-3' : item.corporate === false ? 'blue darken-3' : 'green darken-4'"
+                    @click="toggleDniType(item, index)"
+                  >
+                    {{ item.corporate === null ? 'No definido' : item.corporate === false ? 'Plan Hogar' : 'Corporativo' }}
+                  </v-chip>
+                </template>
                 <template v-slot:[`item.address`]="{ item }">
                   {{ processAddresses(item) }}
                 </template>
@@ -234,6 +244,10 @@ export default {
     }.bind(this)
   },
   methods: {
+    toggleDniType (client, index) {
+      const dniType = !client.corporate
+      this.$store.dispatch('client/updateDniType', { client, corporate: dniType, index, token: this.$store.state.auth.token })
+    },
     updatePassword (client, updatePasswordStatus, index) {
       const updatePassword = !updatePasswordStatus
       this.$store.dispatch('client/updatePassword', { client, updatePassword, index, token: this.$store.state.auth.token })
