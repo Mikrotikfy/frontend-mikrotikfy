@@ -214,11 +214,39 @@ export default {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
     },
     formatTimeOnline (string) {
-      const time = string.split('h')
-      const hours = time[0]
-      const minutes = time[1].split('m')[0]
-      const seconds = time[1].split('m')[1].split('s')[0]
-      return `${hours} horas, ${minutes} minutos y ${seconds} segundos`
+      console.log(string)
+      const time = string.split('d')
+      let days = 0
+      let hours = 0
+      let minutes = 0
+
+      if (time.length > 1) {
+        days = parseInt(time[0])
+        const remainingTime = time[1]
+
+        if (remainingTime.includes('h')) {
+          const timeParts = remainingTime.split('h')
+          hours = parseInt(timeParts[0])
+          const minutesPart = timeParts[1]
+
+          if (minutesPart.includes('m')) {
+            minutes = parseInt(minutesPart.split('m')[0])
+          }
+        } else if (remainingTime.includes('m')) {
+          minutes = parseInt(remainingTime.split('m')[0])
+        }
+      } else if (string.includes('h')) {
+        hours = parseInt(time[0].split('h')[0])
+        const minutesPart = time[0].split('h')[1]
+
+        if (minutesPart.includes('m')) {
+          minutes = parseInt(minutesPart.split('m')[0])
+        }
+      } else if (string.includes('m')) {
+        minutes = parseInt(time[0].split('m')[0])
+      }
+
+      return `${days} días, ${hours} horas y ${minutes} minutos`
     },
     formatTimeOffLine (fecha) {
       const meses = [
