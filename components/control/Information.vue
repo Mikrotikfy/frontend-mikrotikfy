@@ -35,7 +35,7 @@
           <v-col>
             <v-select
               v-model="currentEditClient.corporate"
-              :disabled="!(!$isAdmin() || !$isBiller() || !$isTechnician()) || loading"
+              :disabled="!(!$isAdmin() || !$isBiller()) || loading"
               :items="[{ id: 1, name: 'CEDULA', value: false }, { id: 2, name: 'NIT', value: true }]"
               autocomplete="off"
               hide-details="auto"

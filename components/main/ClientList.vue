@@ -40,6 +40,7 @@
                 <template v-slot:[`item.dni`]="{ item, index }">
                   {{ item.dni }}
                   <v-chip
+                    v-if="$store.state.isDesktop && ($isAdmin() || $isBiller())"
                     x-small
                     :color="item.corporate === null ? 'grey darken-3' : item.corporate === false ? 'blue darken-3' : 'green darken-4'"
                     @click="toggleDniType(item, index)"
