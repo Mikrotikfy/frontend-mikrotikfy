@@ -371,7 +371,7 @@ export default {
                 city: this.$route.query.city,
                 clienttype: this.$route.query.clienttype,
                 token: this.$store.state.auth.token,
-                active: false,
+                active: true,
                 retired: false
               })
               this.$toast.success('Ticket Actualizado con Exito', { duration: 4000, position: 'bottom-center' })

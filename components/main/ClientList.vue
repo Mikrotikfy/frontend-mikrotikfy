@@ -295,7 +295,7 @@ export default {
     },
     processAddressesNeighborhood (client) {
       if (!client) { return 'Sin Barrio' }
-      const addresses = client.addresses3
+      const addresses = client.addresses
       const neighborhood = client.neighborhood
       if (!neighborhood && !addresses) { return 'Sin Barrio' }
       if (neighborhood && !addresses) { return neighborhood.name }

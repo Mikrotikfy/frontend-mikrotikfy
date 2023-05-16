@@ -214,7 +214,6 @@ export default {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
     },
     formatTimeOnline (string) {
-      console.log(string)
       const time = string.split('d')
       let days = 0
       let hours = 0

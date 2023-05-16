@@ -238,22 +238,15 @@ export default {
             }
             Cookie.set('auth', auth, { expires: 7 })
             Cookie.set('token', response.jwt, { expires: 7 })
-            await Promise.all([
-              this.$store.dispatch('plan/getPlansFromDatabase'),
-              this.$store.dispatch('technology/getTechnologiesFromDatabase'),
-              this.$store.dispatch('device/getDeviceBrandsFromDatabase'),
-              this.$store.dispatch('city/getCitiesFromDatabase'),
-              this.$store.dispatch('client/getClientTypesFromDatabase', response.jwt),
-              this.$store.dispatch('neighborhood/getNeighborhoodsFromDatabase'),
-              this.$store.dispatch('telegram/getTelegramBotsFromDatabase', { token: response.jwt, city: userCities[0].name })
-            ]).then(() => {
-              window.location.href = `/clients?city=${userData && userData.preferredcity ? userData.preferredcity.name : userCities[0].name}&clienttype=INTERNET`
-            }).catch((e) => {
-              this.errorMessages = e
-              this.loginFailed = true
-              this.loginSuccessful = false
-              this.isLoading = false
-            })
+            await this.$store.dispatch('plan/getPlansFromDatabase')
+            await this.$store.dispatch('technology/getTechnologiesFromDatabase')
+            await this.$store.dispatch('device/getDeviceBrandsFromDatabase')
+            await this.$store.dispatch('city/getCitiesFromDatabase')
+            await this.$store.dispatch('client/getClientTypesFromDatabase', response.jwt)
+            await this.$store.dispatch('neighborhood/getNeighborhoodsFromDatabase')
+            await this.$store.dispatch('telegram/getTelegramBotsFromDatabase', { token: response.jwt, city: userCities[0].name })
+            const redirectPath = `/tickets?city=${userData && userData.preferredcity ? userData.preferredcity.name : userCities[0].name}&clienttype=INTERNET&view=TODOS`
+            window.location.href = redirectPath
           }
         }).catch((_) => {
           this.errorMessages = 'Usuario o contraseña incorrectos. Intente nuevamente.'

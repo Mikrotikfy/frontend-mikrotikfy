@@ -12,7 +12,7 @@ export default function ({ route, redirect, store }) {
     clienttype: clienttype || 'INTERNET'
   }
   if (path === '/') {
-    redirect({ path: '/clients', query: newQuery })
+    redirect({ path: '/tickets', query: newQuery })
   }
 
   if (name === 'tickets' && !query.view) {
