@@ -145,6 +145,10 @@ export default {
       })
     },
     addAddress () {
+      if (this.neighborhood === null) {
+        this.$toast.error('El barrio es requerido', { duration: 10000 })
+        return
+      }
       this.$store.dispatch('address/addAddress', {
         client: this.client,
         address: this.address,
