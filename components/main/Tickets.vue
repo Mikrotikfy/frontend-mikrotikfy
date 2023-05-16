@@ -303,6 +303,7 @@
                   :ticket="item"
                   :ticketindex="index"
                   @updateTicketStatus="updateTicketStatus($event)"
+                  @refreshTickets="initIntervalAndGetTickets()"
                 />
                 <MainClientStatus
                   v-if="clienttype === 'INTERNET'"
@@ -459,6 +460,7 @@
               :ticketindex="editModalData.editindex"
               :block="true"
               @updateTicketStatus="updateTicketStatus($event)"
+              @refreshTickets="initIntervalAndGetTickets()"
             />
             <MainClientStatus
               v-if="clienttype === 'INTERNET'"
@@ -514,6 +516,7 @@ export default {
       selected: [],
       interval: null,
       currentTechnician: null,
+      view: 'TODOS',
       types: ['TODOS', 'RV', 'CX', 'TR', 'DX']
     }
   },
@@ -613,7 +616,7 @@ export default {
       this.setGetTicketsInterval()
       this.resetSelected()
       await this.refreshTickets()
-      this.setView()
+      this.getViewFromLocalStorage()
     },
     removeOldIntervalIfExists () {
       if (this.interval) {
@@ -630,12 +633,12 @@ export default {
       await this.$store.dispatch('ticket/getTicketsFromDatabase', { city: this.$route.query.city, clienttype: this.clienttype, token: this.$store.state.auth.token, active: this.showClosedValue, retired: this.showRetired })
       this.initialLoading = false
     },
-    setView () {
-      const view = window.localStorage.getItem('view') || 'TODOS'
+    getViewFromLocalStorage () {
+      const view = window.localStorage.getItem('view')
       if (view) {
-        this.view = view
-        this.$store.commit('ticket/changeView', view)
-        this.$router.push({ query: { city: this.$route.query.city, clienttype: this.$route.query.clienttype, view } })
+        this.changeView(view)
+      } else {
+        this.changeView('TODOS')
       }
     },
     changeView (view) {

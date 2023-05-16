@@ -367,13 +367,7 @@ export default {
           })
             .then(async (res) => {
               await this.setNewSpecs(res.data)
-              await this.$store.dispatch('ticket/getTicketsFromDatabase', {
-                city: this.$route.query.city,
-                clienttype: this.$route.query.clienttype,
-                token: this.$store.state.auth.token,
-                active: true,
-                retired: false
-              })
+              this.$emit('refreshTickets')
               this.$toast.success('Ticket Actualizado con Exito', { duration: 4000, position: 'bottom-center' })
             })
             .catch((error) => {

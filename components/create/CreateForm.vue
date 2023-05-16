@@ -472,7 +472,9 @@ export default {
       })
         .then(res => res.json())
         .then((client) => {
-          this.createOfferMovement(client.data, this.Client.offer)
+          if (this.$route.query.clienttype === 'INTERNET') {
+            this.createOfferMovement(client.data, this.Client.offer)
+          }
           this.createDebtMovement(client.data)
           this.createAddress(client.data)
           this.$store.dispatch('client/createTicketForNewClient', {
