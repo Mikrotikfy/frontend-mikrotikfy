@@ -24,6 +24,7 @@
     <v-dialog
       v-model="modal"
       max-width="890"
+      class="transparent"
     >
       <v-card
         :loading="loading"
@@ -99,6 +100,46 @@
           </v-btn>
         </v-card-actions>
       </v-card>
+      <v-card
+        :loading="loading"
+        :class="clientData ? clientData.online ? clientData.address.includes('172.') ? 'blue-grey darken-4 rounded-xl' : 'teal darken-4 rounded-xl' : 'rounded-xl' : 'rounded-xl'"
+        class="mt-5"
+      >
+        <v-card-title>
+          <v-icon>mdi-history</v-icon>
+          Eventos recientes de subida y caída del servicio
+        </v-card-title>
+        <v-divider />
+        <div v-if="!loading">
+          <v-card-text>
+            <v-data-table
+              :headers="headers"
+              :items="events"
+              no-data-text="No hay eventos recientes"
+              no-results-text="No hay eventos recientes"
+              items-per-page="5"
+              calculate-widths
+            >
+              <template v-slot:[`item.type`]="props">
+                <v-chip>
+                  <v-icon :color="props.item.type === 'up' ? 'green' : 'red'">{{ props.item.type === 'up' ? 'mdi-arrow-up-bold' : 'mdi-arrow-down-bold' }}</v-icon>
+                  {{ props.item.type === 'up' ? 'Subida' : 'Caída' }}
+                </v-chip>
+              </template>
+              <template v-slot:[`item.createdAt`]="props">
+                <div style="display:flex!important;flex-direction:column;">
+                  <span class="text-caption" style="white-space:nowrap;">
+                    {{ getHour(props.item.createdAt) }}
+                  </span>
+                  <span style="line-height:1rem;" class="text-caption text--secondary">
+                    {{ getDate(props.item.createdAt) }}
+                  </span>
+                </div>
+              </template>
+            </v-data-table>
+          </v-card-text>
+        </div>
+      </v-card>
     </v-dialog>
   </span>
 </template>
@@ -143,7 +184,13 @@ export default {
     showCard: false,
     loading: true,
     showInfo: false,
-    online: false
+    online: false,
+    events: [],
+    headers: [
+      { text: '#', sortable: false, value: 'id' },
+      { text: 'Tipo', sortable: false, value: 'type' },
+      { text: 'Fecha', sortable: false, value: 'createdAt' }
+    ]
   }),
   computed: {
     clientForDeviceManipulation () {
@@ -167,6 +214,32 @@ export default {
           this.loading = false
           this.clientData = clientstatus
           this.searchDeviceByClient(clientstatus.mac_address)
+        })
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          client: this.clientid
+        },
+        pagination: {
+          page: 1,
+          pageSize: 50
+        },
+        sort: ['createdAt:desc']
+      },
+      {
+        encodeValuesOnly: true
+      })
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}pppoe-events?${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.$store.state.auth.token}`
+        }
+      })
+        .then(res => res.json())
+        .then((events) => {
+          this.loading = false
+          this.events = events.data
         })
     },
     async searchDeviceByClient (mac = 'default') {
@@ -314,6 +387,16 @@ export default {
       }
 
       return traduccion
+    },
+    getDate (date) {
+      const dateObject = new Date(date)
+      const humanDateFormat = dateObject.toLocaleString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
+      return humanDateFormat
+    },
+    getHour (date) {
+      const dateObject = new Date(date)
+      const humanDateFormat = dateObject.toLocaleString('es-ES', { hour: 'numeric', minute: 'numeric', hour12: true })
+      return humanDateFormat
     }
   }
 }
