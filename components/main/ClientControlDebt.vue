@@ -12,6 +12,7 @@
         El Cliente esta {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : 'AL DIA' }}
       </v-alert>
       <v-btn
+        :disabled="!($isAdmin() || $isBiller())"
         :color="!client.active ? 'green darken-4' : client.indebt ? 'blue darken-4' : 'red'"
         x-large
         rounded
@@ -23,7 +24,12 @@
       <span v-if="!client.indebt && !!client.active" class="text-subtitle-2 grey--text lighten-2 mt-2">Para retirar el cliente es necesario antes cortarlo</span>
     </div>
     <div v-if="client.indebt && !!client.active" class="mb-5" style="display:grid;place-items:center;">
-      <v-btn color="yellow darken-4" x-large rounded @click="!client.active ? buttonHandler('retire') : reasonDialog = true">
+      <v-btn
+        :disabled="!($isAdmin() || $isBiller())"
+        color="yellow darken-4"
+        x-large
+        rounded
+        @click="!client.active ? buttonHandler('retire') : reasonDialog = true">
         <v-icon>mdi-cancel</v-icon>
         {{ !client.active ? 'REACTIVAR' : 'RETIRAR' }}
       </v-btn>
