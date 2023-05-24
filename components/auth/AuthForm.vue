@@ -4,6 +4,7 @@
       flat
       :loading="isLoading"
       class="rounded-xl"
+      style="background-color: rgb(0,0,0,0.3); backdrop-filter: blur(5px);"
     >
       <v-alert
         v-if="firstTime"
@@ -55,8 +56,9 @@
             v-model="username"
             :rules="usernameRules"
             label="Usuario"
-            class="rounded-t-xl"
-            filled
+            class="rounded-xl"
+            hide-details="auto"
+            outlined
             required
           />
           <v-text-field
@@ -65,8 +67,9 @@
             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             :type="showPassword ? 'text' : 'password'"
             label="Contraseña"
-            class="rounded-t-xl"
-            filled
+            class="rounded-xl mt-4"
+            hide-details="auto"
+            outlined
             hint="Ingresa tu contraseña"
             required
             @click:append="showPassword = !showPassword"
@@ -78,7 +81,7 @@
           tile
           text
           block
-          class="my-2 blue darken-4 white--text rounded-xl"
+          class="blue darken-4 white--text rounded-xl"
           :loading="isLoading"
           :disabled="isLoading"
           @click.enter="login"
