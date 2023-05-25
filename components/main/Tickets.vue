@@ -693,12 +693,12 @@ export default {
         //   user: this.currentTechnician,
         //   telegramBots: this.telegramBots
         // })
-        // this.$simpleWhatsappSendToChat({
-        //   tickettype: ticket.tickettype.name,
-        //   client: ticket.client,
-        //   user: this.currentTechnician,
-        //   token: this.$config.META_TOKEN
-        // })
+        this.$simpleWhatsappSendToChat({
+          tickettype: ticket.tickettype.name,
+          client: ticket.client,
+          user: this.currentTechnician,
+          token: this.$config.META_TOKEN
+        })
         this.currentTechnician = {}
       } else {
         this.$toast.error('El técnico no tiene un chat de telegram asociado o un numero de telefono de whatsapp valido', { duration: 5000 })
