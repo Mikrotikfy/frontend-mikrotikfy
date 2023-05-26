@@ -6,7 +6,7 @@
       >
         <v-card
           fluid
-          class="rounded-xl"
+          class="rounded-lg"
         >
           <v-card-text
             class="pa-1 d-flex"
@@ -133,7 +133,7 @@
             :items-per-page="itemsPerPage"
             :page.sync="page"
             :loading="initialLoading"
-            :class="$store.state.isDesktop ? 'rounded-xl' : 'transparent'"
+            :class="$store.state.isDesktop ? 'rounded-' : 'transparent'"
             :style="$route.query.clienttype === 'INTERNET' ? 'border-top: 2px solid cyan;' : 'border-top: 2px solid yellow;'"
             sort-by="createdAt"
             calculate-widths

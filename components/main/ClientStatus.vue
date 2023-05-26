@@ -25,6 +25,7 @@
       v-model="modal"
       max-width="890"
       class="transparent"
+      content-class="elevation-0"
     >
       <v-card
         :loading="loading"
@@ -101,16 +102,14 @@
         </v-card-actions>
       </v-card>
       <v-card
-        :loading="loading"
-        :class="clientData ? clientData.online ? clientData.address.includes('172.') ? 'blue-grey darken-4 rounded-xl' : 'teal darken-4 rounded-xl' : 'rounded-xl' : 'rounded-xl'"
-        class="mt-5"
+        class="mt-5 rounded-xl"
       >
         <v-card-title>
           <v-icon>mdi-history</v-icon>
           Eventos recientes de subida y caída del servicio
         </v-card-title>
         <v-divider />
-        <div v-if="!loading">
+        <div>
           <v-card-text>
             <v-data-table
               :headers="headers"
@@ -187,9 +186,9 @@ export default {
     online: false,
     events: [],
     headers: [
-      { text: '#', sortable: false, value: 'id' },
-      { text: 'Tipo', sortable: false, value: 'type' },
-      { text: 'Fecha', sortable: false, value: 'createdAt' }
+      { text: 'Evento', sortable: false, value: 'type' },
+      { text: 'Sucedido', sortable: false, value: 'createdAt' },
+      { text: '#', sortable: false, value: '' }
     ]
   }),
   computed: {
@@ -390,7 +389,7 @@ export default {
     },
     getDate (date) {
       const dateObject = new Date(date)
-      const humanDateFormat = dateObject.toLocaleString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
+      const humanDateFormat = dateObject.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })
       return humanDateFormat
     },
     getHour (date) {

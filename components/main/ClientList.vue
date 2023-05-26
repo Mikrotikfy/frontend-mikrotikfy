@@ -9,7 +9,7 @@
     </v-row>
     <v-row v-if="clients.length > 0" class="mt-0">
       <v-col class="pt-0">
-        <v-card class="elevation-0 rounded-xl">
+        <v-card class="elevation-0 rounded-lg">
           <v-card-text>
             <client-only>
               <v-data-table
