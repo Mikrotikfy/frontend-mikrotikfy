@@ -128,12 +128,12 @@
             :show-select="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop ? true : false"
             :headers="getHeadersByClienttype"
             :items="ticketList"
-            :item-class="rowStyles"
             :search="search"
             :items-per-page="itemsPerPage"
             :page.sync="page"
+            :expanded.sync="expanded"
             :loading="initialLoading"
-            :class="$store.state.isDesktop ? 'rounded-' : 'transparent'"
+            :class="$store.state.isDesktop ? 'rounded-lg' : 'transparent'"
             :style="$route.query.clienttype === 'INTERNET' ? 'border-top: 2px solid cyan;' : 'border-top: 2px solid yellow;'"
             sort-by="createdAt"
             calculate-widths
@@ -296,6 +296,20 @@
             </template>
             <template v-slot:[`item.client.technology.name`]="props">
               {{ props.item.client.technology !== null ? props.item.client.technology.name : 'No reg.' }}
+            </template>
+            <template v-slot:expanded-item="{ item }">
+              <td
+                :colspan="$route.query.clienttype === 'INTERNET' ? '14' : '13'"
+                class="mb-4"
+                :style="$route.query.clienttype === 'INTERNET' ? 'background-color:#58f0ff0f;' : 'background-color:#ffee580f;'"
+              >
+                <div class="d-flex">
+                  <v-chip small label class="ml-10 mr-4" color="white black--text">
+                    Comentarios
+                  </v-chip>
+                  {{ item.details }}
+                </div>
+              </td>
             </template>
             <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="{ item, index }">
               <div class="d-flex">
@@ -511,7 +525,6 @@ export default {
       isDesktop: false,
       editModalData: {},
       infoModal: false,
-      expanded: [],
       singleExpand: true,
       selected: [],
       interval: null,
@@ -526,6 +539,9 @@ export default {
       return this.$store.state.cities ? this.$store.state.cities.find(c => c.id == this.$route.query.city) : ''
     },
     tickets () {
+      return this.$store.state.ticket.tickets.filter(t => t.client !== null)
+    },
+    expanded () {
       return this.$store.state.ticket.tickets.filter(t => t.client !== null)
     },
     ticketList () {
@@ -573,7 +589,7 @@ export default {
         { text: 'Cliente', sortable: false, value: 'client.name' }
       ] : this.$store.state.isDesktop ? [
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
-        { text: 'Tipo', sortable: false, value: 'tickettype.name' },
+        { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
         { text: 'Asignado', sortable: false, value: 'technician', width: 60 },
         { text: 'Observaciones', sortable: false, value: 'details', width: 100 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
@@ -739,13 +755,6 @@ export default {
         return nameArray[0] + ' ' + nameArray[2] + ' ' + nameArray[3]
       } else {
         return name
-      }
-    },
-    rowStyles (item) {
-      if (this.$vuetify.theme.dark) {
-        return ['mb-4', 'rounded-xl', 'grey darken-4']
-      } else {
-        return ['mb-4', 'rounded-xl']
       }
     },
     getDate (date) {
