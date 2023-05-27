@@ -42,7 +42,7 @@
         v-for="clienttype in $store.state.auth.clienttypes"
         :key="clienttype.name"
         class="ml-2"
-        :color="clienttype.name === $route.query.clienttype ? $vuetify.theme.dark ? 'primary white--text' : 'primary white--text' : 'white black--text'"
+        :color="clienttype.name === $route.query.clienttype ? $vuetify.theme.dark ? 'white black--text' : 'primary white--text' : 'grey darken-1 black--text'"
         elevation="0"
         rounded
         small
@@ -60,7 +60,7 @@
           :key="city.name"
           class="ml-2 rounded-xl elevation-0"
           small
-          :color="city.name === $route.query.city ? $vuetify.theme.dark ? 'primary white--text' : 'primary white--text' : 'white black--text'"
+          :color="city.name === $route.query.city ? $vuetify.theme.dark ? 'white black--text' : 'primary white--text' : 'grey darken-1 black--text'"
           :to="`${$route.path}?city=${city.name}&clienttype=${$route.query.clienttype}${$route.name === 'tickets' ? `&view=${$route.query.view}` : ''}`"
         >
           {{ !$store.state.isDesktop ? city.name.charAt(0) : city.name }}

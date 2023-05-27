@@ -13,6 +13,7 @@
           >
             <v-slide-group>
               <v-slide-item
+                v-if="!$store.state.isDesktop"
                 v-slot="{ active, toggle }"
               >
                 <div>
@@ -32,11 +33,12 @@
                 </div>
               </v-slide-item>
               <v-slide-item
+                v-if="!$store.state.isDesktop"
                 v-slot="{ active, toggle }"
               >
                 <div>
                   <MiscPrintTicket
-                    v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
+                    v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop"
                     :tickets="selected"
                     :input-value="active"
                     @click="toggle"
@@ -44,11 +46,12 @@
                 </div>
               </v-slide-item>
               <v-slide-item
+                v-if="!$store.state.isDesktop"
                 v-slot="{ active, toggle }"
               >
                 <div>
                   <MiscPrintOrder
-                    v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
+                    v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop"
                     :tickets="selected"
                     :input-value="active"
                     @click="toggle"
@@ -56,6 +59,7 @@
                 </div>
               </v-slide-item>
               <v-slide-item
+                v-if="!$store.state.isDesktop"
                 v-slot="{ active, toggle }"
               >
                 <div>
@@ -104,7 +108,7 @@
               >
                 <v-btn
                   class="black--text rounded-xl mr-1 my-2"
-                  :class="type === $route.query.view ? 'primary white--text' : 'grey'"
+                  :class="type === $route.query.view ? 'white black--text' : 'grey'"
                   small
                   @click="changeView(type)"
                 >
@@ -113,6 +117,83 @@
               </v-slide-item>
             </v-slide-group>
             <v-spacer v-if="$store.state.isDesktop" />
+            <v-tooltip top>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-if="$store.state.isDesktop"
+                  v-bind="attrs"
+                  class="my-2 ml-1 mr-1"
+                  color="white black--text"
+                  :input-value="active"
+                  dark
+                  rounded
+                  small
+                  :disabled="initialLoading"
+                  :loading="initialLoading"
+                  v-on="on"
+                  @click="initIntervalAndGetTickets(), toggle"
+                >
+                  <v-icon>mdi-reload</v-icon>
+                </v-btn>
+              </template>
+              <span>Refrescar Tickets</span>
+            </v-tooltip>
+            <v-menu
+              v-if="$store.state.isDesktop"
+              offset-y
+            >
+              <template v-slot:activator="{ on: onMenu }">
+                <v-tooltip top>
+                  <template v-slot:activator="{ on: onTooltip, attrs }">
+                    <v-btn
+                      color="white black--text"
+                      dark
+                      small
+                      class="my-2 mr-1 rounded-xl"
+                      v-bind="attrs"
+                      :input-value="active"
+                      v-on="{ ...onMenu, ...onTooltip }"
+                      @click="toggle"
+                    >
+                      <v-icon class="black--text">
+                        mdi-list-status
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Filtros</span>
+                </v-tooltip>
+              </template>
+              <v-list>
+                <v-list-item>
+                  <v-checkbox
+                    v-model="showClosedValue"
+                    class="mr-4"
+                    label="Mostrar cerrados"
+                    @change="initIntervalAndGetTickets()"
+                  />
+                </v-list-item>
+                <v-list-item>
+                  <v-checkbox
+                    v-model="showRetired"
+                    class="mr-4"
+                    label="Mostrar retiros"
+                    @change="initIntervalAndGetTickets()"
+                  />
+                </v-list-item>
+              </v-list>
+            </v-menu>
+            <MiscPrintTicket
+              v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
+              :tickets="selected"
+              :input-value="active"
+              @click="toggle"
+            />
+            <MiscPrintOrder
+              v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
+              :tickets="selected"
+              :input-value="active"
+              @click="toggle"
+            />
             <MiscCreateBulkTickets v-if="$store.state.isDesktop && selected.length < 1" @endProcess="initIntervalAndGetTickets" />
             <MiscCloseBulkTickets v-if="$store.state.isDesktop && selected.length > 0" :selected="selected" @endProcess="initIntervalAndGetTickets" />
           </v-card-text>
@@ -203,7 +284,7 @@
               >
                 <v-chip
                   small
-                  :color="props.item.technician ? 'primary' : $vuetify.theme.dark ? 'grey darken-3' : ''"
+                  :color="props.item.technician ? props.item.technician.username === 'sistema' ? $vuetify.theme.dark ? 'green darken-2' : 'green darken-2 white--text' : 'primary' : $vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-1 black--text'"
                 >
                   <h5>
                     {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
@@ -225,7 +306,11 @@
                   />
                 </template>
               </v-edit-dialog>
-              <v-chip v-else small :color="props.item.technician ? 'primary' : 'grey darken-3'">
+              <v-chip
+                v-else
+                small
+                :color="props.item.technician ? props.item.technician.username === 'sistema' ? $vuetify.theme.dark ? 'green darken-2' : 'green darken-2 white--text' : 'primary' : $vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-1 black--text'"
+              >
                 <h5>
                   {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
                 </h5>
@@ -617,7 +702,6 @@ export default {
     }
   },
   mounted () {
-    this.getResolution()
     this.getTickettypes()
     this.getTvSpecTypes()
     this.getTechnicians()
@@ -824,16 +908,6 @@ export default {
         return 'OFICINA'
       } else {
         return 'CERRADO'
-      }
-    },
-    getResolution () {
-      const res = window.innerWidth
-      if (res > 800) {
-        const clientRes = true
-        this.isDesktop = clientRes
-      } else {
-        const clientRes = false
-        this.isDesktop = clientRes
       }
     },
     showTicketInfo (event) {

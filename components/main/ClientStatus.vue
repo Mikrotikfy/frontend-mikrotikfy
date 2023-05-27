@@ -36,7 +36,16 @@
           {{ name }}
         </v-card-title>
         <v-divider />
-        <div v-if="!loading">
+        <div
+          v-if="loading"
+          class="d-flex justify-center align-center"
+        >
+          <div class="text-center">
+            <h2>Consultando en la Mikrotik...</h2>
+            <p>Espere por favor...</p>
+          </div>
+        </div>
+        <div v-else>
           <v-card-text>
             <v-alert
               v-if="clientData && clientData.online && clientData.exists"
