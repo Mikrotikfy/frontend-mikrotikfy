@@ -388,7 +388,7 @@
                 class="mb-4"
                 :style="$route.query.clienttype === 'INTERNET' ? 'background-color:#58f0ff0f;' : 'background-color:#ffee580f;'"
               >
-                <div class="d-flex">
+                <div class="d-flex align-center">
                   <v-chip small label class="ml-10 mr-4" color="white black--text">
                     Comentarios
                   </v-chip>
@@ -875,7 +875,7 @@ export default {
     },
     processAddressesNeighborhood ({ client }) {
       if (!client) { return 'Sin Barrio' }
-      const addresses = client.addresses3
+      const addresses = client.addresses
       const neighborhood = client.neighborhood
       if (!neighborhood && !addresses) { return 'Sin Barrio' }
       if (neighborhood && !addresses) { return neighborhood.name }
