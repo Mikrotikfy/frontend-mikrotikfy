@@ -316,22 +316,6 @@
                 </h5>
               </v-chip>
             </template>
-            <!-- <template v-if="clienttype === 'INTERNET'" v-slot:[`item.client.name`]="props">
-              <span v-if="testPlanDx(props.item.client)" class="red--text">EN MORA O RETIRADO <span class="text-decoration-line-through">
-                <div
-                  style="width:220px;"
-                >
-                  {{ props.item.client.name }}
-                </div>
-              </span></span>
-              <span v-else>
-                <div
-                  style="width:220px;"
-                >
-                  {{ props.item.client.name }}
-                </div>
-              </span>
-            </template> -->
             <template v-slot:[`item.details`]="{ item }">
               <v-tooltip bottom max-width="400">
                 <template v-slot:activator="{ on, attrs }">
@@ -388,8 +372,17 @@
                 class="mb-4"
                 :style="$route.query.clienttype === 'INTERNET' ? 'background-color:#58f0ff0f;' : 'background-color:#ffee580f;'"
               >
-                <div class="d-flex align-center">
-                  <v-chip small label class="ml-10 mr-4" color="white black--text">
+                <div v-if="item.media" :class="$store.state.isDesktop ? 'parent-with-gallery-desktop' : 'parent-with-gallery-mobile'">
+                  <v-chip small label class="ml-2 mr-4" color="white black--text">
+                    Comentarios
+                  </v-chip>
+                  {{ item.details }}
+                  <MiscPhotoGalleryPreview
+                    :ticket="item"
+                  />
+                </div>
+                <div v-else class="parent-no-gallery">
+                  <v-chip small label class="ml-2 mr-4" color="white black--text">
                     Comentarios
                   </v-chip>
                   {{ item.details }}
@@ -676,7 +669,6 @@ export default {
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
         { text: 'Asignado', sortable: false, value: 'technician', width: 60 },
-        { text: 'Observaciones', sortable: false, value: 'details', width: 100 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 150 },
         { text: 'Codigo', sortable: false, value: 'client.code', width: 60 },
@@ -954,5 +946,26 @@ export default {
 }
 .v-small-dialog__activator__content {
   width: 100% !important;;
+}
+.parent-with-gallery-desktop {
+  display: grid;
+  grid-template-columns: auto auto minmax(400px, 2fr);
+  grid-gap: 10px;
+  place-items: start;
+  align-items: center;
+}
+.parent-with-gallery-mobile {
+  display: grid;
+  grid-template-columns: auto auto minmax(50px, 2fr);
+  grid-gap: 10px;
+  place-items: start;
+  align-items: center;
+}
+.parent-no-gallery {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-gap: 10px;
+  place-items: start;
+  align-items: center;
 }
 </style>
