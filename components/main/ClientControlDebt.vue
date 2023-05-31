@@ -29,7 +29,8 @@
         color="yellow darken-4"
         x-large
         rounded
-        @click="!client.active ? buttonHandler('retire') : reasonDialog = true">
+        @click="!client.active ? buttonHandler('retire') : reasonDialog = true"
+      >
         <v-icon>mdi-cancel</v-icon>
         {{ !client.active ? 'REACTIVAR' : 'RETIRAR' }}
       </v-btn>

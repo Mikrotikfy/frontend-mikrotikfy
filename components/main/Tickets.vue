@@ -183,13 +183,13 @@
               </v-list>
             </v-menu>
             <MiscPrintTicket
-              v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
+              v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop"
               :tickets="selected"
               :input-value="active"
               @click="toggle"
             />
             <MiscPrintOrder
-              v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && (!showClosedValue && !showClosedValue) && $store.state.isDesktop"
+              v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop"
               :tickets="selected"
               :input-value="active"
               @click="toggle"
@@ -724,8 +724,10 @@ export default {
       }
     },
     setGetTicketsInterval () {
-      this.interval = setInterval(() => {
-        this.refreshTickets()
+      this.interval = setInterval(async () => {
+        this.resetSelected()
+        await this.refreshTickets()
+        this.getViewFromLocalStorage()
       }, 60000)
     },
     async refreshTickets () {
