@@ -373,8 +373,8 @@
                 :style="$route.query.clienttype === 'INTERNET' ? 'background-color:#58f0ff0f;' : 'background-color:#ffee580f;'"
               >
                 <div v-if="item.media" :class="$store.state.isDesktop ? 'parent-with-gallery-desktop' : 'parent-with-gallery-mobile'">
-                  <v-chip small label class="ml-2 mr-4" color="white black--text">
-                    Comentarios
+                  <v-chip small label class="ml-1 mr-4" color="white black--text">
+                    Avances
                   </v-chip>
                   {{ item.details }}
                   <MiscPhotoGalleryPreview
@@ -382,8 +382,8 @@
                   />
                 </div>
                 <div v-else class="parent-no-gallery">
-                  <v-chip small label class="ml-2 mr-4" color="white black--text">
-                    Comentarios
+                  <v-chip small label class="ml-1 mr-4" color="white black--text">
+                    Avances
                   </v-chip>
                   {{ item.details }}
                 </div>

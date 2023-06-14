@@ -365,6 +365,7 @@ function simpleTelegramCreateTicketAdvance ({ client, ticket, status, details, o
   }
   const line10 = operator
   const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n${line8}\n\n${line9}\n${line10}`
+  copyAdvanceCommentToClipBoard(message)
   const req =
     'https://api.telegram.org/bot' +
     bot +
@@ -413,6 +414,7 @@ function simpleTelegramCreateTicketAdvanceTv ({ client, ticket, status, details,
   }
   const line15 = operator
   const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n\n${line8}\n${line10}\n${line11}\n${line12}\n\n${line13}\n\n${line14}\n${line15}`
+  copyAdvanceCommentToClipBoard(message)
   const req =
     'https://api.telegram.org/bot' +
     bot +
@@ -481,4 +483,7 @@ function simpleTelegramAdminCreate ({ client, telegramBots, operator }) {
     .catch(function (err) {
       return err
     })
+}
+function copyAdvanceCommentToClipBoard (comment) {
+  navigator.clipboard.writeText(comment)
 }
