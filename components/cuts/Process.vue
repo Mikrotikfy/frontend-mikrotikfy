@@ -164,7 +164,7 @@ export default {
     async cutsProcess () {
       for (let i = 0; i < this.validClients.length; i++) {
         const client = this.validClients[i]
-        this.$simpleTelegramUpdateDebt({ client, operator: this.$store.state.auth.username, isInDebt: true, isRetired: false, telegramBots: this.telegramBots })
+        this.$simpleTelegramUpdateDebt({ client, operator: this.$store.state.auth.username, indebt: true, active: true, telegramBots: this.telegramBots })
         await this.$store.dispatch('cuts/updateBillingPeriodAndDebt', {
           token: this.$store.state.auth.token,
           client,
