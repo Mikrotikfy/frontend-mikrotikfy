@@ -648,7 +648,6 @@ export default {
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
         { text: 'Asignado', sortable: false, value: 'technician', width: 60 },
-        { text: 'Observaciones', sortable: false, value: 'details', width: 100 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name' },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
         { text: 'Código', sortable: false, value: 'client.code', width: 50 },

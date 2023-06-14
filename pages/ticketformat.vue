@@ -48,8 +48,10 @@
                 {{ item.addresses.at(-1).neighborhood.name }}
               </h5>
               <h5 v-else style="display:grid;">
-                <strong class="red--text darken-4 text-decoration-underline">{{ item.details.split('CX:')[0] }}<br></strong>
-                <strong class="green--text darken-4 text-decoration-underline">{{ 'CX: ' + item.details.split('CX:')[1] }}</strong>
+                <strong class="red--text darken-4 text-decoration-underline">{{
+                  `DX: ${item.addresses.at(-2).address} ${item.addresses.at(-2).neighborhood.name}`
+                }}<br></strong>
+                <strong class="green--text darken-4 text-decoration-underline">{{ `CX: ${item.addresses.at(-1).address} ${item.addresses.at(-1).neighborhood.name}` }}</strong>
               </h5>
               <h5>{{ item.phone }}</h5>
               <h5 style="color:#c9c9c9;">
