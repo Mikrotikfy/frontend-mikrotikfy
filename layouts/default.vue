@@ -151,7 +151,7 @@
 <script>
 import Cookie from 'js-cookie'
 export default {
-  middleware: ['defaultCity', 'authenticated'],
+  middleware: ['authenticated', 'defaultCity'],
   data () {
     return {
       light: null,

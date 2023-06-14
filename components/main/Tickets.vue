@@ -14,19 +14,17 @@
             <v-slide-group>
               <v-slide-item
                 v-if="!$store.state.isDesktop"
-                v-slot="{ active, toggle }"
               >
                 <div>
                   <v-btn
                     class="my-2 ml-2 mr-1"
                     color="white black--text"
-                    :input-value="active"
                     dark
                     rounded
                     small
                     :disabled="initialLoading"
                     :loading="initialLoading"
-                    @click="initIntervalAndGetTickets(), toggle"
+                    @click="initIntervalAndGetTickets()"
                   >
                     <v-icon>mdi-reload</v-icon>
                   </v-btn>
@@ -34,33 +32,26 @@
               </v-slide-item>
               <v-slide-item
                 v-if="!$store.state.isDesktop"
-                v-slot="{ active, toggle }"
               >
                 <div>
                   <MiscPrintTicket
                     v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop"
                     :tickets="selected"
-                    :input-value="active"
-                    @click="toggle"
                   />
                 </div>
               </v-slide-item>
               <v-slide-item
                 v-if="!$store.state.isDesktop"
-                v-slot="{ active, toggle }"
               >
                 <div>
                   <MiscPrintOrder
                     v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop"
                     :tickets="selected"
-                    :input-value="active"
-                    @click="toggle"
                   />
                 </div>
               </v-slide-item>
               <v-slide-item
                 v-if="!$store.state.isDesktop"
-                v-slot="{ active, toggle }"
               >
                 <div>
                   <v-menu offset-y>
@@ -71,9 +62,7 @@
                         small
                         class="my-2 mr-1 rounded-xl"
                         v-bind="attrs"
-                        :input-value="active"
                         v-on="on"
-                        @click="toggle"
                       >
                         <v-icon class="black--text">
                           mdi-list-status
@@ -124,14 +113,13 @@
                   v-bind="attrs"
                   class="my-2 ml-1 mr-1"
                   color="white black--text"
-                  :input-value="active"
                   dark
                   rounded
                   small
                   :disabled="initialLoading"
                   :loading="initialLoading"
                   v-on="on"
-                  @click="initIntervalAndGetTickets(), toggle"
+                  @click="initIntervalAndGetTickets()"
                 >
                   <v-icon>mdi-reload</v-icon>
                 </v-btn>
@@ -151,9 +139,7 @@
                       small
                       class="my-2 mr-1 rounded-xl"
                       v-bind="attrs"
-                      :input-value="active"
                       v-on="{ ...onMenu, ...onTooltip }"
-                      @click="toggle"
                     >
                       <v-icon class="black--text">
                         mdi-list-status
@@ -185,14 +171,10 @@
             <MiscPrintTicket
               v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop"
               :tickets="selected"
-              :input-value="active"
-              @click="toggle"
             />
             <MiscPrintOrder
               v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop"
               :tickets="selected"
-              :input-value="active"
-              @click="toggle"
             />
             <MiscCreateBulkTickets v-if="$store.state.isDesktop && selected.length < 1" @endProcess="initIntervalAndGetTickets" />
             <MiscCloseBulkTickets v-if="$store.state.isDesktop && selected.length > 0" :selected="selected" @endProcess="initIntervalAndGetTickets" />
