@@ -107,7 +107,7 @@
                 :key="type"
               >
                 <v-btn
-                  class="black--text rounded-xl mr-1 my-2"
+                  class="black--text rounded-xl ml-2 mr-1 my-2"
                   :class="type === $route.query.view ? 'white black--text' : 'grey'"
                   small
                   @click="changeView(type)"
