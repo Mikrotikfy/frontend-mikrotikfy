@@ -12,12 +12,27 @@ export default function ({ route, redirect, store }) {
     city: userPreferredCity || 'MARIQUITA',
     clienttype: clienttype || 'INTERNET'
   }
+  const newQueryTickets = {
+    city: userPreferredCity || 'MARIQUITA',
+    clienttype: clienttype || 'INTERNET',
+    view: 'TODOS'
+  }
+
   if (path === '/') {
-    redirect({ path: '/tickets', query: newQuery })
+    if (!store.state.redirected) {
+      store.commit('setRedirected', true)
+      redirect({ path: '/tickets', query: newQuery })
+    }
+  }
+
+  if ((name !== 'tickets') && (!query.view || !query.clienttype || !query.city)) {
+    if (!store.state.redirected) {
+      store.commit('setRedirected', true)
+      redirect({ path: '/tickets', query: newQuery })
+    }
   }
 
   if ((name === 'tickets') && (!query.view || !query.clienttype || !query.city)) {
-    newQuery.view = 'RV'
-    return redirect({ path, query: newQuery })
+    return redirect({ path, query: newQueryTickets })
   }
 }

@@ -12,10 +12,14 @@ export const state = () => {
     neighborhoods: null,
     isDesktop: null,
     clientWidth: null,
-    clientHeight: null
+    clientHeight: null,
+    redirected: false
   }
 }
 export const mutations = {
+  setRedirected (state, redirected) {
+    state.redirected = redirected
+  },
   isDesktop (state, isDesktop) {
     state.isDesktop = isDesktop
   },
