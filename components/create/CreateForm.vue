@@ -87,10 +87,55 @@
             />
           </v-col>
           <v-col cols="6" lg="3" md="3">
-            <v-text-field
+            <v-autocomplete
               v-model="dir2"
               label="#"
               placeholder="5, 10, etc..."
+              :items="numbers"
+              outlined
+              dense
+              hide-details
+              @blur="genAddress"
+            />
+          </v-col>
+          <v-col cols="6" lg="3" md="3">
+            <v-autocomplete
+              v-model="dir3"
+              label="Adicional"
+              placeholder="BIZ, APTO, etc..."
+              :items="[
+                'A',
+                'B',
+                'C',
+                'W',
+                'D',
+                'E',
+                'F',
+                'G',
+                'H',
+                'I',
+                'J',
+                'K',
+                'L',
+                'M',
+                'N',
+                'BIZ',
+                'APTO',
+                'CASA',
+                'EDIFICIO',
+                'TORRE',
+                'INTERIOR',
+                'OFICINA',
+                'LOCAL',
+                'PISO',
+                'MANZANA',
+                'LOTE',
+                'KM',
+                'VEREDA',
+                'FINCA',
+                'PARCELA',
+                'BODEGA'
+              ]"
               outlined
               dense
               hide-details
@@ -99,7 +144,7 @@
           </v-col>
           <v-col cols="6" lg="3" md="3">
             <v-select
-              v-model="dir3"
+              v-model="dir4"
               :items="dirFragment2"
               label="#"
               value="#"
@@ -110,16 +155,120 @@
             />
           </v-col>
           <v-col cols="6" lg="3" md="3">
-            <v-text-field
-              v-model="dir4"
+            <v-autocomplete
+              v-model="dir5"
               label="#"
-              placeholder="01 - 23"
+              placeholder="5, 10, etc..."
+              :items="numbers"
               outlined
               dense
               hide-details
               @blur="genAddress"
             />
           </v-col>
+          <v-col cols="6" lg="3" md="3">
+            <v-autocomplete
+              v-model="dir6"
+              label="Adicional"
+              placeholder="BIZ, APTO, etc..."
+              :items="[
+                'A',
+                'B',
+                'C',
+                'W',
+                'D',
+                'E',
+                'F',
+                'G',
+                'H',
+                'I',
+                'J',
+                'K',
+                'L',
+                'M',
+                'N',
+                'BIZ',
+                'APTO',
+                'CASA',
+                'EDIFICIO',
+                'TORRE',
+                'INTERIOR',
+                'OFICINA',
+                'LOCAL',
+                'PISO',
+                'MANZANA',
+                'LOTE',
+                'KM',
+                'VEREDA',
+                'FINCA',
+                'PARCELA',
+                'BODEGA'
+              ]"
+              outlined
+              dense
+              hide-details
+              @blur="genAddress"
+            />
+          </v-col>
+          <v-col cols="6" lg="3" md="3">
+            <v-autocomplete
+              v-model="dir7"
+              label="#"
+              placeholder="5, 10, etc..."
+              :items="numbers"
+              outlined
+              dense
+              hide-details
+              @blur="genAddress"
+            />
+          </v-col>
+          <v-col cols="6" lg="3" md="3">
+            <v-autocomplete
+              v-model="dir8"
+              label="Adicional"
+              placeholder="BIZ, APTO, etc..."
+              :items="[
+                'A',
+                'B',
+                'C',
+                'W',
+                'D',
+                'E',
+                'F',
+                'G',
+                'H',
+                'I',
+                'J',
+                'K',
+                'L',
+                'M',
+                'N',
+                'BIZ',
+                'APTO',
+                'CASA',
+                'EDIFICIO',
+                'TORRE',
+                'INTERIOR',
+                'OFICINA',
+                'LOCAL',
+                'PISO',
+                'MANZANA',
+                'LOTE',
+                'KM',
+                'VEREDA',
+                'FINCA',
+                'PARCELA',
+                'BODEGA'
+              ]"
+              outlined
+              dense
+              hide-details
+              @blur="genAddress"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          {{ address }}
         </v-row>
         <v-row>
           <v-col>
@@ -315,8 +464,12 @@ export default {
       },
       dir1: '',
       dir2: '',
-      dir3: '#',
+      dir3: 'No.',
       dir4: '',
+      dir5: '',
+      dir6: '',
+      dir7: '',
+      dir8: '',
       dirFragment1: [
         '(SIN INICIAL)',
         'CARRERA',
@@ -325,7 +478,7 @@ export default {
         'DIAGONAL'
       ],
       dirFragment2: [
-        '#',
+        'No.',
         'CASA',
         'DIAGONAL',
         'LOTE'
@@ -368,6 +521,12 @@ export default {
     },
     plans () {
       return this.$store.state.plans
+    },
+    address () {
+      return `${this.dir1} ${this.dir2} ${this.dir3} ${this.dir4} ${this.dir5} ${this.dir6} ${this.dir7} ${this.dir8}`
+    },
+    numbers () {
+      return Array.from({ length: 200 }, (_, i) => i + 1)
     },
     neighborhoods () {
       return this.$store.state.neighborhoods
