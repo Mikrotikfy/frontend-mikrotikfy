@@ -5,10 +5,6 @@
     >
       <v-card-title>
         Historial de Tickets
-        <v-spacer />
-        <v-btn icon @click="modal = false">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
       </v-card-title>
       <div v-if="!loading">
         <v-card-text>

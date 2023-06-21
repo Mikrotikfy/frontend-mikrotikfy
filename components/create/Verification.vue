@@ -38,7 +38,6 @@
         <v-card-actions>
           <v-btn
             color="primary"
-            class="rounded-xl"
             @click="createDialog = true"
           >
             Crear cliente
@@ -50,7 +49,7 @@
       v-model="createDialog"
       origin="bottom center"
       class="transparent"
-      max-width="1150px"
+      max-width="1350px"
       :retain-focus="false"
     >
       <CreateForm

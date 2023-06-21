@@ -92,50 +92,160 @@
                     </v-col>
                   </v-row>
                   <p>Direccion de Traslado</p>
-                  <v-row class="mb-2">
-                    <v-col cols="6" lg="3" md="3">
-                      <v-select
-                        v-model="cx.dir1"
-                        :items="cx.dirFragment1"
-                        label="Dirección"
-                        outlined
-                        dense
-                        hide-details
-                        @change="cxGenAddress"
-                      />
-                    </v-col>
-                    <v-col cols="6" lg="3" md="3">
-                      <v-text-field
-                        v-model="cx.dir2"
-                        label="#"
-                        outlined
-                        dense
-                        hide-details
-                        @change="cxGenAddress"
-                      />
-                    </v-col>
-                    <v-col cols="6" lg="3" md="3">
-                      <v-select
-                        v-model="cx.dir3"
-                        :items="cx.dirFragment2"
-                        label="#"
-                        value="#"
-                        outlined
-                        dense
-                        hide-details
-                        @change="cxGenAddress"
-                      />
-                    </v-col>
-                    <v-col cols="6" lg="3" md="3">
-                      <v-text-field
-                        v-model="cx.dir4"
-                        label="#"
-                        outlined
-                        dense
-                        hide-details
-                        @change="cxGenAddress"
-                      />
-                    </v-col>
+                  <div class="my-5 parent">
+                    <v-select
+                      v-model="cx.dir1"
+                      :items="cx.dirFragment1"
+                      label="Dirección"
+                      autocomplete="off"
+                      outlined
+                      dense
+                      hide-details
+                    />
+                    <v-autocomplete
+                      v-model="cx.dir2"
+                      label="#"
+                      placeholder="5, 10, etc..."
+                      autocomplete="off"
+                      :items="numbers"
+                      outlined
+                      dense
+                      hide-details
+                    />
+                    <v-autocomplete
+                      v-model="cx.dir3"
+                      label="Adicional"
+                      placeholder="BIZ, APTO, etc..."
+                      autocomplete="off"
+                      :items="[
+                        'A',
+                        'B',
+                        'C',
+                        'W',
+                        'D',
+                        'E',
+                        'F',
+                        'G',
+                        'H',
+                        'I',
+                        'J',
+                        'K',
+                        'L',
+                        'M',
+                        'N',
+                        'BIZ',
+                        'APTO',
+                        'CASA',
+                        'EDIFICIO',
+                        'TORRE',
+                        'INTERIOR',
+                        'OFICINA',
+                        'LOCAL',
+                        'PISO',
+                        'MANZANA',
+                        'LOTE',
+                        'KM',
+                        'VEREDA',
+                        'FINCA',
+                        'PARCELA',
+                        'BODEGA'
+                      ]"
+                      outlined
+                      dense
+                      hide-details
+                    />
+                    <v-select
+                      v-model="cx.dir4"
+                      :items="cx.dirFragment2"
+                      autocomplete="off"
+                      label="#"
+                      value="No."
+                      outlined
+                      dense
+                      hide-details
+                    />
+                    <v-autocomplete
+                      v-model="cx.dir5"
+                      label="#"
+                      placeholder="5, 10, etc..."
+                      autocomplete="off"
+                      :items="numbers"
+                      outlined
+                      dense
+                      hide-details
+                    />
+                    <v-autocomplete
+                      v-model="cx.dir6"
+                      label="Adicional"
+                      placeholder="BIZ, APTO, etc..."
+                      autocomplete="off"
+                      :items="[
+                        'A',
+                        'B',
+                        'C',
+                        'W',
+                        'D',
+                        'E',
+                        'F',
+                        'G',
+                        'H',
+                        'I',
+                        'J',
+                        'K',
+                        'L',
+                        'M',
+                        'N',
+                        'BIZ',
+                        'APTO',
+                        'CASA',
+                        'EDIFICIO',
+                        'TORRE',
+                        'INTERIOR',
+                        'OFICINA',
+                        'LOCAL',
+                        'PISO',
+                        'MANZANA',
+                        'LOTE',
+                        'KM',
+                        'VEREDA',
+                        'FINCA',
+                        'PARCELA',
+                        'BODEGA'
+                      ]"
+                      outlined
+                      dense
+                      hide-details
+                    />
+                    <v-autocomplete
+                      v-model="cx.dir7"
+                      label="#"
+                      placeholder="5, 10, etc..."
+                      autocomplete="off"
+                      :items="numbers"
+                      outlined
+                      dense
+                      hide-details
+                    />
+                    <v-text-field
+                      v-model="cx.dir8"
+                      label="Opcional"
+                      placeholder="APTO 101, MANZANA 5, etc..."
+                      autocomplete="off"
+                      outlined
+                      dense
+                      hide-details
+                    />
+                  </div>
+                  <v-row class="align-center">
+                    <h5 class="ml-4">
+                      Así va quedando la dirección:
+                    </h5>
+                    <h4 class="ml-2 px-3 grey darken-3 text-weight-bold rounded-xl white--text">
+                      {{ address }}
+                    </h4>
+                    <v-btn x-small class="ml-2 red darken-4" @click="resetAddress">
+                      <v-icon>mdi-close</v-icon>
+                    </v-btn>
                   </v-row>
                   <v-row class="mb-2">
                     <v-col>
@@ -369,8 +479,13 @@ export default {
       neighborhood: {},
       dir1: '',
       dir2: '',
-      dir3: '#',
-      dir4: '',
+      dir3: '',
+      dir4: 'No.',
+      dir5: '',
+      dir6: '',
+      dir7: '',
+      dir8: '',
+      dir9: '',
       dirFragment1: [
         '(SIN INICIAL)',
         'CARRERA',
@@ -379,7 +494,7 @@ export default {
         'DIAGONAL'
       ],
       dirFragment2: [
-        '#',
+        'No.',
         'CASA',
         'DIAGONAL',
         'LOTE'
@@ -408,6 +523,12 @@ export default {
     },
     tickettypes () {
       return this.$store.state.ticket.tickettypes
+    },
+    address () {
+      return `${this.cx.dir1} ${this.cx.dir2}${this.cx.dir3} ${this.cx.dir4} ${this.cx.dir5}${this.cx.dir6} ${this.cx.dir7 !== '' ? '-' : ''} ${this.cx.dir7} ${this.cx.dir8}`
+    },
+    numbers () {
+      return Array.from({ length: 1200 }, (_, i) => i + 1)
     }
   },
   methods: {
@@ -415,7 +536,7 @@ export default {
       return Object.keys(obj).length === 0
     },
     cxGenAddress () {
-      this.cx.finalAddress = `${this.cx.dir1} ${this.cx.dir2} ${this.cx.dir3} ${this.cx.dir4} | ${this.cx.neighborhood.name}`
+      this.cx.finalAddress = `${this.address} | ${this.cx.neighborhood.name}`
     },
     initComponent () {
       if (this.client.phone !== '0' && this.client.phone !== '') {
@@ -526,7 +647,7 @@ export default {
           if (this.ticketPayload.type.name === 'TRASLADO') {
             this.$store.dispatch('address/addAddress', {
               client: this.client,
-              address: `${this.cx.dir1} ${this.cx.dir2} ${this.cx.dir3} ${this.cx.dir4}`,
+              address: this.address,
               neighborhood: this.cx.neighborhood,
               token: this.$store.state.auth.token
             })
@@ -562,7 +683,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .ticketCard {
   color: rgba(255,255,255,0.65);
   background-color: #24292e;
@@ -570,5 +691,11 @@ export default {
   background-repeat: no-repeat;
   background-position: center 0, 0 0, 0 0;
   background-size: cover;
+}
+.parent {
+  display:grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr;
+  row-gap: 10px;
+  column-gap: 10px;
 }
 </style>

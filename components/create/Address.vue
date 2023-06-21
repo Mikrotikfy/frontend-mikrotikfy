@@ -15,57 +15,167 @@
     </v-tooltip>
     <v-dialog
       v-model="modal"
-      max-width="800"
+      max-width="1360"
     >
       <v-card>
         <v-card-title class="headline">
           Ingresa la nueva direccion de {{ client.name }}
         </v-card-title>
         <v-card-text>
-          <v-row>
-            <v-col cols="6" lg="3" md="3">
-              <v-select
-                v-model="dir1"
-                :items="dirFragment1"
-                label="Dirección"
-                outlined
-                dense
-                hide-details
-                @blur="genAddress"
-              />
-            </v-col>
-            <v-col cols="6" lg="3" md="3">
-              <v-text-field
-                v-model="dir2"
-                label="#"
-                outlined
-                dense
-                hide-details
-                @blur="genAddress"
-              />
-            </v-col>
-            <v-col cols="6" lg="3" md="3">
-              <v-select
-                v-model="dir3"
-                :items="dirFragment2"
-                label="#"
-                value="#"
-                outlined
-                dense
-                hide-details
-                @blur="genAddress"
-              />
-            </v-col>
-            <v-col cols="6" lg="3" md="3">
-              <v-text-field
-                v-model="dir4"
-                label="#"
-                outlined
-                dense
-                hide-details
-                @blur="genAddress"
-              />
-            </v-col>
+          <div class="my-5 parent">
+            <v-select
+              v-model="dir1"
+              :items="dirFragment1"
+              label="Dirección"
+              autocomplete="off"
+              outlined
+              dense
+              hide-details
+            />
+            <v-autocomplete
+              v-model="dir2"
+              label="#"
+              placeholder="5, 10, etc..."
+              autocomplete="off"
+              :items="numbers"
+              outlined
+              dense
+              hide-details
+            />
+            <v-autocomplete
+              v-model="dir3"
+              label="Adicional"
+              placeholder="BIZ, APTO, etc..."
+              autocomplete="off"
+              :items="[
+                'A',
+                'B',
+                'C',
+                'W',
+                'D',
+                'E',
+                'F',
+                'G',
+                'H',
+                'I',
+                'J',
+                'K',
+                'L',
+                'M',
+                'N',
+                'BIZ',
+                'APTO',
+                'CASA',
+                'EDIFICIO',
+                'TORRE',
+                'INTERIOR',
+                'OFICINA',
+                'LOCAL',
+                'PISO',
+                'MANZANA',
+                'LOTE',
+                'KM',
+                'VEREDA',
+                'FINCA',
+                'PARCELA',
+                'BODEGA'
+              ]"
+              outlined
+              dense
+              hide-details
+            />
+            <v-select
+              v-model="dir4"
+              :items="dirFragment2"
+              autocomplete="off"
+              label="#"
+              value="No."
+              outlined
+              dense
+              hide-details
+            />
+            <v-autocomplete
+              v-model="dir5"
+              label="#"
+              placeholder="5, 10, etc..."
+              autocomplete="off"
+              :items="numbers"
+              outlined
+              dense
+              hide-details
+            />
+            <v-autocomplete
+              v-model="dir6"
+              label="Adicional"
+              placeholder="BIZ, APTO, etc..."
+              autocomplete="off"
+              :items="[
+                'A',
+                'B',
+                'C',
+                'W',
+                'D',
+                'E',
+                'F',
+                'G',
+                'H',
+                'I',
+                'J',
+                'K',
+                'L',
+                'M',
+                'N',
+                'BIZ',
+                'APTO',
+                'CASA',
+                'EDIFICIO',
+                'TORRE',
+                'INTERIOR',
+                'OFICINA',
+                'LOCAL',
+                'PISO',
+                'MANZANA',
+                'LOTE',
+                'KM',
+                'VEREDA',
+                'FINCA',
+                'PARCELA',
+                'BODEGA'
+              ]"
+              outlined
+              dense
+              hide-details
+            />
+            <v-autocomplete
+              v-model="dir7"
+              label="#"
+              placeholder="5, 10, etc..."
+              autocomplete="off"
+              :items="numbers"
+              outlined
+              dense
+              hide-details
+            />
+            <v-text-field
+              v-model="dir8"
+              label="Opcional"
+              placeholder="APTO 101, MANZANA 5, etc..."
+              autocomplete="off"
+              outlined
+              dense
+              hide-details
+            />
+          </div>
+          <v-row class="align-center">
+            <h5 class="ml-4">
+              Así va quedando la dirección:
+            </h5>
+            <h4 class="ml-2 px-3 grey darken-3 text-weight-bold rounded-xl white--text">
+              {{ address }}
+            </h4>
+            <v-btn x-small class="ml-2 red darken-4" @click="resetAddress">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
           </v-row>
           <v-row>
             <v-col>
@@ -107,12 +217,16 @@ export default {
   data () {
     return {
       modal: false,
-      address: '',
       neighborhood: null,
       dir1: '',
       dir2: '',
-      dir3: '#',
-      dir4: '',
+      dir3: '',
+      dir4: 'No.',
+      dir5: '',
+      dir6: '',
+      dir7: '',
+      dir8: '',
+      dir9: '',
       dirFragment1: [
         '(SIN INICIAL)',
         'CARRERA',
@@ -121,7 +235,7 @@ export default {
         'DIAGONAL'
       ],
       dirFragment2: [
-        '#',
+        'No.',
         'CASA',
         'DIAGONAL',
         'LOTE'
@@ -131,12 +245,15 @@ export default {
   computed: {
     neighborhoods () {
       return this.$store.state.neighborhood.Allneighborhoods
+    },
+    address () {
+      return `${this.dir1} ${this.dir2}${this.dir3} ${this.dir4} ${this.dir5}${this.dir6} ${this.dir7 !== '' ? '-' : ''} ${this.dir7} ${this.dir8}`
+    },
+    numbers () {
+      return Array.from({ length: 1200 }, (_, i) => i + 1)
     }
   },
   methods: {
-    genAddress () {
-      this.address = `${this.dir1} ${this.dir2} ${this.dir3} ${this.dir4}`
-    },
     async initComponent () {
       this.modal = true
       await this.$store.dispatch('neighborhood/getAll', {
@@ -161,3 +278,10 @@ export default {
   }
 }
 </script>
+<style scoped>
+.parent {
+  display:grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr 1fr 2fr 1fr 2fr;
+  column-gap: 10px;
+}
+</style>
