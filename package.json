@@ -1,6 +1,6 @@
 {
   "name": "mikrotikfy",
-  "version": "6.15.6",
+  "version": "6.20.6",
   "private": true,
   "scripts": {
     "dev": "nuxt",
