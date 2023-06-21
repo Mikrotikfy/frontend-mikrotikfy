@@ -261,6 +261,17 @@ export default {
         token: this.$store.state.auth.token
       })
     },
+    resetAddress () {
+      this.dir1 = ''
+      this.dir2 = ''
+      this.dir3 = ''
+      this.dir4 = 'No.'
+      this.dir5 = ''
+      this.dir6 = ''
+      this.dir7 = ''
+      this.dir8 = ''
+      this.dir9 = ''
+    },
     addAddress () {
       if (this.neighborhood === null) {
         this.$toast.error('El barrio es requerido', { duration: 10000 })

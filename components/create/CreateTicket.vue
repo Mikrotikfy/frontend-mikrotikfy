@@ -538,6 +538,17 @@ export default {
     cxGenAddress () {
       this.cx.finalAddress = `${this.address} | ${this.cx.neighborhood.name}`
     },
+    resetAddress () {
+      this.cx.dir1 = ''
+      this.cx.dir2 = ''
+      this.cx.dir3 = ''
+      this.cx.dir4 = 'No.'
+      this.cx.dir5 = ''
+      this.cx.dir6 = ''
+      this.cx.dir7 = ''
+      this.cx.dir8 = ''
+      this.cx.dir9 = ''
+    },
     initComponent () {
       if (this.client.phone !== '0' && this.client.phone !== '') {
         this.modal = true
