@@ -679,7 +679,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .parent {
   display:grid;
   grid-template-columns: 2fr 1fr 2fr 1fr 1fr 2fr 1fr 2fr;
