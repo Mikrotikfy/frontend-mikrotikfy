@@ -24,7 +24,7 @@ export default function ({ route, redirect, store }) {
     }
   }
 
-  if ((name !== 'tickets') && (!query.view || !query.clienttype || !query.city)) {
+  if ((name !== 'tickets') && (!query.clienttype || !query.city)) {
     if (!store.state.redirected) {
       store.commit('setRedirected', true)
       redirect({ path, query: newQuery })
