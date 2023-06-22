@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nuxt",
-    "build": "nuxt build && npm version patch",
+    "build": "npm version patch & nuxt build",
     "start": "nuxt start",
     "export": "nuxt export",
     "serve": "nuxt serve",
