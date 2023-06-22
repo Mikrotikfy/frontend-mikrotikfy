@@ -7,9 +7,9 @@
         label="Generar Cobro $0.00"
         single-line
         hide-details
+        dense
         filled
         rounded
-        autofocus
         placeholder="$0.00"
         prepend-icon="mdi-currency-usd"
         color="red"
@@ -26,6 +26,7 @@
         single-line
         hide-details
         filled
+        dense
         rounded
         autofocus
         @keyup.enter="addAmount"
@@ -37,6 +38,7 @@
         single-line
         hide-details
         filled
+        dense
         rounded
         color="blue"
         @keyup.enter="addAmount"

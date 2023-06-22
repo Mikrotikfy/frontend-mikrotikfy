@@ -42,6 +42,9 @@ export default {
   watch: {
     '$store.state.billing.showArchive' () {
       this.showBillingInfo(this.selected)
+    },
+    '$route' () {
+      this.getBillingInfoByClientId()
     }
   },
   mounted () {
@@ -76,12 +79,18 @@ export default {
         this.testForSingleClient()
       }
     },
-    showBillingInfo (item) {
-      this.selected = item
+    getBillingInfoByClientId () {
       this.$store.dispatch('billing/getBillingInfoByClientId', {
-        client: item,
+        clientId: this.$route.query.selected,
         showArchive: this.$store.state.billing.showArchive,
         token: this.$store.state.auth.token
+      })
+    },
+    showBillingInfo (item) {
+      this.$router.push({
+        path: this.$route.path,
+        params: { search: this.search },
+        query: { selected: item.id, clienttype: this.$route.query.clienttype, city: this.$route.query.city }
       })
     }
   }

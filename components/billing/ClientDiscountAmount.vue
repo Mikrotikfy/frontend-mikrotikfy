@@ -4,14 +4,13 @@
       <v-text-field
         v-model.number="amount"
         type="number"
-        :disabled="selected.length < 1"
-        :label="selected.length > 0 ? `Recaudar a ${selected[0].type}` : 'Recaudar $0.00'"
+        label="Recaudar $0.00"
         single-line
         hide-details
         filled
         rounded
         autofocus
-        :placeholder="selected.length > 0 ? `Recaudar a ${selected[0].type}` : 'Recaudar $0.00'"
+        placeholder="Recaudar $0.00"
         :error="error"
         prepend-icon="mdi-account-cash-outline"
         color="green"

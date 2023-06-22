@@ -41,6 +41,12 @@ export const mutations = {
     state.selected = []
     state.resetSelected++
   },
+  resetInvoices (state) {
+    state.invoices = []
+  },
+  resetCurrentClient (state) {
+    state.currentClient = []
+  },
   setTotal (state, total) {
     state.total = total
   },
@@ -212,15 +218,15 @@ export const actions = {
       const qs = require('qs')
       const query = qs.stringify({
         filters: {
-          client: payload.client.id
+          client: payload.clientId
         },
-        populate: ['offer', 'client', 'invoice_type', 'invoice_movements']
+        populate: ['invoices.offer', 'invoices', 'invoices.invoice_type', 'invoices.invoice_movements']
       },
       {
         encodeValuesOnly: true
       })
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}invoices?${query}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.clientId}?${query}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -228,9 +234,9 @@ export const actions = {
           }
         })
           .then(res => res.json())
-          .then((invoices) => {
-            commit('getBillingInfoByClientId', { invoices: invoices.data, showArchive: payload.showArchive, client: payload.client })
-            resolve(invoices)
+          .then((client) => {
+            commit('getBillingInfoByClientId', { invoices: client.data.invoices, showArchive: payload.showArchive, client: client.data })
+            resolve(client.data.invoices)
           })
       })
     } catch (error) {

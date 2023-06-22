@@ -6,14 +6,14 @@
       elevation="0"
       @click="init"
     >
-      Abonar
+      Pagar
       <v-icon>mdi-cash-plus</v-icon>
     </v-btn>
     <v-dialog
       v-model="dialog"
       width="550"
     >
-      <v-card>
+      <v-card class="pt-4">
         <v-card-text>
           <v-text-field
             v-model.number="billingInfo.payBill.amount"
@@ -108,10 +108,17 @@ export default {
         payed: this.billingInfo.payBill.amount === this.balance || !this.billingInfo.payBill.amount,
         balance: this.billingInfo.payBill.amount ? this.balance - this.billingInfo.payBill.amount : this.balance - this.invoice.balance
       })
-      this.$emit('updateInvoiceList')
+      this.getBillingInfoByClientId()
       this.$store.commit('billing/resetSelected')
       this.amount = null
       this.dialog = false
+    },
+    getBillingInfoByClientId () {
+      this.$store.dispatch('billing/getBillingInfoByClientId', {
+        clientId: this.$route.query.selected,
+        showArchive: this.$store.state.billing.showArchive,
+        token: this.$store.state.auth.token
+      })
     }
   }
 }

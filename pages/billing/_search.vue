@@ -24,7 +24,7 @@
             <BillingClientTotal />
           </v-card-actions>
         </v-card>
-        <BillingClientDiscountAmount v-if="selected.length > 1" />
+        <BillingClientDiscountAmount />
         <BillingClientAddAmount />
       </v-col>
     </v-row>
@@ -40,15 +40,10 @@ export default {
   },
   mounted () {
     this.$store.commit('billing/getCurrentMonth')
-  },
-  head () {
-    return {
-      title: 'Estado de Cuenta'
-    }
   }
 }
 </script>
-<style>
+<style scoped>
 .parent {
   display: grid;
     grid-auto-rows: 8fr 1fr 1fr 1fr;

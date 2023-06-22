@@ -54,6 +54,9 @@ export default {
   },
   methods: {
     getClientBySearch () {
+      this.$store.commit('billing/resetInvoices')
+      this.$store.commit('billing/resetSelected')
+      this.$store.commit('billing/resetCurrentClient')
       if (this.search) {
         this.loadingDataTable = true
         this.$router.push({

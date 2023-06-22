@@ -129,6 +129,11 @@ export default {
         return price - invoiceMovements.reduce((total, curr) => { return total + curr.amount }, 0)
       }
     }
+  },
+  head () {
+    return {
+      title: `${this.currentClient ? 'Estados de cuenta - ' + this.currentClient.name : 'Estados de cuenta'}`
+    }
   }
 }
 </script>
