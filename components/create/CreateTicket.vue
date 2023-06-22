@@ -537,7 +537,7 @@ export default {
         clientId: this.client.id,
         token: this.$store.state.auth.token
       })
-      if (ticket && ticket.active && ticket.tickettype.id === this.ticketPayload.type.id) {
+      if ((ticket && ticket.active) && (ticket.tickettype.id === this.ticketPayload.type.id)) {
         return true
       } else {
         return false
@@ -643,7 +643,7 @@ export default {
       if (this.clientAvailableHour !== '') {
         this.ticketPayload.details = `Cliente disponible desde las ${this.clientAvailableHour}\n${this.ticketPayload.details}`
       }
-      if (this.lastTicketIsOpenAndSameType()) {
+      if (await this.lastTicketIsOpenAndSameType()) {
         this.alertBox = true
         this.alertBoxColor = 'red darken-4'
         this.createdMessage = 'El cliente tiene un ticket abierto, por favor cierra el ticket antes de continuar'

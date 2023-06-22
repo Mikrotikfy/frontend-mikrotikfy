@@ -81,7 +81,7 @@ export const actions = {
       })
         .then(res => res.json())
         .then((client) => {
-          resolve(client.tickets.at(-1))
+          resolve(client.data.tickets.at(-1))
         })
     })
   },
