@@ -532,6 +532,17 @@ export default {
     }
   },
   methods: {
+    async lastTicketIsOpenAndSameType () {
+      const ticket = await this.$store.dispatch('ticket/getClientLastTicket', {
+        clientId: this.client.id,
+        token: this.$store.state.auth.token
+      })
+      if (ticket && ticket.active && ticket.tickettype.id === this.ticketPayload.type.id) {
+        return true
+      } else {
+        return false
+      }
+    },
     isEmpty (obj) {
       return Object.keys(obj).length === 0
     },
@@ -631,6 +642,14 @@ export default {
       }
       if (this.clientAvailableHour !== '') {
         this.ticketPayload.details = `Cliente disponible desde las ${this.clientAvailableHour}\n${this.ticketPayload.details}`
+      }
+      if (this.lastTicketIsOpenAndSameType()) {
+        this.alertBox = true
+        this.alertBoxColor = 'red darken-4'
+        this.createdMessage = 'El cliente tiene un ticket abierto, por favor cierra el ticket antes de continuar'
+        this.loading = false
+        this.$toast.error('El cliente tiene un ticket abierto, por favor cierra el ticket antes de continuar', { duration: 5000 })
+        return
       }
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets`, {
         method: 'POST',

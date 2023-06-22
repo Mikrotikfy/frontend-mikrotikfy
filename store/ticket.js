@@ -63,6 +63,28 @@ export const mutations = {
   }
 }
 export const actions = {
+  getClientLastTicket ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      populate: ['tickets', 'tickets.tickettype']
+    },
+    {
+      encodeValuesOnly: true
+    })
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.clientId}?${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        }
+      })
+        .then(res => res.json())
+        .then((client) => {
+          resolve(client.tickets.at(-1))
+        })
+    })
+  },
   async getTicketsFromDatabase ({ dispatch, commit }, { city, clienttype, token, active, retired }) {
     const isConnected = await this.$checkInternetConnection()
     if (isConnected) {
