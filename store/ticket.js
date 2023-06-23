@@ -41,15 +41,15 @@ export const mutations = {
   changeView (state, payload) {
     if (payload === 'RV') {
       state.ticketList = state.tickets.filter((ticket) => {
-        return ticket.tickettype.name !== 'CONEXION NUEVA' && ticket.tickettype.name !== 'TRASLADO' && ticket.tickettype.name !== 'DX VOLUNTARIA' && ticket.tickettype.name !== 'DX POR MORA'
+        return ticket.tickettype.name !== 'CONEXION NUEVA' && ticket.tickettype.name !== 'DERIVADO' && ticket.tickettype.name !== 'RECONEXION' && ticket.tickettype.name !== 'REINSTALACION' && ticket.tickettype.name !== 'TRASLADO' && ticket.tickettype.name !== 'CAMBIO DE ACOMETIDA' && ticket.tickettype.name !== 'DX VOLUNTARIA' && ticket.tickettype.name !== 'DX POR MORA'
       })
     } else if (payload === 'CX') {
       state.ticketList = state.tickets.filter((ticket) => {
-        return ticket.tickettype.name === 'CONEXION NUEVA'
+        return ticket.tickettype.name === 'CONEXION NUEVA' || ticket.tickettype.name === 'RECONEXION' || ticket.tickettype.name === 'REINSTALACION' || ticket.tickettype.name === 'DERIVADO' || ticket.tickettype.name === 'CONEXION NUEVA' || ticket.tickettype.name === 'CAMBIO DE ACOMETIDA'
       })
     } else if (payload === 'TR') {
       state.ticketList = state.tickets.filter((ticket) => {
-        return ticket.tickettype.name === 'TRASLADO'
+        return ticket.tickettype.name === 'TRASLADO' || ticket.tickettype.name === 'CAMBIO DE LUGAR DE ACOMETIDA' || ticket.tickettype.name === 'CAMBIO DE LUGAR PUNTO DE TV' || ticket.tickettype.name === 'CAMBIO DE LUGAR ROUTER' || ticket.tickettype.name === 'CAMBIO DE LUGAR EQUIPO'
       })
     } else if (payload === 'DX') {
       state.ticketList = state.tickets.filter((ticket) => {
