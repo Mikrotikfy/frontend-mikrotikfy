@@ -91,7 +91,7 @@ export default {
       modal: false,
       add: {
         material: null,
-        materialtype: 1,
+        materialtype: { name: 'GENERAL', id: 1 },
         quantity: 1
       },
       loading: false
