@@ -298,6 +298,49 @@
                 </h5>
               </v-chip>
             </template>
+            <template v-slot:[`item.time`]="props">
+              <v-edit-dialog
+                v-if="$isAdmin() || $isBiller()"
+                ref="dialogTime"
+                large
+                cancel-text="Cancelar"
+                save-text="Guardar"
+                @save="saveAssignatedFromModal(props.item, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+              >
+                <v-chip
+                  small
+                  :color="props.item.technician ? props.item.technician.username === 'sistema' ? $vuetify.theme.dark ? 'green darken-2' : 'green darken-2 white--text' : 'primary' : $vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-1 black--text'"
+                >
+                  <h5>
+                    {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
+                  </h5>
+                </v-chip>
+                <template v-slot:input>
+                  <v-autocomplete
+                    v-model="currentTechnician"
+                    :value="props.item.technician"
+                    item-text="username"
+                    item-value="id"
+                    :items="technicians"
+                    return-object
+                    single-line
+                    outlined
+                    label="Asignar a Tecnico"
+                    dense
+                    @change="updateAssignatedFromModal(props.item.id, $event, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+                  />
+                </template>
+              </v-edit-dialog>
+              <v-chip
+                v-else
+                small
+                :color="props.item.technician ? props.item.technician.username === 'sistema' ? $vuetify.theme.dark ? 'green darken-2' : 'green darken-2 white--text' : 'primary' : $vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-1 black--text'"
+              >
+                <h5>
+                  {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
+                </h5>
+              </v-chip>
+            </template>
             <template v-slot:[`item.details`]="{ item }">
               <v-tooltip bottom max-width="400">
                 <template v-slot:activator="{ on, attrs }">
@@ -630,6 +673,7 @@ export default {
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
         { text: 'Asignado', sortable: false, value: 'technician', width: 60 },
+        { text: 'Usuario disponible', sortable: false, value: 'time', width: 60 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name' },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
         { text: 'Código', sortable: false, value: 'client.code', width: 50 },
@@ -643,6 +687,7 @@ export default {
         { text: 'Estado', sortable: false, value: 'active', width: '5%', hide: 'd-none d-lg-table-cell' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 100 },
         { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
+        { text: 'Usuario disponible', sortable: false, value: 'time', width: 60 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
         { text: 'Cliente', sortable: false, value: 'client.name' }
@@ -650,6 +695,7 @@ export default {
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
         { text: 'Asignado', sortable: false, value: 'technician', width: 60 },
+        { text: 'Usuario disponible', sortable: false, value: 'time', width: 60 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 150 },
         { text: 'Codigo', sortable: false, value: 'client.code', width: 60 },
@@ -662,6 +708,7 @@ export default {
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name' },
         { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
+        { text: 'Usuario disponible', sortable: false, value: 'time', width: 60 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name' },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
         { text: 'Cliente', sortable: false, value: 'client.name' }
