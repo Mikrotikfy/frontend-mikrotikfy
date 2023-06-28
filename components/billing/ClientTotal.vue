@@ -1,11 +1,12 @@
 <template>
-  <h2 class="align-center">
+  <h2 v-if="$store.state.billing.invoices" class="align-center">
     $<span
       style="color:green;"
     >
       {{ Number(totalamount).toLocaleString('es') }}
     </span> saldo total
   </h2>
+  <h2 v-else>El usuario no tiene estados de cuenta aún...</h2>
 </template>
 <script>
 export default {
