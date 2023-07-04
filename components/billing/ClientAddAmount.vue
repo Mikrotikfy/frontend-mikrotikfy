@@ -32,6 +32,28 @@
         @keyup.enter="addAmount"
       />
       <v-text-field
+        v-model="month"
+        label="Mes"
+        class="ml-4"
+        single-line
+        hide-details="auto"
+        filled
+        dense
+        rounded
+        @keyup.enter="addAmount"
+      />
+      <v-text-field
+        v-model="year"
+        label="Año"
+        class="ml-4"
+        single-line
+        hide-details="auto"
+        filled
+        dense
+        rounded
+        @keyup.enter="addAmount"
+      />
+      <v-text-field
         v-model="details"
         label="Observaciones (OPCIONAL)"
         class="ml-4 d-flex"
