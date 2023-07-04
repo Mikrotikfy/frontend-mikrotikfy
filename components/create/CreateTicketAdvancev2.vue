@@ -225,7 +225,7 @@ export default {
       return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
     },
     tvSpecTypes () {
-      return this.$store.state.tv.spectypes
+      return this.$store.state.tvspectypes
     }
   },
   mounted () {

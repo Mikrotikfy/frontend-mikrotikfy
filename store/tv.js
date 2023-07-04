@@ -4,6 +4,7 @@ export const state = () => ({
 export const mutations = {
   getTvSpecTypes (state, spectypes) {
     try {
+      console.log('TV SPEC TYPES MUTATE', spectypes)
       state.spectypes = spectypes
     } catch (error) {
       throw new Error(`TV SPEC TYPES MUTATE ${error}`)
@@ -24,7 +25,7 @@ export const actions = {
         })
           .then(res => res.json())
           .then((spectypes) => {
-            commit('getTvSpecTypes', spectypes.data) // get tvspec types from database
+            localStorage.setItem('tvspectypes', JSON.stringify(spectypes.data))
             dispatch('offline/tvloc/saveTvSpecTypesToIndexedDB', spectypes.data, { root: true }) // save tvspec types to indexedDB
           })
       } catch (error) {

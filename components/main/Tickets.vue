@@ -723,7 +723,6 @@ export default {
   },
   mounted () {
     this.getTickettypes()
-    this.getTvSpecTypes()
     this.getTechnicians()
     this.initIntervalAndGetTickets()
   },
@@ -832,9 +831,6 @@ export default {
         clienttype: this.$route.query.clienttype,
         token: this.$store.state.auth.token
       })
-    },
-    getTvSpecTypes () {
-      this.$store.dispatch('tv/getTvSpecTypes', { token: this.$store.state.auth.token })
     },
     async getTechnicians () {
       await this.$store.dispatch('operator/getOperatorList', {

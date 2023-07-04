@@ -6,6 +6,7 @@ export const state = () => {
     cities: null,
     clienttypes: null,
     telegramBots: null,
+    tvspectypes: null,
     plans: null,
     technologies: null,
     devicebrands: null,
@@ -32,7 +33,7 @@ export const mutations = {
   setAuth (state, auth) {
     state.auth = auth
   },
-  setLocalStorage (state, { cities, plans, technologies, neighborhoods, deviceBrands, clienttypes, telegramBots }) {
+  setLocalStorage (state, { cities, plans, technologies, neighborhoods, deviceBrands, clienttypes, telegramBots, tvspectypes }) {
     state.cities = JSON.parse(cities)
     state.plans = JSON.parse(plans)
     state.technologies = JSON.parse(technologies)
@@ -40,6 +41,7 @@ export const mutations = {
     state.devicebrands = JSON.parse(deviceBrands)
     state.clienttypes = JSON.parse(clienttypes)
     state.telegramBots = JSON.parse(telegramBots)
+    state.tvspectypes = JSON.parse(tvspectypes)
   },
   setTicketsFromLocalStorage (state, tickets) {
     state.tickets = JSON.parse(tickets)
@@ -76,7 +78,8 @@ export const actions = {
     const neighborhoods = localStorage.getItem('neighborhoods')
     const telegramBots = localStorage.getItem('telegramBots')
     const clienttypes = localStorage.getItem('clienttypes')
-    commit('setLocalStorage', { cities, plans, technologies, neighborhoods, deviceBrands, clienttypes, telegramBots })
+    const tvspectypes = localStorage.getItem('tvspectypes')
+    commit('setLocalStorage', { cities, plans, technologies, neighborhoods, deviceBrands, clienttypes, telegramBots, tvspectypes })
   },
   getTicketsFromLocalStorage ({ commit }) {
     const tickets = localStorage.getItem('tickets')

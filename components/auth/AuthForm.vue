@@ -247,9 +247,11 @@ export default {
             await this.$store.dispatch('city/getCitiesFromDatabase')
             await this.$store.dispatch('client/getClientTypesFromDatabase', response.jwt)
             await this.$store.dispatch('neighborhood/getNeighborhoodsFromDatabase')
+            await this.$store.dispatch('tv/getTvSpecTypes', { token: response.jwt })
             await this.$store.dispatch('telegram/getTelegramBotsFromDatabase', { token: response.jwt, city: userCities[0].name })
             const redirectPath = `/tickets?city=${userData && userData.preferredcity ? userData.preferredcity.name : userCities[0].name}&clienttype=INTERNET&view=TODOS`
             window.location.href = redirectPath
+            this.isLoading = false
           }
         }).catch((_) => {
           this.errorMessages = 'Usuario o contraseña incorrectos. Intente nuevamente.'
