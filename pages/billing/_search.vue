@@ -10,14 +10,14 @@
         </v-card>
       </v-col>
       <v-col cols="7" class="parent">
-        <v-card class="rounded-lg" style="overflow-y:scroll;">
+        <v-card class="rounded-lg">
           <v-card-title>
             <span :class="this.$store.state.billing.showArchive ? 'headline ml-4 red darken-4 rounded-lg px-2' : 'headline ml-4'">{{ this.$store.state.billing.showArchive ? 'ARCHIVO DE CUENTA' : 'Movimiento de Cuenta' }}</span>
             <v-spacer />
             <BillingToggleArchive />
             <BillingPrintMovement />
           </v-card-title>
-          <v-card-text style="height:80%;">
+          <v-card-text style="height:75%;overflow-y:scroll;display:flex;flex-direction:column-reverse;">
             <BillingClientDetail />
           </v-card-text>
           <v-card-actions style="position: absolute;bottom: 0;border-top:grey solid 1px;width:100%;" class="d-flex pl-6">

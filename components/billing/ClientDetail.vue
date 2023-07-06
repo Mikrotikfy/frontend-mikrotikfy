@@ -6,7 +6,6 @@
     <client-only>
       <v-data-table
         ref="billDataTable"
-        v-model="selected"
         :headers="headers"
         :items.sync="invoices"
         :items-per-page.sync="itemsPerPage"
@@ -15,14 +14,13 @@
         :loading="loadingDataTable"
         sort-by="id"
         sort-asc
-        show-select
         no-data-text="Realiza una busqueda para iniciar..."
         loading-text="Cargando información de clientes..."
         dense
         hide-default-footer
         mobile-breakpoint="100"
         @page-count="pageCount = $event"
-        @current-items="$vuetify.goTo(0)"
+        @current-items="$vuetify.goTo(999)"
       >
         <template v-slot:[`item.concept`]="props">
           <v-chip
@@ -46,14 +44,13 @@
         <template v-slot:[`item.actions`]="props">
           <span class="d-flex justify-end" :data-index="props.index">
             <BillingPayBill
-              v-if="!props.item.payed && selected.length < 2"
               :invoice="props.item"
               :index="props.index"
               :balance="props.item.balance"
               class="mr-2"
               @updateInvoiceList="updateInvoiceList(props.item)"
             />
-            <BillingDepositHistory v-if="props.item.concept === 'FACTURACION'" :bill="props.item" class="mr-2" />
+            <BillingDepositHistory :bill="props.item" class="mr-2" />
           </span>
         </template>
       </v-data-table>
@@ -64,7 +61,6 @@
 export default {
   data () {
     return {
-      selected: [],
       itemsPerPage: 100,
       page: 1,
       pageCount: 0,
@@ -86,16 +82,6 @@ export default {
     },
     currentClient () {
       return this.$store.state.billing.currentClient
-    }
-  },
-  watch: {
-    '$store.state.billing.resetSelected': {
-      handler () {
-        this.selected = []
-      }
-    },
-    selected () {
-      this.$store.commit('billing/setSelected', this.selected)
     }
   },
   methods: {

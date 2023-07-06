@@ -274,6 +274,31 @@ export const actions = {
       throw new Error(`ADD MOVEMENT ACTION ${error}`)
     }
   },
+  updateClientBalance ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.clientId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              balance: payload.balance
+            }
+          })
+        })
+          .then(res => res.json())
+          .then(({ data: client }) => {
+            this.$toast.info('Saldo actualizado', { duration: 1000 })
+            resolve(client)
+          })
+      })
+    } catch (error) {
+      throw new Error(`UPDATE CLIENT BALANCE ACTION ${error}`)
+    }
+  },
   getBillingInfoByClientId ({ commit }, payload) {
     try {
       const qs = require('qs')
@@ -281,7 +306,7 @@ export const actions = {
         filters: {
           client: payload.clientId
         },
-        populate: ['invoices.offer', 'invoices', 'invoices.invoice_type', 'invoices.invoice_movements']
+        populate: ['invoices.offer', 'invoices', 'invoices.invoice_type', 'invoices.invoice_movements', 'invoices.invoice_movements.biller']
       },
       {
         encodeValuesOnly: true

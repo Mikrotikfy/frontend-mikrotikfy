@@ -29,6 +29,7 @@ export default {
   watch: {
     totalamount () {
       this.$store.commit('billing/setTotal', this.totalamount)
+      this.$store.dispatch('billing/updateClientBalance', { balance: this.totalamount, clientId: this.$route.query.selected, token: this.$store.state.auth.token })
     }
   }
 }

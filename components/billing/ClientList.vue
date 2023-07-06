@@ -44,7 +44,6 @@ export default {
       this.showBillingInfo(this.selected)
     },
     '$store.state.billing.refresh' () {
-      console.log('refreshing')
       this.getBillingInfoByClientId()
     },
     '$route' () {
