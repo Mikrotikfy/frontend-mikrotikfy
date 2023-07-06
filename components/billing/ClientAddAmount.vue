@@ -93,6 +93,7 @@ export default {
       amount: null,
       details: null,
       month: this.getCurrentMonth(),
+      monthName: this.getCurrentMonthName(),
       year: this.getCurrentYear(),
       maxNumberEqualsCurrentYear: [
         v => v <= this.getCurrentYear() || 'El año no puede ser mayor al actual'
@@ -118,27 +119,55 @@ export default {
   },
   methods: {
     addAmount () {
-      this.$store.dispatch('billing/addMovement', {
-        balance: this.amount,
-        month: this.month,
-        year: this.year,
-        type: 'FACTURA',
-        offer: 1,
-        concept: this.details,
-        payed: false,
-        partial: false,
-        indebt: false,
-        client: this.$route.query.selected,
-        invoice_type: this.billtype.id,
-        token: this.$store.state.auth.token
-      })
-      this.amount = null
-      this.details = null
+      if (this.valid) {
+        this.$store.dispatch('billing/addMovement', {
+          balance: this.amount,
+          value: this.amount,
+          month: this.month,
+          year: this.year,
+          type: 'FACTURA',
+          offer: 1,
+          concept: this.billtype.name,
+          details: this.details ? this.details : this.monthName,
+          payed: false,
+          partial: false,
+          indebt: false,
+          client: this.$route.query.selected,
+          invoice_type: this.billtype.id,
+          token: this.$store.state.auth.token
+        })
+        this.amount = null
+        this.details = null
+      } else {
+        this.$toast.error('No se puede crear la factura. Verifique los datos.', { duration: 5000 })
+        this.amount = null
+        this.details = null
+      }
+      this.$store.commit('billing/refresh')
     },
     getCurrentMonth () {
       const date = new Date()
       const month = date.getMonth() + 1
       return month < 10 ? `0${month}` : month
+    },
+    getCurrentMonthName () {
+      const date = new Date()
+      const month = date.getMonth() + 1
+      const monthNames = [
+        'ENERO',
+        'FEBRERO',
+        'MARZO',
+        'ABRIL',
+        'MAYO',
+        'JUNIO',
+        'JULIO',
+        'AGOSTO',
+        'SEPTIEMBRE',
+        'OCTUBRE',
+        'NOVIEMBRE',
+        'DICIEMBRE'
+      ]
+      return monthNames[month - 1]
     },
     getCurrentYear () {
       const date = new Date()

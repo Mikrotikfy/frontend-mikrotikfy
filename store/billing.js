@@ -8,9 +8,13 @@ export const state = () => ({
   headers: [],
   selected: [],
   resetSelected: 0,
+  refresh: 0,
   showArchive: false
 })
 export const mutations = {
+  refresh (state) {
+    state.refresh++
+  },
   editBill (state, payload) {
     state.billingInfo.bills[payload.index].payed = payload.payed
     state.billingInfo.bills[payload.index].details = payload.details
@@ -161,11 +165,13 @@ export const actions = {
           body: JSON.stringify({
             data: {
               balance: payload.balance,
+              value: payload.balance,
               month: payload.month,
               year: payload.year,
               type: payload.type,
               offer: payload.offer,
-              concept: payload.details,
+              concept: payload.concept,
+              details: payload.details,
               payed: payload.payed,
               partial: payload.partial,
               indebt: payload.indebt,

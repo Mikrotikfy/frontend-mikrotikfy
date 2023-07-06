@@ -43,6 +43,10 @@ export default {
     '$store.state.billing.showArchive' () {
       this.showBillingInfo(this.selected)
     },
+    '$store.state.billing.refresh' () {
+      console.log('refreshing')
+      this.getBillingInfoByClientId()
+    },
     '$route' () {
       this.getBillingInfoByClientId()
     }
@@ -88,11 +92,15 @@ export default {
       })
     },
     showBillingInfo (item) {
-      this.$router.push({
-        path: this.$route.path,
-        params: { search: this.search },
-        query: { selected: item.id, clienttype: this.$route.query.clienttype, city: this.$route.query.city }
-      })
+      if (item.id === parseInt(this.$route.query.selected)) {
+        this.getBillingInfoByClientId()
+      } else {
+        this.$router.push({
+          path: this.$route.path,
+          params: { search: this.search },
+          query: { selected: item.id, clienttype: this.$route.query.clienttype, city: this.$route.query.city }
+        })
+      }
     }
   }
 }
