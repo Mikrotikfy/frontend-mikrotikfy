@@ -6,7 +6,9 @@
       {{ Number(totalamount).toLocaleString('es') }}
     </span> saldo total
   </h2>
-  <h2 v-else>El usuario no tiene estados de cuenta aún...</h2>
+  <h2 v-else>
+    El usuario no tiene estados de cuenta aún...
+  </h2>
 </template>
 <script>
 export default {

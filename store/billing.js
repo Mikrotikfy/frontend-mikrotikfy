@@ -149,6 +149,61 @@ export const mutations = {
   }
 }
 export const actions = {
+  addMovement ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}invoices`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              balance: payload.balance,
+              month: payload.month,
+              year: payload.year,
+              type: payload.type,
+              offer: payload.offer,
+              concept: payload.details,
+              payed: payload.payed,
+              partial: payload.partial,
+              indebt: payload.indebt,
+              client: payload.client,
+              invoice_type: payload.invoice_type
+            }
+          })
+        })
+          .then(res => res.json())
+          .then(({ data: invoice }) => {
+            this.$toast.info('Cobro creado', { duration: 3000 })
+            resolve(invoice)
+          })
+      })
+    } catch (error) {
+      throw new Error(`UPDATE BILLING INFO BY CLIENT ID ACTION ${error}`)
+    }
+  },
+  getInvoiceTypes ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}invoice-types`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((invoiceTypes) => {
+            localStorage.setItem('invoiceTypes', JSON.stringify(invoiceTypes.data))
+            resolve(invoiceTypes.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`GET BILLING INFO BY CLIENT ID ACTION ${error}`)
+    }
+  },
   updateInvoice ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {

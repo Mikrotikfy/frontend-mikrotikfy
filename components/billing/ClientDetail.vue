@@ -89,11 +89,6 @@ export default {
     }
   },
   watch: {
-    '$store.state.billing.invoices': {
-      handler () {
-        this.selectLastBill()
-      }
-    },
     '$store.state.billing.resetSelected': {
       handler () {
         this.selected = []
@@ -116,11 +111,6 @@ export default {
       setTimeout(() => {
         this.$refs.clientP.classList.add('hideMe')
       }, 100)
-    },
-    selectLastBill () {
-      this.selected = []
-      const bill = this.invoices.filter(item => item.active)
-      this.selected.push(bill[0])
     },
     caculateDebt (price, invoiceMovements) {
       if (invoiceMovements.length === 0) {
