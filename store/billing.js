@@ -9,7 +9,7 @@ export const state = () => ({
   selected: [],
   resetSelected: 0,
   refresh: 0,
-  showArchive: false
+  showPayed: false
 })
 export const mutations = {
   refresh (state) {
@@ -32,8 +32,8 @@ export const mutations = {
     const month = date.getMonth() + 1
     state.month = month
   },
-  toggleArchive (state, _) {
-    state.showArchive = !state.showArchive
+  togglePayed (state, _) {
+    state.showPayed = !state.showPayed
   },
   setBillingInfo (state, billingInfo) {
     state.billingInfo = billingInfo
@@ -303,9 +303,6 @@ export const actions = {
     try {
       const qs = require('qs')
       const query = qs.stringify({
-        filters: {
-          client: payload.clientId
-        },
         populate: ['invoices.offer', 'invoices', 'invoices.invoice_type', 'invoices.invoice_movements', 'invoices.invoice_movements.biller']
       },
       {
@@ -321,6 +318,7 @@ export const actions = {
         })
           .then(res => res.json())
           .then((client) => {
+            client.data.invoices = client.data.invoices.filter(invoice => invoice.payed === payload.showPayed)
             commit('getBillingInfoByClientId', { invoices: client.data.invoices, showArchive: payload.showArchive, client: client.data })
             resolve(client.data.invoices)
           })

@@ -1,8 +1,5 @@
 <template>
   <div v-if="invoices">
-    <span ref="clientP" class="ml-2 hideMe rounded-xl px-2">
-      Usuario: {{ currentClient.id }} {{ currentClient.name }}
-    </span>
     <client-only>
       <v-data-table
         ref="billDataTable"
@@ -20,16 +17,16 @@
         hide-default-footer
         mobile-breakpoint="100"
         @page-count="pageCount = $event"
-        @current-items="$vuetify.goTo(999)"
+        @current-items="$vuetify.goTo(0)"
       >
-        <template v-slot:[`item.concept`]="props">
+        <template v-slot:[`item.invoice_type.name`]="props">
           <v-chip
             :color="props.item.balance > 0 ? 'orange' : 'green'"
             text
             small
             label
           >
-            {{ props.item.concept }}
+            {{ props.item.invoice_type.name }}
           </v-chip>
         </template>
         <template v-slot:[`item.value`]="props">
@@ -68,7 +65,7 @@ export default {
       loadingDataTable: false,
       headers: [
         { text: 'ID', value: 'id', sortable: false },
-        { text: 'Concepto', value: 'concept', sortable: false },
+        { text: 'Concepto', value: 'invoice_type.name', sortable: false },
         { text: 'Detalles', value: 'details', sortable: false },
         { text: 'Valor Inicial', value: 'value', sortable: false },
         { text: 'Saldo Pendiente', sortable: false, value: 'debt' },
@@ -79,9 +76,6 @@ export default {
   computed: {
     invoices () {
       return this.$store.state.billing.invoices
-    },
-    currentClient () {
-      return this.$store.state.billing.currentClient
     }
   },
   methods: {

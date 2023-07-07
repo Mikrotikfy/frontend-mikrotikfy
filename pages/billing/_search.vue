@@ -12,15 +12,17 @@
       <v-col cols="7" class="parent">
         <v-card class="rounded-lg">
           <v-card-title>
-            <span :class="this.$store.state.billing.showArchive ? 'headline ml-4 red darken-4 rounded-lg px-2' : 'headline ml-4'">{{ this.$store.state.billing.showArchive ? 'ARCHIVO DE CUENTA' : 'Movimiento de Cuenta' }}</span>
+            <span :class="this.$store.state.billing.showArchive ? 'ml-4 red darken-4 rounded-lg px-2' : 'ml-2'">{{ this.$store.state.billing.showArchive ? 'ARCHIVO DE CUENTA' : 'Movimiento de Cuenta' }}</span> <span v-if="currentClient" ref="clientP" class="ml-1 hideMe rounded-xl px-2 text-body-1">
+              {{ currentClient.id }} {{ currentClient.name }}
+            </span>
             <v-spacer />
             <BillingToggleArchive />
             <BillingPrintMovement />
           </v-card-title>
-          <v-card-text style="height:75%;overflow-y:scroll;display:flex;flex-direction:column-reverse;">
+          <v-card-text style="height: calc(100vh - 549px);overflow-y:scroll;">
             <BillingClientDetail />
           </v-card-text>
-          <v-card-actions style="position: absolute;bottom: 0;border-top:grey solid 1px;width:100%;" class="d-flex pl-6">
+          <v-card-actions style="position: absolute;bottom: 0;border-top:grey solid 1px;width:100%;" class="d-flex pl-6 grey darken-4">
             <BillingClientTotal />
           </v-card-actions>
         </v-card>
@@ -36,6 +38,9 @@ export default {
   computed: {
     selected () {
       return this.$store.state.billing.selected
+    },
+    currentClient () {
+      return this.$store.state.billing.currentClient
     }
   },
   mounted () {

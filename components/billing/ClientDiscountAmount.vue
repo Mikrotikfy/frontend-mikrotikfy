@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mt-2 rounded-xl">
+  <v-card class="mt-2 rounded-lg">
     <v-card-text class="d-flex">
       <v-text-field
         v-model.number="amount"
@@ -29,8 +29,8 @@ export default {
     }
   },
   computed: {
-    selected () {
-      return this.$store.state.billing.selected
+    invoices () {
+      return this.$store.state.billing.invoices
     },
     total () {
       return this.$store.state.billing.total
@@ -38,27 +38,61 @@ export default {
   },
   methods: {
     addDiscountMovement () {
+      localStorage.setItem('pendingDiscountToSaveOnDB', true)
       if (this.amount > this.total) {
         this.$toast.error('El valor a recaudar no puede ser mayor al saldo total', { duration: 2000 })
         this.error = true
+        localStorage.removeItem('pendingDiscountToSaveOnDB')
         return
       }
       if (!this.amount) {
         this.$toast.error('Debe ingresar un valor', { duration: 2000 })
+        localStorage.removeItem('pendingDiscountToSaveOnDB')
         return
       }
-      for (const item of this.selected) {
-        if (this.$store.state.billing.billingInfo.clientId > 0) {
-          this.$store.dispatch('billing/addDiscountMovement', {
-            amount: this.amount,
-            for: this.selected.length > 0 ? item.id : null,
-            billingMonth: item.billingMonth,
-            client: this.$store.state.billing.billingInfo.clientId
-          })
-        }
-      }
+      this.payInvoicesFromOlderToNewer(this.invoices, this.amount)
       this.$store.commit('billing/resetSelected')
       this.amount = null
+    },
+    payInvoicesFromOlderToNewer (invoices, amount) {
+      let total = amount
+      const copyInvoices = JSON.parse(JSON.stringify(invoices))
+      for (let i = 0; i < invoices.length; i++) {
+        if (copyInvoices[i].invoice_type.name === 'MENSUALIDAD') {
+          if (total > 0) {
+            if (copyInvoices[i].balance > total) {
+              copyInvoices[i].balance -= total
+              total = 0
+            } else {
+              total -= copyInvoices[i].balance
+              copyInvoices[i].balance = 0
+            }
+          }
+        }
+      }
+      this.saveInvoicesToLocalstorage(copyInvoices)
+    },
+    async saveInvoicesToLocalstorage (invoices) {
+      localStorage.setItem('invoices', JSON.stringify(invoices))
+      const pendingDiscountToSaveOnDB = localStorage.getItem('pendingDiscountToSaveOnDB')
+      const isConnected = await this.$checkInternetConnection()
+      if (isConnected) {
+        if (pendingDiscountToSaveOnDB) {
+          this.$toast.info('Se ha encontrado un descuento pasado pendiente por subir.', { duration: 2000 })
+          const invoicesToSaveOnDB = JSON.parse(localStorage.getItem('invoices'))
+          this.saveInvoicesToDb(invoicesToSaveOnDB)
+        }
+        this.saveInvoicesToDb(invoices)
+      } else {
+        this.$toast.success('Se ha guardado el descuento en el dispositivo', { duration: 2000 })
+        this.$toast.info('No ha sido posible guardar el descuento en base de datos. Reintentando en 10 segundos.', { duration: 2000 })
+        setTimeout(() => {
+          this.saveInvoicesToLocalstorage(invoices)
+        }, 10000)
+      }
+    },
+    saveInvoicesToDb (invoices) {
+      const
     }
   }
 }

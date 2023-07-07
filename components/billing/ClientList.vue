@@ -37,11 +37,14 @@ export default {
     },
     search () {
       return this.$route.params.search
+    },
+    showPayed () {
+      return this.$store.state.billing.showPayed
     }
   },
   watch: {
-    '$store.state.billing.showArchive' () {
-      this.showBillingInfo(this.selected)
+    '$store.state.billing.showPayed' () {
+      this.getBillingInfoByClientId()
     },
     '$store.state.billing.refresh' () {
       this.getBillingInfoByClientId()
@@ -86,7 +89,7 @@ export default {
     getBillingInfoByClientId () {
       this.$store.dispatch('billing/getBillingInfoByClientId', {
         clientId: this.$route.query.selected,
-        showArchive: this.$store.state.billing.showArchive,
+        showPayed: this.showPayed,
         token: this.$store.state.auth.token
       })
     },

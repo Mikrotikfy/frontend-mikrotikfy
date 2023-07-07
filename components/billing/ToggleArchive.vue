@@ -1,21 +1,21 @@
 <template>
   <v-switch
-    v-model="toggleArchive"
-    label="Ver Facturas Pasadas"
+    v-model="togglePayed"
+    label="Ver Pagadas"
     class="mr-2"
-    @change="toggleArchiveStatus"
+    @change="togglePayedStatus"
   />
 </template>
 <script>
 export default {
   data () {
     return {
-      toggleArchive: false
+      togglePayed: false
     }
   },
   methods: {
-    toggleArchiveStatus () {
-      this.$store.commit('billing/toggleArchive')
+    togglePayedStatus () {
+      this.$store.commit('billing/togglePayed')
     }
   }
 }
