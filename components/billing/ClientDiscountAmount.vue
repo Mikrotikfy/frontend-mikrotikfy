@@ -38,7 +38,6 @@ export default {
   },
   methods: {
     addDiscountMovement () {
-      localStorage.setItem('pendingDiscountToSaveOnDB', true)
       if (this.amount > this.total) {
         this.$toast.error('El valor a recaudar no puede ser mayor al saldo total', { duration: 2000 })
         this.error = true
@@ -52,6 +51,7 @@ export default {
       }
       this.payInvoicesFromOlderToNewer(this.invoices, this.amount)
       this.$store.commit('billing/resetSelected')
+      this.$store.commit('billing/refresh')
       this.amount = null
     },
     payInvoicesFromOlderToNewer (invoices, amount) {
@@ -73,7 +73,6 @@ export default {
       this.saveInvoicesToLocalstorage(copyInvoices)
     },
     async saveInvoicesToLocalstorage (invoices) {
-      localStorage.setItem('invoices', JSON.stringify(invoices))
       const pendingDiscountToSaveOnDB = localStorage.getItem('pendingDiscountToSaveOnDB')
       const isConnected = await this.$checkInternetConnection()
       if (isConnected) {
@@ -82,6 +81,8 @@ export default {
           const invoicesToSaveOnDB = JSON.parse(localStorage.getItem('invoices'))
           this.saveInvoicesToDb(invoicesToSaveOnDB)
         }
+        localStorage.setItem('invoices', JSON.stringify(invoices))
+        localStorage.setItem('pendingDiscountToSaveOnDB', true)
         this.saveInvoicesToDb(invoices)
       } else {
         this.$toast.success('Se ha guardado el descuento en el dispositivo', { duration: 2000 })
@@ -92,7 +93,25 @@ export default {
       }
     },
     saveInvoicesToDb (invoices) {
-      const
+      console.log('invoicesq', invoices)
+      for (let i = 0; i < invoices.length; i++) {
+        this.$store.dispatch('billing/createInvoiceMovement', {
+          token: this.$store.state.auth.token,
+          biller: this.$store.state.auth,
+          invoice: invoices[i],
+          amount: invoices[i].value,
+          details: this.billingInfo.payBill.details
+        })
+        this.$store.dispatch('billing/updateInvoice', {
+          token: this.$store.state.auth.token,
+          index: this.index,
+          invoice: this.invoice,
+          payed: this.billingInfo.payBill.amount === this.balance || !this.billingInfo.payBill.amount,
+          balance: this.billingInfo.payBill.amount ? this.balance - this.billingInfo.payBill.amount : this.balance - this.invoice.balance
+        })
+      }
+      localStorage.removeItem('pendingDiscountToSaveOnDB')
+      localStorage.removeItem('invoices')
     }
   }
 }
