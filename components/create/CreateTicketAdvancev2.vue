@@ -369,6 +369,7 @@ export default {
               await this.setNewSpecs(res.data)
               this.$emit('refreshTickets')
               this.$toast.success('Ticket Actualizado con Exito', { duration: 4000, position: 'bottom-center' })
+              this.loading = true
             })
             .catch((error) => {
               this.$toast.error(error, { duration: 5000, position: 'bottom-center' })
@@ -376,7 +377,8 @@ export default {
             })
         }
       }).catch((error) => {
-        this.$toast.error(error, { position: 'bottom-center' })
+        this.$toast.error(error, { duration: 1000, position: 'bottom-center' })
+        this.loading = true
       })
     }
   }

@@ -11,7 +11,7 @@
         :loading="loadingDataTable"
         sort-by="id"
         sort-asc
-        no-data-text="Realiza una busqueda para iniciar..."
+        :no-data-text="showPayed ? 'No hay facturas pagas aun...' : 'Usuario al día'"
         loading-text="Cargando información de clientes..."
         dense
         hide-default-footer
@@ -76,6 +76,9 @@ export default {
   computed: {
     invoices () {
       return this.$store.state.billing.invoices
+    },
+    showPayed () {
+      return this.$store.state.billing.showPayed
     }
   },
   methods: {

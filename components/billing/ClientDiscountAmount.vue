@@ -4,13 +4,13 @@
       <v-text-field
         v-model.number="amount"
         type="number"
-        label="Recaudar $0.00"
+        label="Recaudar a mensualidad $0.00"
         single-line
         hide-details
         filled
         rounded
         autofocus
-        placeholder="Recaudar $0.00"
+        placeholder="Recaudar a mensualidad $0.00"
         :error="error"
         prepend-icon="mdi-account-cash-outline"
         color="green"
@@ -44,14 +44,12 @@ export default {
         localStorage.removeItem('pendingDiscountToSaveOnDB')
         return
       }
-      if (!this.amount) {
+      if (!this.amount || this.amount === 0) {
         this.$toast.error('Debe ingresar un valor', { duration: 2000 })
         localStorage.removeItem('pendingDiscountToSaveOnDB')
         return
       }
       this.payInvoicesFromOlderToNewer(this.invoices, this.amount)
-      this.$store.commit('billing/resetSelected')
-      this.$store.commit('billing/refresh')
       this.amount = null
     },
     payInvoicesFromOlderToNewer (invoices, amount) {
@@ -62,10 +60,12 @@ export default {
           if (total > 0) {
             if (copyInvoices[i].balance > total) {
               copyInvoices[i].balance -= total
+              copyInvoices[i].payed = false
               total = 0
             } else {
               total -= copyInvoices[i].balance
               copyInvoices[i].balance = 0
+              copyInvoices[i].payed = true
             }
           }
         }
@@ -79,11 +79,11 @@ export default {
         if (pendingDiscountToSaveOnDB) {
           this.$toast.info('Se ha encontrado un descuento pasado pendiente por subir.', { duration: 2000 })
           const invoicesToSaveOnDB = JSON.parse(localStorage.getItem('invoices'))
-          this.saveInvoicesToDb(invoicesToSaveOnDB)
+          await this.saveInvoicesToDb(invoicesToSaveOnDB)
         }
         localStorage.setItem('invoices', JSON.stringify(invoices))
         localStorage.setItem('pendingDiscountToSaveOnDB', true)
-        this.saveInvoicesToDb(invoices)
+        await this.saveInvoicesToDb(invoices)
       } else {
         this.$toast.success('Se ha guardado el descuento en el dispositivo', { duration: 2000 })
         this.$toast.info('No ha sido posible guardar el descuento en base de datos. Reintentando en 10 segundos.', { duration: 2000 })
@@ -92,24 +92,24 @@ export default {
         }, 10000)
       }
     },
-    saveInvoicesToDb (invoices) {
-      console.log('invoicesq', invoices)
+    async saveInvoicesToDb (invoices) {
       for (let i = 0; i < invoices.length; i++) {
-        this.$store.dispatch('billing/createInvoiceMovement', {
+        await this.$store.dispatch('billing/createInvoiceMovement', {
           token: this.$store.state.auth.token,
           biller: this.$store.state.auth,
           invoice: invoices[i],
-          amount: invoices[i].value,
-          details: this.billingInfo.payBill.details
+          amount: invoices[i].value - invoices[i].balance,
+          details: 'DESCUENTO EN LOTE'
         })
-        this.$store.dispatch('billing/updateInvoice', {
+        await this.$store.dispatch('billing/updateInvoice', {
           token: this.$store.state.auth.token,
-          index: this.index,
-          invoice: this.invoice,
-          payed: this.billingInfo.payBill.amount === this.balance || !this.billingInfo.payBill.amount,
-          balance: this.billingInfo.payBill.amount ? this.balance - this.billingInfo.payBill.amount : this.balance - this.invoice.balance
+          invoice: invoices[i],
+          payed: invoices[i].payed,
+          balance: invoices[i].balance
         })
       }
+      this.$store.commit('billing/resetSelected')
+      this.$store.commit('billing/refresh')
       localStorage.removeItem('pendingDiscountToSaveOnDB')
       localStorage.removeItem('invoices')
     }

@@ -303,7 +303,7 @@ export const actions = {
     try {
       const qs = require('qs')
       const query = qs.stringify({
-        populate: ['invoices.offer', 'invoices', 'invoices.invoice_type', 'invoices.invoice_movements', 'invoices.invoice_movements.biller']
+        populate: ['city', 'invoices.offer', 'invoices', 'invoices.invoice_type', 'invoices.invoice_movements', 'invoices.invoice_movements.biller']
       },
       {
         encodeValuesOnly: true
