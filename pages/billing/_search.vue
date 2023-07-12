@@ -18,7 +18,7 @@
             <v-spacer />
             <BillingToggleArchive />
             <BillingPrintMovement />
-            <CreateTicket v-if="currentClient" :client="currentClient" />
+            <CreateTicket v-if="currentClient" :client="currentClient" :filled="true" />
           </v-card-title>
           <v-card-text style="height: calc(100vh - 549px);overflow-y:scroll;">
             <BillingClientDetail />

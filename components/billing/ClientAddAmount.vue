@@ -128,7 +128,7 @@ export default {
           type: 'FACTURA',
           offer: 1,
           concept: this.billtype.name,
-          details: this.details ? this.details : this.monthName,
+          details: this.details ? this.details : this.getMonthNameByNumber(),
           payed: false,
           partial: false,
           indebt: false,
@@ -168,6 +168,23 @@ export default {
         'DICIEMBRE'
       ]
       return monthNames[month - 1]
+    },
+    getMonthNameByNumber () {
+      const monthNames = [
+        'ENERO',
+        'FEBRERO',
+        'MARZO',
+        'ABRIL',
+        'MAYO',
+        'JUNIO',
+        'JULIO',
+        'AGOSTO',
+        'SEPTIEMBRE',
+        'OCTUBRE',
+        'NOVIEMBRE',
+        'DICIEMBRE'
+      ]
+      return monthNames[this.month - 1]
     },
     getCurrentYear () {
       const date = new Date()
