@@ -49,6 +49,7 @@ export default {
         localStorage.removeItem('pendingDiscountToSaveOnDB')
         return
       }
+      localStorage.removeItem('invoicesForPrint')
       this.payInvoicesFromOlderToNewer(this.invoices, this.amount)
       this.amount = null
     },
@@ -70,9 +71,9 @@ export default {
           }
         }
       }
-      this.saveInvoicesToLocalstorage(copyInvoices)
+      this.saveInvoicesToLocalstorage(copyInvoices, amount)
     },
-    async saveInvoicesToLocalstorage (invoices) {
+    async saveInvoicesToLocalstorage (invoices, amount) {
       const pendingDiscountToSaveOnDB = localStorage.getItem('pendingDiscountToSaveOnDB')
       const isConnected = await this.$checkInternetConnection()
       if (isConnected) {
@@ -82,8 +83,10 @@ export default {
           await this.saveInvoicesToDb(invoicesToSaveOnDB)
         }
         localStorage.setItem('invoices', JSON.stringify(invoices))
+        localStorage.setItem('invoicesForPrint', JSON.stringify(invoices))
         localStorage.setItem('pendingDiscountToSaveOnDB', true)
         await this.saveInvoicesToDb(invoices)
+        await this.saveReceiptToDb(invoices, amount)
       } else {
         this.$toast.success('Se ha guardado el descuento en el dispositivo', { duration: 2000 })
         this.$toast.info('No ha sido posible guardar el descuento en base de datos. Reintentando en 10 segundos.', { duration: 2000 })
@@ -112,6 +115,16 @@ export default {
       this.$store.commit('billing/refresh')
       localStorage.removeItem('pendingDiscountToSaveOnDB')
       localStorage.removeItem('invoices')
+    },
+    async saveReceiptToDb (invoices, amount) {
+      const receipt = {
+        token: this.$store.state.auth.token,
+        biller: this.$store.state.auth,
+        amount,
+        invoices
+      }
+      const receiptRes = await this.$store.dispatch('billing/createReceipt', receipt)
+      window.open(`/bill?id=${receiptRes.id}`)
     }
   }
 }

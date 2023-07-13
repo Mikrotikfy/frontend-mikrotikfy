@@ -12,7 +12,7 @@
       <v-col cols="7" class="parent">
         <v-card class="rounded-lg">
           <v-card-title>
-            <span :class="this.$store.state.billing.showArchive ? 'ml-4 red darken-4 rounded-lg px-2' : 'ml-2'">{{ this.$store.state.billing.showArchive ? 'ARCHIVO DE CUENTA' : 'Movimiento de Cuenta' }}</span> <span v-if="currentClient" ref="clientP" class="ml-1 hideMe rounded-xl px-2 text-body-1">
+            <span :class="this.$store.state.billing.showArchive ? 'ml-4 red darken-4 rounded-lg px-2' : 'ml-2'">{{ this.$store.state.billing.showArchive ? 'ARCHIVO DE CUENTA' : 'Estado de Cuenta' }}</span> <span v-if="currentClient" ref="clientP" class="ml-1 hideMe rounded-xl px-2 text-body-1">
               {{ currentClient.id }} {{ currentClient.name }}
             </span>
             <v-spacer />

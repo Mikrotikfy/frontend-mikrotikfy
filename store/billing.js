@@ -299,6 +299,35 @@ export const actions = {
       throw new Error(`UPDATE CLIENT BALANCE ACTION ${error}`)
     }
   },
+  createReceipt ({ commit }, payload) {
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}receipts`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              invoices: {
+                connect: payload.invoices.map(invoice => invoice.id)
+              },
+              amount: payload.amount,
+              biller: payload.biller.id
+            }
+          })
+        })
+          .then(res => res.json())
+          .then(({ data: receipt }) => {
+            this.$toast.info('Recibo creado exitosamente', { duration: 3000 })
+            resolve(receipt)
+          })
+      })
+    } catch (error) {
+      throw new Error(`GET BILLING INFO BY CLIENT ID ACTION ${error}`)
+    }
+  },
   getBillingInfoByClientId ({ commit }, payload) {
     try {
       const qs = require('qs')

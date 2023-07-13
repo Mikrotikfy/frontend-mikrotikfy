@@ -239,8 +239,7 @@ export default {
               role: userData.role,
               telegramchatid: userData.telegramchatid
             }
-            Cookie.set('auth', auth, { expires: 1, path: '/' })
-            Cookie.set('auth', auth, { expires: 1, path: '/' })
+            Cookie.set('auth', auth, { expires: 7, path: '/' })
             await this.$store.dispatch('plan/getPlansFromDatabase')
             await this.$store.dispatch('technology/getTechnologiesFromDatabase')
             await this.$store.dispatch('device/getDeviceBrandsFromDatabase')
