@@ -86,6 +86,7 @@
                     <ControlCenter
                       :client="item"
                       :index="index"
+                      @reloadSearch="getClientBySearch"
                     />
                     <BillingAuxBillingList
                       :client="item"
@@ -288,8 +289,8 @@ export default {
       if (!client) { return 'Sin Direccion' }
       const address = client?.address
       const addresses = client?.addresses
-      if (!address && !addresses) { return 'Sin Dirección' }
-      if (address && !addresses) { return client.address }
+      if (!address && addresses.length < 1) { return 'Sin Dirección' }
+      if (address && addresses.length < 1) { return address }
       if (address && addresses.length > 0) { return addresses.at(-1).address }
       if (!address && addresses.length > 0) { return addresses.at(-1).address }
     },
@@ -297,8 +298,8 @@ export default {
       if (!client) { return 'Sin Barrio' }
       const addresses = client.addresses
       const neighborhood = client.neighborhood
-      if (!neighborhood && !addresses) { return 'Sin Barrio' }
-      if (neighborhood && !addresses) { return neighborhood.name }
+      if (!neighborhood && addresses.length < 1) { return 'Sin Barrio' }
+      if (neighborhood && addresses.length < 1) { return neighborhood.name }
       if (neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
       if (neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
       if (!neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }

@@ -673,7 +673,6 @@ export default {
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
         { text: 'Asignado', sortable: false, value: 'technician', width: 60 },
-        { text: 'Usuario disponible', sortable: false, value: 'time', width: 60 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name' },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
         { text: 'Código', sortable: false, value: 'client.code', width: 50 },
@@ -687,7 +686,6 @@ export default {
         { text: 'Estado', sortable: false, value: 'active', width: '5%', hide: 'd-none d-lg-table-cell' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 100 },
         { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
-        { text: 'Usuario disponible', sortable: false, value: 'time', width: 60 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
         { text: 'Cliente', sortable: false, value: 'client.name' }
@@ -695,7 +693,6 @@ export default {
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
         { text: 'Asignado', sortable: false, value: 'technician', width: 60 },
-        { text: 'Usuario disponible', sortable: false, value: 'time', width: 60 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name', width: 150 },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 150 },
         { text: 'Codigo', sortable: false, value: 'client.code', width: 60 },
@@ -708,7 +705,6 @@ export default {
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name' },
         { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
-        { text: 'Usuario disponible', sortable: false, value: 'time', width: 60 },
         { text: 'Barrio', sortable: false, value: 'client.neighborhood.name' },
         { text: 'Dirección', sortable: false, value: 'client.address', width: 180 },
         { text: 'Cliente', sortable: false, value: 'client.name' }

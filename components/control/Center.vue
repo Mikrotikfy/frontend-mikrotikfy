@@ -39,6 +39,7 @@
                   <ControlInformation
                     :client="client"
                     :index="index"
+                    @updateSuccess="reloadSearch"
                   />
                 </v-col>
                 <v-col v-if="$route.query.clienttype === 'INTERNET'">
@@ -102,7 +103,12 @@ export default {
     showCard: false,
     clientData: {},
     modal: false
-  })
+  }),
+  methods: {
+    reloadSearch () {
+      this.$emit('reloadSearch')
+    }
+  }
 }
 </script>
 
