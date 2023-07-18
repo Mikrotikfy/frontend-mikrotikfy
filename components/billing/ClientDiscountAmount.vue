@@ -86,9 +86,8 @@ export default {
         localStorage.setItem('invoicesForPrint', JSON.stringify(invoices))
         localStorage.setItem('pendingDiscountToSaveOnDB', true)
         await this.saveInvoicesToDb(invoices)
-        await this.saveReceiptToDb(invoices, amount)
+        await this.saveLegalNoteToDb(invoices, amount)
       } else {
-        this.$toast.success('Se ha guardado el descuento en el dispositivo', { duration: 2000 })
         this.$toast.info('No ha sido posible guardar el descuento en base de datos. Reintentando en 10 segundos.', { duration: 2000 })
         setTimeout(() => {
           this.saveInvoicesToLocalstorage(invoices)
@@ -116,15 +115,17 @@ export default {
       localStorage.removeItem('pendingDiscountToSaveOnDB')
       localStorage.removeItem('invoices')
     },
-    async saveReceiptToDb (invoices, amount) {
-      const receipt = {
+    async saveLegalNoteToDb (invoices, amount) {
+      const legalNote = {
         token: this.$store.state.auth.token,
         biller: this.$store.state.auth,
+        client: parseInt(this.$route.query.selected),
         amount,
+        type: 'credit',
         invoices
       }
-      const receiptRes = await this.$store.dispatch('billing/createReceipt', receipt)
-      window.open(`/bill?id=${receiptRes.id}`)
+      const legalNoteRes = await this.$store.dispatch('billing/createLegalNote', legalNote)
+      window.open(`/bill?id=${legalNoteRes.id}`)
     }
   }
 }

@@ -102,7 +102,8 @@ export default {
         v => v <= this.getCurrentMonth() || 'El mes no puede ser mayor al actual'
       ],
       canNotBeNullNorContainCommasOrDots: [
-        v => !!v || 'El monto no puede estar vacío',
+        v => !!v || 'El monto es requerido',
+        v => v > 0 || 'El monto debe ser mayor a 0',
         v => !v?.toString().includes(',') || 'No se permiten comas',
         v => !v?.toString().includes('.') || 'No se permiten puntos'
       ],
@@ -118,9 +119,9 @@ export default {
     }
   },
   methods: {
-    addAmount () {
+    async addAmount () {
       if (this.valid) {
-        this.$store.dispatch('billing/addMovement', {
+        await this.$store.dispatch('billing/addMovement', {
           balance: this.amount,
           value: this.amount,
           month: this.month,
@@ -136,14 +137,23 @@ export default {
           invoice_type: this.billtype.id,
           token: this.$store.state.auth.token
         })
+        const legalNote = {
+          token: this.$store.state.auth.token,
+          biller: this.$store.state.auth,
+          client: parseInt(this.$route.query.selected),
+          amount: this.amount,
+          type: 'debit'
+        }
+        await this.$store.dispatch('billing/createLegalNote', legalNote)
         this.amount = null
         this.details = null
+        this.$store.commit('billing/refresh')
       } else {
         this.$toast.error('No se puede crear la factura. Verifique los datos.', { duration: 5000 })
         this.amount = null
         this.details = null
+        this.$store.commit('billing/refresh')
       }
-      this.$store.commit('billing/refresh')
     },
     getCurrentMonth () {
       const date = new Date()

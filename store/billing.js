@@ -1,14 +1,15 @@
 export const state = () => ({
   clients: [],
   currentClient: null,
-  invoices: null,
+  invoices: [],
+  legalNotes: [],
   billsForCurrentClient: [],
   total: 0,
   month: null,
   headers: [],
   selected: [],
   resetSelected: 0,
-  refresh: 0,
+  refresh: 1,
   showPayed: false
 })
 export const mutations = {
@@ -150,6 +151,7 @@ export const mutations = {
     // }
     state.currentClient = data.client
     state.invoices = data.invoices
+    state.legalNotes = data.legalNotes
   }
 }
 export const actions = {
@@ -182,7 +184,6 @@ export const actions = {
         })
           .then(res => res.json())
           .then(({ data: invoice }) => {
-            this.$toast.info('Cobro creado', { duration: 3000 })
             resolve(invoice)
           })
       })
@@ -228,7 +229,6 @@ export const actions = {
         })
           .then(res => res.json())
           .then(({ data: invoiceMovement }) => {
-            this.$toast.info('Estado de cuenta actualizado', { duration: 3000 })
             resolve(invoiceMovement)
           })
       })
@@ -256,7 +256,6 @@ export const actions = {
         })
           .then(res => res.json())
           .then(({ data: invoiceMovement }) => {
-            this.$toast.info('Movimiento creado exitosamente', { duration: 3000 })
             resolve(invoiceMovement)
           })
       })
@@ -291,7 +290,6 @@ export const actions = {
         })
           .then(res => res.json())
           .then(({ data: client }) => {
-            this.$toast.info('Saldo actualizado', { duration: 1000 })
             resolve(client)
           })
       })
@@ -299,10 +297,10 @@ export const actions = {
       throw new Error(`UPDATE CLIENT BALANCE ACTION ${error}`)
     }
   },
-  createReceipt ({ commit }, payload) {
+  createLegalNote ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}receipts`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}legal-notes`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -314,14 +312,14 @@ export const actions = {
                 connect: payload.invoices.map(invoice => invoice.id)
               },
               amount: payload.amount,
+              client: payload.client,
               biller: payload.biller.id
             }
           })
         })
           .then(res => res.json())
-          .then(({ data: receipt }) => {
-            this.$toast.info('Recibo creado exitosamente', { duration: 3000 })
-            resolve(receipt)
+          .then(({ data: legalNotes }) => {
+            resolve(legalNotes)
           })
       })
     } catch (error) {
@@ -332,7 +330,17 @@ export const actions = {
     try {
       const qs = require('qs')
       const query = qs.stringify({
-        populate: ['city', 'invoices.offer', 'invoices', 'invoices.invoice_type', 'invoices.invoice_movements', 'invoices.invoice_movements.biller']
+        populate: [
+          'city',
+          'invoices.offer',
+          'invoices',
+          'invoices.invoice_type',
+          'invoices.invoice_movements',
+          'invoices.invoice_movements.biller',
+          'legal_notes',
+          'legal_notes.biller',
+          'legal_notes.invoices'
+        ]
       },
       {
         encodeValuesOnly: true
@@ -348,7 +356,7 @@ export const actions = {
           .then(res => res.json())
           .then((client) => {
             client.data.invoices = client.data.invoices.filter(invoice => invoice.payed === payload.showPayed)
-            commit('getBillingInfoByClientId', { invoices: client.data.invoices, showArchive: payload.showArchive, client: client.data })
+            commit('getBillingInfoByClientId', { invoices: client.data.invoices, legalNotes: client.data.legal_notes, showArchive: payload.showArchive, client: client.data })
             resolve(client.data.invoices)
           })
       })

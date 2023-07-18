@@ -3,11 +3,18 @@
     <BillingClientSearch class="mt-1" />
     <v-row class="mt-0">
       <v-col cols="5">
-        <v-card class="rounded-lg">
-          <v-card-text>
-            <BillingClientList />
-          </v-card-text>
-        </v-card>
+        <div class="parent-list">
+          <v-card class="rounded-lg">
+            <v-card-text>
+              <BillingClientList />
+            </v-card-text>
+          </v-card>
+          <v-card class="rounded-lg">
+            <v-card-text>
+              <BillingLegalNotesList />
+            </v-card-text>
+          </v-card>
+        </div>
       </v-col>
       <v-col cols="7" class="parent">
         <v-card class="rounded-lg">
@@ -52,8 +59,14 @@ export default {
 <style scoped>
 .parent {
   display: grid;
-    grid-auto-rows: 8fr 1fr 1fr 1fr;
-    grid-gap: 10px;
-    max-height: calc(100vh - 168px);
+  grid-auto-rows: 8fr 1fr 1fr 1fr;
+  grid-gap: 10px;
+  max-height: calc(100vh - 168px);
+}
+.parent-list {
+  display: grid;
+  grid-auto-rows: auto 1fr;
+  grid-gap: 10px;
+  max-height: calc(100vh - 168px);
 }
 </style>
