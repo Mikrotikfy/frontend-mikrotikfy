@@ -48,6 +48,9 @@
                     {{ item.corporate === null ? 'No definido' : item.corporate === false ? 'Plan Hogar' : 'Corporativo' }}
                   </v-chip>
                 </template>
+                <template v-slot:[`item.balance`]="{ item }">
+                  <strong>{{ formatCurrency(item) }}</strong>
+                </template>
                 <template v-slot:[`item.address`]="{ item }">
                   {{ processAddresses(item) }}
                 </template>
@@ -173,6 +176,7 @@ export default {
         { text: 'Barrio', value: 'neighborhood.name', sortable: false },
         { text: 'Telefono', sortable: false, value: 'phone' },
         { text: 'Tarifa', value: 'active', sortable: false },
+        { text: 'Saldo', value: 'balance', sortable: false },
         { text: 'Tecnologia', value: 'technology.name', sortable: false },
         { text: 'Clave', value: 'update_password', sortable: false },
         { text: 'Acciones', value: 'actions', sortable: false }
@@ -184,6 +188,7 @@ export default {
         { text: 'Barrio', value: 'neighborhood.name', sortable: false },
         { text: 'Telefono', sortable: false, value: 'phone' },
         { text: 'Tarifa', value: 'active', sortable: false },
+        { text: 'Saldo', value: 'balance', sortable: false },
         { text: 'Tecnologia', value: 'technology.name', sortable: false },
         { text: 'Acciones', value: 'actions', sortable: false }
       ] : [
@@ -202,6 +207,7 @@ export default {
         { text: 'Barrio', value: 'neighborhood.name', sortable: false },
         { text: 'Telefono', sortable: false, value: 'phone' },
         { text: 'Estado', sortable: false, value: 'active' },
+        { text: 'Saldo', value: 'balance', sortable: false },
         { text: 'Televisores', sortable: true, value: 'tvspec.tvs' },
         { text: 'Altos', sortable: true, value: 'tvspec.high' },
         { text: 'Bajos', sortable: true, value: 'tvspec.down' },
@@ -284,6 +290,10 @@ export default {
     },
     createClientSnack (value) {
       this.$toast.success('Cliente creado con exito', { duration: 4000, position: 'bottom-center' })
+    },
+    formatCurrency (client) {
+      if (client.balance === null) { return '0' }
+      return client.balance.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 })
     },
     processAddresses (client) {
       if (!client) { return 'Sin Direccion' }
