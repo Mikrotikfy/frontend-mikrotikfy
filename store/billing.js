@@ -297,23 +297,25 @@ export const actions = {
       throw new Error(`UPDATE CLIENT BALANCE ACTION ${error}`)
     }
   },
-  createLegalNote ({ commit }, payload) {
+  createLegalNote ({ commit }, { token, invoices, debit, credit, client, biller, connect = false }) {
+    console.log('invoices', credit, debit)
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}legal-notes`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${payload.token}`
+            Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({
             data: {
-              invoices: {
-                connect: payload.invoices.map(invoice => invoice.id)
-              },
-              amount: payload.amount,
-              client: payload.client,
-              biller: payload.biller.id
+              invoices: connect ? {
+                connect: invoices.map(invoice => invoice.id)
+              } : [],
+              credit,
+              debit,
+              client,
+              biller: biller.id
             }
           })
         })

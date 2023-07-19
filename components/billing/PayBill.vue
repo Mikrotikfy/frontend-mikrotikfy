@@ -88,37 +88,40 @@ export default {
         this.$refs.cbtn.$el.focus()
       }, 200)
     },
-    createInvoiceMovement () {
+    async createInvoiceMovement () {
       if (this.billingInfo.payBill.amount && this.billingInfo.payBill.amount > this.balance) {
         this.$toast.error('El valor a recaudar no puede ser mayor al saldo', { duration: 2000 })
         this.error = true
         return
       }
-      this.$store.dispatch('billing/createInvoiceMovement', {
+      await this.$store.dispatch('billing/createInvoiceMovement', {
         token: this.$store.state.auth.token,
         biller: this.$store.state.auth,
         invoice: this.invoice,
         amount: this.billingInfo.payBill.amount || this.balance,
         details: this.billingInfo.payBill.details
       })
-      this.$store.dispatch('billing/updateInvoice', {
+      await this.$store.dispatch('billing/updateInvoice', {
         token: this.$store.state.auth.token,
         index: this.index,
         invoice: this.invoice,
         payed: this.billingInfo.payBill.amount === this.balance || !this.billingInfo.payBill.amount,
         balance: this.billingInfo.payBill.amount ? this.balance - this.billingInfo.payBill.amount : this.balance - this.invoice.balance
       })
-      this.getBillingInfoByClientId()
+      const legalNote = {
+        token: this.$store.state.auth.token,
+        biller: this.$store.state.auth,
+        client: parseInt(this.$route.query.selected),
+        debit: 0,
+        credit: this.billingInfo.payBill.amount || this.balance,
+        connect: true,
+        invoices: [this.invoice]
+      }
+      const legalNoteRes = await this.$store.dispatch('billing/createLegalNote', legalNote)
+      window.open(`/bill?id=${legalNoteRes.id}`)
       this.$store.commit('billing/resetSelected')
-      this.amount = null
-      this.dialog = false
-    },
-    getBillingInfoByClientId () {
-      this.$store.dispatch('billing/getBillingInfoByClientId', {
-        clientId: this.$route.query.selected,
-        showArchive: this.$store.state.billing.showArchive,
-        token: this.$store.state.auth.token
-      })
+      this.$store.commit('billing/refresh')
+      // this.dialog = false
     }
   }
 }

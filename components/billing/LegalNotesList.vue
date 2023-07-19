@@ -1,36 +1,47 @@
 <template>
-  <v-data-table
-    :items="legalNotes"
-    :headers="headers"
-    :items-per-page="itemsPerPage"
-    :page.sync="page"
-    :options.sync="options"
-    :loading="loadingDataTable"
-    no-data-text="No hay recibos para mostrar..."
-    loading-text="Cargando recibos..."
-    dense
-    hide-default-footer
-    caption="Movimientos"
-    mobile-breakpoint="100"
-    @page-count="pageCount = $event"
-    @click:row="showLegalNotesInfo"
-  >
-    <template v-slot:[`item.amount`]="props">
-      <strong> ${{ Number(props.item.amount).toLocaleString('es') }} </strong>
-    </template>
-    <template v-slot:[`item.invoices`]="props">
-      <strong> {{ formatConcepts(props.item.invoices) }} </strong>
-    </template>
-    <template v-slot:[`item.createdAt`]="props">
-      <strong> {{ getDate(props.item.createdAt) }} </strong>
-    </template>
-  </v-data-table>
+  <div>
+    <v-data-table
+      :items="legalNotes"
+      :headers="headers"
+      :items-per-page="itemsPerPage"
+      :page.sync="page"
+      :options.sync="options"
+      :loading="loadingDataTable"
+      no-data-text="No hay recibos para mostrar..."
+      loading-text="Cargando recibos..."
+      dense
+      hide-default-footer
+      caption="Movimientos"
+      mobile-breakpoint="100"
+      @page-count="pageCount = $event"
+    >
+      <template v-slot:[`item.amount`]="props">
+        <strong> ${{ Number(props.item.amount).toLocaleString('es') }} </strong>
+      </template>
+      <template v-slot:[`item.invoices`]="props">
+        <strong> {{ formatConcepts(props.item.invoices) }} </strong>
+      </template>
+      <template v-slot:[`item.createdAt`]="props">
+        <strong> {{ getDate(props.item.createdAt) }} </strong>
+      </template>
+      <template v-slot:[`item.actions`]="props">
+        <v-btn
+          class="white black--text"
+          x-small
+          @click="openPrintReceipt(props.item)"
+        >
+          <v-icon>mdi-printer</v-icon>
+        </v-btn>
+      </template>
+    </v-data-table>
+    <v-pagination v-model="page" :length="pageCount" />
+  </div>
 </template>
 <script>
 export default {
   data () {
     return {
-      itemsPerPage: 10,
+      itemsPerPage: 50,
       page: 1,
       pageCount: 0,
       options: {},
@@ -38,9 +49,10 @@ export default {
       selected: [],
       headers: [
         { text: 'Fecha', value: 'createdAt', align: 'start' },
-        { text: 'Debito', value: 'amount' },
-        { text: 'Crédito', value: 'amount' },
-        { text: 'Conceptos', value: 'invoices', sortable: false }
+        { text: 'Debito', value: 'debit', sortable: false },
+        { text: 'Crédito', value: 'credit', sortable: false },
+        { text: 'Conceptos', value: 'invoices', sortable: false },
+        { text: 'Acciones', value: 'actions', sortable: false }
       ]
     }
   },
@@ -59,14 +71,21 @@ export default {
       return humanDateFormat
     },
     formatConcepts (invoices) {
+      if (invoices.length === 0) { return }
+      console.log(invoices)
       let concepts = ''
       invoices.forEach((invoice, index) => {
-        concepts += `${invoice.details} ${invoice.value - invoice.balance}`
+        concepts += `${invoice.concept === 'FACTURACION MENSUAL' ? invoice.details : invoice.concept} ${invoice.value - invoice.balance}`
         if (index < invoices.length - 1) {
           concepts += ', '
         }
       })
       return concepts
+    },
+    openPrintReceipt (receipt) {
+      localStorage.removeItem('receiptToPrint')
+      localStorage.setItem('receiptToPrint', JSON.stringify(receipt))
+      window.open(`/bill?id=${receipt.id}`)
     }
   }
 }

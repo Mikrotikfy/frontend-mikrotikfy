@@ -141,8 +141,8 @@ export default {
           token: this.$store.state.auth.token,
           biller: this.$store.state.auth,
           client: parseInt(this.$route.query.selected),
-          amount: this.amount,
-          type: 'debit'
+          debit: this.amount,
+          credit: 0
         }
         await this.$store.dispatch('billing/createLegalNote', legalNote)
         this.amount = null

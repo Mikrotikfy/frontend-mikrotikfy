@@ -37,7 +37,7 @@ export default {
     }
   },
   methods: {
-    addDiscountMovement () {
+    async addDiscountMovement () {
       if (this.amount > this.total) {
         this.$toast.error('El valor a recaudar no puede ser mayor al saldo total', { duration: 2000 })
         this.error = true
@@ -50,28 +50,43 @@ export default {
         return
       }
       localStorage.removeItem('invoicesForPrint')
-      this.payInvoicesFromOlderToNewer(this.invoices, this.amount)
+      await this.payInvoicesFromOlderToNewer(this.invoices, this.amount)
       this.amount = null
     },
-    payInvoicesFromOlderToNewer (invoices, amount) {
+    async payInvoicesFromOlderToNewer (invoices, amount) {
       let total = amount
       const copyInvoices = JSON.parse(JSON.stringify(invoices))
-      for (let i = 0; i < invoices.length; i++) {
-        if (copyInvoices[i].invoice_type.name === 'MENSUALIDAD') {
+      const monthlyInvoices = copyInvoices.filter(invoice => invoice.invoice_type.name === 'MENSUALIDAD')
+      const otherInvoices = copyInvoices.filter(invoice => invoice.invoice_type.name !== 'MENSUALIDAD')
+      for (let i = 0; i < monthlyInvoices.length; i++) {
+        if (total > 0) {
+          if (monthlyInvoices[i].balance > total) {
+            monthlyInvoices[i].balance -= total
+            monthlyInvoices[i].payed = false
+            total = 0
+          } else {
+            total -= monthlyInvoices[i].balance
+            monthlyInvoices[i].balance = 0
+            monthlyInvoices[i].payed = true
+          }
+        }
+      }
+      if (total > 0) {
+        for (let i = 0; i < otherInvoices.length; i++) {
           if (total > 0) {
-            if (copyInvoices[i].balance > total) {
-              copyInvoices[i].balance -= total
-              copyInvoices[i].payed = false
+            if (otherInvoices[i].balance > total) {
+              otherInvoices[i].balance -= total
+              otherInvoices[i].payed = false
               total = 0
             } else {
-              total -= copyInvoices[i].balance
-              copyInvoices[i].balance = 0
-              copyInvoices[i].payed = true
+              total -= otherInvoices[i].balance
+              otherInvoices[i].balance = 0
+              otherInvoices[i].payed = true
             }
           }
         }
       }
-      this.saveInvoicesToLocalstorage(copyInvoices, amount)
+      await this.saveInvoicesToLocalstorage(copyInvoices, amount)
     },
     async saveInvoicesToLocalstorage (invoices, amount) {
       const pendingDiscountToSaveOnDB = localStorage.getItem('pendingDiscountToSaveOnDB')
@@ -120,8 +135,9 @@ export default {
         token: this.$store.state.auth.token,
         biller: this.$store.state.auth,
         client: parseInt(this.$route.query.selected),
-        amount,
-        type: 'credit',
+        debit: 0,
+        credit: amount,
+        connect: true,
         invoices
       }
       const legalNoteRes = await this.$store.dispatch('billing/createLegalNote', legalNote)

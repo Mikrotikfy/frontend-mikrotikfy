@@ -1,26 +1,30 @@
 <template>
-  <v-data-table
-    v-if="headers"
-    :headers="headers"
-    :items.sync="clients"
-    :items-per-page.sync="itemsPerPage"
-    :page.sync="page"
-    :options.sync="options"
-    :loading="loadingDataTable"
-    no-data-text="Realiza una busqueda para iniciar..."
-    loading-text="Cargando información de clientes..."
-    dense
-    hide-default-footer
-    mobile-breakpoint="100"
-    @page-count="pageCount = $event"
-    @click:row="showBillingInfo"
-  />
+  <div>
+    <v-data-table
+      v-if="headers"
+      :headers="headers"
+      :items.sync="clients"
+      :items-per-page.sync="itemsPerPage"
+      :page.sync="page"
+      :options.sync="options"
+      :loading="loadingDataTable"
+      no-data-text="Realiza una busqueda para iniciar..."
+      loading-text="Cargando información de clientes..."
+      caption="Clientes"
+      dense
+      hide-default-footer
+      mobile-breakpoint="100"
+      @page-count="pageCount = $event"
+      @click:row="showBillingInfo"
+    />
+    <v-pagination v-model="page" :length="pageCount" />
+  </div>
 </template>
 <script>
 export default {
   data () {
     return {
-      itemsPerPage: 10,
+      itemsPerPage: 25,
       page: 1,
       pageCount: 0,
       options: {},

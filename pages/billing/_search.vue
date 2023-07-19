@@ -2,7 +2,7 @@
   <v-container fluid style="height:calc(100vh - 48px);">
     <BillingClientSearch class="mt-1" />
     <v-row class="mt-0">
-      <v-col cols="5">
+      <v-col cols="5" class="parent-container">
         <div class="parent-list">
           <v-card class="rounded-lg">
             <v-card-text>
@@ -65,8 +65,11 @@ export default {
 }
 .parent-list {
   display: grid;
-  grid-auto-rows: auto 1fr;
+  grid-auto-rows: minmax(1fr, 50vh) minmax(1fr, auto);
   grid-gap: 10px;
+}
+.parent-container {
   max-height: calc(100vh - 168px);
+  overflow-y: scroll;
 }
 </style>
