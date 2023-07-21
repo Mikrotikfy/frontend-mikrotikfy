@@ -54,6 +54,7 @@ export default {
       this.getBillingInfoByClientId()
     },
     '$route' () {
+      this.$store.commit('billing/resetInvoices')
       this.getClientsBySearch()
     }
   },
@@ -91,11 +92,13 @@ export default {
       }
     },
     async getBillingInfoByClientId (cliendId = null) {
-      await this.$store.dispatch('billing/getBillingInfoByClientId', {
-        clientId: cliendId || this.$route.query.selected,
-        showPayed: this.showPayed,
-        token: this.$store.state.auth.token
-      })
+      if (this.$store.state.billing.clients.length > 0) {
+        await this.$store.dispatch('billing/getBillingInfoByClientId', {
+          clientId: cliendId || this.$route.query.selected,
+          showPayed: this.showPayed,
+          token: this.$store.state.auth.token
+        })
+      }
     },
     async showBillingInfo (item) {
       if (item.id === parseInt(this.$route.query.selected)) {

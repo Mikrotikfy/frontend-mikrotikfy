@@ -48,6 +48,7 @@ export const mutations = {
   },
   resetInvoices (state) {
     state.invoices = []
+    state.legalNotes = []
   },
   resetCurrentClient (state) {
     state.currentClient = {}
