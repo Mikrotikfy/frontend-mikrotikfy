@@ -15,11 +15,14 @@
       mobile-breakpoint="100"
       @page-count="pageCount = $event"
     >
-      <template v-slot:[`item.amount`]="props">
-        <strong> ${{ Number(props.item.amount).toLocaleString('es') }} </strong>
+      <template v-slot:[`item.debit`]="props">
+        <strong> ${{ Number(props.item.debit).toLocaleString('es') }} </strong>
+      </template>
+      <template v-slot:[`item.credit`]="props">
+        <strong> ${{ Number(props.item.credit).toLocaleString('es') }} </strong>
       </template>
       <template v-slot:[`item.invoices`]="props">
-        <strong> {{ formatConcepts(props.item.invoices) }} </strong>
+        <strong> {{ formatConcepts(props.item.invoice_movements, props.item) }} </strong>
       </template>
       <template v-slot:[`item.createdAt`]="props">
         <strong> {{ getDate(props.item.createdAt) }} </strong>
@@ -70,13 +73,12 @@ export default {
       const humanDateFormat = dateObject.toLocaleString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })
       return humanDateFormat
     },
-    formatConcepts (invoices) {
-      if (invoices.length === 0) { return }
-      console.log(invoices)
+    formatConcepts (invoicesMovements, legalNote) {
+      if (invoicesMovements.length === 0) { return legalNote.concept }
       let concepts = ''
-      invoices.forEach((invoice, index) => {
-        concepts += `${invoice.concept === 'FACTURACION MENSUAL' ? invoice.details : invoice.concept} ${invoice.value - invoice.balance}`
-        if (index < invoices.length - 1) {
+      invoicesMovements.forEach((movement, index) => {
+        concepts += `${movement.type === 'FACTURACION MENSUAL' ? movement.concept : movement.type} $${Number(movement.amount).toLocaleString('es')}`
+        if (index < invoicesMovements.length - 1) {
           concepts += ', '
         }
       })

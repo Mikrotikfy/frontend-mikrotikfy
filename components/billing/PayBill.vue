@@ -98,6 +98,8 @@ export default {
         token: this.$store.state.auth.token,
         biller: this.$store.state.auth,
         invoice: this.invoice,
+        type: this.invoice.invoice_type.name,
+        concept: this.invoice.details,
         amount: this.billingInfo.payBill.amount || this.balance,
         details: this.billingInfo.payBill.details
       })

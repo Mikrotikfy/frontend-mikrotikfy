@@ -108,7 +108,7 @@ export default {
         v => !v?.toString().includes('.') || 'No se permiten puntos'
       ],
       billtype: {
-        id: 1,
+        id: 3,
         name: 'FACTURACION MENSUAL'
       }
     }
@@ -142,7 +142,8 @@ export default {
           biller: this.$store.state.auth,
           client: parseInt(this.$route.query.selected),
           debit: this.amount,
-          credit: 0
+          credit: 0,
+          concept: this.billtype.name
         }
         await this.$store.dispatch('billing/createLegalNote', legalNote)
         this.amount = null

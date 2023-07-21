@@ -56,8 +56,8 @@ export default {
     async payInvoicesFromOlderToNewer (invoices, amount) {
       let total = amount
       const copyInvoices = JSON.parse(JSON.stringify(invoices))
-      const monthlyInvoices = copyInvoices.filter(invoice => invoice.invoice_type.name === 'MENSUALIDAD')
-      const otherInvoices = copyInvoices.filter(invoice => invoice.invoice_type.name !== 'MENSUALIDAD')
+      const monthlyInvoices = copyInvoices.filter(invoice => invoice.invoice_type.name === 'FACTURACION MENSUAL')
+      const otherInvoices = copyInvoices.filter(invoice => invoice.invoice_type.name !== 'FACTURACION MENSUAL')
       for (let i = 0; i < monthlyInvoices.length; i++) {
         if (total > 0) {
           if (monthlyInvoices[i].balance > total) {
@@ -86,9 +86,9 @@ export default {
           }
         }
       }
-      await this.saveInvoicesToLocalstorage(copyInvoices, amount)
+      await this.saveInvoicesToLocalstorage(invoices, copyInvoices, amount)
     },
-    async saveInvoicesToLocalstorage (invoices, amount) {
+    async saveInvoicesToLocalstorage (originalInvoices, copyInvoices, amount) {
       const pendingDiscountToSaveOnDB = localStorage.getItem('pendingDiscountToSaveOnDB')
       const isConnected = await this.$checkInternetConnection()
       if (isConnected) {
@@ -97,26 +97,31 @@ export default {
           const invoicesToSaveOnDB = JSON.parse(localStorage.getItem('invoices'))
           await this.saveInvoicesToDb(invoicesToSaveOnDB)
         }
-        localStorage.setItem('invoices', JSON.stringify(invoices))
-        localStorage.setItem('invoicesForPrint', JSON.stringify(invoices))
+        localStorage.setItem('invoices', JSON.stringify(copyInvoices))
+        localStorage.setItem('invoicesForPrint', JSON.stringify(copyInvoices))
         localStorage.setItem('pendingDiscountToSaveOnDB', true)
-        await this.saveInvoicesToDb(invoices)
-        await this.saveLegalNoteToDb(invoices, amount)
+        const legalNote = await this.saveLegalNoteToDb(copyInvoices, amount)
+        await this.saveInvoicesToDb(originalInvoices, copyInvoices, legalNote, amount)
       } else {
         this.$toast.info('No ha sido posible guardar el descuento en base de datos. Reintentando en 10 segundos.', { duration: 2000 })
         setTimeout(() => {
-          this.saveInvoicesToLocalstorage(invoices)
+          this.saveInvoicesToLocalstorage(copyInvoices)
         }, 10000)
       }
     },
-    async saveInvoicesToDb (invoices) {
+    async saveInvoicesToDb (originalInvoices, invoices, legalNote, amount) {
       for (let i = 0; i < invoices.length; i++) {
+        console.log('value: ' + originalInvoices[i].value, 'balance: ' + originalInvoices[i].balance, 'amount: ' + amount)
+        console.log('value: ' + invoices[i].value, 'balance: ' + invoices[i].balance, 'amount: ' + amount)
         await this.$store.dispatch('billing/createInvoiceMovement', {
           token: this.$store.state.auth.token,
           biller: this.$store.state.auth,
           invoice: invoices[i],
-          amount: invoices[i].value - invoices[i].balance,
-          details: 'DESCUENTO EN LOTE'
+          amount: originalInvoices[i].balance - invoices[i].balance,
+          details: 'DESCUENTO EN LOTE',
+          type: invoices[i].invoice_type.name,
+          concept: invoices[i].details,
+          legalNote: legalNote.id
         })
         await this.$store.dispatch('billing/updateInvoice', {
           token: this.$store.state.auth.token,
@@ -129,6 +134,7 @@ export default {
       this.$store.commit('billing/refresh')
       localStorage.removeItem('pendingDiscountToSaveOnDB')
       localStorage.removeItem('invoices')
+      // window.open(`/bill?id=${legalNote.id}`)
     },
     async saveLegalNoteToDb (invoices, amount) {
       const legalNote = {
@@ -141,7 +147,7 @@ export default {
         invoices
       }
       const legalNoteRes = await this.$store.dispatch('billing/createLegalNote', legalNote)
-      window.open(`/bill?id=${legalNoteRes.id}`)
+      return legalNoteRes
     }
   }
 }

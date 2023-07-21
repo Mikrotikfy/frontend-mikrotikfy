@@ -4,7 +4,6 @@ export const state = () => ({
 export const mutations = {
   getTvSpecTypes (state, spectypes) {
     try {
-      console.log('TV SPEC TYPES MUTATE', spectypes)
       state.spectypes = spectypes
     } catch (error) {
       throw new Error(`TV SPEC TYPES MUTATE ${error}`)

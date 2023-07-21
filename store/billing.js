@@ -237,6 +237,7 @@ export const actions = {
     }
   },
   createInvoiceMovement ({ commit }, payload) {
+    console.log(payload.amount)
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}invoice-movements`, {
@@ -250,7 +251,10 @@ export const actions = {
               invoice: payload.invoice.id,
               amount: payload.amount,
               details: payload.details,
-              biller: payload.biller.id
+              biller: payload.biller.id,
+              type: payload.type,
+              concept: payload.concept,
+              legal_note: payload.legalNote ? payload.legalNote : null
             }
           })
         })
@@ -297,8 +301,7 @@ export const actions = {
       throw new Error(`UPDATE CLIENT BALANCE ACTION ${error}`)
     }
   },
-  createLegalNote ({ commit }, { token, invoices, debit, credit, client, biller, connect = false }) {
-    console.log('invoices', credit, debit)
+  createLegalNote ({ commit }, { token, invoices, debit, credit, client, biller, concept, connect = false }) {
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}legal-notes`, {
@@ -315,6 +318,7 @@ export const actions = {
               credit,
               debit,
               client,
+              concept,
               biller: biller.id
             }
           })
@@ -341,7 +345,8 @@ export const actions = {
           'invoices.invoice_movements.biller',
           'legal_notes',
           'legal_notes.biller',
-          'legal_notes.invoices'
+          'legal_notes.invoices',
+          'legal_notes.invoice_movements'
         ]
       },
       {
