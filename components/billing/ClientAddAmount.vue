@@ -108,7 +108,7 @@ export default {
         v => !v?.toString().includes('.') || 'No se permiten puntos'
       ],
       billtype: {
-        id: 3,
+        id: 1,
         name: 'FACTURACION MENSUAL'
       }
     }

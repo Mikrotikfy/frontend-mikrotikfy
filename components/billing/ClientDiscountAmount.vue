@@ -63,9 +63,11 @@ export default {
           if (monthlyInvoices[i].balance > total) {
             monthlyInvoices[i].balance -= total
             monthlyInvoices[i].payed = false
+            monthlyInvoices[i].discountedAmount = total
             total = 0
           } else {
             total -= monthlyInvoices[i].balance
+            monthlyInvoices[i].discountedAmount = monthlyInvoices[i].balance
             monthlyInvoices[i].balance = 0
             monthlyInvoices[i].payed = true
           }
@@ -77,18 +79,20 @@ export default {
             if (otherInvoices[i].balance > total) {
               otherInvoices[i].balance -= total
               otherInvoices[i].payed = false
+              otherInvoices[i].discountedAmount = total
               total = 0
             } else {
               total -= otherInvoices[i].balance
+              otherInvoices[i].discountedAmount = otherInvoices[i].balance
               otherInvoices[i].balance = 0
               otherInvoices[i].payed = true
             }
           }
         }
       }
-      await this.saveInvoicesToLocalstorage(invoices, copyInvoices, amount)
+      await this.saveInvoicesToLocalstorage(copyInvoices, amount)
     },
-    async saveInvoicesToLocalstorage (originalInvoices, copyInvoices, amount) {
+    async saveInvoicesToLocalstorage (invoices, amount) {
       const pendingDiscountToSaveOnDB = localStorage.getItem('pendingDiscountToSaveOnDB')
       const isConnected = await this.$checkInternetConnection()
       if (isConnected) {
@@ -97,27 +101,26 @@ export default {
           const invoicesToSaveOnDB = JSON.parse(localStorage.getItem('invoices'))
           await this.saveInvoicesToDb(invoicesToSaveOnDB)
         }
-        localStorage.setItem('invoices', JSON.stringify(copyInvoices))
-        localStorage.setItem('invoicesForPrint', JSON.stringify(copyInvoices))
+        localStorage.setItem('invoices', JSON.stringify(invoices))
+        localStorage.setItem('invoicesForPrint', JSON.stringify(invoices))
         localStorage.setItem('pendingDiscountToSaveOnDB', true)
-        const legalNote = await this.saveLegalNoteToDb(copyInvoices, amount)
-        await this.saveInvoicesToDb(originalInvoices, copyInvoices, legalNote, amount)
+        const legalNote = await this.saveLegalNoteToDb(invoices, amount)
+        await this.saveInvoicesToDb(invoices, legalNote, amount)
       } else {
         this.$toast.info('No ha sido posible guardar el descuento en base de datos. Reintentando en 10 segundos.', { duration: 2000 })
         setTimeout(() => {
-          this.saveInvoicesToLocalstorage(copyInvoices)
+          this.saveInvoicesToLocalstorage(invoices)
         }, 10000)
       }
     },
-    async saveInvoicesToDb (originalInvoices, invoices, legalNote, amount) {
+    async saveInvoicesToDb (invoices, legalNote, amount) {
       for (let i = 0; i < invoices.length; i++) {
-        console.log('value: ' + originalInvoices[i].value, 'balance: ' + originalInvoices[i].balance, 'amount: ' + amount)
-        console.log('value: ' + invoices[i].value, 'balance: ' + invoices[i].balance, 'amount: ' + amount)
+        console.log(invoices[i])
         await this.$store.dispatch('billing/createInvoiceMovement', {
           token: this.$store.state.auth.token,
           biller: this.$store.state.auth,
           invoice: invoices[i],
-          amount: originalInvoices[i].balance - invoices[i].balance,
+          amount: invoices[i].discountedAmount,
           details: 'DESCUENTO EN LOTE',
           type: invoices[i].invoice_type.name,
           concept: invoices[i].details,
