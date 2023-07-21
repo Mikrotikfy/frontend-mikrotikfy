@@ -50,7 +50,7 @@ export const mutations = {
     state.invoices = []
   },
   resetCurrentClient (state) {
-    state.currentClient = []
+    state.currentClient = {}
   },
   setTotal (state, total) {
     state.total = total
@@ -237,7 +237,6 @@ export const actions = {
     }
   },
   createInvoiceMovement ({ commit }, payload) {
-    console.log(payload.amount)
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}invoice-movements`, {

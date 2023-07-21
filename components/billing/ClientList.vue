@@ -54,7 +54,7 @@ export default {
       this.getBillingInfoByClientId()
     },
     '$route' () {
-      this.getBillingInfoByClientId()
+      this.getClientsBySearch()
     }
   },
   mounted () {
@@ -66,9 +66,9 @@ export default {
     this.loadingDataTable = false
   },
   methods: {
-    testForSingleClient () {
+    async testForSingleClient () {
       if (this.$store.state.billing.clients.length === 1) {
-        this.showBillingInfo(this.$store.state.billing.clients[0])
+        await this.showBillingInfo(this.$store.state.billing.clients[0])
       } else {
         this.$store.commit('billing/setBillingInfo', {})
       }
@@ -87,19 +87,19 @@ export default {
           clienttype: this.$route.query.clienttype,
           token: this.$store.state.auth.token
         })
-        this.testForSingleClient()
+        await this.testForSingleClient()
       }
     },
-    getBillingInfoByClientId () {
-      this.$store.dispatch('billing/getBillingInfoByClientId', {
-        clientId: this.$route.query.selected,
+    async getBillingInfoByClientId (cliendId = null) {
+      await this.$store.dispatch('billing/getBillingInfoByClientId', {
+        clientId: cliendId || this.$route.query.selected,
         showPayed: this.showPayed,
         token: this.$store.state.auth.token
       })
     },
-    showBillingInfo (item) {
+    async showBillingInfo (item) {
       if (item.id === parseInt(this.$route.query.selected)) {
-        this.getBillingInfoByClientId()
+        await this.getBillingInfoByClientId(item.id)
       } else {
         this.$router.push({
           path: this.$route.path,

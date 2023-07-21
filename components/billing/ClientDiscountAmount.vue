@@ -113,9 +113,8 @@ export default {
         }, 10000)
       }
     },
-    async saveInvoicesToDb (invoices, legalNote, amount) {
+    async saveInvoicesToDb (invoices, legalNote) {
       for (let i = 0; i < invoices.length; i++) {
-        console.log(invoices[i])
         await this.$store.dispatch('billing/createInvoiceMovement', {
           token: this.$store.state.auth.token,
           biller: this.$store.state.auth,
