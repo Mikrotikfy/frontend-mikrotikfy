@@ -1,11 +1,15 @@
 export const state = () => ({
   clients: [],
+  activeClients: [],
   currentClient: null,
+  e1: 1,
   invoices: [],
   legalNotes: [],
+  sendIndex: 0,
   billsForCurrentClient: [],
   total: 0,
   month: null,
+  year: null,
   headers: [],
   selected: [],
   resetSelected: 0,
@@ -13,6 +17,15 @@ export const state = () => ({
   showPayed: false
 })
 export const mutations = {
+  e1 (state, payload) {
+    state.e1 = payload.e1
+  },
+  setYear (state, payload) {
+    state.year = payload.year
+  },
+  setMonth (state, payload) {
+    state.month = payload.month
+  },
   refresh (state) {
     state.refresh++
   },
@@ -98,65 +111,21 @@ export const mutations = {
     }
   },
   getBillingInfoByClientId (state, data) {
-    // try {
-    // const data = {
-    //   clientId: billingInfo.clientid,
-    //   clientName: billingInfo.clientname,
-    //   bills: [
-    //     { // ESTO ES UNA FACTURA
-    //       id: 1,
-    //       active: true,
-    //       payed: false,
-    //       createdAt: new Date('Sat Jan 25 2022 12:47:26 GMT-0500'),
-    //       details: 'FEBRERO',
-    //       type: { // ESTE ES EL TIPO DE MOVIMIENTO
-    //         id: 1,
-    //         name: 'MENSUALIDAD', // tipos de movimiento son: 'MENSUALIDAD', 'COBRO ROUTER', 'TRASLADO', 'DESCUENTO', ETC...
-    //         billingMonth: 2,
-    //         price: 50000
-    //       },
-    //       deposits: [ // ESTOS SON LOS ABONOS
-    //         {
-    //           id: 1,
-    //           amount: 10000,
-    //           details: 'Pago de factura',
-    //           date: new Date('Sat Jan 26 2022 12:47:26 GMT-0500')
-    //         },
-    //         {
-    //           id: 2,
-    //           amount: 10000,
-    //           details: 'Pago de factura',
-    //           date: new Date('Sat Jan 27 2022 12:47:26 GMT-0500')
-    //         }
-    //       ]
-    //     },
-    //     { // ESTO ES UNA FACTURA
-    //       id: 2,
-    //       active: true,
-    //       payed: false,
-    //       createdAt: new Date('Sat Jan 25 2022 12:47:26 GMT-0500'),
-    //       details: '',
-    //       type: { // ESTE ES EL TIPO DE MOVIMIENTO
-    //         id: 1,
-    //         name: 'CAMBIO ROUTER', // tipos de movimiento son: 'MENSUALIDAD', 'COBRO ROUTER', 'TRASLADO', 'DESCUENTO', ETC...
-    //         billingMonth: null,
-    //         price: 80000
-    //       },
-    //       deposits: [ // ESTOS SON LOS ABONOS
-    //       ]
-    //     }
-    //   ]
-    // }
-    // } catch (error) {
-    //   throw new Error(`GET BILLING INFO BY CLIENT ID MUTATE ${error}`)
-    // }
     state.currentClient = data.client
     state.invoices = data.invoices
     state.legalNotes = data.legalNotes
+  },
+  getListOfActiveClients (state, clients) {
+    try {
+      state.activeClients = clients
+    } catch (error) {
+      throw new Error(`GET LIST OF ACTIVE CLIENTS MUTATE ${error}`)
+    }
   }
 }
 export const actions = {
   addMovement ({ commit }, payload) {
+    console.log(payload)
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}invoices`, {
@@ -449,6 +418,45 @@ export const actions = {
       })
     } catch (error) {
       throw new Error(`GET BILLS BY CLIENT ID ACTION ${error}`)
+    }
+  },
+  getListOfActiveClients ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      filters: {
+        active: payload.active,
+        city: {
+          name: payload.city
+        },
+        clienttype: {
+          name: payload.clienttype
+        }
+      },
+      pagination: {
+        pageSize: 10
+      },
+      populate: ['offer', 'addresses']
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then(({ data: clients }) => {
+            commit('getListOfActiveClients', clients)
+            resolve(clients)
+          })
+      })
+    } catch (error) {
+      throw new Error(`GET LIST OF ACTIVE CLIENTS ACTION ${error}`)
     }
   },
   sendBill ({ commit }, payload) {
