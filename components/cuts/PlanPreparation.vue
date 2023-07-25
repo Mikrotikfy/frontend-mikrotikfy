@@ -57,7 +57,9 @@ export default {
   methods: {
     async getOffers () {
       await this.$store.dispatch('offer/getOffers', {
-        token: this.$store.state.auth.token
+        token: this.$store.state.auth.token,
+        city: this.$route.query.city,
+        clienttype: this.$route.query.clienttype
       })
     }
   }

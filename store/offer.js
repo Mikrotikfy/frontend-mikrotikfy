@@ -137,6 +137,10 @@ export const actions = {
       return new Promise((resolve, reject) => {
         const qs = require('qs')
         const query = qs.stringify({
+          filters: {
+            city: payload.city,
+            clienttype: payload.clienttype
+          },
           populate: ['client', 'plan'],
           sort: 'name:desc'
         },
