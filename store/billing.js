@@ -125,7 +125,6 @@ export const mutations = {
 }
 export const actions = {
   addMovement ({ commit }, payload) {
-    console.log(payload)
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}invoices`, {
@@ -425,6 +424,7 @@ export const actions = {
     const query = qs.stringify({
       filters: {
         active: payload.active,
+        indebt: payload.indebt,
         city: {
           name: payload.city
         },
@@ -433,7 +433,7 @@ export const actions = {
         }
       },
       pagination: {
-        pageSize: 10
+        pageSize: 500
       },
       populate: ['offer', 'addresses']
     },

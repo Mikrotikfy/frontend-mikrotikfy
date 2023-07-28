@@ -1,5 +1,5 @@
 <template>
-  <v-card :loading="loading" class="mb-4 rounded-xl mx-auto elevation-0" width="800">
+  <v-card :loading="loading" class="mb-4 rounded-xl mx-auto elevation-0" width="1200">
     <v-card-title class="text-caption text-center justify-center">
       <strong class="mr-1">{{ activeClients.length }}</strong> clientes activos en {{ $route.query.city }} a la fecha
     </v-card-title>
@@ -96,14 +96,15 @@ export default {
     },
     year () {
       this.setYear()
-      this.getListOfActiveClients()
     },
     '$route' () {
+      this.backToE1()
       this.getListOfActiveClients()
     }
   },
   mounted () {
     this.year = new Date().getFullYear()
+    this.removeOlderThanActualMonths()
   },
   methods: {
     setYear () {
@@ -125,6 +126,19 @@ export default {
         active: true
       })
       this.loading = false
+    },
+    removeOlderThanActualMonths () {
+      const today = new Date()
+      const currentMonth = today.getMonth() + 1
+      this.months = this.months.filter((month) => {
+        if (month.value >= currentMonth) {
+          return true
+        }
+        return false
+      })
+    },
+    backToE1 () {
+      this.$store.commit('billing/e1', { e1: 1 })
     }
   }
 }

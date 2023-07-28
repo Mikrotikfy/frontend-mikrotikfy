@@ -3,10 +3,10 @@
     <v-row>
       <v-col>
         <h2 class="text-center mb-4">
-          Generar Estados de Cuenta {{ $route.query.city }}
+          Generar Estados de Cuenta de {{ $route.query.clienttype}} para {{ $route.query.city }}
         </h2>
         <BillingSelectMonth />
-        <v-card v-if="month" class="rounded-xl mx-auto elevation-0" width="800">
+        <v-card v-if="month" class="rounded-xl mx-auto elevation-0" width="1200">
           <v-card-text>
             <v-stepper v-model="e1" class="transparent elevation-0">
               <v-stepper-header class="elevation-0">
@@ -14,7 +14,7 @@
                   :complete="e1 > 1"
                   step="1"
                 >
-                  Clientes Activos
+                  Clientes Activos: <strong>{{ activeClients.length }}</strong>
                 </v-stepper-step>
 
                 <v-divider />
@@ -51,6 +51,9 @@ export default {
     },
     e1 () {
       return this.$store.state.billing.e1
+    },
+    activeClients () {
+      return this.$store.state.billing.activeClients
     }
   },
   head () {

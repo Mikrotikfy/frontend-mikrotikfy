@@ -6,19 +6,38 @@
       :items-per-page="itemsPerPage"
       :page.sync="page"
       class="elevation-0"
+      style="height:45svh;overflow-y:scroll;"
       hide-default-footer
       :loading="loading"
       :caption="`Clientes activos en ${$route.query.city} a la fecha: ${activeClients.length}`"
       @page-count="pageCount = $event"
-    />
+    >
+      <template v-slot:[`item.balance`]="props">
+        <strong> ${{ Number(props.item.balance).toLocaleString('es') }} </strong>
+      </template>
+      <template v-slot:[`item.active`]="props">
+        <v-chip>
+          <v-icon
+            :color="props.item.active ? 'green' : 'red'"
+            small
+            left
+          >
+            mdi-circle
+          </v-icon>
+          {{ props.item.active ? 'Activo' : 'Inactivo' }}
+        </v-chip>
+      </template>
+    </v-data-table>
     <v-pagination v-model="page" :length="pageCount" />
     <v-btn
-      :disabled="!activeClients.length > 0"
+      :disabled="!activeClients.length > 0 || !month || !year"
       color="primary"
       class="mt-2"
       @click="nextE1"
     >
-      Continuar
+      Continuar <v-icon class="ml-1">
+        mdi-arrow-right
+      </v-icon>
     </v-btn>
   </div>
 </template>
@@ -30,13 +49,15 @@ export default {
       clients: [],
       page: 1,
       pageCount: 0,
-      itemsPerPage: 10,
+      itemsPerPage: 100,
       loading: false,
       headers: [
         { text: 'ID', value: 'id', sortable: false },
         { text: 'Codigo', value: 'code', sortable: false },
         { text: 'Nombre', value: 'name', sortable: false },
-        { text: 'Saldo', value: 'balance', sortable: false }
+        { text: 'Tarifa', value: 'offer.name', sortable: false },
+        { text: 'Saldo', value: 'balance', sortable: false },
+        { text: 'Estado', value: 'active', sortable: false }
       ]
     }
   },
@@ -46,6 +67,12 @@ export default {
     },
     readyForSend () {
       return this.$store.state.notification.readyForSend
+    },
+    month () {
+      return this.$store.state.billing.month
+    },
+    year () {
+      return this.$store.state.billing.year
     }
   },
   methods: {
