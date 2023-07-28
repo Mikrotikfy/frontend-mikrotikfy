@@ -114,6 +114,7 @@ export default {
         token: this.$store.state.auth.token,
         biller: this.$store.state.auth,
         client: parseInt(this.$route.query.selected),
+        concept: this.invoice.invoice_type.name === 'FACTURACION MENSUAL' ? this.invoice.details : this.invoice.invoice_type.name,
         debit: 0,
         credit: this.billingInfo.payBill.amount || this.balance,
         connect: true,

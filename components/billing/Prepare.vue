@@ -27,6 +27,18 @@
           {{ props.item.active ? 'Activo' : 'Inactivo' }}
         </v-chip>
       </template>
+      <template v-slot:[`item.indebt`]="props">
+        <v-chip>
+          <v-icon
+            :color="props.item.indebt ? 'red' : 'green'"
+            small
+            left
+          >
+            mdi-circle
+          </v-icon>
+          {{ props.item.indebt ? 'En mora' : 'Al día' }}
+        </v-chip>
+      </template>
     </v-data-table>
     <v-pagination v-model="page" :length="pageCount" />
     <v-btn
@@ -57,7 +69,8 @@ export default {
         { text: 'Nombre', value: 'name', sortable: false },
         { text: 'Tarifa', value: 'offer.name', sortable: false },
         { text: 'Saldo', value: 'balance', sortable: false },
-        { text: 'Estado', value: 'active', sortable: false }
+        { text: 'Estado', value: 'active', sortable: false },
+        { text: 'Deudor', value: 'indebt', sortable: false }
       ]
     }
   },

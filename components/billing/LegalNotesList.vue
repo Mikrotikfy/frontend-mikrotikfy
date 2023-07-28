@@ -74,6 +74,7 @@ export default {
       return humanDateFormat
     },
     formatConcepts (invoicesMovements, legalNote) {
+      console.log(invoicesMovements, legalNote)
       if (invoicesMovements.length === 0) { return legalNote.concept }
       let concepts = ''
       invoicesMovements.forEach((movement, index) => {

@@ -3,7 +3,7 @@
     <v-row>
       <v-col>
         <h2 class="text-center mb-4">
-          Generar Estados de Cuenta de {{ $route.query.clienttype}} para {{ $route.query.city }}
+          Generar Estados de Cuenta de {{ $route.query.clienttype }} para {{ $route.query.city }}
         </h2>
         <BillingSelectMonth />
         <v-card v-if="month" class="rounded-xl mx-auto elevation-0" width="1200">
