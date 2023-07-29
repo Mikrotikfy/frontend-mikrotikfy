@@ -392,6 +392,39 @@ export const actions = {
       throw new Error(`BILLING CLIENTS SEARCH ACTION ${error}`)
     }
   },
+  getBillById ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      populate: [
+        'biller',
+        'invoices',
+        'invoice_movements',
+        'client',
+        'client.offer',
+        'client.neighborhood'
+      ]
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}legal-notes/${payload.id}?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((invoice) => {
+            resolve(invoice.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`GET BILL BY ID ACTION ${error}`)
+    }
+  },
   getBillsByClientId ({ commit }, payload) {
     const qs = require('qs')
     const query = qs.stringify({

@@ -1,10 +1,6 @@
 <template>
   <v-app>
-    <v-main>
-      <v-container fluid>
-        <nuxt />
-      </v-container>
-    </v-main>
+    <nuxt />
   </v-app>
 </template>
 

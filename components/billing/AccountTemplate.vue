@@ -1,6 +1,6 @@
 <template>
-  <v-card v-if="bill.client" class="elevation-0 inner p-0" light>
-    <v-container class="parent p-0">
+  <v-card class="elevation-5 output" light>
+    <v-container class="parent">
       <div class="sub-parent">
         <div style="width:200px;margin:auto;">
           <MainLogoDark />
@@ -11,26 +11,33 @@
         </div>
         <div style="text-align:center;">
           <h4 style="border:1px solid black;border-radius:10px 10px 0px 0px;" class="pa-1">
-            RECIBO
-          </h4>
-          <h4 style="border:1px solid black;border-radius:0px;" class="pa-1">
-            {{ bill.id }}
+            ESTADO DE CUENTA
           </h4>
           <h4 style="border:1px solid black;border-radius:0px 0px 10px 10px;" class="pa-1">
-            {{ getDate(bill.createdAt) }}
+            000001
           </h4>
         </div>
       </div>
       <div class="client-parent">
         <div class="client-parent-sub">
-          <h5>USUARIO: {{ bill.client.name }}</h5>
-          <h5>DIRECCION: {{ bill.client.address }} {{ bill.client.neighborhood.name }}</h5>
-          <h5>SERVICIO: {{ $route.query.clienttype === 'INTERNET' ? 'INTERNET HOG. ILIMITADO' : 'TELEVISION HOGAR' }}</h5>
-          <h5>OFERTA: {{ bill.client.offer.name }}</h5>
+          <div>
+            <h5>USUARIO: NICOLAS ECHEVERRY</h5>
+            <h5>DIRECCION: CARRERA 11A # 2 - 43 GALAN</h5>
+            <h5>PLAN: INTERNET ILIMITADO PERSONAL S20</h5>
+            <h5>FACTURA: MES DE SEPTIEMBRE</h5>
+          </div>
+          <div>
+            <h4 class="important-info">
+              VENCIMIENTO: 16 SEPTIEMBRE 2022
+            </h4>
+            <h4 class="important-info">
+              SUSPENSION: 18 SEPTIEMBRE 2022
+            </h4>
+          </div>
         </div>
         <div>
           <div class="code-sub-parent">
-            CODIGO {{ bill.client.code }}
+            CODIGO 17171
           </div>
         </div>
       </div>
@@ -38,18 +45,15 @@
     <v-container class="parent-resume">
       <div>
         <div class="sub-parent-resume" style="border-radius:10px 10px 0px 0px;">
-          Resumen de Movimiento
+          Resumen de su cuenta
         </div>
         <div class="sub-parent-resume" style="border-radius:0px 0px 10px 10px;">
-          <h3 class="blue darken-2 white--text rounded-lg px-2" style="margin-left:-5px;">
-            TOTAL ABONADO: $ {{ Number(bill.credit).toLocaleString('es') }}
+          <h3 class="blue darken-2 white--text rounded-xl px-2" style="margin-left:-5px;">
+            SALDO TOTAL: $170.000
           </h3>
-          <h4
-            v-for="invoice in bill.invoices"
-            :key="invoice.id"
-          >
-            ABONO {{ invoice.concept === 'FACTURACION MENSUAL' ? invoice.details : invoice.concept }} {{ invoice.year }} $ {{ Number(invoice.value).toLocaleString('es') }}
-          </h4>
+          <h4>SALDOS AGOSTO: 50.000</h4>
+          <h4>SALDOS JULIO: 50.000</h4>
+          <h4>SALDOS EQUIPOS: 70.000</h4>
         </div>
       </div>
       <div>
@@ -57,8 +61,10 @@
           Servicio
         </div>
         <div class="sub-parent-resume" style="border-radius:0px 0px 10px 10px;">
-          <h3>{{ $route.query.clienttype === 'INTERNET' ? 'INTERNET HOG. ILIMITADO' : 'TELEVISION HOGAR' }}</h3>
-          <h4>{{ bill.client.offer.name }}</h4>
+          <h3>MENSUALIDAD SEPTIEMBRE</h3>
+          <h4>INTERNET ILIMITADO PERSONAL S20</h4>
+          <h4>INTERNET ILIMITADO FAMILIAR M50</h4>
+          <h4>INTERNET ILIMITADO PRO L100</h4>
         </div>
       </div>
     </v-container>
@@ -77,29 +83,39 @@
       </div>
       <div>
         <p class="text-caption">
-          Conozca nuestra politica de tratamiento de datos en www.arnoproducciones.com - Conozca los derechos y deberes como usuario de servicios de comunicaciones en www.comunicadoscomoes.gov.co - ARNOProducciones ofrece el servicio de atención en dias no laborales para atender sus solicitudes de domingo a domingo incluidos festivos a nuestra linea de atención 310 343 25 99 en Mariquita y 350 810 59 49 en Fresno. Porque ya somos parte de tu hogar. Tu estado de cuenta es digital y sera entregado a tu WhatsApp o correo electronico todos los meses para que puedas consultarlo desde cualquier lugar. Tambien puedes acceder a tu estado de cuenta en www.arnoproducciones.com/usuario - Recuerda que durante las tormentas electricas debes desconectaqr tu router de la corriente electrica para evitar daños en tu equipo.
+          ARNOProducciones empresa de telecomunicaciones del norte del tolima. Porque ya somos parte de tu hogar. Conozca nuestra politica de tratamiento de datos en www.arnoproducciones.com - Conozca los derechos y deberes como usuario de servicios de comunicaciones en www.comunicadoscomoes.gov.co - ARNOProducciones ofrece el servicio de atención en dias no laborales para atender sus solicitudes de domingo a domingo incluidos festivos a nuestra linea de atención 310 343 25 99 en Mariquita y 350 810 59 49 en Fresno. Porque ya somos parte de tu hogar.
         </p>
       </div>
     </v-container>
     <v-container class="parent-payment">
       <div>
         <div class="sub-parent-payment" style="border-radius:10px 10px 0px 0px;">
-          Medios de entrega
+          Puntos de pago
         </div>
         <div class="sub-parent-payment" style="border-radius:0px 0px 10px 10px;">
-          <h4>Estado de cuenta digital</h4>
-          <h4>Canales de WhatsApp o Correo electronico</h4>
-          <h4>Al afiliarte con nosotros tu estado de cuenta es digital y ayuda a cuidar el medio ambiente.</h4>
+          <h4>Oficina Mariquita: CRA 4 # 8 - 11</h4>
+          <h4>Barrio: El Carmen</h4>
+          <h4>Telefono: 310 343 25 99</h4>
         </div>
       </div>
       <div />
     </v-container>
     <v-container class="parent-sub-info">
       <div class="client-parent-sub2 pa-2">
-        <h4>USUARIO: {{ bill.client.name }}</h4>
-        <h4>DIRECCION: {{ bill.client.address }} {{ bill.client.neighborhood.name }}</h4>
-        <h4>SERVICIO: {{ $route.query.clienttype === 'INTERNET' ? 'INTERNET HOG. ILIMITADO' : 'TELEVISION HOGAR' }}</h4>
-        <h4>OFERTA: {{ bill.client.offer.name }}</h4>
+        <div>
+          <h5>USUARIO: NICOLAS ECHEVERRY</h5>
+          <h5>DIRECCION: CARRERA 11A # 2 - 43 GALAN</h5>
+          <h5>PLAN: INTERNET ILIMITADO PERSONAL S20</h5>
+          <h5>FACTURA: MES DE SEPTIEMBRE</h5>
+        </div>
+        <div>
+          <h4 class="important-info">
+            VENCIMIENTO: 16 SEPTIEMBRE 2022
+          </h4>
+          <h4 class="important-info">
+            SUSPENSION: 18 SEPTIEMBRE 2022
+          </h4>
+        </div>
       </div>
       <div>
         <div class="sub-parent-company" style="border-radius:10px 10px 0px 0px;">
@@ -125,23 +141,6 @@
     </v-container>
   </v-card>
 </template>
-<script>
-export default {
-  props: {
-    bill: {
-      type: Object,
-      required: true
-    }
-  },
-  methods: {
-    getDate (date) {
-      const dateObject = new Date(date)
-      const humanDateFormat = dateObject.toLocaleString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })
-      return humanDateFormat
-    }
-  }
-}
-</script>
 <style scoped>
   .client-parent-sub2 {
     display: grid;
@@ -152,20 +151,17 @@ export default {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 10px;
-    width:830px;
   }
   .parent-company-footer {
     display: grid;
     grid-template-columns: 50% 50%;
     grid-gap: 10px;
-    width:830px;
   }
   .parent-payment{
     display: grid;
     grid-template-columns: 50% 50%;
     padding: 10px;
     grid-gap: 10px;
-    width:830px;
   }
   .sub-parent-payment {
     border: 1px solid black;
@@ -176,7 +172,6 @@ export default {
     grid-template-columns: 1fr 1fr;
     padding: 10px;
     grid-gap: 10px;
-    width:830px;
   }
   .sub-parent-company {
     border: 1px solid black;
@@ -187,7 +182,6 @@ export default {
     grid-template-columns: 1fr 1fr;
     padding: 10px;
     grid-gap: 10px;
-    width:830px;
   }
   .sub-parent-resume {
     border: 1px solid black;
@@ -200,14 +194,11 @@ export default {
     border-radius: 15px;
     color: white;
     margin-top:5px;
-    width:830px;
   }
   .parent {
     display: grid;
     grid-template-columns: 5fr 10fr;
     grid-gap: 10px;
-    width:830px;
-    align-items: flex-end;
   }
 
   .sub-parent {
@@ -219,13 +210,14 @@ export default {
 
   .client-parent {
     display:grid;
-    grid-template-columns: 4fr 3fr;
+    grid-template-columns: 2fr 1fr;
     grid-gap: 10px;
     border:1px solid black;border-radius:10px;
   }
   .client-parent-sub {
+    display:grid;
+    justify-content: space-between;
     padding: 10px 0 10px 10px;
-    margin-top: 50px;
   }
 
   .code-sub-parent {
@@ -235,22 +227,23 @@ export default {
     font-weight: bold;
     padding: 5px;
     right:12px;
-    font-size:1.8rem;
+    font-size:1.2rem;
     float:right;
     border-radius: 0 10px 0 10px;
   }
-  .inner {
-    width: 775px;
-    height: 1300px;
-    position: absolute;
+  .output {
+    width:1125px;
+    height:1200px;
   }
   @media print {
-    .inner {
-      transform: scale(0.6) rotate(-90deg);
-      bottom: 64px;
-      width: 775px;
-      height: 1300px;
-      position: absolute;
-    }
+  .output {
+    -ms-transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    width: 763px;
+    height: 1198px;
+    top: -215px;
+    left: 221px;
+  }
   }
 </style>

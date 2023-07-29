@@ -41,15 +41,12 @@ export default {
       if (this.amount > this.total) {
         this.$toast.error('El valor a recaudar no puede ser mayor al saldo total', { duration: 2000 })
         this.error = true
-        localStorage.removeItem('pendingDiscountToSaveOnDB')
         return
       }
       if (!this.amount || this.amount === 0) {
         this.$toast.error('Debe ingresar un valor', { duration: 2000 })
-        localStorage.removeItem('pendingDiscountToSaveOnDB')
         return
       }
-      localStorage.removeItem('invoicesForPrint')
       await this.payInvoicesFromOlderToNewer(this.invoices, this.amount)
       this.amount = null
     },
@@ -93,17 +90,8 @@ export default {
       await this.saveInvoicesToLocalstorage(copyInvoices, amount)
     },
     async saveInvoicesToLocalstorage (invoices, amount) {
-      const pendingDiscountToSaveOnDB = localStorage.getItem('pendingDiscountToSaveOnDB')
       const isConnected = await this.$checkInternetConnection()
       if (isConnected) {
-        if (pendingDiscountToSaveOnDB) {
-          this.$toast.info('Se ha encontrado un descuento pasado pendiente por subir.', { duration: 2000 })
-          const invoicesToSaveOnDB = JSON.parse(localStorage.getItem('invoices'))
-          await this.saveInvoicesToDb(invoicesToSaveOnDB)
-        }
-        localStorage.setItem('invoices', JSON.stringify(invoices))
-        localStorage.setItem('invoicesForPrint', JSON.stringify(invoices))
-        localStorage.setItem('pendingDiscountToSaveOnDB', true)
         const legalNote = await this.saveLegalNoteToDb(invoices, amount)
         await this.saveInvoicesToDb(invoices, legalNote, amount)
       } else {
@@ -134,9 +122,7 @@ export default {
       }
       this.$store.commit('billing/resetSelected')
       this.$store.commit('billing/refresh')
-      localStorage.removeItem('pendingDiscountToSaveOnDB')
-      localStorage.removeItem('invoices')
-      // window.open(`/bill?id=${legalNote.id}`)
+      window.open(`/bill?id=${legalNote.id}`)
     },
     async saveLegalNoteToDb (invoices, amount) {
       const legalNote = {
