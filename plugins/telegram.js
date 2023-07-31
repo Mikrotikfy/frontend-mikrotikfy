@@ -340,39 +340,17 @@ function simpleTelegramCreateTicketTV ({ client, tickettype, details, operator, 
       return err
     })
 };
-function simpleTelegramCreateTicketAdvance ({ client, ticket, status, details, operator, telegramBots }) {
+function simpleTelegramCreateTicketAdvance (payload) {
   const fetch = require('node-fetch')
-  const bot = telegramBots.token
-  const chatid = telegramBots.chat
-  let line1 = ''
-  if (status) {
-    line1 = '✅ CIERRE DE TICKET ✅'
-  } else {
-    line1 = '✴️ AVANCE DE TICKET ✴️'
-  }
-  const line2 = client.code
-  const line3 = client.name
-  const line4 = client.addresses.at(-1).address
-  const line5 = client.addresses.at(-1).neighborhood.name
-  const line6 = client.phone
-  const line7 = ticket.tickettype.name
-  const line8 = details
-  let line9 = ''
-  if (status) {
-    line9 = 'CASO CERRADO'
-  } else {
-    line9 = 'CASO ACTIVO'
-  }
-  const line10 = operator
-  const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n${line8}\n\n${line9}\n${line10}`
-  copyAdvanceCommentToClipBoard(message)
+  const bot = payload.telegramBots.token
+  const chatid = payload.telegramBots.chat
   const req =
     'https://api.telegram.org/bot' +
     bot +
     '/sendMessage?chat_id=' +
     chatid +
     '&text=' +
-    encodeURIComponent(message)
+    encodeURIComponent(payload.message)
   const options = {
     method: 'POST',
     headers: {
@@ -385,43 +363,17 @@ function simpleTelegramCreateTicketAdvance ({ client, ticket, status, details, o
       return err
     })
 }
-function simpleTelegramCreateTicketAdvanceTv ({ client, ticket, status, details, specs, operator, telegramBots }) {
+function simpleTelegramCreateTicketAdvanceTv (payload) {
   const fetch = require('node-fetch')
-  const bot = telegramBots.token
-  const chatid = telegramBots.tvchat
-  let line1 = ''
-  if (status) {
-    line1 = '✅ CIERRE DE TICKET ✅'
-  } else {
-    line1 = '✴️ AVANCE DE TICKET ✴️'
-  }
-  const line2 = client.code
-  const line3 = client.name
-  const line4 = client.addresses ? client.addresses.at(-1) ? client.addresses.at(-1).address : 'Sin Direccion' : 'No especificado'
-  const line5 = client.addresses ? client.addresses.at(-1) ? client.addresses.at(-1).neighborhood.name : 'Sin Barrio' : 'No especificado'
-  const line6 = client.phone
-  const line7 = ticket.tickettype.name
-  const line8 = `Calidad de señal: ${specs.tvspectype ? specs.tvspectype.name : 'No especificado'}`
-  const line10 = `Altos: ${specs.high ? specs.high : 'No especificado'}`
-  const line11 = `Bajos: ${specs.down ? specs.down : 'No especificado'}`
-  const line12 = `Televisores: ${specs.tvs ? specs.tvs : 'No especificado'}`
-  const line13 = `Observaciones: ${details}`
-  let line14 = ''
-  if (status) {
-    line14 = 'CASO CERRADO'
-  } else {
-    line14 = 'CASO ACTIVO'
-  }
-  const line15 = operator
-  const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n\n${line8}\n${line10}\n${line11}\n${line12}\n\n${line13}\n\n${line14}\n${line15}`
-  copyAdvanceCommentToClipBoard(message)
+  const bot = payload.telegramBots.token
+  const chatid = payload.telegramBots.tvchat
   const req =
     'https://api.telegram.org/bot' +
     bot +
     '/sendMessage?chat_id=' +
     chatid +
     '&text=' +
-    encodeURIComponent(message)
+    encodeURIComponent(payload.message)
   const options = {
     method: 'POST',
     headers: {
@@ -483,7 +435,4 @@ function simpleTelegramAdminCreate ({ client, telegramBots, operator }) {
     .catch(function (err) {
       return err
     })
-}
-function copyAdvanceCommentToClipBoard (comment) {
-  navigator.clipboard.writeText(comment)
 }

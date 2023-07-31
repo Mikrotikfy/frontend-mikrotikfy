@@ -259,6 +259,65 @@ export default {
         })
       }
     },
+    generateMessage () {
+      if (this.$route.query.clienttype === 'TELEVISION') {
+        let line1 = ''
+        if (this.closeticket) {
+          line1 = '✅ CIERRE DE TICKET ✅'
+        } else {
+          line1 = '✴️ AVANCE DE TICKET ✴️'
+        }
+        const line2 = this.ticket.client.code
+        const line3 = this.ticket.client.name
+        const line4 = this.ticket.client.addresses ? this.ticket.client.addresses.at(-1) ? this.ticket.client.addresses.at(-1).address : 'Sin Direccion' : 'No especificado'
+        const line5 = this.ticket.client.addresses ? this.ticket.client.addresses.at(-1) ? this.ticket.client.addresses.at(-1).neighborhood.name : 'Sin Barrio' : 'No especificado'
+        const line6 = this.ticket.client.phone
+        const line7 = this.ticket.tickettype.name
+        const line8 = `Calidad de señal: ${this.specs.tvspectype ? this.specs.tvspectype.name : 'No especificado'}`
+        const line10 = `Altos: ${this.specs.high ? this.specs.high : 'No especificado'}`
+        const line11 = `Bajos: ${this.specs.down ? this.specs.down : 'No especificado'}`
+        const line12 = `Televisores: ${this.specs.tvs ? this.specs.tvs : 'No especificado'}`
+        const line13 = `Observaciones: ${this.details}`
+        let line14 = ''
+        if (this.closeticket) {
+          line14 = 'CASO CERRADO'
+        } else {
+          line14 = 'CASO ACTIVO'
+        }
+        const line15 = this.$store.state.auth.username
+        const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n\n${line8}\n${line10}\n${line11}\n${line12}\n\n${line13}\n\n${line14}\n${line15}`
+        this.copyAdvanceCommentToClipBoard(message)
+        this.$simpleTelegramCreateTicketAdvanceTv({ message, telegramBots: this.telegramBots })
+      } else {
+        let line1 = ''
+        if (this.closeticket) {
+          line1 = '✅ CIERRE DE TICKET ✅'
+        } else {
+          line1 = '✴️ AVANCE DE TICKET ✴️'
+        }
+        const line2 = this.ticket.client.code
+        const line3 = this.ticket.client.name
+        const line4 = this.ticket.client.addresses.at(-1).address
+        const line5 = this.ticket.client.addresses.at(-1).neighborhood.name
+        const line6 = this.ticket.client.phone
+        const line7 = `Potencia Optica: ${this.opticalpower ? this.opticalpower : 'No especificado'}${this.opticalpower ? 'dBm' : ''}`
+        const line8 = this.ticket.tickettype.name
+        const line9 = this.details
+        let line10 = ''
+        if (this.closeticket) {
+          line10 = 'CASO CERRADO'
+        } else {
+          line10 = 'CASO ACTIVO'
+        }
+        const line11 = this.$store.state.auth.username
+        const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n${line8}\n${line9}\n\n${line10}\n${line11}`
+        this.copyAdvanceCommentToClipBoard(message)
+        this.$simpleTelegramCreateTicketAdvance({ message, telegramBots: this.telegramBots })
+      }
+    },
+    copyAdvanceCommentToClipBoard (comment) {
+      navigator.clipboard.writeText(comment)
+    },
     async createAdvance () {
       if (this.details.length < 1) {
         this.$toast.error('Debes escribir un resumen del caso', { duration: 3000 })
@@ -289,9 +348,9 @@ export default {
           return
         }
       }
-
-      this.loading = true
-
+      // this was removed because low quality network across the principal city inpeded the user to close the ticket
+      // this.loading = true
+      this.generateMessage()
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticket.id}`, {
         method: 'PUT',
         headers: {
@@ -337,26 +396,6 @@ export default {
           }).then((input) => {
             if (input.status === 200) {
               this.dialog = false
-              if (this.$route.query.clienttype === 'INTERNET') {
-                this.$simpleTelegramCreateTicketAdvance({
-                  ticket: this.ticket,
-                  client: this.ticket.client,
-                  status: this.closeticket,
-                  details: this.details,
-                  operator: this.$store.state.auth.username,
-                  telegramBots: this.telegramBots
-                })
-              } else {
-                this.$simpleTelegramCreateTicketAdvanceTv({
-                  ticket: this.ticket,
-                  client: this.ticket.client,
-                  status: this.closeticket,
-                  details: this.details,
-                  operator: this.$store.state.auth.username,
-                  telegramBots: this.telegramBots,
-                  specs: this.specs
-                })
-              }
               this.details = ''
               this.closeticket = false
               this.officeescalated = false
@@ -369,16 +408,16 @@ export default {
               await this.setNewSpecs(res.data)
               this.$emit('refreshTickets')
               this.$toast.success('Ticket Actualizado con Exito', { duration: 4000, position: 'bottom-center' })
-              this.loading = true
+              // this.loading = true
             })
             .catch((error) => {
               this.$toast.error(error, { duration: 5000, position: 'bottom-center' })
-              this.loading = false
+              // this.loading = false
             })
         }
       }).catch((error) => {
         this.$toast.error(error, { duration: 1000, position: 'bottom-center' })
-        this.loading = true
+        // this.loading = true
       })
     }
   }
