@@ -143,6 +143,7 @@ export const actions = {
             'client.neighborhood',
             'client.technology',
             'client.plan',
+            'client.offer',
             'client.naps',
             'client.debtmovements',
             'client.tvspec',

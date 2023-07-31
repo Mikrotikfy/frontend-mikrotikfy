@@ -16,7 +16,17 @@
       mobile-breakpoint="100"
       @page-count="pageCount = $event"
       @click:row="showBillingInfo"
-    />
+    >
+      <template v-slot:[`item.code`]="props">
+        <nuxt-link :to="`/clients/${props.item.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
+          <strong>
+            <h3>
+              {{ props.item.code }}
+            </h3>
+          </strong>
+        </nuxt-link>
+      </template>
+    </v-data-table>
     <v-pagination v-model="page" :length="pageCount" />
   </div>
 </template>

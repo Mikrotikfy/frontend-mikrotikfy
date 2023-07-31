@@ -45,7 +45,7 @@
             <v-col cols="12" md="4" class="order-first">
               <div style="display:grid;place-items:center;">
                 <MainClientControlDebt :client="client" :index="index" />
-                <MainClientControlOffer v-if="$route.query.clienttype === 'INTERNET'" :client="client" :index="index" />
+                <MainClientControlOffer :client="client" :index="index" />
               </div>
             </v-col>
             <v-col cols="12" md="4">

@@ -385,6 +385,24 @@
                 </strong>
               </nuxt-link>
             </template>
+            <template v-slot:[`item.client.balance`]="props">
+              <v-chip
+                v-if="props.item.client && props.item.client.offer && props.item.client.offer.price"
+                small
+                label
+                :to="`/billing/${props.item.client.code}?selected=${props.item.client.id}&city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
+                :color="props.item.client.balance >= props.item.client.offer.price * 2 ? 'yellow darken-4' : 'green'"
+              >
+                ${{ Number(props.item.client.balance).toLocaleString('es') }}
+              </v-chip>
+              <v-chip
+                v-else
+                small
+                label
+              >
+                {{ 'No definido' }}
+              </v-chip>
+            </template>
             <template v-slot:[`item.assignated.username`]="{ item }">
               <strong style="max-width:50px;"> {{ ucfirst(item.assignated.username) }}</strong>
             </template>
@@ -416,6 +434,25 @@
             </template>
             <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="{ item, index }">
               <div class="d-flex">
+                <v-tooltip v-if="$isAdmin() || $isBiller()" top>
+                  <template v-slot:activator="{ on: tooltip }">
+                    <nuxt-link
+                      :to="`/billing/${item.client.code}?selected=${item.client.id}&city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
+                    >
+                      <v-btn
+                        v-bind="attrs"
+                        x-small
+                        text
+                        :color="$vuetify.theme.dark ? 'white' : 'primary'"
+                        class="rounded-xl"
+                        v-on="tooltip"
+                      >
+                        <v-icon>mdi-file-document-plus-outline</v-icon>
+                      </v-btn>
+                    </nuxt-link>
+                  </template>
+                  <span>Estado de cuenta</span>
+                </v-tooltip>
                 <CreateTicketAdvancev2
                   :ticket="item"
                   :ticketindex="index"
@@ -678,6 +715,7 @@ export default {
         { text: 'Código', sortable: false, value: 'client.code', width: 50 },
         { text: 'Cliente', sortable: false, value: 'client.name', width: 200 },
         { text: 'Celular', sortable: false, value: 'client.phone', width: 80 },
+        { text: 'Saldo', sortable: false, value: 'client.balance', width: 80 },
         { text: 'Tec.', sortable: false, value: 'client.technology.name', width: 50 },
         { text: 'Por', sortable: false, value: 'assignated.username', width: 40 },
         { text: 'Creación', sortable: false, value: 'createdAt', width: 100 },
@@ -698,6 +736,7 @@ export default {
         { text: 'Codigo', sortable: false, value: 'client.code', width: 60 },
         { text: 'Cliente', sortable: false, value: 'client.name' },
         { text: 'Celular', sortable: false, value: 'client.phone' },
+        { text: 'Saldo', sortable: false, value: 'client.balance', width: 80 },
         { text: 'Por', sortable: false, value: 'assignated.username' },
         { text: 'Creado el', sortable: false, value: 'createdAt' },
         { text: 'Acciones', sortable: false, value: 'actions' }

@@ -48,8 +48,23 @@
                     {{ item.corporate === null ? 'No definido' : item.corporate === false ? 'Plan Hogar' : 'Corporativo' }}
                   </v-chip>
                 </template>
-                <template v-slot:[`item.balance`]="{ item }">
-                  <strong>{{ formatCurrency(item) }}</strong>
+                <template v-slot:[`item.balance`]="props">
+                  <v-chip
+                    v-if="props.item && props.item.offer && props.item.offer.price"
+                    small
+                    label
+                    :to="`/billing/${props.item.code}?selected=${props.item.id}&city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
+                    :color="props.item.balance >= props.item.offer.price * 2 ? 'yellow darken-4' : 'green'"
+                  >
+                    ${{ Number(props.item.balance).toLocaleString('es') }}
+                  </v-chip>
+                  <v-chip
+                    v-else
+                    small
+                    label
+                  >
+                    {{ 'No definido' }}
+                  </v-chip>
                 </template>
                 <template v-slot:[`item.address`]="{ item }">
                   {{ processAddresses(item) }}
