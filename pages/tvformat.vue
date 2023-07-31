@@ -13,8 +13,11 @@
             max-width="200"
           />
         </v-col>
-        <v-col cols="8" class="d-flex align-end justify-center">
+        <v-col cols="6" class="d-flex align-end justify-center">
           <h2>ENTREGA DE SERVICIO TELEVISION</h2>
+        </v-col>
+        <v-col cols="2" class="d-flex align-end justify-center">
+          <h5>{{ getDate(clientInfo.createdAt) }}</h5>
         </v-col>
       </v-row>
       <v-row>
@@ -126,9 +129,7 @@
               </td>
             </tr>
             <tr>
-              <td style="border-top: 1px solid black;border-right: 1px solid black;">
-                CABLE COAXIAL
-              </td>
+              <td style="border-top: 1px solid black;border-right: 1px solid black;"></td>
               <td style="border-right: 1px solid black;border-top: 1px solid black;">
                 NUEVO
               </td>
@@ -136,15 +137,24 @@
                 USADO
               </td>
               <td></td>
+              <td></td>
               <td style="border-left: 1px solid black;border-top: 1px solid black;">
-                METROS
+                CANTIDAD DE TV's
               </td>
               <td style="border-left: 1px solid black;border-top: 1px solid black;">
-                # TV
-              </td>
-              <td style="border-left: 1px solid black;border-top: 1px solid black;font-size:12px;">
                 UBICACION TV
               </td>
+            </tr>
+            <tr>
+              <td style="border-top: 1px solid black;border-right: 1px solid black;">
+                Cable Coaxial (Metros)
+              </td>
+              <td style="border-right: 1px solid black;border-top: 1px solid black;"></td>
+              <td style="border-right: 1px solid black;border-top: 1px solid black;"></td>
+              <td></td>
+              <td></td>
+              <td style="border-left: 1px solid black;border-bottom: 1px solid black;border-top: 1px solid black;"></td>
+              <td style="border-left: 1px solid black;border-bottom: 1px solid black;border-top: 1px solid black;font-size:12px;"></td>
             </tr>
             <tr>
               <td style="border-bottom: 1px solid black;border-right: 1px solid black;height:35px;border-top: 1px solid black;">
@@ -153,9 +163,9 @@
               <td style="border-right: 1px solid black;border-bottom: 1px solid black;height:35px;border-top: 1px solid black;"></td>
               <td style="border-right: 1px solid black;border-bottom: 1px solid black;height:35px;border-top: 1px solid black;"></td>
               <td></td>
-              <td style="border-left: 1px solid black;border-bottom: 1px solid black;height:35px;border-top: 1px solid black;"></td>
-              <td style="border-left: 1px solid black;border-bottom: 1px solid black;height:35px;border-top: 1px solid black;"></td>
-              <td style="border-left: 1px solid black;border-bottom: 1px solid black;height:35px;border-top: 1px solid black;"></td>
+              <td></td>
+              <td></td>
+              <td></td>
             </tr>
             <tr>
               <td style="border-right: 1px solid black;height:35px;">
@@ -164,9 +174,9 @@
               <td style="border-right: 1px solid black;height:35px;"></td>
               <td style="border-right: 1px solid black;height:35px;"></td>
               <td></td>
-              <td style="border-left: 1px solid black;height:35px;"></td>
-              <td style="border-left: 1px solid black;height:35px;"></td>
-              <td style="border-left: 1px solid black;height:35px;"></td>
+              <td style=""></td>
+              <td style=""></td>
+              <td style=""></td>
             </tr>
           </table>
         </v-col>
@@ -319,6 +329,11 @@ export default {
       if (localStorage.getItem('clientsInfo')) {
         this.clientsInfo = JSON.parse(localStorage.getItem('clientsInfo'))
       }
+    },
+    getDate (date) {
+      const dateObject = new Date(date)
+      const humanDateFormat = dateObject.toLocaleString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+      return humanDateFormat
     }
   },
   head () {

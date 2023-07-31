@@ -9,8 +9,11 @@
         <v-col cols="4" class="d-flex justify-start">
           <MainLogoDark />
         </v-col>
-        <v-col cols="8" class="d-flex align-end justify-center">
+        <v-col cols="6" class="d-flex align-end justify-center">
           <h2>ENTREGA DE SERVICIO INTERNET</h2>
+        </v-col>
+        <v-col cols="2" class="d-flex align-end justify-center">
+          <h5>{{ getDate(clientInfo.createdAt) }}</h5>
         </v-col>
       </v-row>
       <v-row>
@@ -244,6 +247,11 @@ export default {
       if (localStorage.getItem('clientsInfo')) {
         this.clientsInfo = JSON.parse(localStorage.getItem('clientsInfo'))
       }
+    },
+    getDate (date) {
+      const dateObject = new Date(date)
+      const humanDateFormat = dateObject.toLocaleString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+      return humanDateFormat
     }
   },
   head () {
