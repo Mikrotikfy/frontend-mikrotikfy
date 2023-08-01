@@ -545,6 +545,12 @@
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
                 <strong>Tecnología: </strong>{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}
               </p>
+              <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
+                <strong>Nap: </strong>
+                <v-chip label color="green">
+                  {{ editModalData.client ? editModalData.client.naps ? editModalData.client.naps[0].code : 'No Reg.' : '' }}
+                </v-chip>
+              </p>
               <p v-if="$route.query.clienttype === 'INTERNET'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
                 <strong>Potencia Óptica: </strong>{{ editModalData.client && editModalData.client.opticalpower ? editModalData.client.opticalpower : 'No reg.' }}
               </p>
