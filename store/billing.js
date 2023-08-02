@@ -5,6 +5,7 @@ export const state = () => ({
   e1: 1,
   invoices: [],
   legalNotes: [],
+  billsOnDataRange: [],
   sendIndex: 0,
   billsForCurrentClient: [],
   total: 0,
@@ -68,6 +69,20 @@ export const mutations = {
   },
   setTotal (state, total) {
     state.total = total
+  },
+  getBillsByDateRange (state, bills) {
+    try {
+      state.billsOnDataRange = bills
+    } catch (error) {
+      throw new Error(`BILLING CLIENTS MUTATE ${error}`)
+    }
+  },
+  setPaginationForBillsByDateRange (state, pagination) {
+    try {
+      state.billsOnDataRangePagination = pagination
+    } catch (error) {
+      throw new Error(`BILLING CLIENTS MUTATE ${error}`)
+    }
   },
   addMovement (state, movement) {
     state.billingInfo.movements.push({
@@ -423,6 +438,57 @@ export const actions = {
       })
     } catch (error) {
       throw new Error(`GET BILL BY ID ACTION ${error}`)
+    }
+  },
+  getBillsByDateRange ({ commit }, payload) {
+    console.log(payload)
+    const qs = require('qs')
+    const query = qs.stringify({
+      filters: {
+        $and: [
+          {
+            createdAt: {
+              $gte: payload.from
+            }
+          },
+          {
+            createdAt: {
+              $lte: payload.to
+            }
+          }
+        ]
+      },
+      populate: [
+        'biller',
+        'invoices',
+        'invoice_movements',
+        'client',
+        'client.offer',
+        'client.neighborhood'
+      ],
+      pagination: payload.pagination
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}legal-notes?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then((invoices) => {
+            commit('getBillsByDateRange', invoices.data)
+            commit('setPaginationForBillsByDateRange', invoices.pagination)
+            resolve(invoices.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`GET BILLS BY DATE RANGE ACTION ${error}`)
     }
   },
   getBillsByClientId ({ commit }, payload) {
