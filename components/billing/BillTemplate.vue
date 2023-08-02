@@ -45,10 +45,10 @@
             TOTAL ABONADO: $ {{ Number(bill.credit).toLocaleString('es') }}
           </h3>
           <h4
-            v-for="invoice in bill.invoices"
+            v-for="invoice in bill.invoice_movements"
             :key="invoice.id"
           >
-            ABONO {{ invoice.concept === 'FACTURACION MENSUAL' ? invoice.details : invoice.concept }} {{ invoice.year }} $ {{ Number(invoice.value).toLocaleString('es') }}
+            ABONO {{ invoice.type === 'FACTURACION MENSUAL' ? invoice.concept : invoice.type }} {{ invoice.year }} $ {{ Number(invoice.amount).toLocaleString('es') }}
           </h4>
         </div>
       </div>
