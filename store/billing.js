@@ -372,7 +372,7 @@ export const actions = {
             }
           ]
         },
-        populate: ['neighborhood', 'plan', 'technology']
+        populate: ['neighborhood', 'plan', 'technology', 'offer']
       },
       {
         encodeValuesOnly: true
@@ -574,7 +574,7 @@ export const actions = {
       { text: 'Cedula', value: 'dni', sortable: false },
       { text: 'Direccion', sortable: false, value: 'address' },
       { text: 'Barrio', value: 'neighborhood.name', sortable: false },
-      { text: 'Telefono', sortable: false, value: 'phone' }
+      { text: 'Saldo', sortable: false, value: 'balance' }
     ]
     const television = [
       { text: 'Codigo', value: 'code', sortable: false },
@@ -583,7 +583,7 @@ export const actions = {
       { text: 'Direccion', sortable: false, value: 'address' },
       { text: 'Estado', sortable: false, value: 'active' },
       { text: 'Barrio', value: 'neighborhood.name', sortable: false },
-      { text: 'Telefono', sortable: false, value: 'phone' }
+      { text: 'Saldo', sortable: false, value: 'balance' }
     ]
 
     if (clienttype === 'INTERNET') {
