@@ -461,7 +461,7 @@ export const actions = {
           },
           {
             createdAt: {
-              $lte: payload.to
+              $lte: payload.to + ' 23:59:59'
             }
           }
         ]

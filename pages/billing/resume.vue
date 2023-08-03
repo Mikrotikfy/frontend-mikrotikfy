@@ -169,7 +169,7 @@ export default {
   mounted () {
     this.startDate = this.returnToday()
     this.endDate = this.returnToday()
-    // this.getBillsByDateRange()
+    this.getBillsByDateRange()
   },
   methods: {
     async getBillsByDateRange () {
