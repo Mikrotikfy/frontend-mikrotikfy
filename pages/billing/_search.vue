@@ -27,8 +27,8 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   v-bind="attrs"
-                  :class="filled ? 'rounded-xl black--text mr-2' : ''"
-                  :color="$vuetify.theme.dark ? 'white' : 'primary'"
+                  class="rounded-xl black--text mr-2"
+                  :color="$vuetify.theme.dark ? 'white black--text' : 'primary'"
                   to="/billing/resume"
                   v-on="on"
                 >
