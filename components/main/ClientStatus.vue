@@ -329,10 +329,20 @@ export default {
       return `${days} días, ${hours} horas y ${minutes} minutos`
     },
     formatTimeOffLine (fecha) {
-      const meses = [
-        'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
-      ]
+      const meses = {
+        jan: 'enero',
+        feb: 'febrero',
+        mar: 'marzo',
+        apr: 'abril',
+        may: 'mayo',
+        jun: 'junio',
+        jul: 'julio',
+        aug: 'agosto',
+        sep: 'septiembre',
+        oct: 'octubre',
+        nov: 'noviembre',
+        dec: 'diciembre'
+      }
 
       const partes = fecha.split(' ')
       const fechaPartes = partes[0].split('/')
@@ -340,9 +350,9 @@ export default {
 
       // Convertir el formato de mes en inglés a su equivalente en español
       if (mes.length === 3) {
-        mes = meses.find(mesEspanol => mesEspanol.startsWith(mes.toLowerCase()))
+        mes = meses[mes.toLowerCase()]
       } else {
-        mes = meses[Number(mes) - 1]
+        mes = meses[mes.slice(0, 3).toLowerCase()]
       }
 
       const dia = fechaPartes[1]
@@ -350,7 +360,6 @@ export default {
       const hora = partes[1].split(':')[0]
       const minutos = partes[1].split(':')[1]
       const ampm = Number(hora) >= 12 ? 'pm' : 'am'
-
       const formatoFecha = `${mes.charAt(0).toUpperCase() + mes.slice(1)} ${dia} de ${año}`
       const formatoHora = `${Number(hora) > 12 ? Number(hora) - 12 : hora}:${minutos} ${ampm}`
 
