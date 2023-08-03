@@ -441,11 +441,19 @@ export const actions = {
     }
   },
   getBillsByDateRange ({ commit }, payload) {
-    console.log(payload)
+    let filterDebitCredit = {}
+    if (payload.debit && !payload.credit) {
+      filterDebitCredit.credit = 0
+    } else if (payload.credit && !payload.debit) {
+      filterDebitCredit.debit = 0
+    } else if (payload.credit && payload.debit) {
+      filterDebitCredit = {}
+    }
     const qs = require('qs')
     const query = qs.stringify({
       filters: {
         $and: [
+          filterDebitCredit,
           {
             createdAt: {
               $gte: payload.from
@@ -483,8 +491,7 @@ export const actions = {
           .then(res => res.json())
           .then((invoices) => {
             commit('getBillsByDateRange', invoices.data)
-            commit('setPaginationForBillsByDateRange', invoices.pagination)
-            resolve(invoices.data)
+            resolve(invoices)
           })
       })
     } catch (error) {

@@ -23,6 +23,20 @@
               {{ currentClient.id }} {{ currentClient.name }}
             </span>
             <v-spacer />
+            <v-tooltip top>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-bind="attrs"
+                  :class="filled ? 'rounded-xl black--text mr-2' : ''"
+                  :color="$vuetify.theme.dark ? 'white' : 'primary'"
+                  to="/billing/resume"
+                  v-on="on"
+                >
+                  <v-icon>mdi-text-box-check-outline</v-icon>
+                </v-btn>
+              </template>
+              <span>Movimientos Generales</span>
+            </v-tooltip>
             <BillingToggleArchive />
             <BillingPrintMovement />
             <CreateTicket v-if="currentClient" :client="currentClient" :filled="true" />
