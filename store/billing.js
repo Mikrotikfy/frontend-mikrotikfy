@@ -70,6 +70,10 @@ export const mutations = {
   setTotal (state, total) {
     state.total = total
   },
+  setShowPayedToFalse (state) {
+    console.log('setShowPayedToFalse')
+    state.showPayed = false
+  },
   getBillsByDateRange (state, bills) {
     try {
       state.billsOnDataRange = bills
@@ -106,6 +110,7 @@ export const mutations = {
   },
   getBillsByClientId (state, bills) {
     try {
+      state.billsForCurrentClient = []
       state.billsForCurrentClient = bills
     } catch (error) {
       throw new Error(`BILLING CLIENTS MUTATE ${error}`)
@@ -113,6 +118,7 @@ export const mutations = {
   },
   getClientsBySearch (state, clients) {
     try {
+      state.clients = null
       state.clients = clients.data
     } catch (error) {
       throw new Error(`BILLING CLIENTS SEARCH MUTATE ${error}`)
@@ -401,6 +407,7 @@ export const actions = {
       })
         .then(res => res.json())
         .then((clients) => {
+          console.log(clients)
           commit('getClientsBySearch', clients)
         })
     } catch (error) {

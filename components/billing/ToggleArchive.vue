@@ -13,6 +13,11 @@ export default {
       togglePayed: false
     }
   },
+  watch: {
+    '$store.state.billing.showPayed' (newValue, oldValue) {
+      this.togglePayed = newValue
+    }
+  },
   methods: {
     togglePayedStatus () {
       this.$store.commit('billing/togglePayed')

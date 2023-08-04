@@ -79,7 +79,8 @@ export default {
       this.getBillingInfoByClientId()
     },
     '$store.state.billing.refresh' () {
-      this.getBillingInfoByClientId()
+      console.log('refreshing')
+      this.getClientsBySearch()
     },
     '$route' () {
       this.$store.commit('billing/resetInvoices')
@@ -109,7 +110,7 @@ export default {
       })
     },
     async getClientsBySearch () {
-      if (this.search) {
+      if (this.search || this.$route.params.search) {
         await this.$store.dispatch('billing/getClientsBySearch', {
           search: this.search,
           city: this.$route.query.city,

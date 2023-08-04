@@ -57,6 +57,7 @@ export default {
       this.$store.commit('billing/resetInvoices')
       this.$store.commit('billing/resetSelected')
       this.$store.commit('billing/resetCurrentClient')
+      this.$store.commit('billing/setShowPayedToFalse')
       if (this.search) {
         this.loadingDataTable = true
         this.$router.push({

@@ -27,10 +27,12 @@ export default {
     }
   },
   watch: {
-    totalamount () {
+    async totalamount () {
       this.$store.commit('billing/setTotal', this.totalamount)
       if (!this.$store.state.billing.showPayed) {
-        this.$store.dispatch('billing/updateClientBalance', { balance: this.totalamount, clientId: this.$route.query.selected, token: this.$store.state.auth.token })
+        await this.$store.dispatch('billing/updateClientBalance', { balance: this.totalamount, clientId: this.$route.query.selected, token: this.$store.state.auth.token })
+        this.$store.commit('billing/resetSelected')
+        this.$store.commit('billing/refresh')
       }
     }
   }
