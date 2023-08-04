@@ -104,7 +104,6 @@ export default {
   },
   mounted () {
     this.year = new Date().getFullYear()
-    this.removeOlderThanActualMonths()
   },
   methods: {
     setYear () {
