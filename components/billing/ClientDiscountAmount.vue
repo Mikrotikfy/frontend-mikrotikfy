@@ -126,6 +126,8 @@ export default {
     },
     async saveLegalNoteToDb (invoices, amount) {
       const legalNote = {
+        city: this.$route.query.city,
+        clienttype: this.$route.query.clienttype,
         token: this.$store.state.auth.token,
         biller: this.$store.state.auth,
         client: parseInt(this.$route.query.selected),
