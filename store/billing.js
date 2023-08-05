@@ -467,14 +467,10 @@ export const actions = {
         $and: [
           filterDebitCredit,
           {
-            city: {
-              name: payload.city
-            }
+            city: payload.city
           },
           {
-            clienttype: {
-              name: payload.clienttype
-            }
+            clienttype: payload.clienttype
           },
           {
             createdAt: {
