@@ -90,16 +90,20 @@ export default {
     }
   },
   watch: {
-    month () {
-      this.setMonth()
-      this.getListOfActiveClients()
+    month (newVal, oldVal) {
+      if (newVal) {
+        this.setMonth()
+        this.getListOfActiveClients()
+      }
     },
     year () {
       this.setYear()
     },
     '$route' () {
       this.backToE1()
-      this.getListOfActiveClients()
+      this.$store.commit('billing/resetListOfActiveClients')
+      this.month = null
+      this.setMonth()
     }
   },
   mounted () {

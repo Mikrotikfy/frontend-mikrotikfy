@@ -71,7 +71,6 @@ export const mutations = {
     state.total = total
   },
   setShowPayedToFalse (state) {
-    console.log('setShowPayedToFalse')
     state.showPayed = false
   },
   getBillsByDateRange (state, bills) {
@@ -139,6 +138,13 @@ export const mutations = {
   getListOfActiveClients (state, clients) {
     try {
       state.activeClients = clients
+    } catch (error) {
+      throw new Error(`GET LIST OF ACTIVE CLIENTS MUTATE ${error}`)
+    }
+  },
+  resetListOfActiveClients (state, clients) {
+    try {
+      state.activeClients = []
     } catch (error) {
       throw new Error(`GET LIST OF ACTIVE CLIENTS MUTATE ${error}`)
     }
@@ -393,7 +399,7 @@ export const actions = {
             }
           ]
         },
-        populate: ['neighborhood', 'plan', 'technology', 'offer']
+        populate: ['neighborhood', 'plan', 'technology', 'offer', 'offer.plan', 'offermovements.offer', 'offermovements', 'debtmovements', 'debtmovements.technician']
       },
       {
         encodeValuesOnly: true
@@ -407,7 +413,6 @@ export const actions = {
       })
         .then(res => res.json())
         .then((clients) => {
-          console.log(clients)
           commit('getClientsBySearch', clients)
         })
     } catch (error) {
@@ -462,13 +467,23 @@ export const actions = {
         $and: [
           filterDebitCredit,
           {
-            createdAt: {
-              $gte: payload.from
+            city: {
+              name: payload.city
+            }
+          },
+          {
+            clienttype: {
+              name: payload.clienttype
             }
           },
           {
             createdAt: {
-              $lte: payload.to + ' 23:59:59'
+              $gte: payload.from + 'T00:00:00'
+            }
+          },
+          {
+            createdAt: {
+              $lte: payload.to + 'T23:59:59'
             }
           }
         ]
@@ -546,7 +561,7 @@ export const actions = {
         }
       },
       pagination: {
-        pageSize: 500
+        pageSize: 5000
       },
       populate: ['offer', 'addresses']
     },
@@ -654,6 +669,7 @@ export const actions = {
       { text: 'Cedula', value: 'dni', sortable: false },
       { text: 'Direccion', sortable: false, value: 'address' },
       { text: 'Barrio', value: 'neighborhood.name', sortable: false },
+      { text: 'Estado', sortable: false, value: 'active' },
       { text: 'Saldo', sortable: false, value: 'balance' }
     ]
     const television = [
@@ -661,8 +677,8 @@ export const actions = {
       { text: 'Nombre', value: 'name', sortable: false },
       { text: 'Cedula', value: 'dni', sortable: false },
       { text: 'Direccion', sortable: false, value: 'address' },
-      { text: 'Estado', sortable: false, value: 'active' },
       { text: 'Barrio', value: 'neighborhood.name', sortable: false },
+      { text: 'Estado', sortable: false, value: 'active' },
       { text: 'Saldo', sortable: false, value: 'balance' }
     ]
 

@@ -67,6 +67,7 @@ export default {
   data () {
     return {
       dialog: false,
+      loading: false,
       billingInfo: {
         payBill: {
           amount: null,
@@ -89,27 +90,13 @@ export default {
       }, 200)
     },
     async createInvoiceMovement () {
+      if (this.loading) { return }
+      this.loading = true
       if (this.billingInfo.payBill.amount && this.billingInfo.payBill.amount > this.balance) {
         this.$toast.error('El valor a recaudar no puede ser mayor al saldo', { duration: 2000 })
         this.error = true
         return
       }
-      await this.$store.dispatch('billing/createInvoiceMovement', {
-        token: this.$store.state.auth.token,
-        biller: this.$store.state.auth,
-        invoice: this.invoice,
-        type: this.invoice.invoice_type.name,
-        concept: this.invoice.details,
-        amount: this.billingInfo.payBill.amount || this.balance,
-        details: this.billingInfo.payBill.details
-      })
-      await this.$store.dispatch('billing/updateInvoice', {
-        token: this.$store.state.auth.token,
-        index: this.index,
-        invoice: this.invoice,
-        payed: this.billingInfo.payBill.amount === this.balance || !this.billingInfo.payBill.amount,
-        balance: this.billingInfo.payBill.amount ? this.balance - this.billingInfo.payBill.amount : this.balance - this.invoice.balance
-      })
       const legalNote = {
         token: this.$store.state.auth.token,
         biller: this.$store.state.auth,
@@ -121,10 +108,28 @@ export default {
         invoices: [this.invoice]
       }
       const legalNoteRes = await this.$store.dispatch('billing/createLegalNote', legalNote)
+      await this.$store.dispatch('billing/createInvoiceMovement', {
+        token: this.$store.state.auth.token,
+        biller: this.$store.state.auth,
+        invoice: this.invoice,
+        type: this.invoice.invoice_type.name,
+        concept: this.invoice.details,
+        amount: this.billingInfo.payBill.amount || this.balance,
+        details: this.billingInfo.payBill.details,
+        legalNote: legalNoteRes.id
+      })
+      await this.$store.dispatch('billing/updateInvoice', {
+        token: this.$store.state.auth.token,
+        index: this.index,
+        invoice: this.invoice,
+        payed: this.billingInfo.payBill.amount === this.balance || !this.billingInfo.payBill.amount,
+        balance: this.billingInfo.payBill.amount ? this.balance - this.billingInfo.payBill.amount : this.balance - this.invoice.balance
+      })
       window.open(`/bill?id=${legalNoteRes.id}`)
       this.$store.commit('billing/resetSelected')
       this.$store.commit('billing/refresh')
-      // this.dialog = false
+      this.loading = false
+      this.dialog = false
     }
   }
 }

@@ -85,7 +85,7 @@
                   loading-text="Cargando recibos..."
                   dense
                   hide-default-footer
-                  :caption="`Recaudo de ${getDate(startDate)} a ${ getDate(endDate) } - Documentos: ${billsOnDataRange.length} - Total recaudado: $${Number(billsOnDataRange.reduce((a, b) => a + (b.credit || 0), 0)).toLocaleString('es')}`"
+                  :caption="`Recaudo de ${getDateWithoutHours(startDate)} a ${ getDateWithoutHours(endDate) } - Documentos: ${billsOnDataRange.length} - Total recaudado: $${Number(billsOnDataRange.reduce((a, b) => a + (b.credit || 0), 0)).toLocaleString('es')}`"
                   mobile-breakpoint="100"
                   @page-count="options.pageCount = $event"
                 >
@@ -174,6 +174,8 @@ export default {
   methods: {
     async getBillsByDateRange () {
       const { meta } = await this.$store.dispatch('billing/getBillsByDateRange', {
+        city: this.$route.query.city,
+        clienttype: this.$route.query.clienttype,
         token: this.$store.state.auth.token,
         from: this.startDate,
         to: this.endDate,
@@ -188,7 +190,7 @@ export default {
       const dd = String(today.getDate()).padStart(2, '0')
       const mm = String(today.getMonth() + 1).padStart(2, '0')
       const yyyy = today.getFullYear()
-      return yyyy + '-' + mm + '-' + dd
+      return `${yyyy}-${mm}-${dd}`
     },
     formatConcepts (invoicesMovements, legalNote) {
       if (invoicesMovements.length === 0) { return legalNote.concept }
@@ -203,7 +205,12 @@ export default {
     },
     getDate (date) {
       const dateObject = new Date(date)
-      const humanDateFormat = dateObject.toLocaleString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+      const humanDateFormat = dateObject.toLocaleString('es-CO', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })
+      return humanDateFormat
+    },
+    getDateWithoutHours (date) {
+      const dateObject = new Date(date + 'T00:00:00')
+      const humanDateFormat = dateObject.toLocaleString('es-CO', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Bogota' })
       return humanDateFormat
     }
   },

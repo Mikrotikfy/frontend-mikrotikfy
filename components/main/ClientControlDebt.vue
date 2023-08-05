@@ -169,6 +169,7 @@ export default {
         })
       }
       this.resetSearch()
+      this.$store.commit('billing/refresh') // this one refreshes the client when in billing interface
     },
     calculateClientNewPlan (indebt, active, client) {
       if (indebt && active) { return { id: 7 } }

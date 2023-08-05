@@ -44,6 +44,9 @@
           {{ 'No definido' }}
         </v-chip>
       </template>
+      <template v-slot:[`item.active`]="props">
+        <MainClientControl :client="props.item" :index="clients.map(function(x) {return x.id; }).indexOf(props.item.id)" />
+      </template>
     </v-data-table>
     <v-pagination v-model="page" :length="pageCount" />
   </div>
@@ -79,7 +82,6 @@ export default {
       this.getBillingInfoByClientId()
     },
     '$store.state.billing.refresh' () {
-      console.log('refreshing')
       this.getClientsBySearch()
     },
     '$route' () {

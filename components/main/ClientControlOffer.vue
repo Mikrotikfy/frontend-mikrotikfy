@@ -98,6 +98,7 @@ export default {
       })
       this.resetSearch()
       this.dialog = false
+      this.$store.commit('billing/refresh') // this one refreshes the client when in billing interface
     },
     getLastOfferMovement () {
       this.selected = { ...this.client.offer }

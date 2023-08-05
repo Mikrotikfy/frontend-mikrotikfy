@@ -12,6 +12,15 @@
       :caption="`Clientes activos en ${$route.query.city} a la fecha: ${activeClients.length}`"
       @page-count="pageCount = $event"
     >
+      <template v-slot:[`item.code`]="props">
+        <nuxt-link :to="`/billing/${props.item.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
+          <strong>
+            <h3>
+              {{ props.item.code }}
+            </h3>
+          </strong>
+        </nuxt-link>
+      </template>
       <template v-slot:[`item.balance`]="props">
         <strong> ${{ Number(props.item.balance).toLocaleString('es') }} </strong>
       </template>
