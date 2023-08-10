@@ -296,7 +296,7 @@ export const actions = {
       throw new Error(`UPDATE CLIENT BALANCE ACTION ${error}`)
     }
   },
-  createLegalNote ({ commit }, { token, invoices, debit, credit, client, biller, concept, connect = false }) {
+  createLegalNote ({ commit }, { token, invoices, debit, city, clienttype, credit, client, biller, concept, connect = false }) {
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}legal-notes`, {
@@ -313,6 +313,8 @@ export const actions = {
               credit,
               debit,
               client,
+              city,
+              clienttype,
               concept,
               biller: biller.id
             }
@@ -492,7 +494,9 @@ export const actions = {
         'client.offer',
         'client.neighborhood'
       ],
-      pagination: payload.pagination
+      pagination: {
+        pageSize: 5000
+      }
     },
     {
       encodeValuesOnly: true
@@ -509,6 +513,7 @@ export const actions = {
           .then(res => res.json())
           .then((invoices) => {
             commit('getBillsByDateRange', invoices.data)
+            console.log(invoices.data)
             resolve(invoices)
           })
       })

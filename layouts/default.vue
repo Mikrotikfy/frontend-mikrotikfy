@@ -42,7 +42,7 @@
         v-for="clienttype in $store.state.auth.clienttypes"
         :key="clienttype.name"
         class="ml-2"
-        :color="clienttype.name === $route.query.clienttype ? $vuetify.theme.dark ? 'white black--text' : 'primary white--text' : 'grey darken-1 black--text'"
+        :color="clienttype.name === $route.query.clienttype ? $vuetify.theme.dark ? 'white black--text' : 'primary white--text' : $vuetify.theme.dark ? 'grey darken-1 black--text' : 'grey lighten-2 black--text'"
         elevation="0"
         rounded
         small
@@ -60,7 +60,7 @@
           :key="city.name"
           class="ml-2 rounded-xl elevation-0"
           small
-          :color="city.name === $route.query.city ? $vuetify.theme.dark ? 'white black--text' : 'primary white--text' : 'grey darken-1 black--text'"
+          :color="city.name === $route.query.city ? $vuetify.theme.dark ? 'white black--text' : 'primary white--text' : $vuetify.theme.dark ? 'grey darken-1 black--text' : 'grey lighten-2 black--text'"
           :to="`${$route.path}?city=${city.name}&clienttype=${$route.query.clienttype}${$route.name === 'tickets' ? `&view=${$route.query.view}` : ''}`"
         >
           {{ !$store.state.isDesktop ? city.name.charAt(0) : city.name }}
@@ -69,13 +69,14 @@
       <v-menu offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on, attrs }">
           <v-btn
-            class="ml-2 elevation-0"
+            class="ml-2 elevation-0 pa-1"
+            :class="$vuetify.theme.dark ? 'white black--text' : 'grey lighten-2 black--text'"
             fab
             x-small
             v-bind="attrs"
             v-on="on"
           >
-            <v-icon>mdi-account</v-icon>
+            {{ $store.state.auth.username.charAt(0).toUpperCase() + $store.state.auth.username.slice(1) }}
           </v-btn>
         </template>
         <v-list>
@@ -109,22 +110,6 @@
                 </v-btn>
               </template>
               <span>Cerrar sesión</span>
-            </v-tooltip>
-          </v-list-item>
-          <v-list-item>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  icon
-                  large
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="clearCache()"
-                >
-                  <v-icon>mdi-broom</v-icon>
-                </v-btn>
-              </template>
-              <span>Borrar Cache</span>
             </v-tooltip>
           </v-list-item>
           <v-list-item>

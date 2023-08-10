@@ -31,7 +31,7 @@
                     v-bind="attrs"
                     class="rounded-xl black--text mr-2"
                     :color="$vuetify.theme.dark ? 'white black--text' : 'primary'"
-                    to="/billing/resume"
+                    :to="`/billing/resume?city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
                     v-on="on"
                   >
                     <v-icon>mdi-text-box-check-outline</v-icon>

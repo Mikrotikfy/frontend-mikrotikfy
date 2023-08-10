@@ -6,7 +6,7 @@
       >
         <v-card
           fluid
-          class="rounded-lg"
+          class="rounded-lg elevation-0"
         >
           <v-card-text
             class="pa-1 d-flex"
@@ -96,8 +96,8 @@
                 :key="type"
               >
                 <v-btn
-                  class="black--text rounded-xl ml-2 mr-1 my-2"
-                  :class="type === $route.query.view ? 'white black--text' : 'grey'"
+                  class="black--text rounded-xl ml-2 mr-1 my-2 elevation-0"
+                  :class="type === $route.query.view ? 'white black--text' : $vuetify.theme.dark ? 'grey darken-1' : 'grey lighten-2'"
                   small
                   @click="changeView(type)"
                 >

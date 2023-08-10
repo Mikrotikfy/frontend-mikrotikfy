@@ -1,122 +1,136 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row>
-      <v-card class="rounded-lg mt-5" style="width:100%;">
-        <v-card-title class="justify-center">
-          Movimientos de cuenta
-        </v-card-title>
-        <v-card-text>
-          <v-container fluid>
-            <v-row>
-              <v-col
-                cols="12"
-                sm="4"
-              >
-                <v-text-field
-                  ref="startDate"
-                  v-model="startDate"
-                  label="Inicio"
-                  outlined
-                  :rules="dateRules"
-                  class="rounded-xl"
-                  hide-details="auto"
-                  prepend-icon="mdi-calendar"
-                  @keyup.enter="getBillsByDateRange"
-                />
-              </v-col>
-              <v-col
-                cols="12"
-                sm="4"
-              >
-                <v-text-field
-                  v-model="endDate"
-                  label="Fin"
-                  outlined
-                  :rules="dateRules2"
-                  class="rounded-xl"
-                  hide-details="auto"
-                  prepend-icon="mdi-calendar"
-                  @keyup.enter="getBillsByDateRange"
-                />
-              </v-col>
-              <v-col
-                cols="12"
-                sm="4"
-                class="d-flex align-center"
-              >
-                <v-btn-toggle
-                  v-model="mode"
-                  borderless
-                  color="primary"
+      <v-col>
+        <v-card class="rounded-lg" style="width:100%;">
+          <v-card-title class="justify-center">
+            Movimientos de cuenta
+          </v-card-title>
+          <v-card-text>
+            <v-container fluid>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="4"
                 >
-                  <v-btn value="credit">
-                    <span class="hidden-sm-and-down">Credito</span>
-
-                    <v-icon right>
-                      mdi-arrow-down-bold
-                    </v-icon>
-                  </v-btn>
-
-                  <v-btn value="debit">
-                    <span class="hidden-sm-and-down">Debito</span>
-
-                    <v-icon right>
-                      mdi-arrow-up-bold
-                    </v-icon>
-                  </v-btn>
-                  <v-btn value="both">
-                    <span class="hidden-sm-and-down">Ambos</span>
-
-                    <v-icon right>
-                      mdi-circle
-                    </v-icon>
-                  </v-btn>
-                </v-btn-toggle>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-data-table
-                  :items="billsOnDataRange"
-                  :headers="headers"
-                  :options.sync="options"
-                  :loading="loadingDataTable"
-                  no-data-text="No hay recibos para mostrar..."
-                  loading-text="Cargando recibos..."
-                  dense
-                  hide-default-footer
-                  :caption="`Recaudo de ${getDateWithoutHours(startDate)} a ${ getDateWithoutHours(endDate) } - Documentos: ${billsOnDataRange.length} - Total recaudado: $${Number(billsOnDataRange.reduce((a, b) => a + (b.credit || 0), 0)).toLocaleString('es')}`"
-                  mobile-breakpoint="100"
-                  @page-count="options.pageCount = $event"
+                  <v-text-field
+                    ref="startDate"
+                    v-model="startDate"
+                    label="Inicio"
+                    type="date"
+                    outlined
+                    :rules="dateRules"
+                    class="rounded-xl"
+                    hide-details="auto"
+                    prepend-icon="mdi-calendar"
+                    @keyup.enter="setDateQuery"
+                  />
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="4"
+                  class="d-flex align-center"
                 >
-                  <template v-slot:[`item.client.code`]="props">
-                    <nuxt-link :to="`/billing/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
-                      <strong>
-                        <h3>
-                          {{ props.item.client.code }}
-                        </h3>
-                      </strong>
-                    </nuxt-link>
-                  </template>
-                  <template v-slot:[`item.debit`]="props">
-                    <strong> ${{ Number(props.item.debit).toLocaleString('es') }} </strong>
-                  </template>
-                  <template v-slot:[`item.credit`]="props">
-                    <strong> ${{ Number(props.item.credit).toLocaleString('es') }} </strong>
-                  </template>
-                  <template v-slot:[`item.invoices`]="props">
-                    <strong> {{ formatConcepts(props.item.invoice_movements, props.item) }} </strong>
-                  </template>
-                  <template v-slot:[`item.createdAt`]="props">
-                    <strong> {{ getDate(props.item.createdAt) }} </strong>
-                  </template>
-                </v-data-table>
-                <v-pagination v-model="options.page" :length="options.pageCount" />
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-      </v-card>
+                  <v-text-field
+                    v-model="endDate"
+                    label="Fin"
+                    type="date"
+                    outlined
+                    :rules="dateRules2"
+                    class="rounded-xl"
+                    hide-details="auto"
+                    prepend-icon="mdi-calendar"
+                    @keyup.enter="setDateQuery"
+                  />
+                  <v-btn
+                    color="white black--text"
+                    class="rounded-xl ml-4"
+                    @click="getBillsByDateRange"
+                  >
+                    <v-icon>
+                      mdi-history
+                    </v-icon>
+                  </v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="4"
+                  class="d-flex align-center"
+                >
+                  <v-btn-toggle
+                    v-model="mode"
+                    borderless
+                    color="primary"
+                  >
+                    <v-btn value="credit">
+                      <span class="hidden-sm-and-down">Credito</span>
+
+                      <v-icon right>
+                        mdi-arrow-down-bold
+                      </v-icon>
+                    </v-btn>
+
+                    <v-btn value="debit">
+                      <span class="hidden-sm-and-down">Debito</span>
+
+                      <v-icon right>
+                        mdi-arrow-up-bold
+                      </v-icon>
+                    </v-btn>
+                    <v-btn value="both">
+                      <span class="hidden-sm-and-down">Ambos</span>
+
+                      <v-icon right>
+                        mdi-circle
+                      </v-icon>
+                    </v-btn>
+                  </v-btn-toggle>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-data-table
+                    :items="billsOnDataRange"
+                    :headers="headers"
+                    :options.sync="options"
+                    :loading="loadingDataTable"
+                    no-data-text="No hay recibos para mostrar..."
+                    loading-text="Cargando recibos..."
+                    dense
+                    hide-default-footer
+                    :caption="`Recaudo de ${getDateWithoutHours(startDate)} a ${ getDateWithoutHours(endDate) } - Documentos: ${billsOnDataRange.length} - Total recaudado: $${Number(billsOnDataRange.reduce((a, b) => a + (b.credit || 0), 0)).toLocaleString('es')}`"
+                    mobile-breakpoint="100"
+                    @page-count="options.pageCount = $event"
+                  >
+                    <template v-slot:[`item.client.code`]="props">
+                      <nuxt-link :to="`/billing/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
+                        <strong>
+                          <h3>
+                            {{ props.item.client.code }}
+                          </h3>
+                        </strong>
+                      </nuxt-link>
+                    </template>
+                    <template v-slot:[`item.debit`]="props">
+                      <strong> ${{ Number(props.item.debit).toLocaleString('es') }} </strong>
+                    </template>
+                    <template v-slot:[`item.credit`]="props">
+                      <strong> ${{ Number(props.item.credit).toLocaleString('es') }} </strong>
+                    </template>
+                    <template v-slot:[`item.invoices`]="props">
+                      <strong> {{ formatConcepts(props.item.invoice_movements, props.item) }} </strong>
+                    </template>
+                    <template v-slot:[`item.createdAt`]="props">
+                      <strong> {{ getDate(props.item.createdAt) }} </strong>
+                    </template>
+                  </v-data-table>
+                  <v-pagination v-model="options.page" :length="options.pageCount" />
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -159,10 +173,21 @@ export default {
     }
   },
   watch: {
-    'options.page' () {
+    mode () {
       this.getBillsByDateRange()
     },
-    mode () {
+    '$route.query.startDate' () {
+      this.getBillsByDateRange()
+    },
+    '$route.query.endDate' () {
+      this.getBillsByDateRange()
+    },
+    '$route.query.city' () {
+      this.setDateQuery()
+      this.getBillsByDateRange()
+    },
+    '$route.query.clienttype' () {
+      this.setDateQuery()
       this.getBillsByDateRange()
     }
   },
@@ -170,20 +195,30 @@ export default {
     this.startDate = this.returnToday()
     this.endDate = this.returnToday()
     this.getBillsByDateRange()
+    this.setDateQuery()
   },
   methods: {
+    setDateQuery () {
+      this.$router.push({
+        query: {
+          ...this.$route.query,
+          startDate: this.startDate,
+          endDate: this.endDate
+        }
+      })
+    },
     async getBillsByDateRange () {
-      const { meta } = await this.$store.dispatch('billing/getBillsByDateRange', {
+      this.loadingDataTable = true
+      await this.$store.dispatch('billing/getBillsByDateRange', {
         city: this.$route.query.city,
         clienttype: this.$route.query.clienttype,
         token: this.$store.state.auth.token,
-        from: this.startDate,
-        to: this.endDate,
-        pagination: this.options,
+        from: this.$route.query.startDate || this.startDate,
+        to: this.$route.query.endDate || this.endDate,
         credit: this.mode === 'credit' || this.mode === 'both',
         debit: this.mode === 'debit' || this.mode === 'both'
       })
-      this.options = meta.pagination
+      this.loadingDataTable = false
     },
     returnToday () {
       const today = new Date()
@@ -221,3 +256,10 @@ export default {
   }
 }
 </script>
+<style>
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+</style>
