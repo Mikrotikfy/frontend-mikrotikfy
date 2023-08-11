@@ -377,7 +377,7 @@
               <strong>{{ processAddressesNeighborhood(item) }}</strong>
             </template>
             <template v-slot:[`item.client.code`]="props">
-              <nuxt-link :to="`/clients/${props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
+              <nuxt-link :to="`/clients/${props.item.client.id}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
                 <strong>
                   <h3>
                     {{ props.item.client.code }}
