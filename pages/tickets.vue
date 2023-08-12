@@ -1,6 +1,7 @@
 <template>
   <div>
-    <MainTickets />
+    <MainTicketsDx v-if="$route.query.view === 'DX'" />
+    <MainTickets v-else />
   </div>
 </template>
 
