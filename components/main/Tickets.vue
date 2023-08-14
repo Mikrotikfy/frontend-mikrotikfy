@@ -197,7 +197,7 @@
             :expanded.sync="expanded"
             :loading="initialLoading"
             :class="$store.state.isDesktop ? 'rounded-lg' : 'transparent'"
-            :caption="$route.query.clienttype"
+            :caption="$route.query.clienttype === 'INTERNET' ? 'Tickets de Internet' : 'Tickets de Televisión'"
             sort-by="createdAt"
             calculate-widths
             sort-desc
@@ -209,7 +209,7 @@
             @click:row="showTicketInfo({ item: $event, index: ticketList.indexOf($event) })"
           >
             <template v-slot:[`item.active`]="props">
-              <v-chip small outlined :color="getColor(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice)" class="white--text">
+              <v-chip small label outlined>
                 <h5>
                   {{ getState(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice) }}
                 </h5>
@@ -227,7 +227,6 @@
               >
                 <v-chip
                   small
-                  outlined
                   :color="getTicketTypeColor(props.item.tickettype.name)"
                   style="width: 100%;justify-content:center;"
                 >
@@ -250,7 +249,7 @@
                   />
                 </template>
               </v-edit-dialog>
-              <v-chip v-else outlined small :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
+              <v-chip v-else small :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
                 <h5>
                   {{ props.item.tickettype.name }}
                 </h5>
@@ -268,7 +267,6 @@
                 <v-chip
                   small
                   outlined
-                  :color="props.item.technician ? props.item.technician.username === 'sistema' ? $vuetify.theme.dark ? 'green darken-2' : 'green darken-2 white--text' : 'primary' : $vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-1 black--text'"
                 >
                   <h5>
                     {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
@@ -294,7 +292,6 @@
                 v-else
                 small
                 outlined
-                :color="props.item.technician ? props.item.technician.username === 'sistema' ? $vuetify.theme.dark ? 'green darken-2' : 'green darken-2 white--text' : 'primary' : $vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-1 black--text'"
               >
                 <h5>
                   {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
@@ -381,11 +378,9 @@
             </template>
             <template v-slot:[`item.client.code`]="props">
               <nuxt-link :to="`/clients/${props.item.client.code === 'C' ? props.item.client.id : props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
-                <strong>
-                  <h3>
-                    {{ props.item.client.code }}
-                  </h3>
-                </strong>
+                <v-chip label outlined>
+                  {{ props.item.client.code }}
+                </v-chip>
               </nuxt-link>
             </template>
             <template v-slot:[`item.client.balance`]="props">
@@ -395,7 +390,6 @@
                 label
                 outlined
                 :to="`/billing/${props.item.client.code}?selected=${props.item.client.id}&city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
-                :color="props.item.client.balance >= props.item.client.offer.price * 2 ? 'yellow darken-4' : 'green'"
               >
                 ${{ Number(props.item.client.balance).toLocaleString('es') }}
               </v-chip>
@@ -419,17 +413,23 @@
                 class="mb-4"
               >
                 <div v-if="item.media" :class="$store.state.isDesktop ? 'parent-with-gallery-desktop' : 'parent-with-gallery-mobile'">
-                  <v-chip small label class="ml-1 mr-4" color="white black--text">
-                    Avances: {{ item.details }}
+                  <v-chip small label outlined class="ml-1 mr-4" color="white black--text">
+                    Avances
                   </v-chip>
+                  <span class="cyan--text accent-2 font-weight-bold">
+                    {{ item.details }}
+                  </span>
                   <MiscPhotoGalleryPreview
                     :ticket="item"
                   />
                 </div>
                 <div v-else class="parent-no-gallery">
-                  <v-chip small label class="ml-1 mr-4" color="white black--text">
-                    Avances: {{ item.details }}
+                  <v-chip small label outlined class="ml-1 mr-4" color="white black--text">
+                    Avances
                   </v-chip>
+                  <span class="cyan--text accent-2 font-weight-bold">
+                    {{ item.details }}
+                  </span>
                 </div>
               </td>
             </template>
