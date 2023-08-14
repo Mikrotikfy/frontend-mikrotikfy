@@ -123,6 +123,9 @@
                     <template v-slot:[`item.createdAt`]="props">
                       <strong> {{ getDate(props.item.createdAt) }} </strong>
                     </template>
+                    <template v-slot:[`item.biller.username`]="props">
+                      <strong> {{ ucfirst(props.item.biller.username) }} </strong>
+                    </template>
                   </v-data-table>
                   <v-pagination v-model="options.page" :length="options.pageCount" />
                 </v-col>
@@ -156,7 +159,8 @@ export default {
       { text: 'Nombre', value: 'client.name', align: 'start' },
       { text: 'Conceptos', value: 'invoices', sortable: false },
       { text: 'Debito', value: 'debit', sortable: false },
-      { text: 'Crédito', value: 'credit', sortable: false }
+      { text: 'Crédito', value: 'credit', sortable: false },
+      { text: 'Operador', value: 'biller.username', sortable: false }
     ],
     options: {
       page: 1,
@@ -247,6 +251,9 @@ export default {
       const dateObject = new Date(date + 'T00:00:00')
       const humanDateFormat = dateObject.toLocaleString('es-CO', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Bogota' })
       return humanDateFormat
+    },
+    ucfirst (string) {
+      return string.charAt(0).toUpperCase() + string.slice(1)
     }
   },
   head () {

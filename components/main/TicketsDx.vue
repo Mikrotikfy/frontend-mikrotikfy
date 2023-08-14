@@ -445,18 +445,18 @@
           <div>
             <div
               class="elevation-5 rounded-xl py-2 px-4"
-              :class="$vuetify.theme.dark ? 'grey darken-3' : 'white'"
+              :class="{ 'grey darken-3': isDarkTheme, 'white': !isDarkTheme }"
             >
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
-                <strong>Tipo Ticket: </strong>{{ editModalData.tickettype ? editModalData.tickettype.name : '' }}
+                <strong>Tipo Ticket: </strong>{{ getTicketTypeName() }}
               </p>
-              <nuxt-link :to="`/clients/${editModalData.client ? editModalData.client.code : ''}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
+              <nuxt-link :to="`/clients/${this.editModalData.client ? this.editModalData.client.code : ''}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}`" class="blue--text">
                 <strong>
-                  <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold"><strong>Código: </strong>{{ editModalData.client ? editModalData.client.code : '' }}</p>
+                  <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold"><strong>Código: </strong>{{ getClientCode() }}</p>
                 </strong>
               </nuxt-link>
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
-                <strong>Cliente: </strong>{{ editModalData.client ? editModalData.client.name : '' }}
+                <strong>Cliente: </strong>{{ getClientName() }}
               </p>
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
                 <strong>Direccion: </strong>{{ processAddresses(editModalData) }}
@@ -465,41 +465,37 @@
                 <strong>Barrio: </strong>{{ processAddressesNeighborhood(editModalData) }}
               </p>
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
-                <strong>Celular: </strong><a :href="`tel:${editModalData.client ? editModalData.client.phone : ''}`"><strong>{{ editModalData.client ? editModalData.client.phone : '' }}</strong></a>
+                <strong>Celular: </strong><a :href="getClientPhoneLink()"><strong>{{ getClientPhone() }}</strong></a>
               </p>
-              <p v-if="$route.query.clienttype === 'INTERNET'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
-                <strong>Tecnología: </strong>{{ editModalData.client ? editModalData.client.technology ? editModalData.client.technology.name : 'No Reg.' : '' }}
+              <p v-if="isInternetClient" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
+                <strong>Tecnología: </strong>{{ getClientTechnologyName() }}
               </p>
-              <p v-if="$route.query.clienttype === 'INTERNET'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
+              <p v-if="isInternetClient" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
                 <strong>Nap: </strong>
                 <v-chip label color="green">
-                  {{ editModalData.client ? editModalData.client.naps.length > 0 ? editModalData.client.naps[0].code : 'No Reg.' : '' }}
+                  {{ getClientNapCode() }}
                 </v-chip>
               </p>
-              <p v-if="$route.query.clienttype === 'INTERNET'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
-                <strong>Potencia Óptica: </strong>{{ editModalData.client && editModalData.client.opticalpower ? editModalData.client.opticalpower : 'No reg.' }}
+              <p v-if="isInternetClient" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
+                <strong>Potencia Óptica: </strong>{{ getClientOpticalPower() }}
               </p>
-
-              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
-                TV: {{ editModalData.client && editModalData.client.tvspec ? editModalData.client.tvspec.tvs : 'No reg.' }}
+              <p v-if="isTelevisionClient" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
+                TV: {{ getTvSpecProperty('tvs') }}
               </p>
-
-              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
-                Altos: {{ editModalData.client && editModalData.client.tvspec ? editModalData.client.tvspec.high : '' }}
+              <p v-if="isTelevisionClient" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
+                Altos: {{ getTvSpecProperty('high') }}
               </p>
-
-              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
-                Bajos: {{ editModalData.client && editModalData.client.tvspec ? editModalData.client.tvspec.down : '' }}
+              <p v-if="isTelevisionClient" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
+                Bajos: {{ getTvSpecProperty('down') }}
               </p>
-
-              <p v-if="$route.query.clienttype === 'TELEVISION'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
-                Calidad: {{ editModalData.client && editModalData.client.tvspec && editModalData.client.tvspec.tvspectype ? editModalData.client.tvspec.tvspectype.name : '' }}
+              <p v-if="isTelevisionClient" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
+                Calidad: {{ getTvSpecTypeName() }}
               </p>
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
                 <strong>Avance: </strong><code>{{ editModalData ? editModalData.details : '' }}</code>
               </p>
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
-                <strong>Creado por: </strong>{{ editModalData.assignated ? ucfirst(editModalData.assignated.username) : '' }}
+                <strong>Creado por: </strong>{{ getAssignatedUsername() }}
               </p>
               <span class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
                 {{ getDate(editModalData ? editModalData.createdAt : '') }}
@@ -593,6 +589,15 @@ export default {
     },
     clientWidth () {
       return this.$store.state.clientWidth
+    },
+    isInternetClient () {
+      return this.$route.query.clienttype === 'INTERNET'
+    },
+    isTelevisionClient () {
+      return this.$route.query.clienttype === 'TELEVISION'
+    },
+    isDarkTheme () {
+      return this.$vuetify.theme.dark
     },
     getHeadersByClienttype () {
       return this.$route.query.clienttype === 'INTERNET' ? this.$store.state.isDesktop ? [
@@ -823,6 +828,39 @@ export default {
       if (neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
       if (!neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
       if (!neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
+    },
+    getTicketTypeName () {
+      return this.editModalData.tickettype ? this.editModalData.tickettype.name : ''
+    },
+    getClientCode () {
+      return this.editModalData.client ? this.editModalData.client.code : ''
+    },
+    getClientName () {
+      return this.editModalData.client ? this.editModalData.client.name : ''
+    },
+    getClientPhone () {
+      return this.editModalData.client ? this.editModalData.client.phone : ''
+    },
+    getClientPhoneLink () {
+      return `tel:${this.getClientPhone()}`
+    },
+    getClientTechnologyName () {
+      return this.editModalData.client && this.editModalData.client.technology ? this.editModalData.client.technology.name : 'No Reg.'
+    },
+    getClientNapCode () {
+      return this.editModalData.client && this.editModalData.client.naps.length > 0 ? this.editModalData.client.naps[0].code : 'No Reg.'
+    },
+    getClientOpticalPower () {
+      return this.editModalData.client && this.editModalData.client.opticalpower ? this.editModalData.client.opticalpower : 'No reg.'
+    },
+    getTvSpecProperty (prop) {
+      return this.editModalData.client && this.editModalData.client.tvspec ? this.editModalData.client.tvspec[prop] : 'No reg.'
+    },
+    getTvSpecTypeName () {
+      return this.editModalData.client && this.editModalData.client.tvspec && this.editModalData.client.tvspec.tvspectype ? this.editModalData.client.tvspec.tvspectype.name : ''
+    },
+    getAssignatedUsername () {
+      return this.editModalData.assignated ? this.ucfirst(this.editModalData.assignated.username) : ''
     },
     getColor (state, answered, escalated, escalatedoffice) {
       if (state && !answered) {

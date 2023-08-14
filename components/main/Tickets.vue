@@ -197,7 +197,7 @@
             :expanded.sync="expanded"
             :loading="initialLoading"
             :class="$store.state.isDesktop ? 'rounded-lg' : 'transparent'"
-            :style="$route.query.clienttype === 'INTERNET' ? 'border-top: 2px solid cyan;' : 'border-top: 2px solid yellow;'"
+            :caption="$route.query.clienttype"
             sort-by="createdAt"
             calculate-widths
             sort-desc
@@ -209,7 +209,7 @@
             @click:row="showTicketInfo({ item: $event, index: ticketList.indexOf($event) })"
           >
             <template v-slot:[`item.active`]="props">
-              <v-chip small :color="getColor(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice)" class="white--text">
+              <v-chip small outlined :color="getColor(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice)" class="white--text">
                 <h5>
                   {{ getState(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice) }}
                 </h5>
@@ -227,6 +227,7 @@
               >
                 <v-chip
                   small
+                  outlined
                   :color="getTicketTypeColor(props.item.tickettype.name)"
                   style="width: 100%;justify-content:center;"
                 >
@@ -249,7 +250,7 @@
                   />
                 </template>
               </v-edit-dialog>
-              <v-chip v-else small :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
+              <v-chip v-else outlined small :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
                 <h5>
                   {{ props.item.tickettype.name }}
                 </h5>
@@ -266,6 +267,7 @@
               >
                 <v-chip
                   small
+                  outlined
                   :color="props.item.technician ? props.item.technician.username === 'sistema' ? $vuetify.theme.dark ? 'green darken-2' : 'green darken-2 white--text' : 'primary' : $vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-1 black--text'"
                 >
                   <h5>
@@ -291,6 +293,7 @@
               <v-chip
                 v-else
                 small
+                outlined
                 :color="props.item.technician ? props.item.technician.username === 'sistema' ? $vuetify.theme.dark ? 'green darken-2' : 'green darken-2 white--text' : 'primary' : $vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-1 black--text'"
               >
                 <h5>
@@ -390,6 +393,7 @@
                 v-if="props.item.client && props.item.client.offer && props.item.client.offer.price"
                 small
                 label
+                outlined
                 :to="`/billing/${props.item.client.code}?selected=${props.item.client.id}&city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
                 :color="props.item.client.balance >= props.item.client.offer.price * 2 ? 'yellow darken-4' : 'green'"
               >
@@ -413,22 +417,19 @@
               <td
                 :colspan="$route.query.clienttype === 'INTERNET' ? '14' : '13'"
                 class="mb-4"
-                :style="$route.query.clienttype === 'INTERNET' ? 'background-color:#58f0ff0f;' : 'background-color:#ffee580f;'"
               >
                 <div v-if="item.media" :class="$store.state.isDesktop ? 'parent-with-gallery-desktop' : 'parent-with-gallery-mobile'">
                   <v-chip small label class="ml-1 mr-4" color="white black--text">
-                    Avances
+                    Avances: {{ item.details }}
                   </v-chip>
-                  {{ item.details }}
                   <MiscPhotoGalleryPreview
                     :ticket="item"
                   />
                 </div>
                 <div v-else class="parent-no-gallery">
                   <v-chip small label class="ml-1 mr-4" color="white black--text">
-                    Avances
+                    Avances: {{ item.details }}
                   </v-chip>
-                  {{ item.details }}
                 </div>
               </td>
             </template>
