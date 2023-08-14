@@ -196,7 +196,7 @@
             :page.sync="page"
             :expanded.sync="expanded"
             :loading="initialLoading"
-            :class="$store.state.isDesktop ? 'rounded-lg' : 'transparent'"
+            class="rounded-lg"
             :caption="$route.query.clienttype === 'INTERNET' ? 'Tickets de Internet' : 'Tickets de Televisión'"
             sort-by="createdAt"
             calculate-widths
@@ -227,6 +227,7 @@
               >
                 <v-chip
                   small
+                  label
                   :color="getTicketTypeColor(props.item.tickettype.name)"
                   style="width: 100%;justify-content:center;"
                 >
@@ -249,7 +250,7 @@
                   />
                 </template>
               </v-edit-dialog>
-              <v-chip v-else small :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
+              <v-chip v-else small label :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
                 <h5>
                   {{ props.item.tickettype.name }}
                 </h5>
@@ -266,6 +267,7 @@
               >
                 <v-chip
                   small
+                  label
                   outlined
                 >
                   <h5>
@@ -378,7 +380,7 @@
             </template>
             <template v-slot:[`item.client.code`]="props">
               <nuxt-link :to="`/clients/${props.item.client.code === 'C' ? props.item.client.id : props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
-                <v-chip label outlined>
+                <v-chip label outlined small>
                   {{ props.item.client.code }}
                 </v-chip>
               </nuxt-link>
@@ -413,10 +415,10 @@
                 class="mb-4"
               >
                 <div v-if="item.media" :class="$store.state.isDesktop ? 'parent-with-gallery-desktop' : 'parent-with-gallery-mobile'">
-                  <v-chip small label outlined class="ml-1 mr-4" color="white black--text">
+                  <v-chip small label outlined class="ml-1 mr-4">
                     Avances
                   </v-chip>
-                  <span class="cyan--text accent-2 font-weight-bold">
+                  <span class="font-weight-bold">
                     {{ item.details }}
                   </span>
                   <MiscPhotoGalleryPreview
@@ -424,10 +426,10 @@
                   />
                 </div>
                 <div v-else class="parent-no-gallery">
-                  <v-chip small label outlined class="ml-1 mr-4" color="white black--text">
+                  <v-chip small label outlined class="ml-1 mr-4">
                     Avances
                   </v-chip>
-                  <span class="cyan--text accent-2 font-weight-bold">
+                  <span class="font-weight-bold">
                     {{ item.details }}
                   </span>
                 </div>
