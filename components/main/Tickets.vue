@@ -104,6 +104,26 @@
                   {{ calculateQuantity(type) }} {{ type }}
                 </v-btn>
               </v-slide-item>
+              <v-slide-item>
+                <v-tooltip bottom max-width="400">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      class="ml-2"
+                      v-bind="attrs"
+                      v-on="on"
+                      @click="copyToClipboard(getTicketTypesAndCountThemByType(ticketList))"
+                    >
+                      mdi-information-outline
+                    </v-icon>
+                  </template>
+                  <span
+                    v-for="type in getTicketTypesAndCountThemByType(ticketList)"
+                    :key="type"
+                  >
+                    {{ type.name }}: {{ type.count }}<br>
+                  </span>
+                </v-tooltip>
+              </v-slide-item>
             </v-slide-group>
             <v-spacer v-if="$store.state.isDesktop" />
             <v-tooltip top>
@@ -209,7 +229,11 @@
             @click:row="showTicketInfo({ item: $event, index: ticketList.indexOf($event) })"
           >
             <template v-slot:[`item.active`]="props">
-              <v-chip small label outlined>
+              <v-chip
+                small
+                label
+                :color="getColor(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice)"
+              >
                 <h5>
                   {{ getState(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice) }}
                 </h5>
@@ -268,7 +292,7 @@
                 <v-chip
                   small
                   label
-                  outlined
+                  color="white black--text"
                 >
                   <h5>
                     {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
@@ -293,7 +317,7 @@
               <v-chip
                 v-else
                 small
-                outlined
+                color="white black--text"
               >
                 <h5>
                   {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
@@ -415,7 +439,7 @@
                 class="mb-4"
               >
                 <div v-if="item.media" :class="$store.state.isDesktop ? 'parent-with-gallery-desktop' : 'parent-with-gallery-mobile'">
-                  <v-chip small label outlined class="ml-1 mr-4">
+                  <v-chip small label outlined class="mr-4">
                     Avances
                   </v-chip>
                   <span class="font-weight-bold">
@@ -426,7 +450,7 @@
                   />
                 </div>
                 <div v-else class="parent-no-gallery">
-                  <v-chip small label outlined class="ml-1 mr-4">
+                  <v-chip small label outlined class="mr-4">
                     Avances
                   </v-chip>
                   <span class="font-weight-bold">
@@ -891,9 +915,10 @@ export default {
       this.refreshTickets()
       this.infoModal = false
     },
-    copyToClipboard (component, text) {
-      navigator.clipboard.writeText(text)
-      this.$toast.info(`${component} Copiado al portapapeles!`, { duration: 2000 })
+    copyToClipboard (text) {
+      const formated = text.map(item => `${item.name} ${item.count}`).join('\n')
+      navigator.clipboard.writeText(formated)
+      this.$toast.success('Copiado al portapapeles', { duration: 5000 })
     },
     showOnlyNameAndSecondName (name) {
       const nameArray = name.split(' ')
@@ -986,6 +1011,21 @@ export default {
     },
     ucfirst (string) {
       return string.charAt(0).toUpperCase() + string.slice(1)
+    },
+    getTicketTypesAndCountThemByType (tickets) {
+      const ticketTypes = []
+      tickets.forEach((ticket) => {
+        ticketTypes.push(ticket.tickettype.name)
+      })
+      const ticketTypesCounted = ticketTypes.reduce((acc, curr) => {
+        acc[curr] = (acc[curr] || 0) + 1
+        return acc
+      }, {})
+      const formatedTicketTypesCounted = []
+      for (const [key, value] of Object.entries(ticketTypesCounted)) {
+        formatedTicketTypesCounted.push({ name: key, count: value })
+      }
+      return formatedTicketTypesCounted
     }
   }
 }
