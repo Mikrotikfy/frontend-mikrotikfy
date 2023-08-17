@@ -619,7 +619,7 @@ export default {
         }
       }
       if (this.ticketPayload.type.name === 'TRASLADO') {
-        this.ticketPayload.details = `DX: ${this.client.address} ${this.client.neighborhood.name} \n CX: ${this.cx.finalAddress}`
+        this.ticketPayload.details = `DX: ${this.getSecondFromLastAddress(this.client)} ${this.getSecondFromLastAddressNeighborhood(this.client)} \n CX: ${this.cx.finalAddress}`
       }
       if (this.isEmpty(this.ticketPayload.type)) {
         this.alertBox = true
@@ -707,12 +707,17 @@ export default {
         console.error(error)
       })
     },
-    can (component) {
-      // eslint-disable-next-line camelcase
-      const allowed_components = this.role
-      // eslint-disable-next-line camelcase
-      const current_component = component
-      return allowed_components.includes(current_component)
+    getSecondFromLastAddress (client) {
+      if (client.addresses.length > 1) {
+        return client.addresses.at(-2).address
+      }
+      return client.address
+    },
+    getSecondFromLastAddressNeighborhood (client) {
+      if (client.addresses.length > 1) {
+        return client.addresses.at(-2).neighborhood.name
+      }
+      return client.neighborhood.name
     }
   }
 }

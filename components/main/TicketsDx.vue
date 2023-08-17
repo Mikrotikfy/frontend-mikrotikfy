@@ -144,7 +144,7 @@
             :page.sync="page"
             :loading="initialLoading"
             :class="$store.state.isDesktop ? 'rounded-lg' : 'transparent'"
-            :style="$route.query.clienttype === 'INTERNET' ? 'border-top: 2px solid cyan;' : 'border-top: 2px solid yellow;'"
+            :caption="$route.query.clienttype === 'INTERNET' ? 'DX INTERNET' : 'DX TELEVISION'"
             sort-by="createdAt"
             calculate-widths
             sort-desc
@@ -157,7 +157,11 @@
             @click:row="showTicketInfo({ item: $event, index: ticketList.indexOf($event) })"
           >
             <template v-slot:[`item.active`]="props">
-              <v-chip small :color="getColor(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice)" class="white--text">
+              <v-chip
+                small
+                label
+                :color="getColor(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice)"
+              >
                 <h5>
                   {{ getState(props.item.active, props.item.answered, props.item.escalated, props.item.escalatedoffice) }}
                 </h5>
@@ -175,6 +179,7 @@
               >
                 <v-chip
                   small
+                  label
                   :color="getTicketTypeColor(props.item.tickettype.name)"
                   style="width: 100%;justify-content:center;"
                 >
@@ -197,7 +202,7 @@
                   />
                 </template>
               </v-edit-dialog>
-              <v-chip v-else small :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
+              <v-chip v-else small label :color="getTicketTypeColor(props.item.tickettype.name)" class="white--text">
                 <h5>
                   {{ props.item.tickettype.name }}
                 </h5>
@@ -214,7 +219,8 @@
               >
                 <v-chip
                   small
-                  :color="props.item.technician ? props.item.technician.username === 'sistema' ? $vuetify.theme.dark ? 'green darken-2' : 'green darken-2 white--text' : 'primary' : $vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-1 black--text'"
+                  label
+                  color="white black--text"
                 >
                   <h5>
                     {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
@@ -239,7 +245,7 @@
               <v-chip
                 v-else
                 small
-                :color="props.item.technician ? props.item.technician.username === 'sistema' ? $vuetify.theme.dark ? 'green darken-2' : 'green darken-2 white--text' : 'primary' : $vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-1 black--text'"
+                color="white black--text"
               >
                 <h5>
                   {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
@@ -326,11 +332,9 @@
             </template>
             <template v-slot:[`item.client.code`]="props">
               <nuxt-link :to="`/clients/${props.item.client.code === 'C' ? props.item.client.id : props.item.client.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
-                <strong>
-                  <h3>
-                    {{ props.item.client.code }}
-                  </h3>
-                </strong>
+                <v-chip label outlined small>
+                  {{ props.item.client.code }}
+                </v-chip>
               </nuxt-link>
             </template>
             <template v-slot:[`item.client.balance`]="props">
@@ -338,8 +342,8 @@
                 v-if="props.item.client && props.item.client.offer && props.item.client.offer.price"
                 small
                 label
+                outlined
                 :to="`/billing/${props.item.client.code}?selected=${props.item.client.id}&city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
-                :color="props.item.client.balance >= props.item.client.offer.price * 2 ? 'yellow darken-4' : 'green'"
               >
                 ${{ Number(props.item.client.balance).toLocaleString('es') }}
               </v-chip>
