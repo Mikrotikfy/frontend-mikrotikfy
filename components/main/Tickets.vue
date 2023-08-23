@@ -575,7 +575,7 @@
               <p v-if="$route.query.clienttype === 'INTERNET'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
                 <strong>Nap: </strong>
                 <v-chip label color="green">
-                  {{ editModalData.client ? editModalData.client.naps.length > 0 ? editModalData.client.naps[0].code : 'No Reg.' : '' }}
+                  {{ editModalData.client ? editModalData.client.naps.length > 0 ? `${editModalData.client.naps[0].code} - ${editModalData.client.naps[0].address}` : 'No Reg.' : '' }}
                 </v-chip>
               </p>
               <p v-if="$route.query.clienttype === 'INTERNET'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">

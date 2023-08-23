@@ -41,6 +41,11 @@
                   {{ getDate(item.createdAt) }}
                 </span>
               </template>
+              <template v-slot:[`item.details`]="{ item }">
+                <span>
+                  {{ getLastAdvance(item) }}
+                </span>
+              </template>
               <template v-slot:[`item.channel`]="{ item }">
                 <v-tooltip v-if="item.tickettype ? item.tickettype.requireverification : false" bottom>
                   <template v-slot:activator="{ on, attrs }">
@@ -161,6 +166,8 @@ export default {
         populate: [
           'client',
           'tickettype',
+          'ticketdetails',
+          'ticketdetails.operator',
           'tvspec',
           'tvspec.tvspectype',
           'assignated'
@@ -195,6 +202,13 @@ export default {
         return 'blue darken-4'
       } else {
         return 'red'
+      }
+    },
+    getLastAdvance (ticket) {
+      if (ticket.ticketdetails.length > 0) {
+        return `${ticket.ticketdetails.at(-1).operator.username}: ${ticket.ticketdetails.at(-1).details}`
+      } else {
+        return ticket.details
       }
     },
     getState (state) {
