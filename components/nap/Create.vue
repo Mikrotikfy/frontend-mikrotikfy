@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card-title>
+    <v-card-title class="justify-center">
       Crear NAP
     </v-card-title>
     <client-only>
@@ -16,12 +16,13 @@
             {{ createdMessage }}
           </v-alert>
           <v-row>
-            <v-container>
+            <v-container style="display:grid;row-gap:20px;">
               <v-text-field
                 v-model="nap.code"
                 label="Codigo"
                 required
                 outlined
+                hide-details="auto"
                 @click="alertBox = false"
               />
               <v-select
@@ -31,6 +32,7 @@
                 item-value="id"
                 label="Tipo de Nap"
                 outlined
+                hide-details="auto"
                 chips
               />
               <v-text-field
@@ -38,44 +40,43 @@
                 label="Direccion"
                 required
                 outlined
+                hide-details="auto"
               />
               <v-select
                 v-model="nap.city"
                 item-text="name"
                 item-value="id"
-                class="mb-3"
                 :items="cities"
                 :disabled="true"
                 label="Ciudad"
                 outlined
                 dense
-                hide-details
+                hide-details="auto"
               />
               <v-autocomplete
                 v-model="nap.neighborhood"
                 item-text="name"
                 item-value="id"
-                class="mb-3"
                 :items="neighborhoods"
                 label="Barrio"
                 outlined
                 dense
-                hide-details
+                hide-details="auto"
               />
               <v-select
                 v-model="nap.technology"
                 item-text="name"
                 item-value="id"
-                class="mb-3"
                 :items="technologies"
                 label="Tecnología"
                 outlined
                 dense
+                hide-details="auto"
                 required
-                hide-details
               />
               <v-btn
-                class="mr-4 blue darken-4"
+                class="rounded-xl blue darken-4"
+                block
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
                 @click="createNap"

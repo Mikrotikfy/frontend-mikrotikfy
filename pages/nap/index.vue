@@ -59,7 +59,7 @@ export default {
   },
   head () {
     return {
-      title: 'Crear NAP'
+      title: 'Gestion de NAP'
     }
   }
 }

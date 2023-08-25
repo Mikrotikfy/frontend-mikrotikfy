@@ -175,5 +175,28 @@ export const actions = {
     } catch (error) {
       throw new Error(`NAPS GET CLIENT ACTION ${error}`)
     }
+  },
+  updateNap ({ commit }, payload) {
+    console.log(payload)
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}naps/${payload.nap.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: payload.nap
+          })
+        })
+          .then(res => res.json())
+          .then((nap) => {
+            resolve(nap.data)
+          })
+      })
+    } catch (error) {
+      throw new Error(`NAPS UPDATE ACTION ${error}`)
+    }
   }
 }
