@@ -59,6 +59,7 @@
                 item-value="id"
                 :items="neighborhoods"
                 label="Barrio"
+                auto-select-first
                 outlined
                 dense
                 hide-details="auto"

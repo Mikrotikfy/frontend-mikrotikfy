@@ -45,6 +45,7 @@
             :items="naps"
             :disabled="waitingForClientNapData"
             label="Seleccionar NAP"
+            auto-select-first
             item-text="code"
             item-value="id"
             hide-details="auto"

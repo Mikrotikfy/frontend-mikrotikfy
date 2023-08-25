@@ -234,6 +234,7 @@
                     item-value="id"
                     :items="technicians"
                     return-object
+                    auto-select-first
                     single-line
                     outlined
                     label="Asignar a Tecnico"
@@ -277,6 +278,7 @@
                     item-value="id"
                     :items="technicians"
                     return-object
+                    auto-select-first
                     single-line
                     outlined
                     label="Asignar a Tecnico"

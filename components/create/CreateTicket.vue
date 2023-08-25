@@ -57,6 +57,7 @@
                     item-text="name"
                     item-value="id"
                     label="¿Qué describe mejor el caso?"
+                    auto-select-first
                     outlined
                     return-object
                     hide-details="auto"
@@ -84,6 +85,7 @@
                         item-value="id"
                         :items="neighborhoods"
                         label="Barrio"
+                        auto-select-first
                         outlined
                         dense
                         disabled

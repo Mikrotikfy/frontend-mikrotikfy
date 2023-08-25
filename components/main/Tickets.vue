@@ -306,6 +306,7 @@
                     item-value="id"
                     :items="technicians"
                     return-object
+                    auto-select-first
                     single-line
                     outlined
                     label="Asignar a Tecnico"
@@ -348,6 +349,7 @@
                     item-text="username"
                     item-value="id"
                     :items="technicians"
+                    auto-select-first
                     return-object
                     single-line
                     outlined

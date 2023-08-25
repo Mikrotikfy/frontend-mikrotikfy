@@ -34,6 +34,7 @@
             :items="tickettypes"
             label="Tipo de Ticket"
             outlined
+            auto-select-first
             item-text="name"
             item-value="id"
             return-object

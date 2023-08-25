@@ -13,6 +13,7 @@
       label="Tarifa"
       item-text="name"
       item-value="id"
+      auto-select-first
       return-object
       outlined
       filled
