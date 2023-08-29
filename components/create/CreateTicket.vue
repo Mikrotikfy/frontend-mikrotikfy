@@ -711,13 +711,13 @@ export default {
     },
     getSecondFromLastAddress (client) {
       if (client.addresses.length > 1) {
-        return client.addresses.at(-2).address
+        return client.addresses.at(-1).address
       }
       return client.address
     },
     getSecondFromLastAddressNeighborhood (client) {
       if (client.addresses.length > 1) {
-        return client.addresses.at(-2).neighborhood.name
+        return client.addresses.at(-1).neighborhood.name
       }
       return client.neighborhood.name
     }
