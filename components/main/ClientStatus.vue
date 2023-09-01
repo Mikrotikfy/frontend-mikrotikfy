@@ -29,11 +29,10 @@
     >
       <v-card
         :loading="loading"
-        :class="clientData ? clientData.online ? clientData.address.includes('172.') ? 'blue-grey darken-4 rounded-xl' : 'teal darken-4 rounded-xl' : 'rounded-xl' : 'rounded-xl'"
+        :class="clientData ? clientData.online ? clientData.address.includes('172.') ? 'blue-grey darken-4 rounded-xl' : 'teal darken-4 rounded-lg' : 'rounded-lg' : 'rounded-lg'"
       >
         <v-card-title>
-          <v-icon>mdi-account</v-icon>
-          {{ name }}
+          <v-icon class="mr-1">mdi-account</v-icon> Estado del usuario
         </v-card-title>
         <v-divider />
         <div
@@ -47,17 +46,14 @@
         </div>
         <div v-else>
           <v-card-text>
+            <div class="d-flex mb-2 align-center">
+              <v-icon class="mr-2">{{ clientData && !clientData.online && clientData.exists ? 'mdi-close-circle-outline' : 'mdi-check-circle-outline' }}</v-icon>
+              <v-chip outlined label class="mr-2" :to="`/clients/${clientid}`">{{ name }}</v-chip>
+              <h3> Se encuentra <strong>{{ clientData && !clientData.online && clientData.exists ? 'fuera de linea' : clientData.address.includes('172.') ? 'en linea pero NO ESTA NAVEGANDO (SIGUE CORTADO) REPORTAR A NICO' : 'en linea ' }}</strong>
+              </h3>
+            </div>
             <v-alert
-              v-if="clientData && clientData.online && clientData.exists"
-              dense
-              text
-              :type="clientData.address.includes('172.') ? 'error' : 'success'"
-              class="mb-4"
-            >
-              El cliente esta <strong>{{ clientData.address.includes('172.') ? 'en linea pero NO ESTA NAVEGANDO (SIGUE CORTADO) REPORTAR A NICO' : 'en Linea ' }}</strong>
-            </v-alert>
-            <v-alert
-              v-else-if="clientData && !clientData.online && clientData.exists"
+              v-if="clientData && !clientData.online && clientData.exists"
               dense
               outlined
               type="error"
@@ -68,16 +64,6 @@
               Razón de la desconexión: <strong>{{ disconnectReason(clientData.disconnectReason) }}</strong> <br>
               Última MAC conocida: <strong>{{ clientData.lastCallerId }}</strong> <br>
               Última Mikrotik conocida: <strong>{{ clientData.mikrotik }}</strong>
-            </v-alert>
-            <v-alert
-              v-else
-              dense
-              outlined
-              type="warning"
-              class="my-4"
-            >
-              <v-icon>mdi-lightbulb-alert-outline</v-icon>
-              Error de conexión con las Mikrotik. Suele deberse a fallas en el internet. Por favor reportar al webmaster
             </v-alert>
             <div v-if="clientData && clientData.online">
               <v-row>
@@ -114,7 +100,7 @@
         class="mt-5 rounded-xl"
       >
         <v-card-title>
-          <v-icon>mdi-history</v-icon>
+          <v-icon class="mr-2">mdi-history</v-icon>
           Eventos recientes de subida y caída del servicio
         </v-card-title>
         <v-divider />
@@ -125,7 +111,7 @@
               :items="events"
               no-data-text="No hay eventos recientes"
               no-results-text="No hay eventos recientes"
-              items-per-page="5"
+              :items-per-page="5"
               calculate-widths
             >
               <template v-slot:[`item.type`]="props">
@@ -329,6 +315,9 @@ export default {
       return `${days} días, ${hours} horas y ${minutes} minutos`
     },
     formatTimeOffLine (fecha) {
+      if (fecha === '1970-01-01 00:00:00' || fecha === undefined || fecha === '' || fecha === null) {
+        return 'Sin registro de desconexión'
+      }
       const meses = {
         jan: 'enero',
         feb: 'febrero',
@@ -366,6 +355,9 @@ export default {
       return `${formatoFecha} ${formatoHora}`
     },
     formatTimeOffLineSince (fecha) {
+      if (fecha === '1970-01-01 00:00:00' || fecha === undefined || fecha === '' || fecha === null) {
+        return 'Sin registro de desconexión'
+      }
       const fechaActual = new Date()
       const fechaCadena = new Date(fecha)
       const diferenciaMilisegundos = Math.abs(fechaCadena - fechaActual)

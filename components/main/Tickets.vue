@@ -118,7 +118,7 @@
                   </template>
                   <span
                     v-for="type in getTicketTypesAndCountThemByType(ticketList)"
-                    :key="type"
+                    :key="type.name"
                   >
                     {{ type.name }}: {{ type.count }}<br>
                   </span>
@@ -214,7 +214,7 @@
             :search="search"
             :items-per-page="itemsPerPage"
             :page.sync="page"
-            :expanded.sync="expanded"
+            :expanded="expanded"
             :loading="initialLoading"
             class="rounded-lg"
             :caption="$route.query.clienttype === 'INTERNET' ? 'Tickets de Internet' : 'Tickets de Televisión'"
@@ -469,7 +469,6 @@
                       :to="`/billing/${item.client.code}?selected=${item.client.id}&city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
                     >
                       <v-btn
-                        v-bind="attrs"
                         x-small
                         text
                         :color="$vuetify.theme.dark ? 'white' : 'primary'"
