@@ -214,7 +214,7 @@ export default {
           if (clientstatus.error === null) {
             this.clientData = clientstatus.data
             this.clientData.error = clientstatus.error
-            this.searchDeviceByClient(clientstatus.data.mac_address ? clientstatus.data.mac_address : 'Invalida')
+            this.searchDeviceByClient(clientstatus.data.mac_address ? clientstatus.data.mac_address : null)
           }
         })
       const qs = require('qs')
