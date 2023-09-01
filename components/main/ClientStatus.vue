@@ -29,7 +29,7 @@
     >
       <v-card
         :loading="loading"
-        :class="clientData ? clientData.online ? clientData.address.includes('172.') ? 'blue-grey darken-4 rounded-xl' : 'teal darken-4 rounded-lg' : 'rounded-lg' : 'rounded-lg'"
+        :class="clientData ? clientData.online ? clientData.error ? 'blue-grey darken-4 rounded-xl' : clientData.address.includes('172.') ? 'blue-grey darken-4 rounded-xl' : 'teal darken-4 rounded-lg' : 'rounded-lg' : 'rounded-lg'"
       >
         <v-card-title>
           <v-icon class="mr-1">mdi-account</v-icon> Estado del usuario
@@ -45,7 +45,7 @@
           </div>
         </div>
         <div v-else>
-          <v-card-text v-if="clientData.error === null">
+          <v-card-text v-if="clientData && clientData.error === null">
             <div class="d-flex mb-2 align-center">
               <v-icon class="mr-2">{{ clientData && !clientData.online && clientData.exists ? 'mdi-close-circle-outline' : 'mdi-check-circle-outline' }}</v-icon>
               <v-chip outlined label class="mr-2" :to="`/clients/${clientid}`">{{ name }}</v-chip>
