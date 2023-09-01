@@ -283,6 +283,12 @@ export default {
         neighborhood: this.neighborhood,
         token: this.$store.state.auth.token
       })
+      this.$store.dispatch('client/updateClientAddress', {
+        client: this.client,
+        address: this.address,
+        neighborhood: this.cx.neighborhood,
+        token: this.$store.state.auth.token
+      })
       this.modal = false
       this.$emit('updateClient')
     }

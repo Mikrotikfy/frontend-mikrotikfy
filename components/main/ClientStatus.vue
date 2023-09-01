@@ -45,7 +45,7 @@
           </div>
         </div>
         <div v-else>
-          <v-card-text>
+          <v-card-text v-if="clientData.error === null">
             <div class="d-flex mb-2 align-center">
               <v-icon class="mr-2">{{ clientData && !clientData.online && clientData.exists ? 'mdi-close-circle-outline' : 'mdi-check-circle-outline' }}</v-icon>
               <v-chip outlined label class="mr-2" :to="`/clients/${clientid}`">{{ name }}</v-chip>
@@ -82,6 +82,11 @@
                 </v-col>
               </v-row>
             </div>
+          </v-card-text>
+          <v-card-text v-else>
+            <v-alert type="error">
+              Error de conexion de la Mikrotik, no se pudo obtener el estado del usuario o el usuario no existe.
+            </v-alert>
           </v-card-text>
         </div>
         <v-card-actions>
@@ -172,7 +177,7 @@ export default {
     }
   },
   data: () => ({
-    clientData: {},
+    clientData: null,
     modal: false,
     clientExists: false,
     showCard: false,
@@ -206,8 +211,11 @@ export default {
         .then(res => res.json())
         .then((clientstatus) => {
           this.loading = false
-          this.clientData = clientstatus
-          this.searchDeviceByClient(clientstatus.mac_address)
+          if (clientstatus.error === null) {
+            this.clientData = clientstatus.data
+            this.clientData.error = clientstatus.error
+            this.searchDeviceByClient(clientstatus.data.mac_address ? clientstatus.data.mac_address : 'Invalida')
+          }
         })
       const qs = require('qs')
       const query = qs.stringify({
@@ -237,35 +245,37 @@ export default {
         })
     },
     async searchDeviceByClient (mac = 'default') {
-      const macOfCurrentDevice = mac.replace(/:/g, '')
-      await this.$store.dispatch('client/clientForDeviceManipulation', {
-        clientid: this.clientid,
-        token: this.$store.state.auth.token
-      })
-      if (!this.clientForDeviceManipulation) { return }
-      const devices = this.clientForDeviceManipulation.mac_addresses.map((device) => {
-        const newDevice = { ...device }
-        newDevice.mac_address = newDevice.mac_address.replace(/:/g, '')
-        return device
-      })
-      if (devices.length === 0) {
-        this.$store.dispatch('device/assignDeviceToClient', {
-          token: this.$store.state.auth.token,
+      if (mac) {
+        const macOfCurrentDevice = mac.replace(/:/g, '')
+        await this.$store.dispatch('client/clientForDeviceManipulation', {
           clientid: this.clientid,
-          mac: macOfCurrentDevice
+          token: this.$store.state.auth.token
         })
-        this.$toast.info('Nueva MAC asignada', { duration: 5000 })
-        return
-      }
-      if (devices.length > 0) {
-        const device = devices.find(device => device.mac_address === macOfCurrentDevice)
-        if (!device) {
+        if (!this.clientForDeviceManipulation) { return }
+        const devices = this.clientForDeviceManipulation.mac_addresses.map((device) => {
+          const newDevice = { ...device }
+          newDevice.mac_address = newDevice.mac_address.replace(/:/g, '')
+          return device
+        })
+        if (devices.length === 0) {
           this.$store.dispatch('device/assignDeviceToClient', {
             token: this.$store.state.auth.token,
             clientid: this.clientid,
             mac: macOfCurrentDevice
           })
           this.$toast.info('Nueva MAC asignada', { duration: 5000 })
+          return
+        }
+        if (devices.length > 0) {
+          const device = devices.find(device => device.mac_address === macOfCurrentDevice)
+          if (!device) {
+            this.$store.dispatch('device/assignDeviceToClient', {
+              token: this.$store.state.auth.token,
+              clientid: this.clientid,
+              mac: macOfCurrentDevice
+            })
+            this.$toast.info('Nueva MAC asignada', { duration: 5000 })
+          }
         }
       }
     },
@@ -318,34 +328,26 @@ export default {
       if (fecha === '1970-01-01 00:00:00' || fecha === undefined || fecha === '' || fecha === null) {
         return 'Sin registro de desconexión'
       }
-      const meses = {
-        jan: 'enero',
-        feb: 'febrero',
-        mar: 'marzo',
-        apr: 'abril',
-        may: 'mayo',
-        jun: 'junio',
-        jul: 'julio',
-        aug: 'agosto',
-        sep: 'septiembre',
-        oct: 'octubre',
-        nov: 'noviembre',
-        dec: 'diciembre'
-      }
+      const meses = [
+        'enero',
+        'febrero',
+        'marzo',
+        'abril',
+        'mayo',
+        'junio',
+        'julio',
+        'agosto',
+        'septiembre',
+        'noviembre',
+        'diciembre'
+      ]
 
       const partes = fecha.split(' ')
-      const fechaPartes = partes[0].split('/')
-      let mes = fechaPartes[0]
+      const fechaPartes = partes[0].split('-')
 
-      // Convertir el formato de mes en inglés a su equivalente en español
-      if (mes.length === 3) {
-        mes = meses[mes.toLowerCase()]
-      } else {
-        mes = meses[mes.slice(0, 3).toLowerCase()]
-      }
-
-      const dia = fechaPartes[1]
-      const año = fechaPartes[2]
+      const dia = fechaPartes[2]
+      const mes = meses[parseInt(fechaPartes[1])]
+      const año = fechaPartes[0]
       const hora = partes[1].split(':')[0]
       const minutos = partes[1].split(':')[1]
       const ampm = Number(hora) >= 12 ? 'pm' : 'am'

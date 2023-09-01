@@ -702,27 +702,56 @@ export const actions = {
       })
     })
   },
-  async updateClientCommentOnMikrotik (_, { client, token }) {
-    await fetch(`${this.$config.API_STRAPI_ENDPOINT}clientcomment`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        data: client
+  updateClientCommentOnMikrotik (_, { client, token }) {
+    return new Promise((resolve, reject) => {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}clientcomment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          data: client
+        })
+      }).then((input) => {
+        if (input.status === 200) {
+          resolve(true)
+          this.$toast.success('Comentario actualizado', { duration: 1000 })
+        }
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error(error)
+        throw new Error(`UPDATE USER COMMENT ON MIKROTIK ACTION ${error}`)
       })
-    }).then((input) => {
-      if (input.status === 200) {
-        this.$toast.success('Comentario actualizado', { duration: 2000 })
-      }
-    }).catch((error) => {
-      // eslint-disable-next-line no-console
-      console.error(error)
-      throw new Error(`UPDATE USER COMMENT ON MIKROTIK ACTION ${error}`)
     })
   },
   updateClientDevices ({ commit }, { device, index }) {
     commit('updateClientDevices', { device, index })
+  },
+  updateClientAddress ({ commit }, payload) {
+    try {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            address: payload.address,
+            neighborhood: payload.neighborhood.id
+          }
+        })
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            this.$toast.success('Direccion actualizada con éxito', { duration: 4000, position: 'bottom-center' })
+          } else {
+            this.$toast.error('Error al actualizar la direccion', { position: 'bottom-center' })
+          }
+        })
+    } catch (error) {
+      throw new Error(`ADDRESSES ACTION ${error}`)
+    }
   }
 }
