@@ -54,7 +54,7 @@
         {{ !$store.state.isDesktop ? null : clienttype.name }}
       </v-btn>
       <v-spacer />
-      <div v-if="$store.state.auth">
+      <div v-if="$store.state.auth && $store.state.isDesktop">
         <v-btn
           v-for="city in $store.state.auth.cities"
           :key="city.name"
@@ -65,6 +65,20 @@
         >
           {{ !$store.state.isDesktop ? city.name.charAt(0) : city.name }}
         </v-btn>
+      </div>
+      <div v-if="$store.state.auth && !$store.state.isDesktop">
+        <v-select
+          v-model="currentCity"
+          :items="$store.state.auth.cities"
+          class="ml-2 rounded-xl elevation-0"
+          style="max-width:170px;"
+          dense
+          outlined
+          filled
+          hide-details="auto"
+          item-text="name"
+          item-value="id"
+        />
       </div>
       <v-menu offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on, attrs }">
@@ -139,6 +153,7 @@ export default {
   middleware: ['authenticated', 'defaultCity'],
   data () {
     return {
+      newCity: null,
       light: null,
       hasPendingChanges: false,
       drawer: false,
@@ -150,9 +165,13 @@ export default {
     cities () {
       return this.$store.state.cities
     },
-    currentCity () {
-      // eslint-disable-next-line eqeqeq
-      return this.$store.state.cities ? this.$store.state.cities.find(c => c.name == this.$route.query.city) : ''
+    currentCity: {
+      get () {
+        return this.$store.state.cities ? this.$store.state.cities.find(c => c.name === this.$route.query.city) : ''
+      },
+      set (val) {
+        this.newCity = val
+      }
     },
     role () {
       return this.$store.state.auth.role.name
@@ -162,6 +181,20 @@ export default {
     },
     menu () {
       return this.$store.state.menu.menu
+    }
+  },
+  watch: {
+    newCity (val) {
+      const newCity = this.$store.state.auth.cities.find(c => c.id === val)
+      if (val) {
+        this.$router.push({
+          path: this.$route.path,
+          query: {
+            city: newCity.name,
+            clienttype: this.$route.query.clienttype
+          }
+        })
+      }
     }
   },
   destroyed () {

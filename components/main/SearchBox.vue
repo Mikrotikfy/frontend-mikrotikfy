@@ -71,6 +71,11 @@ export default {
   },
   mounted () {
     this.searchClientInput = this.$route.params.search
+    const latestSearch = localStorage.getItem('searchClient')
+    if (latestSearch) {
+      this.searchClientInput = latestSearch
+      this.getClientBySearch()
+    }
     setTimeout(() => {
       this.$refs.searchClient.$refs.input.select()
       this.$refs.searchClient.$refs.input.focus()
@@ -79,6 +84,7 @@ export default {
   methods: {
     getClientBySearch () {
       if (this.searchClientInput) {
+        localStorage.setItem('searchClient', this.searchClientInput)
         this.loadingDataTable = true
         this.$router.push({
           path: `/clients/${this.searchClientInput}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}`

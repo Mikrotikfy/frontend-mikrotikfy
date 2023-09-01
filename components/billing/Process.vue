@@ -14,7 +14,7 @@
         </v-btn>
       </v-col>
     </v-row>
-    <v-row>
+    <!-- <v-row>
       <v-col>
         <v-btn
           class="rounded-xl"
@@ -27,7 +27,7 @@
           Enviar Notificaciones
         </v-btn>
       </v-col>
-    </v-row>
+    </v-row> -->
     <v-row>
       <v-col>
         <span v-if="sendIndex > 0" class="text-h5">Enviados: <strong>{{ sendIndex }}</strong></span>
