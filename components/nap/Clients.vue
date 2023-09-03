@@ -24,6 +24,13 @@
           hide-default-footer
           @page-count="pageCount = $event"
         >
+          <template v-slot:[`item.active`]="{ item }">
+            <v-chip
+              :color="item.active ? item.indebt ? 'red darken-4' : 'green darken-3' : item.indebt ? 'red darken-4' : 'grey darken-1'"
+            >
+              {{ item.active ? item.indebt ? 'En Mora' : 'Al Dia' : item.indebt ? 'En Mora' : 'Retirado' }}
+            </v-chip>
+          </template>
           <template v-slot:[`item.actions`]="{ item }">
             <div style="white-space:nowrap">
               <v-btn
@@ -109,6 +116,7 @@ export default {
         { text: 'Cedula', value: 'dni' },
         { text: 'Nombre', value: 'name' },
         { text: 'Direccion', value: 'address' },
+        { text: 'Estado', value: 'active' },
         { text: 'Acciones', value: 'actions' }
       ],
       headersClientList: [
@@ -149,8 +157,8 @@ export default {
         }
       })
         .then(res => res.json())
-        .then((clients) => {
-          this.napClientsList = clients.data.clients
+        .then((naps) => {
+          this.napClientsList = naps.data.clients
           this.loading = false
         })
     },

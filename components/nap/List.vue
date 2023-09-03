@@ -87,6 +87,33 @@
               </template>
             </v-edit-dialog>
           </template>
+          <template v-slot:[`item.naptype.name`]="{ item }">
+            <v-edit-dialog
+              large
+              cancel-text="Cancelar"
+              save-text="Guardar"
+              @open="initDialogType(item)"
+              @save="updateNapType(item)"
+            >
+              <v-chip label outlined>
+                {{ item.naptype.name }}
+              </v-chip>
+              <template v-slot:input>
+                <v-autocomplete
+                  ref="naptype"
+                  v-model="newNapType"
+                  :items="napTypes"
+                  label="Tipeo de Nap"
+                  return-object
+                  item-text="name"
+                  item-value="id"
+                  auto-select-first
+                  outlined
+                  hide-details="auto"
+                />
+              </template>
+            </v-edit-dialog>
+          </template>
         </v-data-table>
       </client-only>
     </v-card-text>
@@ -127,6 +154,9 @@ export default {
     },
     napList () {
       return this.$store.state.nap.naps
+    },
+    napTypes () {
+      return this.$store.state.nap.napTypes
     }
   },
   watch: {
@@ -168,6 +198,16 @@ export default {
           this.$toast.error('Error al actualizar nap', { duration: 3000 })
         })
     },
+    updateNapType (nap) {
+      this.$store.dispatch('nap/updateNap', { nap: { ...nap, naptype: this.newNapType.id }, token: this.$store.state.auth.token })
+        .then(() => {
+          this.$toast.info('Nap actualiza correctamente', { duration: 3000 })
+          this.getNaps()
+        })
+        .catch(() => {
+          this.$toast.error('Error al actualizar nap', { duration: 3000 })
+        })
+    },
     showNapInfo (nap) {
       this.$emit('showNapInfo', nap)
     },
@@ -184,6 +224,12 @@ export default {
     },
     initDialogCode (nap) {
       this.newCode = nap.code
+      setTimeout(() => {
+        this.$refs.code.$refs.input.select()
+      }, 100)
+    },
+    initDialogType (nap) {
+      this.newNapType = nap.naptype
       setTimeout(() => {
         this.$refs.code.$refs.input.select()
       }, 100)

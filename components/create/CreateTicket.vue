@@ -519,6 +519,9 @@ export default {
     hideHint: true
   }),
   computed: {
+    currentCity () {
+      return this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
+    },
     neighborhoods () {
       return this.$store.state.neighborhoods
     },
@@ -568,10 +571,10 @@ export default {
       this.cx.dir9 = ''
     },
     initComponent () {
-      if (this.client.phone !== '0' && this.client.phone !== '') {
-        this.modal = true
-      } else {
+      if (this.client.phone === '0' && this.currentCity.requiresphone) {
         this.$toast.error('El cliente no tiene un celular registrado', { duration: 5000 })
+      } else {
+        this.modal = true
       }
       this.ticketPayload.client = this.client.id
       this.ticketPayload.city = this.client.city.id

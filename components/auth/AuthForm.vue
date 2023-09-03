@@ -197,6 +197,7 @@ export default {
               id: city.id,
               name: city.name,
               color: city.color,
+              requiresphone: city.requiresphone,
               mikrotiks: city.mikrotiks.map((mikrotik) => {
                 return {
                   id: mikrotik.id,
