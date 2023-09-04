@@ -142,7 +142,7 @@ export const actions = {
             clienttype: payload.clienttype
           },
           populate: ['client', 'plan'],
-          sort: 'name:desc',
+          sort: 'price:asc',
           pagination: {
             pageSize: 1000
           }

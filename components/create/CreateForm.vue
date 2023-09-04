@@ -276,7 +276,7 @@
               hide-details
             />
           </v-col>
-          <v-col v-if="clienttype.name === 'INTERNET'">
+          <v-col>
             <v-select
               v-model="Client.offer"
               item-text="name"
