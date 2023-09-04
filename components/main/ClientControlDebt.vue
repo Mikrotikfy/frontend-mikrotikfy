@@ -9,7 +9,7 @@
         style="width:100%;"
         class="text-center"
       >
-        El Cliente esta {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : 'AL DIA' }}
+        El Cliente esta {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : 'AL DIA' }} | Saldo: {{ client.balance }}
       </v-alert>
       <v-btn
         :disabled="!($isAdmin() || $isBiller())"

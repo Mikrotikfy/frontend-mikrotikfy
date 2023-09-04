@@ -6,15 +6,15 @@
           v-bind="attrs"
           small
           rounded
-          :color="$vuetify.theme.dark ? client.indebt || !client.active ? 'red darken-4' : 'white black--text' : 'primary'"
+          :color="$vuetify.theme.dark ? client.indebt || !client.active ? 'red lighten-1' : 'white black--text' : 'primary'"
           v-on="on"
           @click="initComponent()"
         >
           <span v-if="$route.query.clienttype === 'INTERNET'">
-            {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : `${client.offer ? client.offer.plan ? client.offer.plan.name : 'NO DEF.' : 'NO DEF.'}` }}
+            {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : `$${client.offer ? Number(client.offer.price).toLocaleString('es') : 'NO DEF.'}` }}
           </span>
           <span v-else>
-            {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : 'AL DIA' }}
+            {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : `$${client.offer ? Number(client.offer.price).toLocaleString('es') : 'NO DEF.'}` }}
           </span>
         </v-btn>
       </template>

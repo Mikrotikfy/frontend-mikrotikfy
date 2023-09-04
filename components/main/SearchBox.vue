@@ -72,9 +72,11 @@ export default {
   mounted () {
     this.searchClientInput = this.$route.params.search
     const latestSearch = localStorage.getItem('searchClient')
-    if (latestSearch) {
+    if (latestSearch && this.$route.query.referer === 'layout') {
       this.searchClientInput = latestSearch
       this.getClientBySearch()
+    } else {
+      localStorage.setItem('searchClient', this.searchClientInput)
     }
     setTimeout(() => {
       this.$refs.searchClient.$refs.input.select()
@@ -87,13 +89,13 @@ export default {
         localStorage.setItem('searchClient', this.searchClientInput)
         this.loadingDataTable = true
         this.$router.push({
-          path: `/clients/${this.searchClientInput}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}`
+          path: `/clients/${this.searchClientInput}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}&referer=${this.$route.query.referer}`
         })
         this.$emit('search', this.searchClientInput)
         this.loadingDataTable = false
       } else {
         this.$router.push({
-          path: `/clients?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}`
+          path: `/clients?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}&referer=${this.$route.query.referer}`
         })
         this.$emit('search', '')
         this.loadingDataTable = false

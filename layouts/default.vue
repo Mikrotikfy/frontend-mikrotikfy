@@ -19,7 +19,7 @@
         <v-list-item
           v-for="(item, i) in menu"
           :key="i"
-          :to="`${item.url}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
+          :to="`${item.url}?city=${$route.query.city}&clienttype=${$route.query.clienttype}&referer=layout`"
           exact
         >
           <v-list-item-action>
