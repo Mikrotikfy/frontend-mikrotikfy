@@ -283,8 +283,13 @@ export default {
       await this.$store.dispatch('client/clearClientsFromDatatable')
       const search = this.searchClientInput.trim()
       this.setSearchText()
-      if (search) {
+      if (search && this.$route.query.fuzzy === 'false') {
         await this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: this.pagination })
+        this.pagination = { ...this.$store.state.client.pagination }
+        this.loadingDataTable = false
+        this.result = 'No se han encontrado resultados de' + ' ' + search
+      } else {
+        await this.$store.dispatch('client/getUsersFromDatabaseByFuzzySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: this.pagination })
         this.pagination = { ...this.$store.state.client.pagination }
         this.loadingDataTable = false
         this.result = 'No se han encontrado resultados de' + ' ' + search
@@ -313,6 +318,8 @@ export default {
     processAddresses (client) {
       if (!client) { return 'Sin Direccion' }
       const address = client?.address
+      if (!client.addresses) { return address }
+      if (!client || !client.addresses) { return 'Sin Direccion' }
       const addresses = client?.addresses
       if (!address && addresses.length < 1) { return 'Sin Dirección' }
       if (address && addresses.length < 1) { return address }
@@ -321,8 +328,10 @@ export default {
     },
     processAddressesNeighborhood (client) {
       if (!client) { return 'Sin Barrio' }
-      const addresses = client.addresses
       const neighborhood = client.neighborhood
+      if (!client.addresses) { return neighborhood }
+      if (!client || !client.addresses) { return 'Sin Barrio' }
+      const addresses = client.addresses
       if (!neighborhood && addresses.length < 1) { return 'Sin Barrio' }
       if (neighborhood && addresses.length < 1) { return neighborhood.name }
       if (neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }

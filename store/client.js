@@ -32,6 +32,13 @@ export const mutations = {
       throw new Error(`MUTATE SEARCH CLIENT${error}`)
     }
   },
+  getUsersFromDatabaseFuzzy (state, clientsList) {
+    try {
+      state.clients = clientsList.clients
+    } catch (error) {
+      throw new Error(`MUTATE SEARCH CLIENT FUZZY${error}`)
+    }
+  },
   setActiveFromModal (state, payload) {
     state.clients[payload.index].active = payload.active
   },
@@ -221,6 +228,37 @@ export const actions = {
         .then(res => res.json())
         .then((clients) => {
           commit('getUsersFromDatabase', clients)
+        })
+    } catch (error) {
+      throw new Error(`ACTION ${error}`)
+    }
+  },
+  async getUsersFromDatabaseByFuzzySearch ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      filters: {
+        city: {
+          name: payload.city
+        },
+        clienttype: {
+          name: payload.clienttype
+        }
+      }
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}fuzzy-search/search?query=${payload.search}&${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        }
+      })
+        .then(res => res.json())
+        .then((clients) => {
+          commit('getUsersFromDatabaseFuzzy', clients)
         })
     } catch (error) {
       throw new Error(`ACTION ${error}`)

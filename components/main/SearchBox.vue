@@ -36,10 +36,40 @@
             autocomplete="off"
             :loading="loadingDataTable"
             :disabled="loadingDataTable"
-            class="white--text"
-            style="width:100px;max-width: 600px;border-radius: 0 30px 30px 0;"
+            :class="searchByAddress ? 'primary white--text' : 'white--text'"
+            style="width:100px;max-width: 600px;border-radius: 0;"
             @keyup.enter="getClientBySearch()"
           />
+          <v-menu offset-y>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                :color="searchByAddress ? 'primary white--text elevation-0' : 'grey lighten-4 black--text elevation-0'"
+                dark
+                :loading="loadingDataTable"
+                tile
+                large
+                x-large
+                style="border-radius: 0 30px 30px 0;padding:5px;height:56px;"
+                v-bind="searchByAddress ? null : attrs"
+                v-on="searchByAddress ? null : on"
+                @click="searchByAddress ? searchByAddress = false : getClientBySearch()"
+              >
+                <v-icon>{{ searchByAddress ? 'mdi-close-circle' : 'mdi-filter-outline' }}</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item>
+                <v-list-item-title class="mr-2">
+                  Busqueda por direccion
+                </v-list-item-title>
+                <v-switch
+                  v-model="searchByAddress"
+                  color="primary"
+                  @change="getClientBySearch()"
+                />
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </v-row>
       </v-col>
     </v-row>
@@ -51,7 +81,8 @@ export default {
   data () {
     return {
       searchClientInput: '',
-      loadingDataTable: false
+      loadingDataTable: false,
+      searchByAddress: false
     }
   },
   computed: {
@@ -67,10 +98,14 @@ export default {
         this.$refs.searchClient.$refs.input.focus()
       }, 200)
       this.searchClientInput = ''
+    },
+    searchByAddress () {
+      this.getClientBySearch()
     }
   },
   mounted () {
     this.searchClientInput = this.$route.params.search
+    this.searchByAddress = this.$route.query.fuzzy
     const latestSearch = localStorage.getItem('searchClient')
     if (latestSearch && this.$route.query.referer === 'layout') {
       this.searchClientInput = latestSearch
@@ -89,13 +124,13 @@ export default {
         localStorage.setItem('searchClient', this.searchClientInput)
         this.loadingDataTable = true
         this.$router.push({
-          path: `/clients/${this.searchClientInput}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}&referer=${this.$route.query.referer}`
+          path: `/clients/${this.searchClientInput}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}&referer=${this.$route.query.referer}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
         })
         this.$emit('search', this.searchClientInput)
         this.loadingDataTable = false
       } else {
         this.$router.push({
-          path: `/clients?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}&referer=${this.$route.query.referer}`
+          path: `/clients?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}&referer=${this.$route.query.referer}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
         })
         this.$emit('search', '')
         this.loadingDataTable = false
