@@ -73,6 +73,7 @@
                   <h3>Mac: {{ clientData.mac_address }}</h3>
                   <v-spacer />
                   <h3>En Linea: {{ formatTimeOnline(clientData.uptime) }}</h3>
+                  <h3>OLT o Puerto: {{ clientData.service }}</h3>
                   <v-spacer />
                 </v-col>
                 <v-col>
