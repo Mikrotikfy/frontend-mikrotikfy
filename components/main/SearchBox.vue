@@ -52,7 +52,7 @@
                 style="border-radius: 0 30px 30px 0;padding:5px;height:56px;"
                 v-bind="searchByAddress ? null : attrs"
                 v-on="searchByAddress ? null : on"
-                @click="searchByAddress ? searchByAddress = false : getClientBySearch()"
+                @click="searchByAddress ? searchByAddress = false : null"
               >
                 <v-icon>{{ searchByAddress ? 'mdi-close-circle' : 'mdi-filter-outline' }}</v-icon>
               </v-btn>
@@ -105,7 +105,7 @@ export default {
   },
   mounted () {
     this.searchClientInput = this.$route.params.search
-    this.searchByAddress = this.$route.query.fuzzy
+    this.searchByAddress = this.$route.query.fuzzy === 'true'
     const latestSearch = localStorage.getItem('searchClient')
     if (latestSearch && this.$route.query.referer === 'layout') {
       this.searchClientInput = latestSearch
@@ -113,20 +113,16 @@ export default {
     } else {
       localStorage.setItem('searchClient', this.searchClientInput)
     }
-    setTimeout(() => {
-      this.$refs.searchClient.$refs.input.select()
-      this.$refs.searchClient.$refs.input.focus()
-    }, 200)
   },
   methods: {
     getClientBySearch () {
-      if (this.searchClientInput) {
-        localStorage.setItem('searchClient', this.searchClientInput)
+      if (this.searchClientInput || this.$route.params.search) {
+        localStorage.setItem('searchClient', this.searchClientInput || this.$route.params.search)
         this.loadingDataTable = true
         this.$router.push({
-          path: `/clients/${this.searchClientInput}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}&referer=${this.$route.query.referer}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
+          path: `/clients/${this.searchClientInput || this.$route.params.search}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}&referer=${this.$route.query.referer}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
         })
-        this.$emit('search', this.searchClientInput)
+        this.$emit('search', this.searchClientInput || this.$route.params.search)
         this.loadingDataTable = false
       } else {
         this.$router.push({

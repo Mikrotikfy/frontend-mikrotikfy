@@ -46,7 +46,7 @@
         elevation="0"
         rounded
         small
-        :to="`${$route.path}?city=${$route.query.city}&clienttype=${clienttype.name}${$route.query.selected ? '&selected=' + $route.query.selected : ''}${$route.name === 'tickets' ? `&view=${$route.query.view}` : ''}`"
+        :to="`${$route.path}?city=${$route.query.city}&clienttype=${clienttype.name}${$route.query.selected ? '&selected=' + $route.query.selected : ''}${$route.name === 'tickets' ? `&view=${$route.query.view}` : ''}${$route.name === 'clients-search' ? '&fuzzy=false' : ''}`"
       >
         <v-icon :class="!$store.state.isDesktop ? '' : 'mr-2'">
           {{ clienttype.icon }}
