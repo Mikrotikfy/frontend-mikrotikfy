@@ -61,7 +61,7 @@
           class="ml-2 rounded-xl elevation-0"
           small
           :color="city.name === $route.query.city ? $vuetify.theme.dark ? 'white black--text' : 'primary white--text' : $vuetify.theme.dark ? 'grey darken-1 black--text' : 'grey lighten-2 black--text'"
-          :to="`${$route.path}?city=${city.name}&clienttype=${$route.query.clienttype}${$route.name === 'tickets' ? `&view=${$route.query.view}` : ''}`"
+          :to="`${$route.path}?city=${city.name}&clienttype=${$route.query.clienttype}${$route.name === 'tickets' ? `&view=${$route.query.view}` : ''}${$route.name === 'clients' || $route.name === 'clients-search' ? '&fuzzy=false' : ''}`"
         >
           {{ !$store.state.isDesktop ? city.name.charAt(0) : city.name }}
         </v-btn>
@@ -191,7 +191,8 @@ export default {
           path: this.$route.path,
           query: {
             city: newCity.name,
-            clienttype: this.$route.query.clienttype
+            clienttype: this.$route.query.clienttype,
+            fuzzy: false
           }
         })
       }
