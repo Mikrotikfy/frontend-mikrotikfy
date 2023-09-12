@@ -287,7 +287,7 @@ export default {
         const line15 = this.$store.state.auth.username
         const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n\n${line8}\n${line10}\n${line11}\n${line12}\n\n${line13}\n\n${line14}\n${line15}`
         this.copyAdvanceCommentToClipBoard(message)
-        this.$simpleTelegramCreateTicketAdvanceTv({ message, telegramBots: this.telegramBots })
+        return message
       } else {
         let line1 = ''
         if (this.closeticket) {
@@ -312,7 +312,7 @@ export default {
         const line11 = this.$store.state.auth.username
         const message = `${line1}\n${line2}\n${line3}\n${line4}\n${line5}\n${line6}\n${line7}\n${line8}\n${line9}\n\n${line10}\n${line11}`
         this.copyAdvanceCommentToClipBoard(message)
-        this.$simpleTelegramCreateTicketAdvance({ message, telegramBots: this.telegramBots })
+        return message
       }
     },
     copyAdvanceCommentToClipBoard (comment) {
@@ -348,77 +348,105 @@ export default {
           return
         }
       }
-      // this was removed because low quality network across the principal city inpeded the user to close the ticket
-      // this.loading = true
-      this.generateMessage()
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticket.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.$store.state.auth.token}`
-        },
-        body: JSON.stringify({
-          data: {
-            active: !this.closeticket,
-            escalated: this.technicianescalated,
-            escalatedoffice: this.officeescalated,
-            answered: true,
-            opticalpower: this.ticket.client.opticalpower
+      this.loading = true
+      const message = this.generateMessage()
+      try {
+        await this.fetchWithTimeout(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticket.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.$store.state.auth.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              active: !this.closeticket,
+              escalated: this.technicianescalated,
+              escalatedoffice: this.officeescalated,
+              answered: true,
+              opticalpower: this.ticket.client.opticalpower
+            }
+          })
+        }).then(async (input) => {
+          if (input.status === 200) {
+            await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${this.ticket.client.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${this.$store.state.auth.token}`
+              },
+              body: JSON.stringify({
+                data: {
+                  opticalpower: this.opticalpower
+                }
+              })
+            })
+            await fetch(`${this.$config.API_STRAPI_ENDPOINT}ticketdetails`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${this.$store.state.auth.token}`
+              },
+              body: JSON.stringify({
+                data: {
+                  ticket: this.ticket.id,
+                  details: this.details,
+                  operator: this.$store.state.auth.id
+                }
+              })
+            }).then((input) => {
+              if (input.status === 200) {
+                this.dialog = false
+                this.details = ''
+                this.closeticket = false
+                this.officeescalated = false
+                this.technicianescalated = false
+                this.loading = false
+              }
+              return input.json()
+            })
+              .then(async (res) => {
+                await this.setNewSpecs(res.data)
+                this.$emit('refreshTickets')
+                this.$toast.success('Ticket Actualizado con Exito', { duration: 4000, position: 'bottom-center' })
+                this.loading = false
+                if (this.$route.query.clienttype === 'INTERNET') {
+                  try {
+                    this.$simpleTelegramCreateTicketAdvance({ message, telegramBots: this.telegramBots })
+                  } catch (error) {
+                    this.$toast.error('No se pudo enviar el mensaje a Telegram', { duration: 3000 })
+                  }
+                } else {
+                  try {
+                    this.$simpleTelegramCreateTicketAdvanceTv({ message, telegramBots: this.telegramBots })
+                  } catch (error) {
+                    this.$toast.error('No se pudo enviar el mensaje a Telegram', { duration: 3000 })
+                  }
+                }
+              })
           }
         })
-      }).then(async (input) => {
-        if (input.status === 200) {
-          await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${this.ticket.client.id}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${this.$store.state.auth.token}`
-            },
-            body: JSON.stringify({
-              data: {
-                opticalpower: this.opticalpower
-              }
-            })
-          })
-          await fetch(`${this.$config.API_STRAPI_ENDPOINT}ticketdetails`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${this.$store.state.auth.token}`
-            },
-            body: JSON.stringify({
-              data: {
-                ticket: this.ticket.id,
-                details: this.details,
-                operator: this.$store.state.auth.id
-              }
-            })
-          }).then((input) => {
-            if (input.status === 200) {
-              this.dialog = false
-              this.details = ''
-              this.closeticket = false
-              this.officeescalated = false
-              this.technicianescalated = false
-              this.loading = false
-            }
-            return input.json()
-          })
-            .then(async (res) => {
-              await this.setNewSpecs(res.data)
-              this.$emit('refreshTickets')
-              this.$toast.success('Ticket Actualizado con Exito', { duration: 4000, position: 'bottom-center' })
-              // this.loading = true
-            })
-            .catch((error) => {
-              this.$toast.error(error, { duration: 5000, position: 'bottom-center' })
-              // this.loading = false
-            })
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          this.$toast.info('La calidad de red es insuficiente. Intentalo de nuevo mas tarde.', { duration: 6000 })
+        } else {
+          this.$toast.error(error, { duration: 1000, position: 'bottom-center' })
         }
-      }).catch((error) => {
-        this.$toast.error(error, { duration: 1000, position: 'bottom-center' })
-        // this.loading = true
+        this.loading = false
+      }
+    },
+    async fetchWithTimeout (resource, options = {}) {
+      const { timeout = 6000 } = options
+
+      const controller = new AbortController()
+      const id = setTimeout(() => controller.abort(), timeout)
+
+      const response = await fetch(resource, {
+        ...options,
+        signal: controller.signal
       })
+      clearTimeout(id)
+
+      return response
     }
   }
 }
