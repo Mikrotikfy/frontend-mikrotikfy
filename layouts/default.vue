@@ -54,6 +54,14 @@
         {{ !$store.state.isDesktop ? null : clienttype.name }}
       </v-btn>
       <v-spacer />
+      <span>
+        <v-chip
+          x-small
+          :color="connectionTypeColor"
+        >
+          Señal: {{ connectionType }}
+        </v-chip>
+      </span>
       <div v-if="$store.state.auth && $store.state.isDesktop">
         <v-btn
           v-for="city in $store.state.auth.cities"
@@ -158,7 +166,9 @@ export default {
       hasPendingChanges: false,
       drawer: false,
       title: 'Aplicación de Gestión Dinámica ARNOP',
-      rounded: false
+      rounded: false,
+      connectionType: null,
+      connectionTypeColor: 'grey'
     }
   },
   computed: {
@@ -202,6 +212,7 @@ export default {
     window.removeEventListener('resize', this.isDesktopScreen)
   },
   mounted () {
+    navigator.connection.addEventListener('change', this.updateConnectionType())
     window.addEventListener('resize', this.isDesktopScreen)
     this.testAuthToken()
     this.getLocalStorage()
@@ -209,11 +220,35 @@ export default {
     this.loadThemeFromVuetifyThemeManager()
     this.isDesktopScreen()
     this.getMenu()
+    this.updateConnectionType()
     setInterval(() => {
       this.getMenu()
     }, 1000 * 60)
   },
   methods: {
+    updateConnectionType () {
+      switch (navigator.connection.effectiveType) {
+        case 'slow-2g':
+          this.connectionType = '...'
+          this.connectionTypeColor = 'red'
+          break
+        case '2g':
+          this.connectionType = 'H'
+          this.connectionTypeColor = 'red'
+          break
+        case '3g':
+          this.connectionType = '3G'
+          this.connectionTypeColor = 'orange'
+          break
+        case '4g':
+          this.connectionType = '4G'
+          this.connectionTypeColor = 'green'
+          break
+        default:
+          this.connectionType = 'Desconocida'
+          break
+      }
+    },
     async getMenu () {
       await this.$store.dispatch('menu/getMenuFromDatabase', {
         token: this.$store.state.auth.token,
