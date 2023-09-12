@@ -456,7 +456,7 @@
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold">
                 <strong>Tipo Ticket: </strong>{{ getTicketTypeName() }}
               </p>
-              <nuxt-link :to="`/clients/${this.editModalData.client ? this.editModalData.client.code : ''}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}`" class="blue--text">
+              <nuxt-link :to="`/clients/${editModalData.client ? editModalData.client.code : ''}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
                 <strong>
                   <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold"><strong>Código: </strong>{{ getClientCode() }}</p>
                 </strong>

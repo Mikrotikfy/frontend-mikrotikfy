@@ -513,7 +513,6 @@ export const actions = {
           .then(res => res.json())
           .then((invoices) => {
             commit('getBillsByDateRange', invoices.data)
-            console.log(invoices.data)
             resolve(invoices)
           })
       })

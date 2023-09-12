@@ -7,7 +7,6 @@ export default function ({ route, redirect, store }) {
   if (userHasPreferredCity) {
     userPreferredCity = auth.preferredcity.name
   }
-  console.log('name: ', name)
   const newQuery = {
     city: userPreferredCity || 'MARIQUITA',
     clienttype: clienttype || 'INTERNET',

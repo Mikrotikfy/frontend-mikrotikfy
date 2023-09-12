@@ -177,7 +177,6 @@ export const actions = {
     }
   },
   updateNap ({ commit }, payload) {
-    console.log(payload)
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}naps/${payload.nap.id}`, {
