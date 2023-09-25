@@ -157,7 +157,10 @@ export const actions = {
             'ticketdetails',
             'ticketdetails.operator'
           ],
-          sort: ['createdAt:desc']
+          sort: ['createdAt:desc'],
+          pagination: {
+            pageSize: 50
+          }
         },
         {
           encodeValuesOnly: true
