@@ -238,7 +238,12 @@ export default {
         'No.',
         'CASA',
         'DIAGONAL',
-        'LOTE'
+        'LOTE',
+        'FINCA',
+        'KM',
+        'VEREDA',
+        'PARCELA',
+        'BODEGA'
       ]
     }
   },
