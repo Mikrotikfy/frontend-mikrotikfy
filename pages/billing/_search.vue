@@ -1,14 +1,9 @@
 <template>
   <v-container fluid style="height:calc(100vh - 48px);">
-    <BillingClientSearch class="mt-1" />
+    <BillingClientSearch />
     <v-row class="mt-0">
       <v-col cols="5" class="parent-container">
         <div class="parent-list">
-          <v-card class="rounded-lg">
-            <v-card-text>
-              <BillingClientList />
-            </v-card-text>
-          </v-card>
           <v-card class="rounded-lg">
             <v-card-text>
               <BillingLegalNotesList />
@@ -81,7 +76,7 @@ export default {
 }
 .parent-list {
   display: grid;
-  grid-auto-rows: minmax(1fr, 50vh) minmax(1fr, auto);
+  grid-auto-rows: minmax(1fr, auto);
   grid-gap: 10px;
 }
 .parent-container {

@@ -67,7 +67,20 @@ export default {
       return this.$store.state.billing.showPayed
     }
   },
+  mounted () {
+    this.getBillingInfoByClientId()
+  },
   methods: {
+    async getBillingInfoByClientId () {
+      console.log(this.$route.params.search)
+      if (this.$route.params.search) {
+        await this.$store.dispatch('billing/getBillingInfoByClientId', {
+          clientId: this.$route.params.search,
+          showPayed: this.showPayed,
+          token: this.$store.state.auth.token
+        })
+      }
+    },
     getDate (date) {
       const dateObject = new Date(date)
       const humanDateFormat = dateObject.toLocaleString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })

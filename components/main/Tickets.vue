@@ -260,13 +260,14 @@
                   </h5>
                 </v-chip>
                 <template v-slot:input>
-                  <v-select
+                  <v-autocomplete
                     :value="props.item.tickettype"
                     item-text="name"
                     item-value="id"
                     :items="tickettypes"
                     return-object
                     single-line
+                    auto-select-first
                     label="Establecer tipo"
                     outlined
                     dense
@@ -668,10 +669,6 @@
               :name="editModalData.client.name"
               :block="true"
             />
-            <MiscPhotoGallery
-              :ticket="editModalData"
-              :block="true"
-            />
           </div>
         </v-card-text>
       </v-card>
@@ -749,8 +746,6 @@ export default {
         { text: 'Código', sortable: false, value: 'client.code', width: 50 },
         { text: 'Cliente', sortable: false, value: 'client.name', width: 200 },
         { text: 'Celular', sortable: false, value: 'client.phone', width: 80 },
-        { text: 'Saldo', sortable: false, value: 'client.balance', width: 80 },
-        { text: 'Tec.', sortable: false, value: 'client.technology.name', width: 50 },
         { text: 'Por', sortable: false, value: 'assignated.username', width: 40 },
         { text: 'Creación', sortable: false, value: 'createdAt', width: 100 },
         { text: 'Acciones', sortable: false, value: 'actions' }
@@ -770,7 +765,6 @@ export default {
         { text: 'Codigo', sortable: false, value: 'client.code', width: 60 },
         { text: 'Cliente', sortable: false, value: 'client.name' },
         { text: 'Celular', sortable: false, value: 'client.phone' },
-        { text: 'Saldo', sortable: false, value: 'client.balance', width: 80 },
         { text: 'Por', sortable: false, value: 'assignated.username' },
         { text: 'Creado el', sortable: false, value: 'createdAt' },
         { text: 'Acciones', sortable: false, value: 'actions' }

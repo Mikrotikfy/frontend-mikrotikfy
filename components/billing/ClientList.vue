@@ -93,7 +93,7 @@ export default {
     this.loadingDataTable = true
     this.page = 1
     this.getHeadersByClientType()
-    this.getClientsBySearch()
+    // this.getClientsBySearch()
     this.getBillingInfoByClientId()
     this.loadingDataTable = false
   },

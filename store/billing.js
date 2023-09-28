@@ -1,5 +1,5 @@
 export const state = () => ({
-  clients: [],
+  client: null,
   activeClients: [],
   currentClient: null,
   e1: 1,
@@ -116,9 +116,9 @@ export const mutations = {
     }
   },
   getClientsBySearch (state, clients) {
+    console.log(clients)
     try {
-      state.clients = null
-      state.clients = clients.data
+      state.client = clients
     } catch (error) {
       throw new Error(`BILLING CLIENTS SEARCH MUTATE ${error}`)
     }

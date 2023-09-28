@@ -1,5 +1,5 @@
 <template>
-  <v-row class="mb-1 justify-center w-100">
+  <v-row class="justify-center w-100">
     <v-col
       cols="12"
     >
@@ -13,25 +13,29 @@
           tile
           large
           x-large
-          style="border-radius: 30px 0 0 30px;padding:5px;height:56px;"
+          style="border-radius: 30px 0 0 30px;padding:5px;height:48px;"
           @click="getClientBySearch()"
         >
           <v-icon>mdi-magnify</v-icon>
         </v-btn>
-        <v-text-field
-          ref="searchClient"
-          v-model="search"
+        <v-autocomplete
+          v-model="select"
+          :items="searchResults"
           :label="loadingDataTable ? 'Cargando... Por favor espere.' : 'Buscar por código, nombre, barrio o dirección'"
-          single-line
+          :search-input.sync="search"
+          :item-text="text"
+          item-value="id"
+          clearable
           hide-details
-          filled
+          hide-selected
+          auto-select-first
+          return-object
+          solo
           rounded
-          autofocus
+          no-data-text="Realiza una busqueda para iniciar..."
           :loading="loadingDataTable"
-          :disabled="loadingDataTable"
           class="white--text"
           style="width:100px;max-width: 600px;border-radius: 0 30px 30px 0;"
-          @keyup.enter="getClientBySearch()"
         />
       </v-row>
     </v-col>
@@ -42,7 +46,9 @@ export default {
   name: 'ClientSearch',
   data () {
     return {
-      search: '',
+      search: null,
+      searchResults: [],
+      select: null,
       loadingDataTable: false
     }
   },
@@ -52,16 +58,80 @@ export default {
       return this.$store.state.cities ? this.$store.state.cities.find(c => c.name == this.$route.query.city) : ''
     }
   },
+  watch: {
+    search (val) {
+      val && val !== this.select && this.searchInDatabase(val)
+    },
+    select (resultObject) {
+      this.getClientBySearch(resultObject)
+    }
+  },
   methods: {
-    getClientBySearch () {
+    text: item => `${item.code} - ${item.name} - ${item.dni} - ${item.address} - ${item.neighborhood.name}`,
+    searchInDatabase (val) {
+      if (val.length < 4) { return }
+      this.loadingDataTable = true
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          $and: [
+            {
+              city: {
+                name: this.$route.query.city
+              }
+            },
+            {
+              clienttype: {
+                name: this.$route.query.clienttype
+              }
+            },
+            {
+              $or: [
+                {
+                  name: {
+                    $contains: val
+                  }
+                },
+                {
+                  code: val
+                },
+                {
+                  dni: val
+                }
+              ]
+            }
+          ]
+        },
+        populate: ['neighborhood', 'plan', 'offer', 'offer.plan', 'offermovements.offer', 'offermovements', 'debtmovements', 'debtmovements.technician']
+      },
+      {
+        encodeValuesOnly: true
+      })
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.$store.state.auth.token}`
+        }
+      })
+        .then(res => res.clone().json())
+        .then((clients) => {
+          this.searchResults = clients.data
+        })
+        .finally(() => {
+          this.loadingDataTable = false
+        })
+    },
+    getClientBySearch (search) {
       this.$store.commit('billing/resetInvoices')
       this.$store.commit('billing/resetSelected')
       this.$store.commit('billing/resetCurrentClient')
       this.$store.commit('billing/setShowPayedToFalse')
-      if (this.search) {
+      this.$store.commit('billing/getClientsBySearch', search)
+      if (search) {
         this.loadingDataTable = true
         this.$router.push({
-          path: `/billing/${this.search}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}`
+          path: `/billing/${search.id}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}`
         })
         this.loadingDataTable = false
       } else {
