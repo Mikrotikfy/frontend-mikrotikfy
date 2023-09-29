@@ -89,6 +89,12 @@ export default {
     },
     '$store.state.billing.showPayed' () {
       this.getBillingInfoByClientId()
+    },
+    '$route' () {
+      this.$store.commit('billing/resetInvoices')
+      this.$router.push({
+        path: `/billing?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}`
+      })
     }
   },
   mounted () {
@@ -106,7 +112,6 @@ export default {
       }
     },
     processAddresses (client) {
-      console.log(client)
       if (!client) { return 'Sin Direccion' }
       const address = client?.address
       const addresses = client?.addresses

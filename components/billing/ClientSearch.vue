@@ -136,7 +136,7 @@ export default {
         this.loadingDataTable = false
       } else {
         this.$router.push({
-          path: '/billing'
+          path: `/billing?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}`
         })
         this.loadingDataTable = false
       }

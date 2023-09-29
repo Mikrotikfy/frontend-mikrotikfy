@@ -103,7 +103,7 @@
                     @page-count="options.pageCount = $event"
                   >
                     <template v-slot:[`item.client.code`]="props">
-                      <nuxt-link :to="`/billing/${props.item.client && props.item.client.code ? props.item.client.code : 'fallback'}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
+                      <nuxt-link :to="`/billing/${props.item.client && props.item.client.code ? props.item.client.id : 'fallback'}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
                         <strong>
                           <h3>
                             {{ props.item.client && props.item.client.code ? props.item.client.code : 'Sin codigo' }}

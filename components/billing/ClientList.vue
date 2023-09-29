@@ -85,8 +85,9 @@ export default {
       this.getClientsBySearch()
     },
     '$route' () {
-      this.$store.commit('billing/resetInvoices')
-      this.getClientsBySearch()
+      this.$router.push({
+        path: '/billing'
+      })
     }
   },
   mounted () {
