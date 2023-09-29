@@ -65,7 +65,7 @@ export const mutations = {
     state.legalNotes = []
   },
   resetCurrentClient (state) {
-    state.currentClient = {}
+    state.currentClient = null
   },
   setTotal (state, total) {
     state.total = total
@@ -116,7 +116,6 @@ export const mutations = {
     }
   },
   getClientsBySearch (state, clients) {
-    console.log(clients)
     try {
       state.client = clients
     } catch (error) {
@@ -334,9 +333,18 @@ export const actions = {
       const qs = require('qs')
       const query = qs.stringify({
         populate: [
+          'addresses',
+          'addresses.neighborhood',
+          'neighborhood',
+          'offermovements',
+          'offermovements.offer',
+          'offermovements.offer.plan',
+          'debtmovements',
+          'plan',
+          'offer',
           'city',
-          'invoices.offer',
           'invoices',
+          'invoices.offer',
           'invoices.invoice_type',
           'invoices.invoice_movements',
           'invoices.invoice_movements.biller',

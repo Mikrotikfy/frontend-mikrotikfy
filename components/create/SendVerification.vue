@@ -70,10 +70,11 @@ export default {
           body: JSON.stringify(
             {
               messaging_product: 'whatsapp',
+              recipient_type: 'individual',
               to: `57${this.phone}`,
               type: 'template',
               template: {
-                name: 'verification_arnop',
+                name: 'verification_arnop_v2',
                 language: {
                   code: 'es'
                 },
@@ -83,7 +84,18 @@ export default {
                     parameters: [
                       {
                         type: 'text',
-                        text: `${this.randomNumber}`
+                        text: '123456'
+                      }
+                    ]
+                  },
+                  {
+                    type: 'button',
+                    sub_type: 'url',
+                    index: '0',
+                    parameters: [
+                      {
+                        type: 'text',
+                        text: '<ONE-TIME PASSWORD>'
                       }
                     ]
                   }

@@ -2,7 +2,14 @@
   <v-container fluid style="height:calc(100vh - 48px);">
     <BillingClientSearch />
     <v-row class="mt-0">
-      <v-col cols="5" class="parent-container">
+      <v-col
+        cols="12"
+        xs="12"
+        sm="12"
+        md="12"
+        lg="5"
+        xl="5"
+        class="parent-container">
         <div class="parent-list">
           <v-card class="rounded-lg">
             <v-card-text>
@@ -11,11 +18,22 @@
           </v-card>
         </div>
       </v-col>
-      <v-col cols="7" class="parent">
+      <v-col
+        cols="12"
+        xs="12"
+        sm="12"
+        md="12"
+        lg="7"
+        xl="7"
+        class="parent"
+      >
         <v-card class="rounded-lg">
-          <v-card-title>
-            <span :class="this.$store.state.billing.showPayed ? 'ml-4 red darken-4 rounded-lg px-2' : 'ml-2'">{{ this.$store.state.billing.showPayed ? 'ARCHIVO DE CUENTA' : 'Estado de Cuenta' }}</span> <span v-if="currentClient" ref="clientP" class="ml-1 hideMe rounded-xl px-2 text-body-1">
-              {{ currentClient.id }} {{ currentClient.name }}
+          <v-card-title class="text-caption">
+            <span v-if="currentClient" ref="clientP" class="hideMe rounded-xl text-body-1">
+              <MainClientControl :client="currentClient" :index="-1" />
+              <v-chip outlined tag class="text-caption">
+                {{ currentClient.code }} / {{ currentClient.name }} / {{ processAddresses(currentClient) }} / {{ processAddressesNeighborhood(currentClient) }}
+              </v-chip>
             </span>
             <v-spacer />
             <div class="d-flex align-center">
@@ -59,11 +77,57 @@ export default {
       return this.$store.state.billing.selected
     },
     currentClient () {
-      return this.$store.state.billing.currentClient
+      return this.$store.state.billing.currentClient || null
+    },
+    showPayed () {
+      return this.$store.state.billing.showPayed
+    }
+  },
+  watch: {
+    '$store.state.billing.refresh' () {
+      this.getBillingInfoByClientId()
+    },
+    '$store.state.billing.showPayed' () {
+      this.getBillingInfoByClientId()
     }
   },
   mounted () {
+    this.getBillingInfoByClientId()
     this.$store.commit('billing/getCurrentMonth')
+  },
+  methods: {
+    async getBillingInfoByClientId () {
+      if (this.$route.params.search) {
+        await this.$store.dispatch('billing/getBillingInfoByClientId', {
+          clientId: this.$route.params.search,
+          showPayed: this.showPayed,
+          token: this.$store.state.auth.token
+        })
+      }
+    },
+    processAddresses (client) {
+      console.log(client)
+      if (!client) { return 'Sin Direccion' }
+      const address = client?.address
+      const addresses = client?.addresses
+      if (address && !addresses) { return address }
+      if (address && addresses.length === 0) { return address }
+      if (!address && addresses.length < 1) { return 'Sin Dirección' }
+      if (address && addresses.length > 0) { return addresses.at(-1).address }
+      if (!address && addresses.length > 0) { return addresses.at(-1).address }
+    },
+    processAddressesNeighborhood (client) {
+      if (!client) { return 'Sin Barrio' }
+      const addresses = client.addresses
+      const neighborhood = client.neighborhood
+      if (neighborhood && !addresses) { return neighborhood.name }
+      if (neighborhood && addresses.length === 0) { return neighborhood.name }
+      if (!neighborhood && addresses.length < 1) { return 'Sin Barrio' }
+      if (neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
+      if (neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
+      if (!neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
+      if (!neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
+    }
   }
 }
 </script>

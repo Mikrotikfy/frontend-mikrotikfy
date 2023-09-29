@@ -130,7 +130,7 @@ export default {
         clienttype: this.$route.query.clienttype,
         token: this.$store.state.auth.token,
         biller: this.$store.state.auth,
-        client: parseInt(this.$route.query.selected),
+        client: parseInt(this.$route.params.search),
         debit: 0,
         credit: amount,
         connect: true,

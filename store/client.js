@@ -101,7 +101,7 @@ export const mutations = {
   },
   setPlanFromModal (state, payload) {
     try {
-      if (payload.clientIndex !== null) {
+      if (payload.clientIndex !== null || payload.clientIndex !== -1) {
         state.clients[payload.clientIndex].offer = payload.newPlan
       }
     } catch (error) {

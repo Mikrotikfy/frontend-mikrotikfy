@@ -62,7 +62,7 @@ export default {
     },
     index: {
       type: Number,
-      required: true
+      default: 0
     }
   },
   data () {
@@ -105,15 +105,17 @@ export default {
       this.selected = { ...this.client.offer }
     },
     setPlanFromModal () {
-      this.$store.dispatch('client/setPlanFromModal', {
-        clientId: this.client.id,
-        clientIndex: this.index,
-        isOfferChange: true,
-        kick: true,
-        newPlan: this.selected.plan,
-        operator: this.$store.state.auth.id,
-        token: this.$store.state.auth.token
-      })
+      if (this.$route.query.clienttype === 'INTERNET') {
+        this.$store.dispatch('client/setPlanFromModal', {
+          clientId: this.client.id,
+          clientIndex: this.index,
+          isOfferChange: true,
+          kick: true,
+          newPlan: this.selected.plan,
+          operator: this.$store.state.auth.id,
+          token: this.$store.state.auth.token
+        })
+      }
       this.$simpleTelegramUpdateOffer({ client: this.client, operator: this.$store.state.auth.username, offer: this.selected, telegramBots: this.telegramBots })
     },
     confirm () {

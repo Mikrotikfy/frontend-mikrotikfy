@@ -6,18 +6,6 @@
       <v-row
         class="mx-1 mt-1 mb-1 justify-center d-flex"
       >
-        <v-btn
-          color="grey lighten-4 black--text elevation-0"
-          dark
-          :loading="loadingDataTable"
-          tile
-          large
-          x-large
-          style="border-radius: 30px 0 0 30px;padding:5px;height:48px;"
-          @click="getClientBySearch()"
-        >
-          <v-icon>mdi-magnify</v-icon>
-        </v-btn>
         <v-autocomplete
           v-model="select"
           :items="searchResults"
@@ -35,8 +23,20 @@
           no-data-text="Realiza una busqueda para iniciar..."
           :loading="loadingDataTable"
           class="white--text"
-          style="width:100px;max-width: 600px;border-radius: 0 30px 30px 0;"
-        />
+          style="width:100px;max-width: 600px;border-radius: 30px 30px 30px 30px;"
+        >
+          <template v-slot:item="{ item }">
+            <v-list-item-avatar
+              :color="item.active ? item.indebt ? 'red darkne-4' : 'green darken-4' : item.indebt ? 'gray' : 'red darken-4'"
+              class="text-h5 font-weight-light white--text"
+            >
+              {{ item.active ? item.indebt ? 'M' : 'A' : item.indebt ? 'E' : 'R' }}
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="`${item.code} - ${item.name} - ${processAddresses(item)} - ${processAddressesNeighborhood(item)}`" />
+            </v-list-item-content>
+          </template>
+        </v-autocomplete>
       </v-row>
     </v-col>
   </v-row>
@@ -67,9 +67,9 @@ export default {
     }
   },
   methods: {
-    text: item => `${item.code} - ${item.name} - ${item.dni} - ${item.address} - ${item.neighborhood.name}`,
+    text: item => `${item.code} - ${item.name} - ${item.dni}`,
     searchInDatabase (val) {
-      if (val.length < 4) { return }
+      if (val.length < 1) { return }
       this.loadingDataTable = true
       const qs = require('qs')
       const query = qs.stringify({
@@ -140,6 +140,26 @@ export default {
         })
         this.loadingDataTable = false
       }
+    },
+    processAddresses (client) {
+      if (!client) { return 'Sin Direccion' }
+      const address = client?.address
+      const addresses = client?.addresses
+      if (!address && addresses.length < 1) { return 'Sin Dirección' }
+      if (address && !addresses) { return address }
+      if (address && addresses.length > 0) { return addresses.at(-1).address }
+      if (!address && addresses.length > 0) { return addresses.at(-1).address }
+    },
+    processAddressesNeighborhood (client) {
+      if (!client) { return 'Sin Barrio' }
+      const addresses = client.addresses
+      const neighborhood = client.neighborhood
+      if (!neighborhood && addresses.length < 1) { return 'Sin Barrio' }
+      if (neighborhood && !addresses) { return neighborhood.name }
+      if (neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
+      if (neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
+      if (!neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
+      if (!neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
     }
   }
 }

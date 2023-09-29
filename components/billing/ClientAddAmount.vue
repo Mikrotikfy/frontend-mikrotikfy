@@ -133,7 +133,7 @@ export default {
           payed: false,
           partial: false,
           indebt: false,
-          client: this.$route.query.selected,
+          client: this.$route.params.search,
           invoice_type: this.billtype.id,
           token: this.$store.state.auth.token
         })
@@ -142,7 +142,7 @@ export default {
           clienttype: this.$route.query.clienttype,
           token: this.$store.state.auth.token,
           biller: this.$store.state.auth,
-          client: parseInt(this.$route.query.selected),
+          client: parseInt(this.$route.params.search),
           debit: this.amount,
           credit: 0,
           concept: this.billtype.name

@@ -11,6 +11,7 @@
         :loading="loadingDataTable"
         sort-by="id"
         sort-asc
+        calculate-widths
         :no-data-text="showPayed ? 'No hay facturas pagas aun...' : 'Usuario al día'"
         loading-text="Cargando información de clientes..."
         dense
@@ -39,7 +40,7 @@
           <BillingDetails :billinginfo="props" />
         </template>
         <template v-slot:[`item.actions`]="props">
-          <span class="d-flex justify-end" :data-index="props.index">
+          <span class=" d-xl-flex justify-end" :data-index="props.index">
             <BillingPayBill
               :invoice="props.item"
               :index="props.index"
