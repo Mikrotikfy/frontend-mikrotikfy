@@ -85,7 +85,7 @@ export default {
       return this.$store.state.billing.sendIndex
     },
     clients () {
-      return this.$store.state.billing.clients
+      return this.$store.state.billing.clients || []
     },
     month () {
       return this.$store.state.billing.month
