@@ -13,7 +13,7 @@ export const mutations = {
 export const actions = {
   addAddress ({ commit }, payload) {
     try {
-      fetch(`${this.$config.API_STRAPI_ENDPOINT}addresses`, {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}service_addresses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -22,7 +22,7 @@ export const actions = {
         body: JSON.stringify({
           data: {
             address: payload.address,
-            client: payload.client.id,
+            service: payload.service.id,
             neighborhood: payload.neighborhood.id
           }
         })

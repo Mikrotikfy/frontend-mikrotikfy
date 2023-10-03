@@ -47,7 +47,7 @@
                 {{ createdMessage }}
               </v-alert>
               <v-card-title>
-                Crear Ticket de {{ clienttype.name }} <v-icon class="ml-2">{{ clienttype.icon }}</v-icon>
+                Crear Ticket de {{ service.name }} <v-icon class="ml-2">{{ service.name === 'INTERNET' ? 'mdi-wifi' : 'mdi-television' }}</v-icon>
               </v-card-title>
               <div v-if="!loading">
                 <v-card-text>
@@ -70,7 +70,7 @@
                   <v-row class="mb-2">
                     <v-col cols="6">
                       <v-text-field
-                        :value="client.addresses.length > 0 ? client.addresses.at(-1).address : client.address"
+                        :value="processAddresses(service)"
                         label="#"
                         outlined
                         dense
@@ -80,7 +80,7 @@
                     </v-col>
                     <v-col cols="6">
                       <v-autocomplete
-                        :value="client.addresses.length > 0 ? client.addresses.at(-1).neighborhood : client.neighborhood"
+                        :value="processAddressesNeighborhood(service)"
                         item-text="name"
                         item-value="id"
                         :items="neighborhoods"
@@ -371,8 +371,7 @@
           </v-col>
           <v-col cols="12" md="6" lg="7">
             <MiscTicketHistoryTicket
-              :clientid="client.id"
-              :name="client.name"
+              :service="service"
             />
           </v-col>
         </v-row>
@@ -434,12 +433,8 @@ export default {
       type: Object,
       default: () => {}
     },
-    assignated: {
-      type: Number,
-      default: -1
-    },
-    role: {
-      type: Array,
+    service: {
+      type: Object,
       default: () => {}
     },
     block: {
@@ -466,7 +461,7 @@ export default {
       details: false
     },
     ticketPayload: {
-      client: '',
+      service: null,
       type: {},
       details: '',
       city: '',
@@ -549,7 +544,7 @@ export default {
   methods: {
     async lastTicketIsOpenAndSameType () {
       const ticket = await this.$store.dispatch('ticket/getClientLastTicket', {
-        clientId: this.client.id,
+        serviceId: this.service.id,
         token: this.$store.state.auth.token
       })
       if ((ticket && ticket.active) && (ticket.tickettype.id === this.ticketPayload.type.id)) {
@@ -577,13 +572,12 @@ export default {
     },
     initComponent () {
       if (this.client.phone === '0' && this.currentCity.requiresphone) {
-        this.$toast.error('El cliente no tiene un celular registrado', { duration: 5000 })
+        this.$toast.error('El servicio no tiene un celular registrado', { duration: 5000 })
       } else {
         this.modal = true
       }
-      this.ticketPayload.client = this.client.id
-      this.ticketPayload.city = this.client.city.id
-      this.ticketPayload.assignated = this.assignated
+      this.ticketPayload.service = this.service.id
+      this.ticketPayload.city = this.service.city.id
     },
     testClientAvailable () {
       if (this.isEmpty(this.ticketPayload.type)) {
@@ -623,13 +617,12 @@ export default {
         })
         if (res.status === 200) {
           this.$toast.info('El celular del cliente ha sido actualizado', { duration: 5000 })
-          this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search: this.$route.params.search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: { page: 1, pageSize: 500 } })
         } else {
           this.$toast.error('Ha ocurrido un error al actualizar el celular del cliente')
         }
       }
       if (this.ticketPayload.type.name === 'TRASLADO') {
-        this.ticketPayload.details = `DX: ${this.getSecondFromLastAddress(this.client)} ${this.getSecondFromLastAddressNeighborhood(this.client)} \n CX: ${this.cx.finalAddress}`
+        this.ticketPayload.details = `DX: ${this.getSecondFromLastAddress(this.service)} ${this.getSecondFromLastAddressNeighborhood(this.service)} \n CX: ${this.cx.finalAddress}`
       }
       if (this.isEmpty(this.ticketPayload.type)) {
         this.alertBox = true
@@ -675,15 +668,15 @@ export default {
         body: JSON.stringify({
           data: {
             active: true,
-            client: this.ticketPayload.client,
+            service: this.ticketPayload.service,
             channel: this.ticketPayload.type && this.ticketPayload.type.name === 'TRASLADO' ? 'office' : this.ticketPayload.channel,
             reboot: this.ticketPayload.reboot,
             network: this.ticketPayload.network,
             on: this.ticketPayload.on,
             city: this.ticketPayload.city,
             tickettype: this.ticketPayload.type.id,
-            clienttype: this.clienttype.id,
-            assignated: this.ticketPayload.assignated,
+            clienttype: this.service.name === 'INTERNET' ? 1 : 0,
+            assignated: this.$store.state.auth.id,
             details: this.ticketPayload.details
           }
         })
@@ -691,13 +684,7 @@ export default {
         if (input.status === 200) {
           if (this.ticketPayload.type.name === 'TRASLADO') {
             this.$store.dispatch('address/addAddress', {
-              client: this.client,
-              address: this.address,
-              neighborhood: this.cx.neighborhood,
-              token: this.$store.state.auth.token
-            })
-            this.$store.dispatch('client/updateClientAddress', {
-              client: this.client,
+              service: this.service,
               address: this.address,
               neighborhood: this.cx.neighborhood,
               token: this.$store.state.auth.token
@@ -705,11 +692,12 @@ export default {
           }
           this.modal = false
           this.loading = false
-          if (this.$route.query.clienttype === 'INTERNET') {
-            this.$simpleTelegramCreateTicket({ client: this.client, tickettype: this.ticketPayload.type.name, details: this.ticketPayload.details, neighborhood: this.client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+          this.$store.commit('client/refresh')
+          if (this.service.name === 'INTERNET') {
+            this.$simpleTelegramCreateTicket({ service: this.service, tickettype: this.ticketPayload.type.name, details: this.ticketPayload.details, neighborhood: this.client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
             // this.$pushSend({ title: 'TICKET INTERNET', message: `Ticket ${this.ticketPayload.type.name} creado para ${this.client.name}` })
           } else {
-            this.$simpleTelegramCreateTicketTV({ client: this.client, tickettype: this.ticketPayload.type.name, details: this.ticketPayload.details, neighborhood: this.client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+            this.$simpleTelegramCreateTicketTV({ service: this.service, tickettype: this.ticketPayload.type.name, details: this.ticketPayload.details, neighborhood: this.client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
             // this.$pushSend({ title: 'TICKET TELEVISION', message: `Ticket ${this.ticketPayload.type.name} creado para ${this.client.name}` })
           }
         } else {
@@ -723,17 +711,39 @@ export default {
         console.error(error)
       })
     },
-    getSecondFromLastAddress (client) {
-      if (client.addresses.length > 1) {
-        return client.addresses.at(-1).address
+    getSecondFromLastAddress (service) {
+      if (service.addresses.length > 1) {
+        return service.addresses.at(-1).address
       }
-      return client.address
+      return service.address
     },
-    getSecondFromLastAddressNeighborhood (client) {
-      if (client.addresses.length > 1) {
-        return client.addresses.at(-1).neighborhood.name
+    getSecondFromLastAddressNeighborhood (service) {
+      if (service.addresses.length > 1) {
+        return service.addresses.at(-1).neighborhood.name
       }
-      return client.neighborhood.name
+      return service.neighborhood.name
+    },
+    processAddresses (service) {
+      if (!service) { return 'Sin Direccion' }
+      const address = service?.address
+      const serviceAddresses = service?.service_addresses
+      if (address && !serviceAddresses) { return address }
+      if (address && serviceAddresses.length === 0) { return address }
+      if (!address && serviceAddresses.length < 1) { return 'Sin Dirección' }
+      if (address && serviceAddresses.length > 0) { return serviceAddresses.at(-1).address }
+      if (!address && serviceAddresses.length > 0) { return serviceAddresses.at(-1).address }
+    },
+    processAddressesNeighborhood (service) {
+      if (!service) { return 'Sin Barrio' }
+      const addresses = service.service_addresses
+      const neighborhood = service.neighborhood
+      if (neighborhood && !addresses) { return neighborhood.name }
+      if (neighborhood && addresses.length === 0) { return neighborhood.name }
+      if (!neighborhood && addresses.length < 1) { return 'Sin Barrio' }
+      if (neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
+      if (neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
+      if (!neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
+      if (!neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
     }
   }
 }

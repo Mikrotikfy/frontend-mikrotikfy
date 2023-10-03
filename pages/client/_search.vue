@@ -90,7 +90,7 @@
               :code="currentService.code"
               :item="currentService"
             />
-            <CreateTicket :client="currentService" :assignated="$store.state.auth.id" />
+            <CreateTicket :client="searchResult" :service="currentService" :assignated="$store.state.auth.id" />
             <MainClientControl :service="currentService" @refresh="getClientFromSearchParam()" />
           </v-card-text>
         </v-card>
@@ -337,7 +337,7 @@
             </div>
           </v-card-text>
         </v-card>
-        <v-card v-else>
+        <v-card v-else class="rounded-xl">
           <v-card-text>
             <v-alert
               type="info"
@@ -404,8 +404,16 @@ export default {
   },
   mounted () {
     this.getClientFromSearchParam()
+    this.getTickettypes()
   },
   methods: {
+    getTickettypes () {
+      this.$store.dispatch('ticket/getTickettypes', {
+        city: this.$route.query.city,
+        clienttype: this.$route.query.clienttype,
+        token: this.$store.state.auth.token
+      })
+    },
     testChanges () {
       const service = this.searchResult.services.at(this.selectedService)
       const oldService = this.oldClient.services.at(this.selectedService)
@@ -464,6 +472,9 @@ export default {
         .then((clients) => {
           this.oldClient = JSON.parse(JSON.stringify(clients.data))
           this.searchResult = clients.data
+          if (this.searchResult.services.length < 2) {
+            this.selectedService = 0
+          }
         })
     },
     getDate (date) {

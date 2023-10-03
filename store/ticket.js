@@ -72,7 +72,7 @@ export const actions = {
       encodeValuesOnly: true
     })
     return new Promise((resolve, reject) => {
-      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.clientId}?${query}`, {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.serviceId}?${query}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -80,8 +80,8 @@ export const actions = {
         }
       })
         .then(res => res.json())
-        .then((client) => {
-          resolve(client.data.tickets.at(-1))
+        .then((service) => {
+          resolve(service.data.tickets.at(-1))
         })
     })
   },

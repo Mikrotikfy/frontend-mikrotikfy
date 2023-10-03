@@ -730,7 +730,7 @@ export const actions = {
   updateClientPhone ({ commit }, { phone, client, token }) {
     // eslint-disable-next-line no-unreachable
     return new Promise((resolve, reject) => {
-      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${client.id}`, {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized_clients/${client.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

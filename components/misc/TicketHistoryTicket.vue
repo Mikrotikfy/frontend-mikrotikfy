@@ -28,7 +28,7 @@
               <template v-slot:[`item.actions`]="props">
                 <TicketAdvanceHistory
                   :ticketid="props.item.id"
-                  :name="props.item.client.name"
+                  :name="props.item.service.normalized_client.name"
                 />
               </template>
               <template v-slot:[`item.active`]="props">
@@ -99,13 +99,9 @@ export default {
     TicketAdvanceHistory
   },
   props: {
-    clientid: {
-      type: Number,
-      default: -1
-    },
-    name: {
-      type: String,
-      default: ''
+    service: {
+      type: Object,
+      default: () => ({})
     },
     block: {
       type: Boolean,
@@ -154,17 +150,13 @@ export default {
       const qs = require('qs')
       const query = qs.stringify({
         filters: {
-          client: {
-            id: {
-              $eq: this.clientid
-            }
-          },
-          clienttype: {
-            name: this.$route.query.clienttype
+          service: {
+            id: this.service.id
           }
         },
         populate: [
-          'client',
+          'service',
+          'service.normalized_client',
           'tickettype',
           'ticketdetails',
           'ticketdetails.operator',
