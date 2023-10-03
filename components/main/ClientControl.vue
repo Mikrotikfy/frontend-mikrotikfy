@@ -6,15 +6,15 @@
           v-bind="attrs"
           small
           rounded
-          :color="$vuetify.theme.dark ? client.indebt || !client.active ? 'red lighten-1' : 'white black--text' : 'primary'"
+          :color="$vuetify.theme.dark ? service.indebt || !service.active ? 'red lighten-1' : 'white black--text' : 'primary'"
           v-on="on"
           @click="initComponent()"
         >
           <span v-if="$route.query.clienttype === 'INTERNET'">
-            {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : `${client.offer ? '$' + Number(client.offer.price).toLocaleString('es') : 'NO DEF.'}` }}
+            {{ !service.active ? 'RETIRADO' : service.indebt ? 'EN MORA' : `${service.offer ? '$' + Number(service.offer.price).toLocaleString('es') : 'NO DEF.'}` }}
           </span>
           <span v-else>
-            {{ !client.active ? 'RETIRADO' : client.indebt ? 'EN MORA' : `${client.offer ? '$' + Number(client.offer.price).toLocaleString('es') : 'NO DEF.'}` }}
+            {{ !service.active ? 'RETIRADO' : service.indebt ? 'EN MORA' : `${service.offer ? '$' + Number(service.offer.price).toLocaleString('es') : 'NO DEF.'}` }}
           </span>
         </v-btn>
       </template>
@@ -40,16 +40,16 @@
         <v-container>
           <v-row>
             <v-col cols="12" md="4" class="order-md-first order-lg-first">
-              <MiscOfferHistory :client="client" style="border-right:1px solid grey;" />
+              <MiscOfferHistory :service="service" style="border-right:1px solid grey;" />
             </v-col>
             <v-col cols="12" md="4" class="order-first">
               <div style="display:grid;place-items:center;">
-                <MainClientControlDebt :client="client" :index="index" />
-                <MainClientControlOffer :client="client" :index="index" />
+                <MainClientControlDebt :service="service" />
+                <MainClientControlOffer :service="service" />
               </div>
             </v-col>
             <v-col cols="12" md="4">
-              <MiscDebtHistory :client="client" style="border-left:1px solid grey;" />
+              <MiscDebtHistory :service="service" style="border-left:1px solid grey;" />
             </v-col>
           </v-row>
         </v-container>
@@ -61,12 +61,8 @@
 export default {
   name: 'ClientControl',
   props: {
-    client: {
+    service: {
       type: Object,
-      required: true
-    },
-    index: {
-      type: Number,
       required: true
     }
   },

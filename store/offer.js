@@ -63,7 +63,7 @@ export const mutations = {
 export const actions = {
   setNewOffer ({ commit }, payload) {
     try {
-      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ export const actions = {
         },
         body: JSON.stringify({
           data: {
-            client: payload.client.id,
+            service: payload.service.id,
             offer: payload.offer.id,
             technician: payload.technician.id,
             details: payload.details
@@ -110,7 +110,7 @@ export const actions = {
           },
           body: JSON.stringify({
             data: {
-              client: payload.client.id,
+              service: payload.service.id,
               city: payload.city.id,
               comment: payload.comment,
               isindebt: payload.isindebt,

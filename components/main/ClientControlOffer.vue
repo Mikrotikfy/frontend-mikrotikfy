@@ -4,12 +4,12 @@
       Asignar Tarifa
     </h2>
     <v-autocomplete
-      v-if="client"
+      v-if="service"
       v-model="selected"
       :items="offers"
-      :disabled="!client.active || !$isAdmin()"
-      :error="!client.active"
-      :error-messages="!client.active ? ['El cliente debe estar activo antes de modificar su tarifa.'] : []"
+      :disabled="!service.active || !$isAdmin()"
+      :error="!service.active"
+      :error-messages="!service.active ? ['El servicio debe estar activo antes de modificar su tarifa.'] : []"
       label="Tarifa"
       item-text="name"
       item-value="id"
@@ -29,7 +29,7 @@
           Confirmacion de seguridad
         </v-toolbar>
         <v-card-text class="mt-4">
-          <h3>Estas a punto de asignar una tarifa a este cliente.</h3>
+          <h3>Estas a punto de asignar una tarifa a este servicio.</h3>
         </v-card-text>
         <v-card-text>
           <strong class="green--text darken-4">{{ selected ? selected.name : 'Ninguna seleccionada' }}</strong>
@@ -56,13 +56,9 @@
 export default {
   name: 'ClientControlOffer',
   props: {
-    client: {
+    service: {
       type: Object,
       required: true
-    },
-    index: {
-      type: Number,
-      default: 0
     }
   },
   data () {
@@ -87,28 +83,27 @@ export default {
       const offer = this.selected
       await this.$store.dispatch('offer/setNewOffer', {
         token: this.$store.state.auth.token,
-        client: this.client,
+        service: this.service,
         offer,
         technician: this.$store.state.auth
       })
       await this.$store.dispatch('client/setAuxPlan', {
         token: this.$store.state.auth.token,
-        clientId: this.client.id,
+        serviceId: this.service.id,
         plan: offer.plan,
         index: this.index
       })
-      this.resetSearch()
       this.dialog = false
-      this.$store.commit('billing/refresh') // this one refreshes the client when in billing interface
+      this.$store.commit('client/refresh') // this one refreshes the service
+      this.$store.commit('billing/refresh') // this one refreshes the service when in billing interface
     },
     getLastOfferMovement () {
-      this.selected = { ...this.client.offer }
+      this.selected = { ...this.service.offer }
     },
     setPlanFromModal () {
-      if (this.$route.query.clienttype === 'INTERNET') {
+      if (this.service.name === 'INTERNET') {
         this.$store.dispatch('client/setPlanFromModal', {
-          clientId: this.client.id,
-          clientIndex: this.index,
+          serviceId: this.service.id,
           isOfferChange: true,
           kick: true,
           newPlan: this.selected.plan,
@@ -116,7 +111,7 @@ export default {
           token: this.$store.state.auth.token
         })
       }
-      this.$simpleTelegramUpdateOffer({ client: this.client, operator: this.$store.state.auth.username, offer: this.selected, telegramBots: this.telegramBots })
+      // this.$simpleTelegramUpdateOffer({ client: this.service, operator: this.$store.state.auth.username, offer: this.selected, telegramBots: this.telegramBots })
     },
     confirm () {
       this.dialog = true
@@ -125,12 +120,8 @@ export default {
       this.offers = await this.$store.dispatch('offer/getOffers', {
         token: this.$store.state.auth.token,
         city: this.$route.query.city,
-        clienttype: this.$route.query.clienttype
+        clienttype: this.service.name
       })
-    },
-    async resetSearch () {
-      await this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search: this.$route.params.search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: { page: 1, pageSize: 500 } })
-      this.$emit('resetSearch')
     }
   }
 }

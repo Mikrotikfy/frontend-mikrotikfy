@@ -5,7 +5,7 @@
     </v-card-title>
     <v-card-text style="display:grid;place-items:center;">
       <v-data-table
-        :items="client.debtmovements"
+        :items="service.debtmovements"
         :headers="headers"
         :page.sync="page"
         sort-by="createdAt"
@@ -38,7 +38,7 @@
 export default {
   name: 'DebtHistory',
   props: {
-    client: {
+    service: {
       type: Object,
       required: true
     }

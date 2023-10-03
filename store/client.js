@@ -4,9 +4,17 @@ export const state = () => ({
   clientsByDni: [],
   currentClientCode: null,
   clientForDeviceManipulation: null,
-  headers: null
+  headers: null,
+  refresh: 0
 })
 export const mutations = {
+  refresh (state) {
+    try {
+      state.refresh++
+    } catch (error) {
+      throw new Error(`MUTATE REFRESH ${error}`)
+    }
+  },
   updateDniType (state, payload) {
     try {
       state.clients[payload.index].corporate = !state.clients[payload.index].corporate
@@ -70,13 +78,13 @@ export const mutations = {
       throw new Error(`ADMINTOGGLE MUTATE ${error}`)
     }
   },
-  updateClient (state, { client, index }) {
-    try {
-      Object.assign(state.clients[index], client)
-    } catch (error) {
-      throw new Error(`UPDATE CLIENT MUTATE ${error}`)
-    }
-  },
+  // updateClient (state, { client, index }) {
+  //   try {
+  //     Object.assign(state.clients[index], client)
+  //   } catch (error) {
+  //     throw new Error(`UPDATE CLIENT MUTATE ${error}`)
+  //   }
+  // },
   updateClientDevices (state, { device, index }) {
     try {
       state.clients[index].mac_addresses.push(device)
@@ -186,7 +194,7 @@ export const actions = {
           })
         }).then((input) => {
           if (input.status === 200) {
-            commit('updateClient', { client: payload.client, index: payload.index })
+            // commit('updateClient', { client: payload.client, index: payload.index })
             this.$toast.info('Cambio de clave confirmado', { duration: 4000, position: 'bottom-center' })
             resolve(true)
           } else {
@@ -447,7 +455,7 @@ export const actions = {
   setAuxPlan ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.clientId}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.serviceId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -462,7 +470,7 @@ export const actions = {
           .then(res => res.json())
           .then((client) => {
             if (payload.index) {
-              commit('setAuxPlan', { client: client.data, index: payload.index, plan: payload.plan })
+              // commit('setAuxPlan', { client: client.data, index: payload.index, plan: payload.plan })
             }
             resolve(client)
           })
@@ -536,7 +544,7 @@ export const actions = {
   setPlanFromModal ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}editclientplan`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}editserviceplan`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -544,7 +552,7 @@ export const actions = {
           },
           body: JSON.stringify({
             data: {
-              id: payload.clientId,
+              id: payload.serviceId,
               plan: payload.newPlan.id,
               isRx: payload.isRx,
               kick: payload.kick,
@@ -554,7 +562,7 @@ export const actions = {
         }).then((input) => {
           if (input.status === 200) {
             if (payload.isOfferChange) {
-              commit('setPlanFromModal', payload)
+              // commit('setPlanFromModal', payload)
             }
             if (!payload.isBulkDx) {
               this.$toast.info('Plan actualizado actualizado con exito', { duration: 4000, position: 'bottom-center' })
@@ -566,11 +574,11 @@ export const actions = {
         }).catch((error) => {
           // eslint-disable-next-line no-console
           console.error(error)
-          throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
+          throw new Error(`EDIT SERVICE PLAN ACTION ${error}`)
         })
       })
     } catch (error) {
-      throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
+      throw new Error(`EDIT SERVICE PLAN ACTION ${error}`)
     }
   },
   async setActiveFromModal ({ commit }, payload) {
@@ -656,19 +664,19 @@ export const actions = {
     })
   },
   async updateClient ({ commit }, payload) {
-    delete payload.client.active
-    await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+    delete payload.service.active
+    await fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${payload.token}`
       },
       body: JSON.stringify({
-        data: { operator: payload.operator, ...payload.client }
+        data: { operator: payload.operator, ...payload.service }
       })
     }).then((input) => {
       if (input.status === 200) {
-        commit('updateClient', { client: payload.client, index: payload.index })
+        // commit('updateClient', { service: payload.service, index: payload.index })
       }
     }).catch((error) => {
       // eslint-disable-next-line no-console
@@ -698,7 +706,7 @@ export const actions = {
   },
   editClientStatus ({ commit }, payload) {
     return new Promise((resolve, reject) => {
-      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -715,7 +723,7 @@ export const actions = {
       }).catch((error) => {
         // eslint-disable-next-line no-console
         console.error(error)
-        throw new Error(`UPDATE DEBT CLIENT ACTION ${error}`)
+        throw new Error(`UPDATE DEBT SERVICE ACTION ${error}`)
       })
     })
   },
