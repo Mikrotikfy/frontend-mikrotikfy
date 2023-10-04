@@ -712,16 +712,16 @@ export default {
       })
     },
     getSecondFromLastAddress (service) {
-      if (service.addresses.length > 1) {
-        return service.addresses.at(-1).address
+      if (service.service_addresses.length > 0) {
+        return service.service_addresses.at(-1).address
       }
-      return service.address
+      throw new Error('No hay una segunda direccion')
     },
     getSecondFromLastAddressNeighborhood (service) {
-      if (service.addresses.length > 1) {
-        return service.addresses.at(-1).neighborhood.name
+      if (service.service_addresses.length > 0) {
+        return service.service_addresses.at(-1).neighborhood.name
       }
-      return service.neighborhood.name
+      throw new Error('No hay una segunda direccion')
     },
     processAddresses (service) {
       if (!service) { return 'Sin Direccion' }

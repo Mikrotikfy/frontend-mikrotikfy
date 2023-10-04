@@ -26,6 +26,12 @@
               @page-count="pageCount = $event"
             >
               <template v-slot:[`item.actions`]="props">
+                <CreateTicketAdvancev2
+                  :ticket="props.item"
+                  :ticketindex="-1"
+                  :block="true"
+                  @refreshTickets="initComponent()"
+                />
                 <TicketAdvanceHistory
                   :ticketid="props.item.id"
                   :name="props.item.service.normalized_client.name"
@@ -156,6 +162,7 @@ export default {
         },
         populate: [
           'service',
+          'service.tvspec',
           'service.normalized_client',
           'tickettype',
           'ticketdetails',

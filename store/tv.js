@@ -45,7 +45,7 @@ export const actions = {
           },
           body: JSON.stringify({
             data: {
-              client: payload.client.id,
+              service: payload.service.id,
               ticketdetail: payload.ticketdetail.id,
               ticket: payload.ticket.id,
               high: payload.specs.high,

@@ -238,21 +238,21 @@ export default {
       this.stepper = 1
     },
     testTvSpecs () {
-      const hasSpecs = this.ticket.client.tvspec
+      const hasSpecs = this.ticket.service.tvspec
       if (hasSpecs) {
-        this.specs = { ...this.ticket.client.tvspec }
+        this.specs = { ...this.ticket.service.tvspec }
         delete this.specs.id
         this.specsString = JSON.stringify(this.specs)
       }
     },
     setOpticalPower () {
-      this.opticalpower = this.ticket.client.opticalpower
+      this.opticalpower = this.ticket.service.opticalpower
     },
     async setNewSpecs (ticketdetail) {
-      if (this.specsString !== JSON.stringify(this.specs) && this.$route.query.clienttype === 'TELEVISION') {
+      if (this.specsString !== JSON.stringify(this.specs) && this.ticket.service.name === 'TELEVISION') {
         await this.$store.dispatch('tv/saveSpecs', {
           token: this.$store.state.auth.token,
-          client: this.ticket.client,
+          service: this.ticket.service,
           ticketdetail,
           ticket: this.ticket,
           specs: this.specs
@@ -260,18 +260,18 @@ export default {
       }
     },
     generateMessage () {
-      if (this.$route.query.clienttype === 'TELEVISION') {
+      if (this.ticket.service.name === 'TELEVISION') {
         let line1 = ''
         if (this.closeticket) {
           line1 = '✅ CIERRE DE TICKET ✅'
         } else {
           line1 = '✴️ AVANCE DE TICKET ✴️'
         }
-        const line2 = this.ticket.client.code
-        const line3 = this.ticket.client.name
-        const line4 = this.ticket.client.addresses ? this.ticket.client.addresses.at(-1) ? this.ticket.client.addresses.at(-1).address : 'Sin Direccion' : 'No especificado'
-        const line5 = this.ticket.client.addresses ? this.ticket.client.addresses.at(-1) ? this.ticket.client.addresses.at(-1).neighborhood.name : 'Sin Barrio' : 'No especificado'
-        const line6 = this.ticket.client.phone
+        const line2 = this.ticket.service.code
+        const line3 = this.ticket.service.name
+        const line4 = this.ticket.service.addresses ? this.ticket.service.addresses.at(-1) ? this.ticket.service.addresses.at(-1).address : 'Sin Direccion' : 'No especificado'
+        const line5 = this.ticket.service.addresses ? this.ticket.service.addresses.at(-1) ? this.ticket.service.addresses.at(-1).neighborhood.name : 'Sin Barrio' : 'No especificado'
+        const line6 = this.ticket.service.phone
         const line7 = this.ticket.tickettype.name
         const line8 = `Calidad de señal: ${this.specs.tvspectype ? this.specs.tvspectype.name : 'No especificado'}`
         const line10 = `Altos: ${this.specs.high ? this.specs.high : 'No especificado'}`
@@ -295,11 +295,11 @@ export default {
         } else {
           line1 = '✴️ AVANCE DE TICKET ✴️'
         }
-        const line2 = this.ticket.client.code
-        const line3 = this.ticket.client.name
-        const line4 = this.ticket.client.addresses.at(-1).address
-        const line5 = this.ticket.client.addresses.at(-1).neighborhood.name
-        const line6 = this.ticket.client.phone
+        const line2 = this.ticket.service.code
+        const line3 = this.ticket.service.name
+        const line4 = this.ticket.service.addresses.at(-1).address
+        const line5 = this.ticket.service.addresses.at(-1).neighborhood.name
+        const line6 = this.ticket.service.phone
         const line7 = `Potencia Optica: ${this.opticalpower ? this.opticalpower : 'No especificado'}${this.opticalpower ? 'dBm' : ''}`
         const line8 = this.ticket.tickettype.name
         const line9 = this.details
@@ -324,7 +324,7 @@ export default {
         return
       }
 
-      if (this.$route.query.clienttype === 'TELEVISION' && this.$isTechnician()) {
+      if (this.ticket.service.name === 'TELEVISION' && this.$isTechnician()) {
         if (this.closeticket && this.specs.quality === null) {
           this.$toast.error('Seleccione una calidad de señal', { duration: 3000 })
           return
@@ -363,12 +363,12 @@ export default {
               escalated: this.technicianescalated,
               escalatedoffice: this.officeescalated,
               answered: true,
-              opticalpower: this.ticket.client.opticalpower
+              opticalpower: this.ticket.service.opticalpower
             }
           })
         }).then(async (input) => {
           if (input.status === 200) {
-            await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${this.ticket.client.id}`, {
+            await fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${this.ticket.service.id}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
@@ -409,7 +409,7 @@ export default {
                 this.$emit('refreshTickets')
                 this.$toast.success('Ticket Actualizado con Exito', { duration: 4000, position: 'bottom-center' })
                 this.loading = false
-                if (this.$route.query.clienttype === 'INTERNET') {
+                if (this.ticket.service.name === 'INTERNET') {
                   try {
                     this.$simpleTelegramCreateTicketAdvance({ message, telegramBots: this.telegramBots })
                   } catch (error) {

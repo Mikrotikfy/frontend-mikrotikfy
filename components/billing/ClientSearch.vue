@@ -15,7 +15,6 @@
           item-value="id"
           clearable
           hide-details
-          hide-selected
           auto-select-first
           return-object
           solo
@@ -26,15 +25,36 @@
           style="width:100px;max-width: 600px;border-radius: 30px 30px 30px 30px;"
         >
           <template v-slot:item="{ item }">
-            <v-list-item-avatar
-              :color="item.active ? item.indebt ? 'red darkne-4' : 'green darken-4' : item.indebt ? 'gray' : 'red darken-4'"
-              class="text-h5 font-weight-light white--text"
-            >
-              {{ item.active ? item.indebt ? 'M' : 'A' : item.indebt ? 'E' : 'R' }}
-            </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="`${item.code} - ${item.name} - ${processAddresses(item)} - ${processAddressesNeighborhood(item)}`" />
+              <v-list-item-title class="text-caption" v-text="`${item.dni} / ${item.name} / ${item.phone}`" />
             </v-list-item-content>
+            <v-list-item-action class="d-flex flex-row">
+              <v-tooltip
+                v-for="service in item.services"
+                :key="service.id"
+                left
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-chip
+                    label
+                    outlined
+                    class="mr-1"
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="getClientBySearch(service)"
+                  >
+                    <v-icon
+                      :color="service.active ? service.indebt ? 'red darkne-2' : 'green darken-2' : service.indebt ? 'gray' : 'red darken-4'"
+                      class="mr-1"
+                    >
+                      {{ service.name === 'INTERNET' ? 'mdi-wifi' : 'mdi-television' }}
+                    </v-icon>
+                    {{ service.code }} {{ service.balance ? `$${service.balance}` : 'Al Dia' }}
+                  </v-chip>
+                </template>
+                <span>{{ `${processAddresses(service)} ${processAddressesNeighborhood(service)}` }}</span>
+              </v-tooltip>
+            </v-list-item-action>
           </template>
         </v-autocomplete>
       </v-row>
@@ -61,53 +81,36 @@ export default {
   watch: {
     search (val) {
       val && val !== this.select && this.searchInDatabase(val)
-    },
-    select (resultObject) {
-      this.getClientBySearch(resultObject)
     }
   },
   methods: {
-    text: item => `${item.code} - ${item.name} - ${item.dni}`,
+    text: item => `${item.name} - ${item.dni}`,
     searchInDatabase (val) {
       if (val.length < 1) { return }
       this.loadingDataTable = true
       const qs = require('qs')
       const query = qs.stringify({
         filters: {
-          $and: [
+          $or: [
             {
-              city: {
-                name: this.$route.query.city
+              name: {
+                $contains: val
               }
             },
             {
-              clienttype: {
-                name: this.$route.query.clienttype
-              }
+              phone: val
             },
             {
-              $or: [
-                {
-                  name: {
-                    $contains: val
-                  }
-                },
-                {
-                  code: val
-                },
-                {
-                  dni: val
-                }
-              ]
+              dni: val
             }
           ]
         },
-        populate: ['neighborhood', 'plan', 'offer', 'offer.plan', 'offermovements.offer', 'offermovements', 'debtmovements', 'debtmovements.technician']
+        populate: ['services', 'services.service_addresses', 'services.service_addresses.neighborhood', 'services.plan', 'services.offer', 'services.offer.plan', 'services.offermovements.offer', 'services.offermovements', 'services.debtmovements', 'services.debtmovements.technician']
       },
       {
         encodeValuesOnly: true
       })
-      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized-clients?${query}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -115,14 +118,15 @@ export default {
         }
       })
         .then(res => res.clone().json())
-        .then((clients) => {
-          this.searchResults = clients.data
+        .then(({ data: clients }) => {
+          this.searchResults = clients
         })
         .finally(() => {
           this.loadingDataTable = false
         })
     },
     getClientBySearch (search) {
+      console.log(search)
       this.$store.commit('billing/resetInvoices')
       this.$store.commit('billing/resetSelected')
       this.$store.commit('billing/resetCurrentClient')
@@ -141,21 +145,23 @@ export default {
         this.loadingDataTable = false
       }
     },
-    processAddresses (client) {
-      if (!client) { return 'Sin Direccion' }
-      const address = client?.address
-      const addresses = client?.addresses
-      if (!address && addresses.length < 1) { return 'Sin Dirección' }
-      if (address && !addresses) { return address }
-      if (address && addresses.length > 0) { return addresses.at(-1).address }
-      if (!address && addresses.length > 0) { return addresses.at(-1).address }
+    processAddresses (service) {
+      if (!service) { return 'Sin Direccion' }
+      const address = service?.address
+      const serviceAddresses = service?.service_addresses
+      if (address && !serviceAddresses) { return address }
+      if (address && serviceAddresses.length === 0) { return address }
+      if (!address && serviceAddresses.length < 1) { return 'Sin Dirección' }
+      if (address && serviceAddresses.length > 0) { return serviceAddresses.at(-1).address }
+      if (!address && serviceAddresses.length > 0) { return serviceAddresses.at(-1).address }
     },
-    processAddressesNeighborhood (client) {
-      if (!client) { return 'Sin Barrio' }
-      const addresses = client.addresses
-      const neighborhood = client.neighborhood
-      if (!neighborhood && addresses.length < 1) { return 'Sin Barrio' }
+    processAddressesNeighborhood (service) {
+      if (!service) { return 'Sin Barrio' }
+      const addresses = service.service_addresses
+      const neighborhood = service.neighborhood
       if (neighborhood && !addresses) { return neighborhood.name }
+      if (neighborhood && addresses.length === 0) { return neighborhood.name }
+      if (!neighborhood && addresses.length < 1) { return 'Sin Barrio' }
       if (neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
       if (neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
       if (!neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }

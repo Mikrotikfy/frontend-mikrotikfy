@@ -1,7 +1,7 @@
 export const state = () => ({
   client: null,
   activeClients: [],
-  currentClient: null,
+  currentService: null,
   e1: 1,
   invoices: [],
   legalNotes: [],
@@ -129,8 +129,8 @@ export const mutations = {
       throw new Error(`GET BILLING HEADERS BY CLIENT TYPE MUTATE ${error}`)
     }
   },
-  getBillingInfoByClientId (state, data) {
-    state.currentClient = data.client
+  getBillingInfoByServiceId (state, data) {
+    state.currentService = data.service
     state.invoices = data.invoices
     state.legalNotes = data.legalNotes
   },
@@ -328,18 +328,13 @@ export const actions = {
       throw new Error(`GET BILLING INFO BY CLIENT ID ACTION ${error}`)
     }
   },
-  getBillingInfoByClientId ({ commit }, payload) {
+  getBillingInfoByServiceId ({ commit }, payload) {
     try {
       const qs = require('qs')
       const query = qs.stringify({
         populate: [
-          'addresses',
-          'addresses.neighborhood',
-          'neighborhood',
-          'offermovements',
-          'offermovements.offer',
-          'offermovements.offer.plan',
-          'debtmovements',
+          'service_addresses',
+          'service_addresses.neighborhood',
           'plan',
           'offer',
           'city',
@@ -358,7 +353,7 @@ export const actions = {
         encodeValuesOnly: true
       })
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.clientId}?${query}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.serviceId}?${query}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -366,10 +361,10 @@ export const actions = {
           }
         })
           .then(res => res.json())
-          .then((client) => {
-            client.data.invoices = client.data.invoices.filter(invoice => invoice.payed === payload.showPayed)
-            commit('getBillingInfoByClientId', { invoices: client.data.invoices, legalNotes: client.data.legal_notes, showArchive: payload.showArchive, client: client.data })
-            resolve(client.data.invoices)
+          .then(({ data: service }) => {
+            service.invoices = service.invoices.filter(invoice => invoice.payed === payload.showPayed)
+            commit('getBillingInfoByServiceId', { invoices: service.invoices, legalNotes: service.legal_notes, showArchive: payload.showArchive, service })
+            resolve(service.invoices)
           })
       })
     } catch (error) {

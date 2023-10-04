@@ -29,10 +29,10 @@
       >
         <v-card class="rounded-lg">
           <v-card-title class="text-caption">
-            <span v-if="currentClient" ref="clientP" class="hideMe rounded-xl text-body-1">
-              <MainClientControl :client="currentClient" :index="-1" />
+            <span v-if="currentService" ref="clientP" class="hideMe rounded-xl text-body-1">
+              <MainClientControl :service="currentService" :index="-1" />
               <v-chip outlined tag class="text-caption">
-                {{ currentClient.code }} / {{ currentClient.name }} / {{ processAddresses(currentClient) }} / {{ processAddressesNeighborhood(currentClient) }}
+                {{ currentService.code }} / {{ currentService.name }} / {{ processAddresses(currentService) }} / {{ processAddressesNeighborhood(currentService) }}
               </v-chip>
             </span>
             <v-spacer />
@@ -52,7 +52,7 @@
                 </template>
                 <span>Movimientos Generales</span>
               </v-tooltip>
-              <CreateTicket v-if="currentClient" :client="currentClient" :filled="true" />
+              <CreateTicket v-if="currentService" :service="currentService" :filled="true" />
               <BillingPrintMovement />
             </div>
           </v-card-title>
@@ -76,8 +76,8 @@ export default {
     selected () {
       return this.$store.state.billing.selected
     },
-    currentClient () {
-      return this.$store.state.billing.currentClient || null
+    currentService () {
+      return this.$store.state.billing.currentService || null
     },
     showPayed () {
       return this.$store.state.billing.showPayed
@@ -85,10 +85,10 @@ export default {
   },
   watch: {
     '$store.state.billing.refresh' () {
-      this.getBillingInfoByClientId()
+      this.getBillingInfoByServiceId()
     },
     '$store.state.billing.showPayed' () {
-      this.getBillingInfoByClientId()
+      this.getBillingInfoByServiceId()
     },
     '$route' () {
       this.$store.commit('billing/resetInvoices')
@@ -98,33 +98,33 @@ export default {
     }
   },
   mounted () {
-    this.getBillingInfoByClientId()
+    this.getBillingInfoByServiceId()
     this.$store.commit('billing/getCurrentMonth')
   },
   methods: {
-    async getBillingInfoByClientId () {
+    async getBillingInfoByServiceId () {
       if (this.$route.params.search) {
-        await this.$store.dispatch('billing/getBillingInfoByClientId', {
-          clientId: this.$route.params.search,
+        await this.$store.dispatch('billing/getBillingInfoByServiceId', {
+          serviceId: this.$route.params.search,
           showPayed: this.showPayed,
           token: this.$store.state.auth.token
         })
       }
     },
-    processAddresses (client) {
-      if (!client) { return 'Sin Direccion' }
-      const address = client?.address
-      const addresses = client?.addresses
-      if (address && !addresses) { return address }
-      if (address && addresses.length === 0) { return address }
-      if (!address && addresses.length < 1) { return 'Sin Dirección' }
-      if (address && addresses.length > 0) { return addresses.at(-1).address }
-      if (!address && addresses.length > 0) { return addresses.at(-1).address }
+    processAddresses (service) {
+      if (!service) { return 'Sin Direccion' }
+      const address = service?.address
+      const serviceAddresses = service?.service_addresses
+      if (address && !serviceAddresses) { return address }
+      if (address && serviceAddresses.length === 0) { return address }
+      if (!address && serviceAddresses.length < 1) { return 'Sin Dirección' }
+      if (address && serviceAddresses.length > 0) { return serviceAddresses.at(-1).address }
+      if (!address && serviceAddresses.length > 0) { return serviceAddresses.at(-1).address }
     },
-    processAddressesNeighborhood (client) {
-      if (!client) { return 'Sin Barrio' }
-      const addresses = client.addresses
-      const neighborhood = client.neighborhood
+    processAddressesNeighborhood (service) {
+      if (!service) { return 'Sin Barrio' }
+      const addresses = service.service_addresses
+      const neighborhood = service.neighborhood
       if (neighborhood && !addresses) { return neighborhood.name }
       if (neighborhood && addresses.length === 0) { return neighborhood.name }
       if (!neighborhood && addresses.length < 1) { return 'Sin Barrio' }
