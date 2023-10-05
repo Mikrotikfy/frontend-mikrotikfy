@@ -119,7 +119,7 @@ export default {
     async getOffers () {
       this.offers = await this.$store.dispatch('offer/getOffers', {
         token: this.$store.state.auth.token,
-        city: this.$route.query.city,
+        city: this.service.city.name,
         clienttype: this.service.name
       })
     }

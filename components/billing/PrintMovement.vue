@@ -7,14 +7,19 @@
     transition="dialog-bottom-transition"
   >
     <template v-slot:activator="{ on, attrs }">
-      <v-btn
-        class="rounded-xl"
-        color="white black--text"
-        v-bind="attrs"
-        v-on="on"
-      >
-        <v-icon>mdi-printer</v-icon>
-      </v-btn>
+      <v-tooltip top>
+        <template v-slot:activator="{ on: ontooltip, attrs: tooltip }">
+          <v-btn
+            icon
+            color="white black--text"
+            v-bind="{ ...attrs, ...tooltip}"
+            v-on="{...on, ...ontooltip}"
+          >
+            <v-icon>mdi-printer</v-icon>
+          </v-btn>
+        </template>
+        <span>Imprimir Historial</span>
+      </v-tooltip>
     </template>
     <v-card>
       <BillingBillTemplate />

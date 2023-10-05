@@ -1,7 +1,6 @@
 <template>
   <div>
     <MainSearchBox />
-    <MainClientList :search="search" :resetsearch="true" />
   </div>
 </template>
 

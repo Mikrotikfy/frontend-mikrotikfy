@@ -42,11 +42,12 @@
         <template v-slot:[`item.actions`]="props">
           <span class=" d-xl-flex justify-end" :data-index="props.index">
             <BillingPayBill
+              :service="currentService"
               :invoice="props.item"
               :index="props.index"
               :balance="props.item.balance"
               class="mr-2"
-              @updateInvoiceList="updateInvoiceList(props.item)"
+              @updateInvoiceList="updateInvoiceList()"
             />
             <BillingDepositHistory :bill="props.item" class="mr-2" />
           </span>
@@ -80,12 +81,15 @@ export default {
     },
     showPayed () {
       return this.$store.state.billing.showPayed
+    },
+    currentService () {
+      return this.$store.state.billing.currentService
     }
   },
   methods: {
-    updateInvoiceList ({ client }) {
-      this.$store.dispatch('billing/getBillingInfoByClientId', {
-        client,
+    updateInvoiceList () {
+      this.$store.dispatch('billing/getBillingInfoByServiceId', {
+        service: this.currentService.id,
         showArchive: this.$store.state.billing.showArchive,
         token: this.$store.state.auth.token
       })

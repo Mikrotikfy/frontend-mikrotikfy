@@ -1,9 +1,6 @@
 export default function ({ route, redirect, store }) {
   const { query, path, name } = route
-  const { referer, fuzzy } = query
-  const newQuery = {
-    referer: referer || 'none'
-  }
+  const { fuzzy } = query
   const newQueryTickets = {
     view: 'TODOS'
   }
@@ -14,14 +11,14 @@ export default function ({ route, redirect, store }) {
   if (path === '/') {
     if (!store.state.redirected) {
       store.commit('setRedirected', true)
-      redirect({ path: '/tickets', query: newQuery })
+      redirect({ path: '/tickets' })
     }
   }
 
   if ((name !== 'tickets' && name !== 'clients' && name !== 'clients-search') && (!query.clienttype || !query.city)) {
     if (!store.state.redirected) {
       store.commit('setRedirected', true)
-      redirect({ path, query: newQuery })
+      redirect({ path })
     }
   }
 

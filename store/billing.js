@@ -271,10 +271,10 @@ export const actions = {
       throw new Error(`ADD MOVEMENT ACTION ${error}`)
     }
   },
-  updateClientBalance ({ commit }, payload) {
+  updateServiceBalance ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.clientId}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.serviceId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -287,12 +287,12 @@ export const actions = {
           })
         })
           .then(res => res.json())
-          .then(({ data: client }) => {
-            resolve(client)
+          .then(({ data: service }) => {
+            resolve(service)
           })
       })
     } catch (error) {
-      throw new Error(`UPDATE CLIENT BALANCE ACTION ${error}`)
+      throw new Error(`UPDATE SERVICE BALANCE ACTION ${error}`)
     }
   },
   createLegalNote ({ commit }, { token, invoices, debit, city, clienttype, credit, service, biller, concept, connect = false }) {
@@ -337,8 +337,12 @@ export const actions = {
           'service_addresses',
           'service_addresses.neighborhood',
           'plan',
-          'offer',
           'city',
+          'offer',
+          'debtmovements',
+          'debtmovements.technician',
+          'offermovents',
+          'offermovements.offer',
           'invoices',
           'invoices.offer',
           'invoices.invoice_type',

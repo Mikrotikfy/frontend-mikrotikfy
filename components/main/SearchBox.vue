@@ -161,36 +161,22 @@ export default {
       const qs = require('qs')
       const query = qs.stringify({
         filters: {
-          $and: [
+          $or: [
             {
-              city: {
-                name: this.$route.query.city
+              name: {
+                $contains: val
               }
             },
             {
-              clienttype: {
-                name: this.$route.query.clienttype
-              }
+              phone: val
             },
             {
-              $or: [
-                {
-                  name: {
-                    $contains: val
-                  }
-                },
-                {
-                  phone: val
-                },
-                {
-                  dni: val
-                },
-                {
-                  services: {
-                    code: val
-                  }
-                }
-              ]
+              dni: val
+            },
+            {
+              services: {
+                code: val
+              }
             }
           ]
         },
@@ -230,13 +216,13 @@ export default {
       if (this.search) {
         this.loadingDataTable = true
         this.$router.push({
-          path: `/clients/${this.search}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}&referer=${this.$route.query.referer}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
+          path: `/client/${this.search}fuzzy=${this.searchByAddress ? 'true' : 'false'}`
         })
         this.$emit('search', this.search || this.$route.params.search)
         this.loadingDataTable = false
       } else {
         this.$router.push({
-          path: `/clients?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}&referer=${this.$route.query.referer}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
+          path: `/client?fuzzy=${this.searchByAddress ? 'true' : 'false'}`
         })
         this.$emit('search', '')
         this.loadingDataTable = false
@@ -246,13 +232,13 @@ export default {
       if (selectedResult) {
         this.loadingDataTable = true
         this.$router.push({
-          path: `/client/${selectedResult.id}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}&referer=${this.$route.query.referer}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
+          path: `/client/${selectedResult.id}?fuzzy=${this.searchByAddress ? 'true' : 'false'}`
         })
         this.$emit('search', this.searchClientInput || this.$route.params.search)
         this.loadingDataTable = false
       } else {
         this.$router.push({
-          path: `/clients?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}&referer=${this.$route.query.referer}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
+          path: `/client?fuzzy=${this.searchByAddress ? 'true' : 'false'}`
         })
         this.$emit('search', '')
         this.loadingDataTable = false

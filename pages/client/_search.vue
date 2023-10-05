@@ -46,7 +46,7 @@
           <v-card-text>
             <v-list rounded>
               <v-list-item-group
-                v-model="selectedService"
+                v-model="indexOfSelectedService"
                 color="primary"
               >
                 <v-list-item
@@ -60,7 +60,7 @@
                     />
                   </v-list-item-icon>
                   <v-list-item-content>
-                    <v-list-item-title v-text="`${processAddresses(service)} - ${processAddressesNeighborhood(service)}`"></v-list-item-title>
+                    <v-list-item-title class="text-caption" v-text="`${service.city.name} - ${processAddresses(service)} - ${processAddressesNeighborhood(service)}`" />
                   </v-list-item-content>
                 </v-list-item>
               </v-list-item-group>
@@ -81,7 +81,7 @@
         lg="6"
       >
         <v-card-title>Detalles del Servicio {{ currentService.id }}</v-card-title>
-        <v-card v-if="selectedService !== null" class="rounded-xl mb-3">
+        <v-card v-if="indexOfSelectedService !== null" class="rounded-xl mb-3">
           <v-card-text>
             <MainClientStatus
               v-if="currentService.name === 'INTERNET'"
@@ -91,10 +91,23 @@
               :item="currentService"
             />
             <CreateTicket :client="searchResult" :service="currentService" :assignated="$store.state.auth.id" />
+            <v-tooltip top>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  :to="`/billing/${currentService.id}`"
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>mdi-currency-usd</v-icon>
+                </v-btn>
+              </template>
+              <span>Estados de cuenta</span>
+            </v-tooltip>
             <MainClientControl :service="currentService" @refresh="getClientFromSearchParam()" />
           </v-card-text>
         </v-card>
-        <v-card v-if="selectedService !== null" class="rounded-xl">
+        <v-card v-if="indexOfSelectedService !== null" class="rounded-xl">
           <v-card-text>
             <v-form ref="editForm" v-model="valid" @focus="resetSaveStatus">
               <v-row>
@@ -359,7 +372,7 @@ export default {
     return {
       searchResult: null,
       oldClient: null,
-      selectedService: null,
+      indexOfSelectedService: null,
       loadingDataTable: false,
       loading: false,
       saveStatus: 'No hay cambios pendientes...',
@@ -376,7 +389,7 @@ export default {
   },
   computed: {
     currentService () {
-      return this.searchResult.services.at(this.selectedService) || null
+      return this.searchResult.services.at(this.indexOfSelectedService) || null
     },
     cities () {
       return this.$store.state.cities
@@ -400,6 +413,21 @@ export default {
   watch: {
     '$store.state.client.refresh' () {
       this.getClientFromSearchParam()
+    },
+    '$route.query.service' () {
+      this.selectServiceIfQuery()
+    },
+    searchResult () {
+      this.selectServiceIfQuery()
+    },
+    indexOfSelectedService () {
+      this.$router.push({
+        path: this.$route.path,
+        query: {
+          ...this.$route.query,
+          service: this.currentService.id
+        }
+      })
     }
   },
   mounted () {
@@ -407,6 +435,12 @@ export default {
     this.getTickettypes()
   },
   methods: {
+    selectServiceIfQuery () {
+      if (this.$route.query.service) {
+        const service = this.searchResult.services.find(s => s.id === parseInt(this.$route.query.service))
+        this.indexOfSelectedService = this.searchResult.services.indexOf(service)
+      }
+    },
     getTickettypes () {
       this.$store.dispatch('ticket/getTickettypes', {
         city: this.$route.query.city,
@@ -415,8 +449,8 @@ export default {
       })
     },
     testChanges () {
-      const service = this.searchResult.services.at(this.selectedService)
-      const oldService = this.oldClient.services.at(this.selectedService)
+      const service = this.searchResult.services.at(this.indexOfSelectedService)
+      const oldService = this.oldClient.services.at(this.indexOfSelectedService)
       const changes = Object.keys(service).filter(key => service[key] !== oldService[key])
       return changes.length
     },
@@ -427,7 +461,7 @@ export default {
       if (this.testChanges() === 0) { return }
       this.loading = true
       const operator = this.$store.state.auth.id
-      const service = this.searchResult.services.at(this.selectedService)
+      const service = this.searchResult.services.at(this.indexOfSelectedService)
 
       this.saveStatus = 'Guardando...'
 
@@ -473,7 +507,7 @@ export default {
           this.oldClient = JSON.parse(JSON.stringify(clients.data))
           this.searchResult = clients.data
           if (this.searchResult.services.length < 2) {
-            this.selectedService = 0
+            this.indexOfSelectedService = 0
           }
         })
     },

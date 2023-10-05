@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid style="height:calc(100vh - 48px);">
+  <v-container v-if="currentService" fluid style="height:calc(100vh - 48px);">
     <BillingClientSearch />
     <v-row class="mt-0">
       <v-col
@@ -29,21 +29,17 @@
       >
         <v-card class="rounded-lg">
           <v-card-title class="text-caption">
-            <a
-              v-if="currentService"
-              ref="clientP"
-              :to="`/client/${currentService.normalized_client.id}`"
-              outlined
-              tag
+            <nuxt-link
+              :to="`/client/${currentService.normalized_client.id}?service=${currentService.id}`"
               class="hideMe rounded-xl text-body-1 white--text text-weight-bold"
             >
               {{ currentService.code }} / {{ currentService.normalized_client.name }} / {{ processAddresses(currentService) }} / {{ processAddressesNeighborhood(currentService) }}
-            </a>
+            </nuxt-link>
           </v-card-title>
-          <v-card-text v-if="currentService">
+          <v-card-text>
             <div class="d-flex align-center">
               <v-btn
-                rounded="xl"
+                rounded
                 text
                 class="grey darken-2 mr-2"
               >
@@ -55,7 +51,7 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
                     v-bind="attrs"
-                    class="rounded-xl black--text mr-2"
+                    icon
                     :color="$vuetify.theme.dark ? 'white black--text' : 'primary'"
                     :to="`/billing/resume?city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
                     v-on="on"
@@ -65,7 +61,7 @@
                 </template>
                 <span>Movimientos Generales</span>
               </v-tooltip>
-              <CreateTicket v-if="currentService" :service="currentService" :filled="true" />
+              <CreateTicket :service="currentService" :filled="true" />
               <BillingPrintMovement />
               <BillingToggleArchive class="ml-2" />
             </div>
@@ -74,7 +70,7 @@
             <BillingClientDetail />
           </v-card-text>
           <v-card-actions style="position: absolute;bottom: 0;border-top:grey solid 1px;width:100%;" class="d-flex pl-6 grey darken-4">
-            <BillingClientTotal />
+            <BillingClientTotal :service="currentService" />
           </v-card-actions>
         </v-card>
         <BillingClientDiscountAmount :service="currentService" />

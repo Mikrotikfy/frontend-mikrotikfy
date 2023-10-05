@@ -1,13 +1,12 @@
 <template>
   <div>
-    <MainTicketsDx v-if="$route.query.view === 'DX'" />
-    <MainTickets v-else />
+    <MainTickets />
   </div>
 </template>
 
 <script>
 export default {
-  middleware: ['defaultCity', 'authenticated'],
+  middleware: ['authenticated'],
   head () {
     return {
       title: 'Tickets API ARNOP'

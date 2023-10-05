@@ -141,12 +141,12 @@ export default {
       if (search) {
         this.loadingDataTable = true
         this.$router.push({
-          path: `/billing/${search.id}?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}`
+          path: `/billing/${search.id}`
         })
         this.loadingDataTable = false
       } else {
         this.$router.push({
-          path: `/billing?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}`
+          path: '/billing'
         })
         this.loadingDataTable = false
       }

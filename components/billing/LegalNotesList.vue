@@ -11,7 +11,7 @@
       loading-text="Cargando recibos..."
       dense
       hide-default-footer
-      caption="Movimientos"
+      :caption="`Movimientos para servicio ID: ${$route.params.search}`"
       mobile-breakpoint="100"
       @page-count="pageCount = $event"
     >

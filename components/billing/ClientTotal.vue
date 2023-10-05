@@ -12,6 +12,13 @@
 </template>
 <script>
 export default {
+  props: {
+    service: {
+      type: Object,
+      default: () => {},
+      required: true
+    }
+  },
   data () {
     return {}
   },
@@ -30,7 +37,7 @@ export default {
     async totalamount () {
       this.$store.commit('billing/setTotal', this.totalamount)
       if (!this.$store.state.billing.showPayed) {
-        await this.$store.dispatch('billing/updateClientBalance', { balance: this.totalamount, clientId: this.$route.query.selected, token: this.$store.state.auth.token })
+        await this.$store.dispatch('billing/updateServiceBalance', { balance: this.totalamount, serviceId: this.service.id, token: this.$store.state.auth.token })
         this.$store.commit('billing/resetSelected')
         this.$store.commit('billing/refresh')
       }

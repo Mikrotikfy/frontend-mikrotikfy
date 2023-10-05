@@ -4,9 +4,7 @@
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           v-bind="attrs"
-          :text="!filled"
-          :x-small="!filled"
-          :class="filled ? 'rounded-xl black--text mr-2' : ''"
+          icon
           :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
           v-on="on"
           @click="initComponent()"

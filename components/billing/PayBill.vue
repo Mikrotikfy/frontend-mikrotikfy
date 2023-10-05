@@ -55,6 +55,10 @@ export default {
       type: Number,
       required: true
     },
+    service: {
+      type: Object,
+      required: true
+    },
     invoice: {
       type: Object,
       required: true
@@ -98,11 +102,11 @@ export default {
         return
       }
       const legalNote = {
-        city: this.$route.query.city,
-        clienttype: this.$route.query.clienttype,
+        city: this.service.city.name,
+        clienttype: this.service.name,
         token: this.$store.state.auth.token,
         biller: this.$store.state.auth,
-        client: parseInt(this.$route.query.selected),
+        service: this.service.id,
         concept: this.invoice.invoice_type.name === 'FACTURACION MENSUAL' ? this.invoice.details : this.invoice.invoice_type.name,
         debit: 0,
         credit: this.billingInfo.payBill.amount || this.balance,
