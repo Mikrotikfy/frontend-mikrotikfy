@@ -29,7 +29,7 @@
         <v-list-item
           v-for="(item, i) in menu"
           :key="i"
-          :to="`${item.url}?city=${$route.query.city}&clienttype=${$route.query.clienttype}&referer=layout`"
+          :to="`${item.url}?referer=layout`"
           exact
         >
           <v-list-item-action>
@@ -48,21 +48,6 @@
       :class="this.$vuetify.theme.dark ? 'elevation-2 grey darken-4 no-printme' : 'white elevation-2 no-printme'"
     >
       <v-app-bar-nav-icon v-if="!$store.state.isDesktop" @click.stop="drawer = !drawer" />
-      <v-btn
-        v-for="clienttype in $store.state.auth.clienttypes"
-        :key="clienttype.name"
-        class="ml-2"
-        :color="clienttype.name === $route.query.clienttype ? $vuetify.theme.dark ? 'white black--text' : 'primary white--text' : $vuetify.theme.dark ? 'grey darken-1 black--text' : 'grey lighten-2 black--text'"
-        elevation="0"
-        rounded
-        small
-        :to="`${$route.path}?city=${$route.query.city}&clienttype=${clienttype.name}${$route.query.selected ? '&selected=' + $route.query.selected : ''}${$route.name === 'tickets' ? `&view=${$route.query.view}` : ''}${$route.name === 'clients-search' ? '&fuzzy=false' : ''}`"
-      >
-        <v-icon :class="!$store.state.isDesktop ? '' : 'mr-2'">
-          {{ clienttype.icon }}
-        </v-icon>
-        {{ !$store.state.isDesktop ? null : clienttype.name }}
-      </v-btn>
       <v-spacer />
       <span
         v-if="$store.state.isDesktop"
@@ -74,32 +59,6 @@
           Señal: {{ connectionType }}
         </v-chip>
       </span>
-      <div v-if="$store.state.auth && $store.state.isDesktop">
-        <v-btn
-          v-for="city in $store.state.auth.cities"
-          :key="city.name"
-          class="ml-2 rounded-xl elevation-0"
-          small
-          :color="city.name === $route.query.city ? $vuetify.theme.dark ? 'white black--text' : 'primary white--text' : $vuetify.theme.dark ? 'grey darken-1 black--text' : 'grey lighten-2 black--text'"
-          :to="`${$route.path}?city=${city.name}&clienttype=${$route.query.clienttype}${$route.name === 'tickets' ? `&view=${$route.query.view}` : ''}${$route.name === 'clients' || $route.name === 'clients-search' ? '&fuzzy=false' : ''}`"
-        >
-          {{ !$store.state.isDesktop ? city.name.charAt(0) : city.name }}
-        </v-btn>
-      </div>
-      <div v-if="$store.state.auth && !$store.state.isDesktop">
-        <v-select
-          v-model="currentCity"
-          :items="$store.state.auth.cities"
-          class="ml-2 rounded-xl elevation-0"
-          style="max-width:170px;"
-          dense
-          outlined
-          filled
-          hide-details="auto"
-          item-text="name"
-          item-value="id"
-        />
-      </div>
       <v-menu offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -173,7 +132,6 @@ export default {
   middleware: ['authenticated', 'defaultCity'],
   data () {
     return {
-      newCity: null,
       light: null,
       hasPendingChanges: false,
       drawer: false,
@@ -184,17 +142,6 @@ export default {
     }
   },
   computed: {
-    cities () {
-      return this.$store.state.cities
-    },
-    currentCity: {
-      get () {
-        return this.$store.state.cities ? this.$store.state.cities.find(c => c.name === this.$route.query.city) : ''
-      },
-      set (val) {
-        this.newCity = val
-      }
-    },
     role () {
       return this.$store.state.auth.role.name
     },
@@ -203,21 +150,6 @@ export default {
     },
     menu () {
       return this.$store.state.menu.menu
-    }
-  },
-  watch: {
-    newCity (val) {
-      const newCity = this.$store.state.auth.cities.find(c => c.id === val)
-      if (val) {
-        this.$router.push({
-          path: this.$route.path,
-          query: {
-            city: newCity.name,
-            clienttype: this.$route.query.clienttype,
-            fuzzy: false
-          }
-        })
-      }
     }
   },
   destroyed () {
@@ -307,9 +239,6 @@ export default {
       await this.$strapi.update('users', this.$store.state.auth.id, {
         resetSession: false
       })
-    },
-    setLocalStorage () {
-      localStorage.setItem('currentCity', this.$route.query.city)
     },
     comprobeDateToSetChristmasTheme () {
       const date = new Date()

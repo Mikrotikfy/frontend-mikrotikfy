@@ -1,25 +1,13 @@
 export default function ({ route, redirect, store }) {
   const { query, path, name } = route
-  const { clienttype, referer, fuzzy } = query
-  const auth = store.state.auth
-  const userHasPreferredCity = auth && auth.preferredcity
-  let userPreferredCity = null
-  if (userHasPreferredCity) {
-    userPreferredCity = auth.preferredcity.name
-  }
+  const { referer, fuzzy } = query
   const newQuery = {
-    city: userPreferredCity || 'MARIQUITA',
-    clienttype: clienttype || 'INTERNET',
     referer: referer || 'none'
   }
   const newQueryTickets = {
-    city: userPreferredCity || 'MARIQUITA',
-    clienttype: clienttype || 'INTERNET',
     view: 'TODOS'
   }
   const newQueryClients = {
-    city: userPreferredCity || 'MARIQUITA',
-    clienttype: clienttype || 'INTERNET',
     fuzzy: fuzzy || 'false'
   }
 

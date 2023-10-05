@@ -4,7 +4,6 @@
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           v-bind="attrs"
-          small
           rounded
           :color="$vuetify.theme.dark ? service.indebt || !service.active ? 'red lighten-1' : 'white black--text' : 'primary'"
           v-on="on"

@@ -29,15 +29,28 @@
       >
         <v-card class="rounded-lg">
           <v-card-title class="text-caption">
-            <span v-if="currentService" ref="clientP" class="hideMe rounded-xl text-body-1">
-              <MainClientControl :service="currentService" :index="-1" />
-              <v-chip outlined tag class="text-caption">
-                {{ currentService.code }} / {{ currentService.name }} / {{ processAddresses(currentService) }} / {{ processAddressesNeighborhood(currentService) }}
-              </v-chip>
-            </span>
-            <v-spacer />
+            <a
+              v-if="currentService"
+              ref="clientP"
+              :to="`/client/${currentService.normalized_client.id}`"
+              outlined
+              tag
+              class="hideMe rounded-xl text-body-1 white--text text-weight-bold"
+            >
+              {{ currentService.code }} / {{ currentService.normalized_client.name }} / {{ processAddresses(currentService) }} / {{ processAddressesNeighborhood(currentService) }}
+            </a>
+          </v-card-title>
+          <v-card-text v-if="currentService">
             <div class="d-flex align-center">
-              <BillingToggleArchive />
+              <v-btn
+                rounded="xl"
+                text
+                class="grey darken-2 mr-2"
+              >
+                <v-icon class="mr-1">mdi-map-marker-circle</v-icon>
+                {{ currentService.city.name }}
+              </v-btn>
+              <MainClientControl :service="currentService" :index="-1" class="mr-2" />
               <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
@@ -54,8 +67,9 @@
               </v-tooltip>
               <CreateTicket v-if="currentService" :service="currentService" :filled="true" />
               <BillingPrintMovement />
+              <BillingToggleArchive class="ml-2" />
             </div>
-          </v-card-title>
+          </v-card-text>
           <v-card-text style="height: calc(100vh - 549px);overflow-y:scroll;">
             <BillingClientDetail />
           </v-card-text>
@@ -63,8 +77,8 @@
             <BillingClientTotal />
           </v-card-actions>
         </v-card>
-        <BillingClientDiscountAmount />
-        <BillingClientAddAmount />
+        <BillingClientDiscountAmount :service="currentService" />
+        <BillingClientAddAmount :service="currentService" />
       </v-col>
     </v-row>
   </v-container>

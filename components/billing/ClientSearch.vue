@@ -14,6 +14,7 @@
           :item-text="text"
           item-value="id"
           clearable
+          cache-items
           hide-details
           auto-select-first
           return-object
@@ -80,7 +81,12 @@ export default {
   },
   watch: {
     search (val) {
-      val && val !== this.select && this.searchInDatabase(val)
+      val && val !== this.select && val !== null && this.searchInDatabase(val)
+    },
+    select (resultObject) {
+      if (this.search && resultObject.services.length === 1) {
+        this.getClientBySearch(resultObject)
+      }
     }
   },
   methods: {

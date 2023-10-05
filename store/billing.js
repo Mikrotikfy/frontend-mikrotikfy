@@ -172,7 +172,7 @@ export const actions = {
               payed: payload.payed,
               partial: payload.partial,
               indebt: payload.indebt,
-              client: payload.client,
+              service: payload.service,
               invoice_type: payload.invoice_type
             }
           })
@@ -295,7 +295,7 @@ export const actions = {
       throw new Error(`UPDATE CLIENT BALANCE ACTION ${error}`)
     }
   },
-  createLegalNote ({ commit }, { token, invoices, debit, city, clienttype, credit, client, biller, concept, connect = false }) {
+  createLegalNote ({ commit }, { token, invoices, debit, city, clienttype, credit, service, biller, concept, connect = false }) {
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}legal-notes`, {
@@ -311,7 +311,7 @@ export const actions = {
               } : [],
               credit,
               debit,
-              client,
+              service,
               city,
               clienttype,
               concept,
@@ -333,6 +333,7 @@ export const actions = {
       const qs = require('qs')
       const query = qs.stringify({
         populate: [
+          'normalized_client',
           'service_addresses',
           'service_addresses.neighborhood',
           'plan',

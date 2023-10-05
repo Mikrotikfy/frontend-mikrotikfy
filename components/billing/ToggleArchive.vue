@@ -3,6 +3,7 @@
     v-model="togglePayed"
     label="Ver Pagadas"
     class="mr-2"
+    inset
     @change="togglePayedStatus"
   />
 </template>

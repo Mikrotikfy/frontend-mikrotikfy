@@ -22,6 +22,13 @@
 </template>
 <script>
 export default {
+  props: {
+    service: {
+      type: Object,
+      default: () => {},
+      required: true
+    }
+  },
   data () {
     return {
       amount: null,
@@ -126,11 +133,11 @@ export default {
     },
     async saveLegalNoteToDb (invoices, amount) {
       const legalNote = {
-        city: this.$route.query.city,
-        clienttype: this.$route.query.clienttype,
+        city: this.service.city.name,
+        clienttype: this.service.name,
         token: this.$store.state.auth.token,
         biller: this.$store.state.auth,
-        client: parseInt(this.$route.params.search),
+        service: this.service.id,
         debit: 0,
         credit: amount,
         connect: true,
