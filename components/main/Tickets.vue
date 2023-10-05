@@ -9,7 +9,7 @@
           class="rounded-lg elevation-0"
         >
           <v-card-text
-            class="pa-1 d-flex"
+            class="pa-1 d-flex justify-space-between"
           >
             <v-slide-group>
               <v-slide-item
@@ -125,79 +125,81 @@
                 </v-tooltip>
               </v-slide-item>
             </v-slide-group>
-            <v-spacer v-if="$store.state.isDesktop" />
-            <v-tooltip top>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  v-if="$store.state.isDesktop"
-                  v-bind="attrs"
-                  class="my-2 ml-1 mr-1"
-                  color="white black--text"
-                  dark
-                  rounded
-                  small
-                  :disabled="initialLoading"
-                  :loading="initialLoading"
-                  v-on="on"
-                  @click="initIntervalAndGetTickets()"
-                >
-                  <v-icon>mdi-reload</v-icon>
-                </v-btn>
-              </template>
-              <span>Refrescar Tickets</span>
-            </v-tooltip>
-            <v-menu
-              v-if="$store.state.isDesktop"
-              offset-y
-            >
-              <template v-slot:activator="{ on: onMenu }">
-                <v-tooltip top>
-                  <template v-slot:activator="{ on: onTooltip, attrs }">
-                    <v-btn
-                      color="white black--text"
-                      dark
-                      small
-                      class="my-2 mr-1 rounded-xl"
-                      v-bind="attrs"
-                      v-on="{ ...onMenu, ...onTooltip }"
-                    >
-                      <v-icon class="black--text">
-                        mdi-list-status
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Filtros</span>
-                </v-tooltip>
-              </template>
-              <v-list>
-                <v-list-item>
-                  <v-checkbox
-                    v-model="showClosedValue"
-                    class="mr-4"
-                    label="Mostrar cerrados"
-                    @change="initIntervalAndGetTickets()"
-                  />
-                </v-list-item>
-                <v-list-item>
-                  <v-checkbox
-                    v-model="showRetired"
-                    class="mr-4"
-                    label="Mostrar retiros"
-                    @change="initIntervalAndGetTickets()"
-                  />
-                </v-list-item>
-              </v-list>
-            </v-menu>
-            <MiscPrintTicket
-              v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop"
-              :tickets="selected"
-            />
-            <MiscPrintOrder
-              v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop"
-              :tickets="selected"
-            />
-            <MiscCreateBulkTickets v-if="$store.state.isDesktop && selected.length < 1" @endProcess="initIntervalAndGetTickets" />
-            <MiscCloseBulkTickets v-if="$store.state.isDesktop && selected.length > 0" :selected="selected" @endProcess="initIntervalAndGetTickets" />
+            <MiscCustomToggle v-if="$store.state.isDesktop" />
+            <span class="d-flex">
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    v-if="$store.state.isDesktop"
+                    v-bind="attrs"
+                    class="my-2 ml-1 mr-1"
+                    color="white black--text"
+                    dark
+                    rounded
+                    small
+                    :disabled="initialLoading"
+                    :loading="initialLoading"
+                    v-on="on"
+                    @click="initIntervalAndGetTickets()"
+                  >
+                    <v-icon>mdi-reload</v-icon>
+                  </v-btn>
+                </template>
+                <span>Refrescar Tickets</span>
+              </v-tooltip>
+              <v-menu
+                v-if="$store.state.isDesktop"
+                offset-y
+              >
+                <template v-slot:activator="{ on: onMenu }">
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on: onTooltip, attrs }">
+                      <v-btn
+                        color="white black--text"
+                        dark
+                        small
+                        class="my-2 mr-1 rounded-xl"
+                        v-bind="attrs"
+                        v-on="{ ...onMenu, ...onTooltip }"
+                      >
+                        <v-icon class="black--text">
+                          mdi-list-status
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Filtros</span>
+                  </v-tooltip>
+                </template>
+                <v-list>
+                  <v-list-item>
+                    <v-checkbox
+                      v-model="showClosedValue"
+                      class="mr-4"
+                      label="Mostrar cerrados"
+                      @change="initIntervalAndGetTickets()"
+                    />
+                  </v-list-item>
+                  <v-list-item>
+                    <v-checkbox
+                      v-model="showRetired"
+                      class="mr-4"
+                      label="Mostrar retiros"
+                      @change="initIntervalAndGetTickets()"
+                    />
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+              <MiscPrintTicket
+                v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop"
+                :tickets="selected"
+              />
+              <MiscPrintOrder
+                v-if="($store.state.auth.role.name === 'superadmin' || $store.state.auth.role.name === 'admin' || $store.state.auth.role.name === 'biller') && $store.state.isDesktop"
+                :tickets="selected"
+              />
+              <MiscCreateBulkTickets v-if="$store.state.isDesktop && selected.length < 1" @endProcess="initIntervalAndGetTickets" />
+              <MiscCloseBulkTickets v-if="$store.state.isDesktop && selected.length > 0" :selected="selected" @endProcess="initIntervalAndGetTickets" />
+            </span>
           </v-card-text>
         </v-card>
       </v-col>
@@ -462,7 +464,7 @@
                 </div>
               </td>
             </template>
-            <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="{ item, index }">
+            <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="{ item }">
               <div class="d-flex">
                 <v-tooltip v-if="$isAdmin() || $isBiller()" top>
                   <template v-slot:activator="{ on: tooltip }">
@@ -482,12 +484,12 @@
                   </template>
                   <span>Estado de cuenta</span>
                 </v-tooltip>
-                <CreateTicketAdvancev2
+                <!-- <CreateTicketAdvancev2
                   :ticket="item"
                   :ticketindex="index"
                   @updateTicketStatus="updateTicketStatus($event)"
                   @refreshTickets="initIntervalAndGetTickets()"
-                />
+                /> -->
                 <MainClientStatus
                   v-if="clienttype === 'INTERNET'"
                   :name="item.client.name"
@@ -644,13 +646,13 @@
             "
             class="mt-2"
           >
-            <CreateTicketAdvancev2
+            <!-- <CreateTicketAdvancev2
               :ticket="editModalData"
               :ticketindex="editModalData.editindex"
               :block="true"
               @updateTicketStatus="updateTicketStatus($event)"
               @refreshTickets="initIntervalAndGetTickets()"
-            />
+            /> -->
             <MainClientStatus
               v-if="clienttype === 'INTERNET'"
               :block="true"
