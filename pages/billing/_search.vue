@@ -9,7 +9,8 @@
         md="12"
         lg="5"
         xl="5"
-        class="parent-container">
+        class="parent-container"
+      >
         <div class="parent-list">
           <v-card class="rounded-lg">
             <v-card-text>
@@ -43,7 +44,9 @@
                 text
                 class="grey darken-2 mr-2"
               >
-                <v-icon class="mr-1">mdi-map-marker-circle</v-icon>
+                <v-icon class="mr-1">
+                  mdi-map-marker-circle
+                </v-icon>
                 {{ currentService.city.name }}
               </v-btn>
               <MainClientControl :service="currentService" :index="-1" class="mr-2" />

@@ -58,19 +58,19 @@
       <v-divider v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo" class="mb-5" />
       <v-card-text v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo">
         <NapActualInfo
-          :client="ticket.client"
+          :client="ticket.service"
         />
         <NapRemoveDialog
-          v-if="ticket.client.naps.length > 0 && ticket.tickettype.name === 'TRASLADO'"
+          v-if="ticket.service.naps.length > 0 && ticket.tickettype.name === 'TRASLADO'"
           :ticketindex="ticketindex"
           :isticket="true"
-          :client="ticket.client"
+          :client="ticket.service"
           :block="true"
         />
         <NapManageClient
           :isticket="true"
           :ticketindex="ticketindex"
-          :client="ticket.client"
+          :client="ticket.service"
           :block="true"
         />
       </v-card-text>
@@ -297,8 +297,8 @@ export default {
         }
         const line2 = this.ticket.service.code
         const line3 = this.ticket.service.name
-        const line4 = this.ticket.service.addresses.at(-1).address
-        const line5 = this.ticket.service.addresses.at(-1).neighborhood.name
+        const line4 = this.ticket.service.service_addresses.at(-1).address
+        const line5 = this.ticket.service.service_addresses.at(-1).neighborhood.name
         const line6 = this.ticket.service.phone
         const line7 = `Potencia Optica: ${this.opticalpower ? this.opticalpower : 'No especificado'}${this.opticalpower ? 'dBm' : ''}`
         const line8 = this.ticket.tickettype.name

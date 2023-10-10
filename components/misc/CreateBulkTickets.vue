@@ -5,10 +5,8 @@
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           v-bind="attrs"
-          class="my-2 mr-1"
-          color="white black--text"
           dark
-          small
+          icon
           rounded
           v-on="on"
           @click="initComponent()"

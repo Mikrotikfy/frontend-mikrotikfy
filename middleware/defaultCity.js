@@ -1,11 +1,15 @@
 export default function ({ route, redirect, store }) {
   const { query, path, name } = route
-  const { fuzzy } = query
-  const newQueryTickets = {
-    view: 'TODOS'
+  const auth = store.state.auth
+  const userHasPreferredCity = auth && auth.preferredcity
+  let userPreferredCity = null
+  if (userHasPreferredCity) {
+    userPreferredCity = auth.preferredcity.name
   }
-  const newQueryClients = {
-    fuzzy: fuzzy || 'false'
+  const newQueryTickets = {
+    city: userPreferredCity || 'MARIQUITA',
+    clienttype: 'INTERNET',
+    view: 'TODOS'
   }
 
   if (path === '/') {
@@ -15,17 +19,7 @@ export default function ({ route, redirect, store }) {
     }
   }
 
-  if ((name !== 'tickets' && name !== 'clients' && name !== 'clients-search') && (!query.clienttype || !query.city)) {
-    if (!store.state.redirected) {
-      store.commit('setRedirected', true)
-      redirect({ path })
-    }
-  }
-
-  if ((name === 'tickets') && (!query.clienttype || !query.city)) {
-    return redirect({ path, query: newQueryTickets })
-  }
-  if ((name === 'clients-search' || name === 'clients') && (!query.clienttype || !query.city || !query.fuzzy)) {
-    return redirect({ path, query: newQueryClients })
+  if ((name === 'tickets') && (!query.clienttype || !query.city || !query.view)) {
+    redirect({ path, query: newQueryTickets })
   }
 }

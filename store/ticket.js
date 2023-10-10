@@ -137,17 +137,17 @@ export const actions = {
         const query = qs.stringify({
           filters,
           populate: [
-            'client',
-            'client.addresses',
-            'client.addresses.neighborhood',
-            'client.neighborhood',
-            'client.technology',
-            'client.plan',
-            'client.offer',
-            'client.naps',
-            'client.debtmovements',
-            'client.tvspec',
-            'client.tvspec.tvspectype',
+            'service',
+            'service.normalized_client',
+            'service.service_addresses',
+            'service.service_addresses.neighborhood',
+            'service.technology',
+            'service.plan',
+            'service.offer',
+            'service.naps',
+            'service.debtmovements',
+            'service.tvspec',
+            'service.tvspec.tvspectype',
             'city',
             'media',
             'tickettype',
@@ -159,7 +159,7 @@ export const actions = {
           ],
           sort: ['createdAt:desc'],
           pagination: {
-            pageSize: 50
+            pageSize: 100
           }
         },
         {

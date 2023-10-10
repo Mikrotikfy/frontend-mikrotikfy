@@ -5,15 +5,13 @@
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           v-bind="attrs"
-          class="my-2 mr-1"
-          color="white black--text"
+          icon
           dark
-          small
           rounded
           v-on="on"
           @click="printTickets()"
         >
-          <v-icon>mdi-printer</v-icon>
+          <v-icon>mdi-printer-outline</v-icon>
           </v-btn>
         </template>
       <span>Imprimir Lista</span>

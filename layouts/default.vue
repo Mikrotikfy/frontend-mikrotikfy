@@ -43,6 +43,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-app-bar
+      v-if="!$store.state.isDesktop"
       app
       dense
       :class="this.$vuetify.theme.dark ? 'elevation-2 grey darken-4 no-printme' : 'white elevation-2 no-printme'"

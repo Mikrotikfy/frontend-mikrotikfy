@@ -1,7 +1,7 @@
 <template>
   <div class="mt-2">
     <label class="switch btn-color-mode-switch">
-      <input v-model="uwu" id="color_mode" type="checkbox" name="color_mode" value="1">
+      <input id="color_mode" v-model="uwu" type="checkbox" name="color_mode" value="1">
       <label for="color_mode" data-on="TELEVISION" data-off="INTERNET" class="btn-color-mode-switch-inner" />
     </label>
   </div>
@@ -73,8 +73,8 @@ label {
     content: attr(data-off);
     width: 100px;
     height: 26px;
-    background: #1e1e1e;
-    color: #fff;
+    background: #ffffff;
+    color: #1e1e1e;
     border-radius: 26px;
     position: absolute;
     left: 2px;
@@ -111,18 +111,13 @@ label {
 .btn-color-mode-switch input[type="checkbox"]:checked + label.btn-color-mode-switch-inner:after{
     content: attr(data-on);
     left: 98px;
-    background: #1e1e1e;
+    background: #ffffff;
 }
 
 .btn-color-mode-switch input[type="checkbox"]:checked + label.btn-color-mode-switch-inner:before{
     content: attr(data-off);
     right: auto;
     left: 20px;
-}
-
-.btn-color-mode-switch input[type="checkbox"]:checked + label.btn-color-mode-switch-inner{
-    /*background: #66BB6A; */
-    /*color: #fff;*/
 }
 
 .btn-color-mode-switch input[type="checkbox"]:checked ~ .alert{
@@ -154,10 +149,6 @@ label {
 
 .white-preview div.btn-container i.fa-moon-o{
     color: #777;
-}
-
-p.by {
-
 }
 
 p.by a{

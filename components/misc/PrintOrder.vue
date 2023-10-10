@@ -4,11 +4,9 @@
     <template v-slot:activator="{ on, attrs }"> 
       <v-btn
         v-bind="attrs"
-        class="my-2 mr-1"
-        color="white black--text"
         dark
+        icon
         rounded
-        small
         v-on="on"
         @click="printOrder()"
       >

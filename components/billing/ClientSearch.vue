@@ -132,7 +132,6 @@ export default {
         })
     },
     getClientBySearch (search) {
-      console.log(search)
       this.$store.commit('billing/resetInvoices')
       this.$store.commit('billing/resetSelected')
       this.$store.commit('billing/resetCurrentClient')
