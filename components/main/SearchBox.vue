@@ -59,6 +59,7 @@
                     <v-chip
                       label
                       outlined
+                      :to="`/client/${item.id}?service=${service.id}`"
                       class="mr-1"
                       v-bind="attrs"
                       v-on="on"
@@ -232,7 +233,7 @@ export default {
       if (selectedResult) {
         this.loadingDataTable = true
         this.$router.push({
-          path: `/client/${selectedResult.id}?fuzzy=${this.searchByAddress ? 'true' : 'false'}`
+          path: `/client/${selectedResult.id}?service=${this.$route.query.service}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
         })
         this.$emit('search', this.searchClientInput || this.$route.params.search)
         this.loadingDataTable = false

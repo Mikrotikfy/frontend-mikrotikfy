@@ -497,8 +497,7 @@
                   :code="item.service.code"
                 />
                 <MiscTicketHistory
-                  :clientid="item.service.id"
-                  :name="item.service.name"
+                  :service="item.service"
                 />
                 <MiscTicketAdvanceHistory
                   :ticketid="item.id"

@@ -93,14 +93,14 @@ export default {
     itemsPerPage: 5,
     ticketdetails: [],
     headers: [
-      { text: 'Cliente', sortable: true, value: 'ticket.client.name' },
+      { text: 'Cliente', sortable: true, value: 'ticket.service.normalized_client.name' },
       { text: 'Tipo', sortable: true, value: 'ticket.tickettype.name' },
       { text: 'Creado por', sortable: false, value: 'operator.username' },
       { text: 'Detalles', sortable: true, value: 'details' },
       { text: 'Avance creado el', sortable: true, value: 'createdAt' }
     ],
     headersTV: [
-      { text: 'Cliente', sortable: true, value: 'ticket.client.name' },
+      { text: 'Cliente', sortable: true, value: 'ticket.service.normalized_client.name' },
       { text: 'Tipo', sortable: true, value: 'ticket.tickettype.name' },
       { text: 'Creado por', sortable: false, value: 'operator.username' },
       { text: 'Detalles', sortable: true, value: 'details' },
@@ -126,7 +126,8 @@ export default {
         },
         populate: [
           'ticket',
-          'ticket.client',
+          'ticket.service',
+          'ticket.service.normalized_client',
           'ticket.tickettype',
           'tvspec',
           'tvspec.tvspectype',

@@ -44,7 +44,10 @@
         <v-card-title>Servicios del Usuario</v-card-title>
         <v-card class="rounded-xl">
           <v-card-text>
-            <v-list rounded>
+            <h4 v-if="searchResult.services.length === 0">
+              No hay servicios aún...
+            </h4>
+            <v-list v-else rounded>
               <v-list-item-group
                 v-model="indexOfSelectedService"
                 color="primary"
@@ -56,32 +59,37 @@
                   <v-list-item-icon>
                     <v-icon
                       :color="service.active ? service.indebt ? 'red darkne-2' : 'green darken-2' : service.indebt ? 'gray' : 'red darken-4'"
-                      v-text="service.name === 'INTERNET' ? 'mdi-wifi' : 'mdi-television'"
-                    />
+                    >
+                      {{ service.name === 'INTERNET' ? 'mdi-wifi' : 'mdi-television' }}
+                    </v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
-                    <v-list-item-title class="text-caption" v-text="`${service.city.name} - ${processAddresses(service)} - ${processAddressesNeighborhood(service)}`" />
+                    <v-list-item-title class="text-caption">
+                      {{ `${service.city.name} - ${processAddresses(service)} - ${processAddressesNeighborhood(service)}` }}
+                    </v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list-item-group>
             </v-list>
           </v-card-text>
-          <v-divider />
-
-          <v-card-actions class="justify-end">
-            <v-btn color="primary" block dense rounded>
-              Afiliar Nuevo Servicio
-            </v-btn>
-          </v-card-actions>
         </v-card>
+        <v-btn
+          color="primary"
+          block
+          dense
+          rounded
+          class="mt-3"
+        >
+          Afiliar Nuevo Servicio
+        </v-btn>
       </v-col>
       <v-col
         cols="12"
         md="4"
         lg="6"
       >
-        <v-card-title>Detalles del Servicio {{ currentService.id }}</v-card-title>
-        <v-card v-if="indexOfSelectedService !== null" class="rounded-xl mb-3">
+        <v-card-title>Detalles del Servicio {{ currentService ? currentService.id : "N/A" }}</v-card-title>
+        <v-card v-if="indexOfSelectedService !== null && currentService" class="rounded-xl mb-3">
           <v-card-text>
             <MainClientStatus
               v-if="currentService.name === 'INTERNET'"
@@ -107,7 +115,7 @@
             <MainClientControl :service="currentService" @refresh="getClientFromSearchParam()" />
           </v-card-text>
         </v-card>
-        <v-card v-if="indexOfSelectedService !== null" class="rounded-xl">
+        <v-card v-if="indexOfSelectedService !== null && currentService" class="rounded-xl">
           <v-card-text>
             <v-form ref="editForm" v-model="valid" @focus="resetSaveStatus">
               <v-row>
@@ -421,6 +429,7 @@ export default {
       this.selectServiceIfQuery()
     },
     indexOfSelectedService () {
+      if (this.currentService === null) { return }
       this.$router.push({
         path: this.$route.path,
         query: {

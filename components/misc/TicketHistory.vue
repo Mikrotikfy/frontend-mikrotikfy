@@ -56,9 +56,9 @@
                 @page-count="pageCount = $event"
               >
                 <template v-slot:[`item.actions`]="props">
-                  <TicketAdvanceHistory
+                  <MiscTicketAdvanceHistory
                     :ticketid="props.item.id"
-                    :name="props.item.client.name"
+                    :name="props.item.service.normalized_client.name"
                   />
                 </template>
                 <template v-slot:[`item.active`]="props">
@@ -118,20 +118,12 @@
 </template>
 
 <script>
-import TicketAdvanceHistory from '../misc/TicketAdvanceHistory'
 export default {
   name: 'TicketHistory',
-  components: {
-    TicketAdvanceHistory
-  },
   props: {
-    clientid: {
-      type: Number,
-      default: -1
-    },
-    name: {
-      type: String,
-      default: ''
+    service: {
+      type: Object,
+      default: () => ({})
     },
     block: {
       type: Boolean,
@@ -178,9 +170,9 @@ export default {
       const qs = require('qs')
       const query = qs.stringify({
         filters: {
-          client: {
+          service: {
             id: {
-              $eq: this.clientid
+              $eq: this.service.id
             }
           },
           clienttype: {
@@ -188,7 +180,8 @@ export default {
           }
         },
         populate: [
-          'client',
+          'service',
+          'service.normalized_client',
           'tickettype',
           'tvspec',
           'tvspec.tvspectype',
