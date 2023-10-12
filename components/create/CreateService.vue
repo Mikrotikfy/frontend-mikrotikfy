@@ -288,18 +288,6 @@
           <v-row>
             <v-col>
               <v-text-field
-                ref="email"
-                v-model="Client.email"
-                label="Correo Electronico"
-                required
-                :rules="email"
-                outlined
-                dense
-                hide-details="auto"
-              />
-            </v-col>
-            <v-col>
-              <v-text-field
                 v-model="Client.stratum"
                 label="Estrato"
                 outlined
@@ -395,7 +383,6 @@ export default {
         wifi_ssid: '',
         wifi_password: '',
         technology: { id: 2, name: 'FTTH' },
-        email: null,
         newModel: 1,
         ipmodel: 0,
         stratum: 0
@@ -528,13 +515,13 @@ export default {
         (
           this.selectedClienttype.name === 'INTERNET' &&
           (
-            this.Client.code === '' || this.Client.offer === null || this.Client.name === '' || this.Client.neighborhood === null || this.Client.email === null
+            this.Client.code === '' || this.Client.offer === null || this.Client.name === '' || this.Client.neighborhood === null
           )
         ) ||
         (
           this.selectedClienttype.name === 'TELEVISION' &&
           (
-            this.Client.code === '' || this.Client.name === '' || this.Client.neighborhood === null || this.Client.email === null
+            this.Client.code === '' || this.Client.name === '' || this.Client.neighborhood === null
           )
         )
       ) {

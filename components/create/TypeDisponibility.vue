@@ -42,7 +42,7 @@ export default {
   },
   methods: {
     nextE1 () {
-      this.$store.commit('create/sete1', 3)
+      this.$store.commit('create/sete1', 2)
     }
   }
 }

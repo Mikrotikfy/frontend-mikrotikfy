@@ -53,7 +53,7 @@ export default {
       }
       this.$store.commit('create/randomNumber', this.randomNumber)
       this.$store.commit('create/setClientNumber', this.phone)
-      this.$store.commit('create/sete1', 4)
+      this.$store.commit('create/sete1', 3)
       this.loading = false
     },
     random6Digits () {
