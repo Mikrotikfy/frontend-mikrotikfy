@@ -32,31 +32,31 @@ export default {
         this.$toast.error('No hay clientes seleccionados', { duration: 3000 })
         return
       }
-      const clients = []
+      const services = []
       if (this.$route.query.clienttype === 'INTERNET') {
         this.tickets.map((ticket) => {
-          clients.push({
-            id: ticket.client.id,
-            name: ticket.client.name,
-            address: ticket.client.address,
-            addresses: ticket.client.addresses,
-            phone: ticket.client.phone,
-            plan: ticket.client.plan,
-            technology: ticket.client.technology,
-            stratum: ticket.client.stratum,
+          services.push({
+            id: ticket.service.id,
+            name: ticket.service.normalized_client.name,
+            address: ticket.service.service_addresses,
+            addresses: ticket.service.service_addresses,
+            phone: ticket.service.normalized_client.phone,
+            plan: ticket.service.plan,
+            technology: ticket.service.technology,
+            stratum: ticket.service.stratum,
             tickettype: ticket.tickettype.name,
             createdAt: ticket.createdAt
           })
         })
       } else {
         this.tickets.map((ticket) => {
-          clients.push({
-            id: ticket.client.id,
-            name: ticket.client.name,
-            address: ticket.client.address,
-            addresses: ticket.client.addresses,
-            phone: ticket.client.phone,
-            stratum: ticket.client.stratum,
+          services.push({
+            id: ticket.service.id,
+            name: ticket.service.normalized_client.name,
+            address: ticket.service.service_addresses,
+            addresses: ticket.service.service_addresses,
+            phone: ticket.service.normalized_client.phone,
+            stratum: ticket.service.stratum,
             tickettype: ticket.tickettype.name,
             createdAt: ticket.createdAt
           })
@@ -64,12 +64,12 @@ export default {
       }
       if (this.$route.query.clienttype === 'INTERNET') {
         localStorage.removeItem('clientsInfo')
-        localStorage.setItem('clientsInfo', JSON.stringify(clients))
+        localStorage.setItem('clientsInfo', JSON.stringify(services))
         const routeData = this.$router.resolve({ name: 'format' })
         window.open(routeData.href, '_blank')
       } else {
         localStorage.removeItem('clientsInfo')
-        localStorage.setItem('clientsInfo', JSON.stringify(clients))
+        localStorage.setItem('clientsInfo', JSON.stringify(services))
         const routeData = this.$router.resolve({ name: 'tvformat' })
         window.open(routeData.href, '_blank')
       }

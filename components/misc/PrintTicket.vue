@@ -39,40 +39,40 @@ export default {
         this.$toast.error('No hay clientes seleccionados', { duration: 3000 })
         return
       }
-      const clients = []
+      const services = []
       if (this.$route.query.clienttype === 'INTERNET') {
         this.tickets.map((ticket) => {
-          clients.push({
+          services.push({
             tickettype: ticket.tickettype,
             details: ticket.details,
-            code: ticket.client.code,
-            name: ticket.client.name,
-            addresses: ticket.client.addresses,
-            phone: ticket.client.phone,
-            id: ticket.client.id
+            code: ticket.service.code,
+            name: ticket.service.normalized_client.name,
+            addresses: ticket.service.service_addresses,
+            phone: ticket.service.normalized_client.phone,
+            id: ticket.service.id
           })
         })
       } else {
         this.tickets.map((ticket) => {
-          clients.push({
+          services.push({
             tickettype: ticket.tickettype,
             details: ticket.details,
-            code: ticket.client.code,
-            name: ticket.client.name,
-            addresses: ticket.client.addresses,
-            phone: ticket.client.phone,
-            id: ticket.client.id
+            code: ticket.service.code,
+            name: ticket.service.normalized_client.name,
+            addresses: ticket.service.addresses,
+            phone: ticket.service.normalized_client.phone,
+            id: ticket.service.id
           })
         })
       }
       if (this.$route.query.clienttype === 'INTERNET') {
         localStorage.removeItem('ticketListForPrint')
-        localStorage.setItem('ticketListForPrint', JSON.stringify(clients))
+        localStorage.setItem('ticketListForPrint', JSON.stringify(services))
         const routeData = this.$router.resolve({ name: 'ticketformat', query: { clienttype: this.$route.query.clienttype } })
         window.open(routeData.href, '_blank')
       } else {
         localStorage.removeItem('ticketListForPrint')
-        localStorage.setItem('ticketListForPrint', JSON.stringify(clients))
+        localStorage.setItem('ticketListForPrint', JSON.stringify(services))
         const routeData = this.$router.resolve({ name: 'ticketformat', query: { clienttype: this.$route.query.clienttype } })
         window.open(routeData.href, '_blank')
       }

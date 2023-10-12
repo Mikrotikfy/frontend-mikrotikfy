@@ -10,9 +10,9 @@
       {{ createdMessage }}
     </v-alert>
     <v-card-title>
-      {{ $store.state.nap.naps.length }} Naps en {{ currentCity.name }}
+      {{napList.length}} Naps en {{ selectedCity ? selectedCity.name : 'N/A' }}
     </v-card-title>
-    <v-card-text>
+    <v-card-text class="d-flex">
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
@@ -20,7 +20,23 @@
         single-line
         outlined
         hide-details="auto"
+        class="mr-2"
       />
+      <v-select
+        v-model="selectedCity"
+        :items="cities"
+        label="Filtrar Ciudad"
+        item-value="id"
+        item-text="name"
+        return-object
+        outlined
+        hide-details="auto"
+        @change="changeCity(selectedCity)"
+      >
+        <template v-slot:item="{ item }">
+          {{ item.name }}
+        </template>
+      </v-select>
     </v-card-text>
     <v-card-text>
       <client-only>
@@ -134,6 +150,7 @@ export default {
     newCode: '',
     createdMessage: '',
     alertBox: false,
+    selectedCity: null,
     alertBoxColor: '',
     isSubmitting: false,
     page: 0,
@@ -148,9 +165,8 @@ export default {
     ]
   }),
   computed: {
-    currentCity () {
-      // eslint-disable-next-line eqeqeq
-      return this.$store.state.cities ? this.$store.state.cities.find(c => c.name == this.$route.query.city) : ''
+    cities () {
+      return this.$store.state.auth.cities
     },
     napList () {
       return this.$store.state.nap.naps
@@ -165,6 +181,7 @@ export default {
     }
   },
   mounted () {
+    this.setQueryCity()
     this.getNaps()
   },
   methods: {
@@ -173,6 +190,14 @@ export default {
         return 'N/A'
       } else {
         return ports
+      }
+    },
+    changeCity (city) {
+      this.$router.push({ query: { city: city.name } })
+    },
+    setQueryCity () {
+      if (this.$route.query.city) {
+        this.selectedCity = this.$store.state.auth.cities.find(c => c.name === this.$route.query.city)
       }
     },
     getNaps () {

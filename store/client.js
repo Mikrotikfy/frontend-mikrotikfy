@@ -286,14 +286,14 @@ export const actions = {
               active: true,
               escalated: false,
               answered: false,
-              city: payload.city,
-              client: payload.client.id,
+              city: payload.city.id,
+              service: payload.service.id,
               tickettype: 36,
               assignated: 22,
               clienttype: payload.clienttype.id,
               channel: 'office',
               details: `
-                CX: ${payload.client.address} ${payload.neighborhood.name}
+                CX: ${payload.address} ${payload.neighborhood.name}
               `
             }
           })
@@ -381,7 +381,7 @@ export const actions = {
   createAddress ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}addresses`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}service-addresses`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -391,7 +391,7 @@ export const actions = {
             data: {
               address: payload.address,
               neighborhood: payload.neighborhood.id,
-              client: payload.client.id
+              service: payload.service.id
             }
           })
         }).then((input) => {

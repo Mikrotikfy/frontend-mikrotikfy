@@ -1,7 +1,7 @@
 <template>
   <div v-if="Object.keys(napdata).length > 0">
     <v-card-title>
-      {{ napClientsList.length }} Clientes en Nap {{ napdata.code }}
+      {{ napServiceList.length }} Servicios en Nap {{ napdata.code }}
     </v-card-title>
     <v-card-text>
       <v-alert
@@ -15,15 +15,20 @@
       </v-alert>
       <client-only>
         <v-data-table
-          :headers="headersNapClientList"
-          :items="napClientsList"
+          :headers="headersNapServiceList"
+          :items="napServiceList"
           :page.sync="page"
           class="elevation-1"
-          no-data-text="No hay clientes que mostrar"
+          no-data-text="No hay servicios que mostrar"
           mobile-breakpoint="100"
           hide-default-footer
           @page-count="pageCount = $event"
         >
+          <template v-slot:[`item.service_addresses.address`]="{ item }">
+            <span>
+              {{ item.service_addresses.at(-1).address }}
+            </span>
+          </template>
           <template v-slot:[`item.active`]="{ item }">
             <v-chip
               :color="item.active ? item.indebt ? 'red darken-4' : 'green darken-3' : item.indebt ? 'red darken-4' : 'grey darken-1'"
@@ -36,7 +41,7 @@
               <v-btn
                 icon
                 small
-                @click="removeClient(item)"
+                @click="removeService(item)"
               >
                 <v-icon>mdi-arrow-down</v-icon>
               </v-btn>
@@ -56,27 +61,37 @@
         prepend-icon="mdi-magnify"
         filled
         rounded
-        @keyup.enter="searchClient"
+        @keyup.enter="searchService"
       />
       <div v-if="showSearchResult">
         <client-only>
           <v-data-table
-            :headers="headersClientList"
-            :items="clientList"
+            :headers="headersServiceList"
+            :items="serviceList"
             :page.sync="page2"
-            no-data-text="No han cargando los clientes"
-            no-results-text="Error al cargar los clientes"
+            no-data-text="No han cargando los servicios"
+            no-results-text="Error al cargar los servicios"
             mobile-breakpoint="100"
             class="elevation-1"
             hide-default-footer
             @page-count="pageCount2 = $event"
           >
+            <template v-slot:[`item.service_addresses.address`]="{ item }">
+              <span>
+                {{ item.service_addresses.at(-1).address }}
+              </span>
+            </template>
+            <template v-slot:[`item.service_addresses.neighborhood.name`]="{ item }">
+              <span>
+                {{ item.service_addresses.at(-1).neighborhood.name }}
+              </span>
+            </template>
             <template v-slot:[`item.actions`]="{ item }">
               <div style="white-space:nowrap">
                 <v-btn
                   icon
                   small
-                  @click="addClient(item)"
+                  @click="addService(item)"
                 >
                   <v-icon>mdi-arrow-up</v-icon>
                 </v-btn>
@@ -104,26 +119,26 @@ export default {
     return {
       codeSearch: '',
       loading: false,
-      napClientsList: [],
-      clientList: [],
+      napServiceList: [],
+      serviceList: [],
       showSearchResult: false,
       page: 0,
       pageCount: 0,
       page2: 0,
       pageCount2: 0,
-      headersNapClientList: [
+      headersNapServiceList: [
         { text: 'Codigo', value: 'code' },
-        { text: 'Cedula', value: 'dni' },
-        { text: 'Nombre', value: 'name' },
-        { text: 'Direccion', value: 'address' },
+        { text: 'Cedula', value: 'normalized_client.dni' },
+        { text: 'Nombre', value: 'normalized_client.name' },
+        { text: 'Direccion', value: 'service_addresses.address' },
         { text: 'Estado', value: 'active' },
         { text: 'Acciones', value: 'actions' }
       ],
-      headersClientList: [
+      headersServiceList: [
         { text: 'Codigo', value: 'code' },
-        { text: 'Nombre', value: 'name' },
-        { text: 'Barrio', value: 'neighborhood.name' },
-        { text: 'Direccion', value: 'address' },
+        { text: 'Nombre', value: 'normalized_client.name' },
+        { text: 'Barrio', value: 'service_addresses.neighborhood.name' },
+        { text: 'Direccion', value: 'service_addresses.address' },
         { text: 'Acciones', value: 'actions' }
       ],
       createdMessage: '',
@@ -133,19 +148,19 @@ export default {
   },
   watch: {
     napdata () {
-      this.getNapClients()
+      this.getNapServices()
     },
     '$route.query.city' () {
-      this.napClientsList = []
-      this.clientList = []
+      this.napServiceList = []
+      this.serviceList = []
     }
   },
   methods: {
-    async getNapClients () {
+    async getNapServices () {
       this.loading = true
       const qs = require('qs')
       const query = qs.stringify({
-        populate: ['clients']
+        populate: ['services', 'services.normalized_client', 'services.service_addresses', 'services.service_addresses.neighborhood']
       },
       {
         encodeValuesOnly: true
@@ -157,12 +172,12 @@ export default {
         }
       })
         .then(res => res.json())
-        .then((naps) => {
-          this.napClientsList = naps.data.clients
+        .then(({ data: naps }) => {
+          this.napServiceList = naps.services
           this.loading = false
         })
     },
-    async searchClient () {
+    async searchService () {
       this.showSearchResult = true
       this.alertBox = false
       if (this.codeSearch) {
@@ -174,27 +189,27 @@ export default {
               name: this.$route.query.city
             }
           },
-          populate: ['neighborhood']
+          populate: ['service_addresses', 'service_addresses.neighborhood', 'normalized_client']
         },
         {
           encodeValuesOnly: true
         })
-        await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+        await fetch(`${this.$config.API_STRAPI_ENDPOINT}services?${query}`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${this.$store.state.auth.token}`
           }
         })
           .then(res => res.json())
-          .then((clients) => {
-            this.clientList = clients.data
+          .then(({ data: services }) => {
+            this.serviceList = services
           })
       }
     },
-    async addClient (client) {
+    async addService (service) {
       this.loading = true
-      const clientExist = this.napClientsList.find(item => item.id === client.id)
-      if (!clientExist) {
+      const serviceExist = this.napServiceList.find(item => item.id === service.id)
+      if (!serviceExist) {
         await fetch(`${this.$config.API_STRAPI_ENDPOINT}naps/${this.napdata.id}`, {
           method: 'PUT',
           headers: {
@@ -203,16 +218,16 @@ export default {
           },
           body: JSON.stringify({
             data: {
-              clients: [
-                ...this.napClientsList,
-                client
+              services: [
+                ...this.napServiceList,
+                service
               ]
             }
           })
         }).then((input) => {
           if (input.status === 200) {
-            this.getNapClients()
-            this.napClientsList.push(client)
+            this.getNapServices()
+            this.napServiceList.push(service)
             this.loading = false
           }
         })
@@ -220,10 +235,10 @@ export default {
         this.loading = false
         this.alertBox = true
         this.alertBoxColor = 'error'
-        this.createdMessage = 'El cliente ya existe en el Nap'
+        this.createdMessage = 'El servicio ya existe en el Nap'
       }
     },
-    removeClient (client) {
+    removeService (service) {
       this.loading = true
       fetch(`${this.$config.API_STRAPI_ENDPOINT}naps/${this.napdata.id}`, {
         method: 'PUT',
@@ -233,12 +248,12 @@ export default {
         },
         body: JSON.stringify({
           data: {
-            clients: this.napClientsList.filter(item => item.id !== client.id)
+            services: this.napServiceList.filter(item => item.id !== service.id)
           }
         })
       }).then((input) => {
         if (input.status === 200) {
-          this.getNapClients()
+          this.getNapServices()
           this.loading = false
         }
       })

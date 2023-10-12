@@ -408,7 +408,7 @@
               <strong>{{ processAddressesNeighborhood(item) }}</strong>
             </template>
             <template v-slot:[`item.service.code`]="props">
-              <nuxt-link :to="`/client/${props.item.service.code === 'C' ? props.item.service.id : props.item.service.dni}`" class="blue--text">
+              <nuxt-link :to="`/client/${props.item.service.normalized_client.id}`" class="blue--text">
                 <v-chip label outlined small>
                   {{ props.item.service.code }}
                 </v-chip>

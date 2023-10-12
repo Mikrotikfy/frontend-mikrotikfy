@@ -11,6 +11,9 @@ export default function ({ route, redirect, store }) {
     clienttype: 'INTERNET',
     view: 'TODOS'
   }
+  const newQueryNap = {
+    city: userPreferredCity || 'MARIQUITA'
+  }
 
   if (path === '/') {
     if (!store.state.redirected) {
@@ -21,5 +24,8 @@ export default function ({ route, redirect, store }) {
 
   if ((name === 'tickets') && (!query.clienttype || !query.city || !query.view)) {
     redirect({ path, query: newQueryTickets })
+  }
+  if ((name === 'nap') && (!query.city)) {
+    redirect({ path, query: newQueryNap })
   }
 }

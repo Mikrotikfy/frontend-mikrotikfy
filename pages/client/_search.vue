@@ -79,6 +79,7 @@
           dense
           rounded
           class="mt-3"
+          :to="`/client/create?client=${searchResult.id}&name=${searchResult.name}`"
         >
           Afiliar Nuevo Servicio
         </v-btn>
