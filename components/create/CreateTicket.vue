@@ -657,6 +657,19 @@ export default {
         this.$toast.error('El cliente tiene un ticket abierto, por favor cierra el ticket antes de continuar', { duration: 5000 })
         return
       }
+      const payload = {
+        active: true,
+        service: this.ticketPayload.service,
+        channel: this.ticketPayload.type && this.ticketPayload.type.name === 'TRASLADO' ? 'office' : this.ticketPayload.channel,
+        reboot: this.ticketPayload.reboot,
+        network: this.ticketPayload.network,
+        on: this.ticketPayload.on,
+        city: this.ticketPayload.city,
+        tickettype: this.ticketPayload.type.id,
+        clienttype: this.service.name === 'INTERNET' ? 1 : 2,
+        assignated: this.$store.state.auth.id,
+        details: this.ticketPayload.details
+      }
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets`, {
         method: 'POST',
         headers: {
@@ -664,19 +677,7 @@ export default {
           Authorization: `Bearer ${this.$store.state.auth.token}`
         },
         body: JSON.stringify({
-          data: {
-            active: true,
-            service: this.ticketPayload.service,
-            channel: this.ticketPayload.type && this.ticketPayload.type.name === 'TRASLADO' ? 'office' : this.ticketPayload.channel,
-            reboot: this.ticketPayload.reboot,
-            network: this.ticketPayload.network,
-            on: this.ticketPayload.on,
-            city: this.ticketPayload.city,
-            tickettype: this.ticketPayload.type.id,
-            clienttype: this.service.name === 'INTERNET' ? 1 : 0,
-            assignated: this.$store.state.auth.id,
-            details: this.ticketPayload.details
-          }
+          data: payload
         })
       }).then((input) => {
         if (input.status === 200) {

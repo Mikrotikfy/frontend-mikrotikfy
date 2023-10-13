@@ -9,11 +9,11 @@
           v-on="on"
           @click="initComponent()"
         >
-          <span v-if="$route.query.clienttype === 'INTERNET'">
-            {{ !service.active ? 'RETIRADO' : service.indebt ? 'EN MORA' : `${service.offer ? '$' + Number(service.offer.price).toLocaleString('es') : 'NO DEF.'}` }}
+          <span v-if="service.name === 'INTERNET'">
+            {{ !service.active ? 'RETIRADO' : service.indebt ? 'EN MORA' : `${service.offer ? service.offer.plan.name : 'NO DEF.'}` }}
           </span>
           <span v-else>
-            {{ !service.active ? 'RETIRADO' : service.indebt ? 'EN MORA' : `${service.offer ? '$' + Number(service.offer.price).toLocaleString('es') : 'NO DEF.'}` }}
+            {{ !service.active ? 'RETIRADO' : service.indebt ? 'EN MORA' : `${service.offer ? 'AL DIA' : 'NO DEF.'}` }}
           </span>
         </v-btn>
       </template>

@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="currentService" fluid style="height:calc(100vh - 48px);">
+  <v-container v-if="currentService" fluid  >
     <BillingClientSearch />
     <v-row class="mt-0">
       <v-col
@@ -11,13 +11,7 @@
         xl="5"
         class="parent-container"
       >
-        <div class="parent-list">
-          <v-card class="rounded-lg">
-            <v-card-text>
-              <BillingLegalNotesList />
-            </v-card-text>
-          </v-card>
-        </div>
+        <BillingLegalNotesList />
       </v-col>
       <v-col
         cols="12"
@@ -38,7 +32,7 @@
             </nuxt-link>
           </v-card-title>
           <v-card-text>
-            <div class="d-flex align-center">
+            <div>
               <v-btn
                 rounded
                 text
@@ -66,10 +60,11 @@
               </v-tooltip>
               <CreateTicket :service="currentService" :filled="true" />
               <BillingPrintMovement />
+              <BillingClientAddAmount :service="currentService" />
               <BillingToggleArchive class="ml-2" />
             </div>
           </v-card-text>
-          <v-card-text style="height: calc(100vh - 549px);overflow-y:scroll;">
+          <v-card-text style="height: calc(100vh - 376px);overflow-y:scroll;">
             <BillingClientDetail />
           </v-card-text>
           <v-card-actions style="position: absolute;bottom: 0;border-top:grey solid 1px;width:100%;" class="d-flex pl-6 grey darken-4">
@@ -77,7 +72,6 @@
           </v-card-actions>
         </v-card>
         <BillingClientDiscountAmount :service="currentService" />
-        <BillingClientAddAmount :service="currentService" />
       </v-col>
     </v-row>
   </v-container>
@@ -154,7 +148,6 @@ export default {
   display: grid;
   grid-auto-rows: 8fr 1fr 1fr 1fr;
   grid-gap: 10px;
-  max-height: calc(100vh - 168px);
 }
 .parent-list {
   display: grid;

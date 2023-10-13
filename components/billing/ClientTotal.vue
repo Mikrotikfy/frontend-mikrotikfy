@@ -42,6 +42,9 @@ export default {
         this.$store.commit('billing/refresh')
       }
     }
+  },
+  mounted () {
+    this.$store.commit('billing/setTotal', this.totalamount)
   }
 }
 </script>

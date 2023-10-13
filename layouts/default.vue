@@ -3,16 +3,6 @@
     class="text-body-2"
     :style="this.$vuetify.theme.dark ? 'background-color:rgb(20 20 20 / 68%);' : 'background-color:#fafafa;'"
   >
-    <v-sheet
-      v-if="!$store.state.isDesktop"
-      style="position:absolute;right:0;bottom:0;z-index:99;padding-bottom:5px;"
-      width="100%"
-      height="20"
-      class="text-caption text-center"
-      :color="connectionTypeColor"
-    >
-      Señal: {{ connectionType }}
-    </v-sheet>
     <v-navigation-drawer
       v-model="drawer"
       class="no-printme"

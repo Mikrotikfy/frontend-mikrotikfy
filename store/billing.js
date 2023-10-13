@@ -339,6 +339,7 @@ export const actions = {
           'plan',
           'city',
           'offer',
+          'offer.plan',
           'debtmovements',
           'debtmovements.technician',
           'offermovents',

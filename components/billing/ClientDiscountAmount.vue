@@ -1,6 +1,6 @@
 <template>
   <v-card class="mt-2 rounded-lg">
-    <v-card-text class="d-flex">
+    <v-card-text>
       <v-text-field
         v-model.number="amount"
         type="number"

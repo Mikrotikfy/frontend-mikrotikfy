@@ -16,7 +16,7 @@
         loading-text="Cargando información de clientes..."
         dense
         hide-default-footer
-        mobile-breakpoint="100"
+        mobile-breakpoint="600"
         @page-count="pageCount = $event"
         @current-items="$vuetify.goTo(0)"
       >

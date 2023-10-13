@@ -138,7 +138,7 @@ export default {
         active: payload.active
       })
       await this.$store.dispatch('offer/setNewDebt', {
-        city: this.city,
+        city: this.service.city,
         service: this.service,
         token: this.$store.state.auth.token,
         technician: this.$store.state.auth,

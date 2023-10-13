@@ -11,22 +11,12 @@
         md="4"
         lg="3"
       >
-        <v-card-title>Informacion del Usuario</v-card-title>
+        <v-card-title><strong>{{ searchResult.name }}</strong></v-card-title>
         <v-card
           class="rounded-xl"
         >
           <v-list-item two-line>
             <v-list-item-content>
-              <v-list-item-title class="text-h5">
-                {{ searchResult.name }}
-              </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item two-line>
-            <v-list-item-content>
-              <v-list-item-title>
-                Detalle datos del cliente
-              </v-list-item-title>
               <v-list-item-subtitle>Documento de Identidad: <strong>{{ searchResult.dni }}</strong></v-list-item-subtitle>
               <v-list-item-subtitle>Celular / Telefono: <strong>{{ searchResult.phone }}</strong></v-list-item-subtitle>
               <v-list-item-subtitle>Correo Electrónico: <strong>{{ searchResult.email }}</strong></v-list-item-subtitle>
@@ -89,7 +79,7 @@
         md="4"
         lg="6"
       >
-        <v-card-title>Editar Detalles</v-card-title>
+        <v-card-title>Gestión De Información y Controles</v-card-title>
         <v-card v-if="indexOfSelectedService !== null && currentService" class="rounded-xl mb-3">
           <v-card-text>
             <MainClientStatus
@@ -104,11 +94,14 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   :to="`/billing/${currentService.id}`"
-                  icon
+                  rounded
+                  class="mr-1 ml-1"
+                  :color="$vuetify.theme.dark ? currentService.indebt || !currentService.active ? 'red lighten-1' : 'white black--text' : 'primary'"
                   v-bind="attrs"
                   v-on="on"
                 >
                   <v-icon>mdi-currency-usd</v-icon>
+                  {{ Number(currentService.balance).toLocaleString('es') }}
                 </v-btn>
               </template>
               <span>Estados de cuenta</span>
@@ -408,7 +401,7 @@
           </v-card-text>
           <v-divider />
           <v-card-text class="d-flex align-center mt-5">
-            <caption ref="saveStatusText" class="font-italic">
+            <caption ref="saveStatusText" class="font-italic align-self-end">
               {{ saveStatus }}
             </caption>
             <v-spacer />

@@ -11,7 +11,29 @@
               <v-row>
                 <v-col
                   cols="12"
-                  sm="4"
+                  sm="3"
+                >
+                  <v-select
+                    v-model="selectedCity"
+                    :items="cities"
+                    label="Filtrar Ciudad"
+                    item-value="id"
+                    item-text="name"
+                    return-object
+                    rounded
+                    dense
+                    outlined
+                    hide-details="auto"
+                    @change="changeCity(selectedCity)"
+                  >
+                    <template v-slot:item="{ item }">
+                      {{ item.name }}
+                    </template>
+                  </v-select>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="3"
                 >
                   <v-text-field
                     ref="startDate"
@@ -19,6 +41,7 @@
                     label="Inicio"
                     type="date"
                     outlined
+                    dense
                     :rules="dateRules"
                     class="rounded-xl"
                     hide-details="auto"
@@ -28,7 +51,7 @@
                 </v-col>
                 <v-col
                   cols="12"
-                  sm="4"
+                  sm="3"
                   class="d-flex align-center"
                 >
                   <v-text-field
@@ -36,6 +59,7 @@
                     label="Fin"
                     type="date"
                     outlined
+                    dense
                     :rules="dateRules2"
                     class="rounded-xl"
                     hide-details="auto"
@@ -54,7 +78,7 @@
                 </v-col>
                 <v-col
                   cols="12"
-                  sm="4"
+                  sm="3"
                   class="d-flex align-center"
                 >
                   <v-btn-toggle
@@ -140,6 +164,7 @@
 <script>
 export default {
   data: () => ({
+    selectedCity: null,
     startDate: '',
     endDate: '',
     dateRules: [
@@ -174,6 +199,9 @@ export default {
   computed: {
     billsOnDataRange () {
       return this.$store.state.billing.billsOnDataRange
+    },
+    cities () {
+      return this.$store.state.auth.cities
     }
   },
   watch: {
@@ -200,8 +228,17 @@ export default {
     this.endDate = this.returnToday()
     this.getBillsByDateRange()
     this.setDateQuery()
+    this.setQueryCity()
   },
   methods: {
+    changeCity (city) {
+      this.$router.push({ query: { city: city.name } })
+    },
+    setQueryCity () {
+      if (this.$route.query.city) {
+        this.selectedCity = this.$store.state.auth.cities.find(c => c.name === this.$route.query.city)
+      }
+    },
     setDateQuery () {
       this.$router.push({
         query: {

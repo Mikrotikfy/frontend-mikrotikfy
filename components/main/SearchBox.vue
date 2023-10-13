@@ -17,8 +17,6 @@
             dark
             :loading="loadingDataTable"
             tile
-            large
-            x-large
             style="border-radius: 30px 0 0 30px;padding:5px;height:48px;"
             @click="getClientBySearchButton()"
           >
@@ -83,8 +81,6 @@
                 dark
                 :loading="loadingDataTable"
                 tile
-                large
-                x-large
                 style="border-radius: 0 30px 30px 0;padding:5px;height:48px;"
                 v-bind="searchByAddress ? null : attrs"
                 v-on="searchByAddress ? null : on"

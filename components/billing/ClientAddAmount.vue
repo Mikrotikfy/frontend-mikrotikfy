@@ -1,89 +1,114 @@
 <template>
-  <v-card class="mt-2 rounded-lg">
-    <v-card-text>
-      <v-form v-model="valid" action="" class="d-flex">
-        <v-btn
-          v-if="amount"
-          :disabled="!valid"
-          color="primary"
-          class="mr-2"
-          rounded
-          @click="addAmount"
-        >
-          <v-icon>mdi-send</v-icon>
-        </v-btn>
-        <v-text-field
-          v-model.number="amount"
-          type="number"
-          label="Generar Cobro $0.00"
-          :rules="canNotBeNullNorContainCommasOrDots"
-          single-line
-          dense
-          filled
-          rounded
-          hide-details="auto"
-          placeholder="$0.00"
-          prepend-icon="mdi-currency-usd"
-          color="red"
-          @keyup.enter="addAmount"
-        />
-        <v-autocomplete
-          v-model="billtype"
-          :items="billtypes"
-          item-text="name"
-          item-value="id"
-          label="Tipo de cobro"
-          class="ml-4"
-          return-object
-          single-line
-          hide-details
-          filled
-          dense
-          rounded
-          autofocus
-          @keyup.enter="addAmount"
-        />
-        <v-text-field
-          v-model.number="month"
-          type="number"
-          label="Mes"
-          class="ml-4"
-          :rules="maxNumberEqualsCurrentMonth"
-          single-line
-          hide-details="auto"
-          filled
-          dense
-          rounded
-          @keyup.enter="addAmount"
-        />
-        <v-text-field
-          v-model.number="year"
-          type="number"
-          label="Año"
-          class="ml-4"
-          :rules="maxNumberEqualsCurrentYear"
-          single-line
-          hide-details="auto"
-          filled
-          dense
-          rounded
-          @keyup.enter="addAmount"
-        />
-        <v-text-field
-          v-model="details"
-          label="Observaciones (OPCIONAL)"
-          class="ml-4 d-flex"
-          single-line
-          hide-details
-          filled
-          dense
-          rounded
-          color="blue"
-          @keyup.enter="addAmount"
-        />
-      </v-form>
-    </v-card-text>
-  </v-card>
+  <v-dialog
+    v-model="dialog"
+    width="1200"
+  >
+    <template v-slot:activator="{ on: onDialog, attrs: attrDialog }">
+      <v-tooltip top>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            icon
+            :color="$vuetify.theme.dark ? 'white' : 'primary'"
+            v-bind="{...attrs, ...attrDialog}"
+            v-on="{ ...on, ...onDialog }"
+          >
+            <v-icon>mdi-file-document-plus-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Generar Cobro</span>
+      </v-tooltip>
+    </template>
+    <v-card class="mt-2 rounded-lg">
+      <v-card-title class="d-flex justify-center">
+        Generar Cobro por Conceptos
+      </v-card-title>
+      <v-card-text>
+        <v-form v-model="valid" action="" class="d-lg-flex mt-2 mt-lg-0">
+          <v-btn
+            v-if="amount"
+            :disabled="!valid"
+            :block="!$store.state.isDesktop"
+            color="primary"
+            class="mr-0 mr-lg-2 mt-2 mt-lg-0"
+            rounded
+            @click="addAmount"
+          >
+            <v-icon>mdi-send</v-icon>
+          </v-btn>
+          <v-text-field
+            v-model.number="amount"
+            type="number"
+            label="Generar Cobro $0.00"
+            :rules="canNotBeNullNorContainCommasOrDots"
+            single-line
+            dense
+            filled
+            rounded
+            class="mr-0 mr-lg-2 mt-2 mt-lg-0"
+            hide-details="auto"
+            placeholder="$0.00"
+            append-icon="mdi-currency-usd"
+            color="red"
+            @keyup.enter="addAmount"
+          />
+          <v-autocomplete
+            v-model="billtype"
+            :items="billtypes"
+            item-text="name"
+            item-value="id"
+            label="Tipo de cobro"
+            class="mr-0 mr-lg-2 mt-2 mt-lg-0"
+            return-object
+            single-line
+            hide-details
+            filled
+            dense
+            rounded
+            autofocus
+            @keyup.enter="addAmount"
+          />
+          <v-text-field
+            v-model.number="month"
+            type="number"
+            label="Mes"
+            class="mr-0 mr-lg-2 mt-2 mt-lg-0"
+            :rules="maxNumberEqualsCurrentMonth"
+            single-line
+            hide-details="auto"
+            filled
+            dense
+            rounded
+            @keyup.enter="addAmount"
+          />
+          <v-text-field
+            v-model.number="year"
+            type="number"
+            label="Año"
+            class="mr-0 mr-lg-2 mt-2 mt-lg-0"
+            :rules="maxNumberEqualsCurrentYear"
+            single-line
+            hide-details="auto"
+            filled
+            dense
+            rounded
+            @keyup.enter="addAmount"
+          />
+          <v-text-field
+            v-model="details"
+            label="Observaciones (OPCIONAL)"
+            class="mr-0 mr-lg-2 mt-2 mt-lg-0 d-lg-flex"
+            single-line
+            hide-details
+            filled
+            dense
+            rounded
+            color="blue"
+            @keyup.enter="addAmount"
+          />
+        </v-form>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 </template>
 <script>
 export default {
@@ -97,6 +122,7 @@ export default {
   data () {
     return {
       valid: true,
+      dialog: false,
       amount: null,
       details: null,
       month: this.getCurrentMonth(),

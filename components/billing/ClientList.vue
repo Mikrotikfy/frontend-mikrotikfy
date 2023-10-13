@@ -13,7 +13,7 @@
       caption="Clientes"
       dense
       hide-default-footer
-      mobile-breakpoint="100"
+      mobile-breakpoint="600"
       @page-count="pageCount = $event"
       @click:row="showBillingInfo"
     >

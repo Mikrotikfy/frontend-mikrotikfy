@@ -14,6 +14,9 @@ export default function ({ route, redirect, store }) {
   const newQueryNap = {
     city: userPreferredCity || 'MARIQUITA'
   }
+  const newQueryResume = {
+    city: userPreferredCity || 'MARIQUITA'
+  }
 
   if (path === '/') {
     if (!store.state.redirected) {
@@ -27,5 +30,8 @@ export default function ({ route, redirect, store }) {
   }
   if ((name === 'nap') && (!query.city)) {
     redirect({ path, query: newQueryNap })
+  }
+  if ((name === 'billing-resume') && (!query.city)) {
+    redirect({ path, query: newQueryResume })
   }
 }
