@@ -118,6 +118,68 @@
         </v-card>
         <v-card v-if="indexOfSelectedService !== null && currentService" class="rounded-xl">
           <v-card-text>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="searchResult.dni"
+                  label="Cedula"
+                  autocomplete="off"
+                  required
+                  outlined
+                  dense
+                  hide-details
+                  :disabled="!(!$isAdmin() || !$isBiller()) || loading"
+                  @blur="updateClient"
+                  @keyup.enter="$event.target.blur()"
+                />
+              </v-col>
+              <v-col>
+                <v-text-field
+                  v-model="searchResult.name"
+                  label="Nombre Completo"
+                  autocomplete="off"
+                  required
+                  outlined
+                  dense
+                  hide-details
+                  :disabled="!(!$isAdmin() || !$isBiller()) || loading"
+                  @blur="updateClient"
+                  @keyup.enter="$event.target.blur()"
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="searchResult.phone"
+                  label="Celular"
+                  autocomplete="off"
+                  required
+                  outlined
+                  dense
+                  hide-details
+                  :disabled="!(!$isAdmin() || !$isBiller()) || loading"
+                  @blur="updateClient"
+                  @keyup.enter="$event.target.blur()"
+                />
+              </v-col>
+              <v-col>
+                <v-text-field
+                  v-model="searchResult.email"
+                  label="Correo Electronico"
+                  autocomplete="off"
+                  required
+                  outlined
+                  dense
+                  hide-details
+                  :disabled="!(!$isAdmin() || !$isBiller()) || loading"
+                  @blur="updateClient"
+                  @keyup.enter="$event.target.blur()"
+                />
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-text>
             <v-form ref="editForm" v-model="valid" @focus="resetSaveStatus">
               <v-row>
                 <v-col>
@@ -145,7 +207,7 @@
                     hide-details
                     disabled
                     @input="currentService.name = $event.toUpperCase()"
-                    @blur="updateClient"
+                    @blur="updateService"
                     @keyup.enter="$event.target.blur()"
                   />
                 </v-col>
@@ -186,7 +248,7 @@
                     outlined
                     dense
                     hide-details
-                    @blur="updateClient"
+                    @blur="updateService"
                     @keyup.enter="$event.target.blur()"
                   />
                 </v-col>
@@ -200,7 +262,7 @@
                     outlined
                     dense
                     hide-details
-                    @blur="updateClient"
+                    @blur="updateService"
                     @keyup.enter="$event.target.blur()"
                   />
                 </v-col>
@@ -220,7 +282,7 @@
                     dense
                     required
                     hide-details
-                    @change="updateClient"
+                    @change="updateService"
                   />
                 </v-col>
                 <v-col>
@@ -233,7 +295,7 @@
                     dense
                     type="number"
                     hide-details="auto"
-                    @blur="updateClient"
+                    @blur="updateService"
                     @keyup.enter="$event.target.blur()"
                   />
                 </v-col>
@@ -249,20 +311,7 @@
                     dense
                     type="number"
                     hide-details="auto"
-                    @blur="updateClient"
-                    @keyup.enter="$event.target.blur()"
-                  />
-                </v-col>
-                <v-col>
-                  <v-text-field
-                    v-model="currentService.phone"
-                    label="Telefono"
-                    required
-                    outlined
-                    dense
-                    hide-details
-                    :disabled="!(!$isAdmin() || !$isBiller()) || loading"
-                    @blur="updateClient"
+                    @blur="updateService"
                     @keyup.enter="$event.target.blur()"
                   />
                 </v-col>
@@ -280,7 +329,7 @@
                     outlined
                     dense
                     hide-details
-                    @change="updateClient"
+                    @change="updateService"
                   />
                 </v-col>
                 <v-col>
@@ -295,7 +344,7 @@
                     outlined
                     dense
                     hide-details
-                    @change="updateClient"
+                    @change="updateService"
                   />
                 </v-col>
               </v-row>
@@ -400,6 +449,12 @@ export default {
     currentService () {
       return this.searchResult.services.at(this.indexOfSelectedService) || null
     },
+    noPendingChangesServices () {
+      return Object.entries(this.searchResult.services.at(this.indexOfSelectedService)).toString() === Object.entries(this.oldClient.services.at(this.indexOfSelectedService)).toString()
+    },
+    noPendingChangesClient () {
+      return Object.entries(this.searchResult).toString() === Object.entries(this.oldClient).toString()
+    },
     cities () {
       return this.$store.state.cities
     },
@@ -440,8 +495,8 @@ export default {
       })
     }
   },
-  mounted () {
-    this.getClientFromSearchParam()
+  async mounted () {
+    await this.getClientFromSearchParam()
     this.getTickettypes()
   },
   methods: {
@@ -468,14 +523,44 @@ export default {
       this.$refs.saveStatusText.classList.remove('success--text')
       this.saveStatus = 'No hay cambios pendientes...'
       this.$refs.saveStatusText.classList.add('cyan--text')
-      if (this.testChanges() === 0) { return }
+      if (this.noPendingChangesClient) { return }
       this.loading = true
       const operator = this.$store.state.auth.id
-      const service = this.searchResult.services.at(this.indexOfSelectedService)
+      const client = JSON.parse(JSON.stringify(this.searchResult))
 
       this.saveStatus = 'Guardando...'
 
-      await this.$store.dispatch('client/updateClient', { service, index: this.index, operator, token: this.$store.state.auth.token })
+      await this.$store.dispatch('client/updateClient', { client, index: this.index, operator, token: this.$store.state.auth.token })
+      if (this.$route.query.clienttype === 'INTERNET') {
+        // this.$store.dispatch('client/updateClientCommentOnMikrotik', { service, token: this.$store.state.auth.token })
+        // this.$simpleTelegramUpdate({ service, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+      } else {
+        // this.$simpleTelegramUpdateTV({ service, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+      }
+
+      this.$refs.saveStatusText.classList.remove('cyan--text')
+      this.$refs.saveStatusText.classList.add('success--text')
+      this.$refs.saveStatusText.classList.add('font-weight-bold')
+      this.saveStatus = 'Guardado'
+      setTimeout(() => {
+        this.$refs.saveStatusText.classList.remove('success--text')
+        this.$refs.saveStatusText.classList.remove('font-weight-bold')
+        this.resetSaveStatus()
+      }, 5000)
+      this.loading = false
+    },
+    async updateService () {
+      this.$refs.saveStatusText.classList.remove('success--text')
+      this.saveStatus = 'No hay cambios pendientes...'
+      this.$refs.saveStatusText.classList.add('cyan--text')
+      if (this.noPendingChangesServices) { return }
+      this.loading = true
+      const operator = this.$store.state.auth.id
+      const service = JSON.parse(JSON.stringify(this.searchResult.services.at(this.indexOfSelectedService)))
+
+      this.saveStatus = 'Guardando...'
+
+      await this.$store.dispatch('client/updateService', { service, index: this.index, operator, token: this.$store.state.auth.token })
       if (this.$route.query.clienttype === 'INTERNET') {
         // this.$store.dispatch('client/updateClientCommentOnMikrotik', { service, token: this.$store.state.auth.token })
         // this.$simpleTelegramUpdate({ service, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
@@ -497,7 +582,7 @@ export default {
     resetSaveStatus () {
       this.saveStatus = 'No hay cambios pendientes...'
     },
-    getClientFromSearchParam () {
+    async getClientFromSearchParam () {
       const qs = require('qs')
       const query = qs.stringify({
         populate: ['services', 'services.city', 'services.plan', 'services.service_addresses', 'services.service_addresses.neighborhood', 'services.technology', 'services.clienttype', 'services.offer', 'services.offer.plan', 'services.offermovements.offer', 'services.offermovements', 'services.debtmovements', 'services.debtmovements.technician', 'services.monthlybills', 'services.tvspec', 'services.tvspec.tvspectype']
@@ -505,7 +590,7 @@ export default {
       {
         encodeValuesOnly: true
       })
-      fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized-clients/${this.$route.params.search}?${query}`, {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized-clients/${this.$route.params.search}?${query}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -513,9 +598,9 @@ export default {
         }
       })
         .then(res => res.clone().json())
-        .then((clients) => {
-          this.oldClient = JSON.parse(JSON.stringify(clients.data))
-          this.searchResult = clients.data
+        .then(({ data: clients }) => {
+          this.oldClient = JSON.parse(JSON.stringify(clients))
+          this.searchResult = clients
           if (this.searchResult.services.length < 2) {
             this.indexOfSelectedService = 0
           }

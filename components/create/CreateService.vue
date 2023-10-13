@@ -5,7 +5,7 @@
         <v-icon class="mr-2">
           mdi-account
         </v-icon>
-        Crear Servicio para cliente {{ $route.query.client }}
+        Crear Servicio para {{ $route.query.name }}
       </v-card-title>
       <v-divider class="mb-5" />
       <v-card-text class="d-flex">
@@ -346,7 +346,7 @@
             :disabled="isSubmitting"
             @click="createClient"
           >
-            Crear Cliente
+            Crear Servicio
           </v-btn>
         </v-form>
       </v-card-text>

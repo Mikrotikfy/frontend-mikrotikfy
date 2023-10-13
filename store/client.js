@@ -664,6 +664,31 @@ export const actions = {
     })
   },
   async updateClient ({ commit }, payload) {
+    await fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized-clients/${payload.client.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${payload.token}`
+      },
+      body: JSON.stringify({
+        data: {
+          name: payload.client.name,
+          dni: payload.client.dni,
+          phone: payload.client.phone,
+          email: payload.client.email
+        }
+      })
+    }).then((input) => {
+      if (input.status === 200) {
+        // commit('updateClient', { service: payload.service, index: payload.index })
+      }
+    }).catch((error) => {
+      // eslint-disable-next-line no-console
+      console.error(error)
+      throw new Error(`UPDATE USER ACTION ${error}`)
+    })
+  },
+  async updateService ({ commit }, payload) {
     delete payload.service.active
     await fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}`, {
       method: 'PUT',
@@ -672,7 +697,7 @@ export const actions = {
         Authorization: `Bearer ${payload.token}`
       },
       body: JSON.stringify({
-        data: { operator: payload.operator, ...payload.service }
+        data: payload.service
       })
     }).then((input) => {
       if (input.status === 200) {
