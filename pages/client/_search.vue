@@ -89,7 +89,7 @@
         md="4"
         lg="6"
       >
-        <v-card-title>Detalles del Servicio {{ currentService ? currentService.id : "N/A" }}</v-card-title>
+        <v-card-title>Editar Detalles</v-card-title>
         <v-card v-if="indexOfSelectedService !== null && currentService" class="rounded-xl mb-3">
           <v-card-text>
             <MainClientStatus
@@ -117,6 +117,11 @@
           </v-card-text>
         </v-card>
         <v-card v-if="indexOfSelectedService !== null && currentService" class="rounded-xl">
+          <v-subheader>
+            Información del Cliente {{ searchResult ? searchResult.id : "N/A" }}
+          </v-subheader>
+
+          <v-divider />
           <v-card-text>
             <v-row>
               <v-col>
@@ -179,6 +184,11 @@
               </v-col>
             </v-row>
           </v-card-text>
+          <v-subheader>
+            Información del Servicio {{ currentService ? currentService.id : "N/A" }}
+          </v-subheader>
+
+          <v-divider />
           <v-card-text>
             <v-form ref="editForm" v-model="valid" @focus="resetSaveStatus">
               <v-row>
