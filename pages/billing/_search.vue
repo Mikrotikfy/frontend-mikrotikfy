@@ -59,7 +59,7 @@
                 <span>Movimientos Generales</span>
               </v-tooltip>
               <CreateTicket :service="currentService" :filled="true" />
-              <BillingPrintMovement />
+              <BillingPrintMovement :service="currentService" />
               <BillingClientAddAmount :service="currentService" />
               <BillingToggleArchive class="ml-2" />
             </div>

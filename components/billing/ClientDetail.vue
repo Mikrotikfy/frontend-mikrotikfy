@@ -50,6 +50,13 @@
               @updateInvoiceList="updateInvoiceList()"
             />
             <BillingDepositHistory :bill="props.item" class="mr-2" />
+            <v-btn
+              class="white black--text"
+              x-small
+              @click="openPrintReceipt(props.item)"
+            >
+              <v-icon>mdi-printer</v-icon>
+            </v-btn>
           </span>
         </template>
       </v-data-table>
@@ -106,6 +113,11 @@ export default {
       } else {
         return price - invoiceMovements.reduce((total, curr) => { return total + curr.amount }, 0)
       }
+    },
+    openPrintReceipt (invoice) {
+      localStorage.removeItem('invoiceToPrint')
+      localStorage.setItem('invoiceToPrint', JSON.stringify(invoice))
+      window.open(`/invoice?id=${invoice.id}`)
     }
   },
   head () {

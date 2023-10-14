@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="bill" class="elevation-0 inner p-0" light>
+  <v-card v-if="invoices.length > 0 && service" class="elevation-0 inner p-0" light>
     <v-container class="parent p-0">
       <div class="sub-parent">
         <div style="width:200px;margin:auto;">
@@ -11,26 +11,26 @@
         </div>
         <div style="text-align:center;">
           <h4 style="border:1px solid black;border-radius:10px 10px 0px 0px;" class="pa-1">
-            RECIBO
+            ESTADO DE CUENTA
           </h4>
           <h4 style="border:1px solid black;border-radius:0px;" class="pa-1">
-            {{ bill.id }}
+            Servicio: {{ service.id }}
           </h4>
           <h4 style="border:1px solid black;border-radius:0px 0px 10px 10px;" class="pa-1">
-            {{ getDate(bill.createdAt) }}
+            {{ getDate(Date.now()) }}
           </h4>
         </div>
       </div>
       <div class="client-parent">
         <div class="client-parent-sub">
-          <h5>USUARIO: {{ bill.service.normalized_client.name }}</h5>
-          <h5>DIRECCION: {{ bill.service.service_addresses.at(-1).address }} {{ bill.service.service_addresses.at(-1).neighborhood.name }}</h5>
-          <h5>SERVICIO: {{ bill.service.name === 'INTERNET' ? 'INTERNET HOG. ILIMITADO' : 'TELEVISION HOGAR' }}</h5>
-          <h5>OFERTA: {{ bill.service.offer.name }}</h5>
+          <h5>USUARIO: {{ service.normalized_client.name }}</h5>
+          <h5>DIRECCION: {{ service.service_addresses.at(-1).address }} {{ service.service_addresses.at(-1).neighborhood.name }}</h5>
+          <h5>SERVICIO: {{ service.name === 'INTERNET' ? 'INTERNET HOG. ILIMITADO' : 'TELEVISION HOGAR' }}</h5>
+          <h5>OFERTA: {{ service.offer.name }}</h5>
         </div>
         <div>
           <div class="code-sub-parent">
-            CODIGO {{ bill.service.code }}
+            CODIGO {{ service.code }}
           </div>
         </div>
       </div>
@@ -38,17 +38,23 @@
     <v-container class="parent-resume">
       <div>
         <div class="sub-parent-resume" style="border-radius:10px 10px 0px 0px;">
-          Resumen de Movimiento
+          Concepto
         </div>
         <div class="sub-parent-resume" style="border-radius:0px 0px 10px 10px;">
           <h3 class="blue darken-2 white--text rounded-lg px-2" style="margin-left:-5px;">
-            TOTAL ABONADO: $ {{ Number(bill.credit).toLocaleString('es') }}
+            TOTAL: $ {{ Number(invoices.reduce((total, item) => {
+              if (item.payed) {
+                return total
+              } else {
+                return total + item.balance
+              }
+            }, 0)).toLocaleString('es') }}
           </h3>
           <h4
-            v-for="invoice in bill.invoice_movements"
+            v-for="invoice in invoices"
             :key="invoice.id"
           >
-            ABONO {{ invoice.type === 'FACTURACION MENSUAL' ? invoice.concept : invoice.type }} {{ invoice.year }} $ {{ Number(invoice.amount).toLocaleString('es') }}
+            {{ invoice.details }} {{ invoice.year }} $ {{ Number(invoice.balance).toLocaleString('es') }}
           </h4>
         </div>
       </div>
@@ -57,8 +63,8 @@
           Servicio
         </div>
         <div class="sub-parent-resume" style="border-radius:0px 0px 10px 10px;">
-          <h3>{{ bill.service.name === 'INTERNET' ? 'INTERNET HOG. ILIMITADO' : 'TELEVISION HOGAR' }}</h3>
-          <h4>{{ bill.service.offer.name }}</h4>
+          <h3>{{ service.name === 'INTERNET' ? 'INTERNET HOG. ILIMITADO' : 'TELEVISION HOGAR' }}</h3>
+          <h4>{{ service.offer.name }}</h4>
         </div>
       </div>
     </v-container>
@@ -96,10 +102,10 @@
     </v-container>
     <v-container class="parent-sub-info">
       <div class="client-parent-sub2 pa-2">
-        <h4>USUARIO: {{ bill.service.normalized_client.name }}</h4>
-        <h4>DIRECCION: {{ bill.service.service_addresses.at(-1).address }} {{ bill.service.service_addresses.at(-1).neighborhood.name }}</h4>
-        <h4>SERVICIO: {{ bill.service.name === 'INTERNET' ? 'INTERNET HOG. ILIMITADO' : 'TELEVISION HOGAR' }}</h4>
-        <h4>OFERTA: {{ bill.service.offer.name }}</h4>
+        <h4>USUARIO: {{ service.normalized_client.name }}</h4>
+        <h4>DIRECCION: {{ service.service_addresses.at(-1).address }} {{ service.service_addresses.at(-1).neighborhood.name }}</h4>
+        <h4>SERVICIO: {{ service.name === 'INTERNET' ? 'INTERNET HOG. ILIMITADO' : 'TELEVISION HOGAR' }}</h4>
+        <h4>OFERTA: {{ service.offer.name }}</h4>
       </div>
       <div>
         <div class="sub-parent-company" style="border-radius:10px 10px 0px 0px;">
@@ -128,9 +134,14 @@
 <script>
 export default {
   props: {
-    bill: {
-      type: Object,
+    invoices: {
+      type: Array,
+      default: () => [],
       required: true
+    },
+    service: {
+      type: Object || null,
+      default: () => {}
     }
   },
   methods: {

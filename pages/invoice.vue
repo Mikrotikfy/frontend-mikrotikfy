@@ -1,26 +1,26 @@
 <template>
   <div class="output">
-    <BillingBillTemplate :bill="bill" />
+    <BillingInvoiceTemplate :invoice="invoice" />
   </div>
 </template>
 <script>
 export default {
-  name: 'Bill',
+  name: 'Invoice',
   layout: 'print',
   data () {
     return {
-      bill: null
+      invoice: null
     }
   },
   async mounted () {
-    this.bill = await this.$store.dispatch('billing/getBillById', {
+    this.invoice = await this.$store.dispatch('billing/getInvoiceById', {
       token: this.$store.state.auth.token,
       id: this.$route.query.id
     })
   },
   head () {
     return {
-      title: 'Imprimir Recibo'
+      title: 'Imprimir Estado de Cuenta'
     }
   }
 }

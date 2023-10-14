@@ -430,6 +430,135 @@ export const actions = {
       throw new Error(`BILLING CLIENTS SEARCH ACTION ${error}`)
     }
   },
+  getInvoicesByServiceId ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      filters: {
+        $and: [
+          {
+            service: payload.serviceId
+          },
+          {
+            payed: payload.payed
+          }
+        ]
+      },
+      populate: [
+        'offer',
+        'service',
+        'legal_notes',
+        'invoice_type',
+        'invoice_movements',
+        'service.normalized_client',
+        'service.service_addresses',
+        'service.offer',
+        'service.service_addresses.neighborhood'
+      ]
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}invoices?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then(({ data: invoices }) => {
+            resolve(invoices)
+          })
+      })
+    } catch (error) {
+      throw new Error(`GET BILL BY ID ACTION ${error}`)
+    }
+  },
+  getServiceById ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      populate: [
+        'normalized_client',
+        'service_addresses',
+        'service_addresses.neighborhood',
+        'plan',
+        'city',
+        'offer',
+        'offer.plan',
+        'debtmovements',
+        'debtmovements.technician',
+        'offermovents',
+        'offermovements.offer',
+        'invoices',
+        'invoices.offer',
+        'invoices.invoice_type',
+        'invoices.invoice_movements',
+        'invoices.invoice_movements.biller',
+        'legal_notes',
+        'legal_notes.biller',
+        'legal_notes.invoices',
+        'legal_notes.invoice_movements'
+      ]
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.serviceId}?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then(({ data: service }) => {
+            resolve(service)
+          })
+      })
+    } catch (error) {
+      throw new Error(`GET BILL BY ID ACTION ${error}`)
+    }
+  },
+  getInvoiceById ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      populate: [
+        'offer',
+        'service',
+        'legal_notes',
+        'invoice_type',
+        'invoice_movements',
+        'service.normalized_client',
+        'service.service_addresses',
+        'service.offer',
+        'service.service_addresses.neighborhood'
+      ]
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}invoices/${payload.id}?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then(({ data: invoice }) => {
+            resolve(invoice)
+          })
+      })
+    } catch (error) {
+      throw new Error(`GET BILL BY ID ACTION ${error}`)
+    }
+  },
   getBillById ({ commit }, payload) {
     const qs = require('qs')
     const query = qs.stringify({
@@ -437,9 +566,10 @@ export const actions = {
         'biller',
         'invoices',
         'invoice_movements',
-        'client',
-        'client.offer',
-        'client.neighborhood'
+        'service',
+        'service.offer',
+        'service.normalized_client',
+        'service.service_addresses.neighborhood'
       ]
     },
     {
