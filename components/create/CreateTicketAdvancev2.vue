@@ -260,6 +260,8 @@ export default {
       }
     },
     generateMessage () {
+      const ticket = this.ticket
+      const service = this.ticket.service
       if (this.ticket.service.name === 'TELEVISION') {
         let line1 = ''
         if (this.closeticket) {
@@ -267,12 +269,12 @@ export default {
         } else {
           line1 = '✴️ AVANCE DE TICKET ✴️'
         }
-        const line2 = this.ticket.service.code
-        const line3 = this.ticket.service.name
-        const line4 = this.ticket.service.addresses ? this.ticket.service.addresses.at(-1) ? this.ticket.service.addresses.at(-1).address : 'Sin Direccion' : 'No especificado'
-        const line5 = this.ticket.service.addresses ? this.ticket.service.addresses.at(-1) ? this.ticket.service.addresses.at(-1).neighborhood.name : 'Sin Barrio' : 'No especificado'
-        const line6 = this.ticket.service.phone
-        const line7 = this.ticket.tickettype.name
+        const line2 = service.code
+        const line3 = service.normalized_client.name
+        const line4 = service.service_addresses ? service.service_addresses.at(-1) ? service.service_addresses.at(-1).address : 'Sin Direccion' : 'No especificado'
+        const line5 = service.service_addresses ? service.service_addresses.at(-1) ? service.service_addresses.at(-1).neighborhood.name : 'Sin Barrio' : 'No especificado'
+        const line6 = service.normalized_client.phone
+        const line7 = ticket.tickettype.name
         const line8 = `Calidad de señal: ${this.specs.tvspectype ? this.specs.tvspectype.name : 'No especificado'}`
         const line10 = `Altos: ${this.specs.high ? this.specs.high : 'No especificado'}`
         const line11 = `Bajos: ${this.specs.down ? this.specs.down : 'No especificado'}`
@@ -295,13 +297,13 @@ export default {
         } else {
           line1 = '✴️ AVANCE DE TICKET ✴️'
         }
-        const line2 = this.ticket.service.code
-        const line3 = this.ticket.service.name
-        const line4 = this.ticket.service.service_addresses.at(-1).address
-        const line5 = this.ticket.service.service_addresses.at(-1).neighborhood.name
-        const line6 = this.ticket.service.phone
+        const line2 = service.code
+        const line3 = service.normalized_client.name
+        const line4 = service.service_addresses.at(-1).address
+        const line5 = service.service_addresses.at(-1).neighborhood.name
+        const line6 = service.normalized_client.phone
         const line7 = `Potencia Optica: ${this.opticalpower ? this.opticalpower : 'No especificado'}${this.opticalpower ? 'dBm' : ''}`
-        const line8 = this.ticket.tickettype.name
+        const line8 = ticket.tickettype.name
         const line9 = this.details
         let line10 = ''
         if (this.closeticket) {

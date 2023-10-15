@@ -17,6 +17,11 @@ export default function ({ route, redirect, store }) {
   const newQueryResume = {
     city: userPreferredCity || 'MARIQUITA'
   }
+  const newQueryCuts = {
+    city: userPreferredCity || 'MARIQUITA',
+    clienttype: 'INTERNET',
+    view: 'TODOS'
+  }
 
   if (path === '/') {
     if (!store.state.redirected) {
@@ -33,5 +38,8 @@ export default function ({ route, redirect, store }) {
   }
   if ((name === 'billing-resume') && (!query.city)) {
     redirect({ path, query: newQueryResume })
+  }
+  if ((name === 'cuts') && (!query.city)) {
+    redirect({ path, query: newQueryCuts })
   }
 }

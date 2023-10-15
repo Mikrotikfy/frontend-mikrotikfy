@@ -1,10 +1,10 @@
 <template>
   <v-card>
     <v-card-title class="justify-center">
-      Listado de usuarios cortados por mes
+      Listado de servicios suspendidos por mes
     </v-card-title>
     <v-card-text class="d-flex">
-      <MiscPrintDx :clients="selected" />
+      <MiscPrintDx :services="selected" />
       <v-tooltip top>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -30,7 +30,7 @@
         <v-expansion-panel
           v-for="billingperiod in billingperiods"
           :key="billingperiod.id"
-          @click="getClients(billingperiod)"
+          @click="getServices(billingperiod)"
         >
           <v-expansion-panel-header class="justify-center">
             {{ months[billingperiod.month - 1].name }}
@@ -48,11 +48,21 @@
             <v-data-table
               v-model="selected"
               :headers="headers"
-              :items="clients"
+              :items="services"
               :loading="loading"
               :search="search"
               show-select
             >
+              <template v-slot:[`item.service_addresses.address`]="{ item }">
+                <span>
+                  {{ item.service_addresses.at(-1).address }}
+                </span>
+              </template>
+              <template v-slot:[`item.service_addresses.neighborhood.name`]="{ item }">
+                <span>
+                  {{ item.service_addresses.at(-1).neighborhood.name }}
+                </span>
+              </template>
               <template v-slot:[`item.id`]="{ item }">
                 <v-btn
                   small
@@ -78,15 +88,15 @@ export default {
       loading: false,
       billingperiods: [],
       lastbillingperiod: {},
-      clients: [],
+      services: [],
       search: '',
       selected: [],
       headers: [
         { text: 'Codigo', value: 'code', sortable: false },
-        { text: 'Nombre', value: 'name', sortable: false },
-        { text: 'Direccion', value: 'addresses[0].address', sortable: false },
-        { text: 'Barrio', value: 'addresses[0].neighborhood.name', sortable: false },
-        { text: 'Telefono', value: 'phone', sortable: false },
+        { text: 'Nombre', value: 'normalized_client.name', sortable: false },
+        { text: 'Direccion', value: 'service_addresses.address', sortable: false },
+        { text: 'Barrio', value: 'service_addresses.neighborhood.name', sortable: false },
+        { text: 'Telefono', value: 'normalized_client.phone', sortable: false },
         { text: 'Acciones', value: 'id', sortable: false }
       ],
       months: [
@@ -115,10 +125,10 @@ export default {
     this.getBillingPeriods()
   },
   methods: {
-    async getClients (billingperiod) {
+    async getServices (billingperiod) {
       this.lastbillingperiod = billingperiod
       this.loading = true
-      await this.$store.dispatch('cuts/getClientsByBillingPeriod', {
+      await this.$store.dispatch('cuts/getServicesByBillingPeriod', {
         token: this.$store.state.auth.token,
         clienttype: this.$route.query.clienttype,
         city: this.$route.query.city,
@@ -126,13 +136,15 @@ export default {
         year: billingperiod.year,
         indebt: true,
         active: true
-      }).then((clients) => {
-        clients.forEach((client) => {
-          client.addresses.sort((a, b) => {
-            return new Date(b.createdAt) - new Date(a.createdAt)
+      }).then((services) => {
+        if (services && services.length > 0) {
+          services.forEach((service) => {
+            service.service_addresses.sort((a, b) => {
+              return new Date(b.createdAt) - new Date(a.createdAt)
+            })
           })
-        })
-        this.clients = clients
+        }
+        this.services = services
         this.loading = false
       })
     },
@@ -145,17 +157,17 @@ export default {
         this.billingperiods = billingperiods
       })
     },
-    async retire (clients) {
-      if (clients.length < 1) {
-        this.$toast.error('Selecciona los clientes antes de retirar', { position: 'bottom-center' })
+    async retire (services) {
+      if (services.length < 1) {
+        this.$toast.error('Selecciona los servicios antes de retirar', { position: 'bottom-center' })
         return
       }
       this.$toast.info('Aplicando cortes. Por favor espere...', { duration: 5000, position: 'bottom-center' })
       this.loading = true
-      for (let i = 0; i < clients.length; i++) {
-        await this.$store.dispatch('cuts/retireClient', {
+      for (let i = 0; i < services.length; i++) {
+        await this.$store.dispatch('cuts/retireService', {
           token: this.$store.state.auth.token,
-          client: clients[i],
+          service: services[i],
           active: false,
           indebt: false
         })
@@ -165,12 +177,12 @@ export default {
           isindebt: false,
           isretired: true,
           isBulkDx: false,
-          client: clients[i],
-          comment: 'RETIRO DESDE INTERFAZ CORTES',
+          service: services[i],
+          comment: 'RETIRO DESDE INTERFAZ SUSPENCIONES',
           technician: this.$store.state.auth
         })
       }
-      this.getClients(this.lastbillingperiod)
+      this.getServices(this.lastbillingperiod)
       this.loading = false
       this.$toast.info('Proceso finalizado correctamente', { duration: 5000, position: 'bottom-center' })
     }

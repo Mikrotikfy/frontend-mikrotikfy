@@ -5,23 +5,34 @@
         <v-btn
           color="primary"
           large
-          @click="prepareClients"
+          @click="prepareServices"
         >
           <v-icon>mdi-magnify</v-icon>
-          <span>Preparar Clientes</span>
+          <span>Preparar Servicios</span>
         </v-btn>
       </v-card-text>
       <v-card-text v-else>
         <v-data-table
           :headers="headers"
-          :items="clients ? clients : clientsByPlan"
+          :items="services ? services : servicesByPlan"
           :loading="loading"
           :item-class="getcolor"
-        />
+        >
+          <template v-slot:[`item.service_addresses`]="{ item }">
+            <span>
+              {{ item.service_addresses.at(-1).address }}
+            </span>
+          </template>
+          <template v-slot:[`item.service_addresses.neighborhood`]="{ item }">
+            <span>
+              {{ item.service_addresses.at(-1).neighborhood.name }}
+            </span>
+          </template>
+        </v-data-table>
       </v-card-text>
     </v-card>
     <v-btn
-      v-if="(clients.length > 0 || clientsByPlan.length > 0) && !loading"
+      v-if="(services.length > 0 || servicesByPlan.length > 0) && !loading"
       color="primary"
       class="mt-5"
       @click="process"
@@ -42,10 +53,10 @@ export default {
     return {
       headers: [
         { text: 'Codigo', value: 'code' },
-        { text: 'Nombre', value: 'name' },
-        { text: 'Direccion', value: 'address' },
-        { text: 'Barrio', value: 'neighborhood.name' },
-        { text: 'Telefono', value: 'phone' },
+        { text: 'Nombre', value: 'normalized_client.name' },
+        { text: 'Direccion', value: 'service_addresses' },
+        { text: 'Barrio', value: 'service_addresses.neighborhood' },
+        { text: 'Telefono', value: 'normalized_client.phone' },
         { text: 'Plan', value: 'plan.name' }
       ]
     }
@@ -63,11 +74,11 @@ export default {
     offer () {
       return this.$store.state.cuts.offer
     },
-    clients () {
-      return this.$store.state.cuts.clients
+    services () {
+      return this.$store.state.cuts.services
     },
-    clientsByPlan () {
-      return this.$store.state.cuts.clientsByPlan
+    servicesByPlan () {
+      return this.$store.state.cuts.servicesByPlan
     },
     loading () {
       return this.$store.state.cuts.loading
@@ -95,9 +106,9 @@ export default {
     process () {
       this.$store.commit('cuts/e1', '4')
     },
-    async prepareClients () {
+    async prepareServices () {
       if (!this.ready) {
-        this.$toast.error('No hay clientes para preparar')
+        this.$toast.error('No hay servicios para preparar')
         return
       }
       if (this.applyOffer && !this.offer) {
@@ -108,13 +119,13 @@ export default {
       this.$store.commit('cuts/reset')
       this.$store.commit('cuts/loading', true)
 
-      await this.validateClients()
+      await this.validateServices()
 
       this.$store.commit('cuts/loading', false)
     },
-    async validateClients () {
+    async validateServices () {
       for (let i = 0; i < this.ready.length; i++) {
-        await this.$store.dispatch('cuts/prepareClients', {
+        await this.$store.dispatch('cuts/prepareServices', {
           city: this.$route.query.city,
           token: this.$store.state.auth.token,
           ready: this.ready[i]

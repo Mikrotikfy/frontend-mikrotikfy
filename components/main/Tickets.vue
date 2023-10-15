@@ -891,18 +891,9 @@ export default {
           index,
           token: this.$store.state.auth.token
         })
-        // this.$simpleTelegramSendToChat({
-        //   client: ticket.client,
-        //   tickettype: ticket.tickettype.name,
-        //   details: ticket.details,
-        //   neighborhood: ticket.client.neighborhood,
-        //   operator: this.$store.state.auth.username,
-        //   user: this.currentTechnician,
-        //   telegramBots: this.telegramBots
-        // })
         this.$simpleWhatsappSendToChat({
           tickettype: ticket.tickettype.name,
-          client: ticket.client,
+          service: ticket.service,
           user: this.currentTechnician,
           token: this.$config.META_TOKEN
         })

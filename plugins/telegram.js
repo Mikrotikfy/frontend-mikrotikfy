@@ -159,7 +159,7 @@ function simpleTelegramUpdateOffer ({ client, operator, offer, telegramBots }) {
     })
 };
 
-function simpleTelegramUpdateDebt ({ client, operator, indebt, active, telegramBots }) {
+function simpleTelegramUpdateDebt ({ service, operator, indebt, active, telegramBots }) {
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.binnacle
@@ -171,8 +171,8 @@ function simpleTelegramUpdateDebt ({ client, operator, indebt, active, telegramB
   } else {
     line1 = '📶 RECONEXIÓN 📶'
   }
-  const line2 = client.code
-  const line3 = client.name
+  const line2 = service.code
+  const line3 = service.normalized_client.name
   const line4 = operator
   const message = `${line1}\n${line2}\n${line3}\n${line4}`
   const req =
@@ -228,14 +228,14 @@ function simpleTelegramSendToChat ({ client, tickettype, details, operator, user
       return err
     })
 };
-function simpleWhatsappSendToChat ({ tickettype, client, user, token }) {
+function simpleWhatsappSendToChat ({ tickettype, service, user, token }) {
   const fetch = require('node-fetch')
   const line1 = tickettype
-  const line2 = client.code
-  const line3 = client.name
-  const line4 = client.addresses.at(-1).address
-  const line5 = client.addresses.at(-1).neighborhood.name
-  const line6 = client.phone
+  const line2 = service.code
+  const line3 = service.normalized_client.name
+  const line4 = service.service_addresses.at(-1).address
+  const line5 = service.service_addresses.at(-1).neighborhood.name
+  const line6 = service.normalized_client.phone
   const message = `${line1} - ${line2} - ${line3} - ${line4} - ${line5} - ${line6}`
   const options = {
     method: 'POST',

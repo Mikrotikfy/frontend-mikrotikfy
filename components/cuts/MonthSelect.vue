@@ -1,13 +1,52 @@
 <template>
   <div>
-    <v-select
-      v-model="month"
-      :items="months"
-      label="Mes a operar"
-      filled
-      rounded
-    />
+    <div class="d-flex">
+      <v-select
+        v-model="selectedCity"
+        :items="cities"
+        label="Filtrar Ciudad"
+        item-value="id"
+        item-text="name"
+        return-object
+        filled
+        rounded
+        hide-details="auto"
+        class="mr-2 elevation-0"
+        style="width:180px;"
+        @change="changeCity(selectedCity)"
+      >
+        <template v-slot:item="{ item }">
+          {{ item.name }}
+        </template>
+      </v-select>
+      <v-select
+        v-model="selectedClienttype"
+        :items="clienttypes"
+        label="Filtrar Servicio"
+        item-value="id"
+        item-text="name"
+        return-object
+        filled
+        rounded
+        hide-details="auto"
+        class="mr-2 elevation-0"
+        style="width:180px;"
+        @change="changeType(selectedClienttype)"
+      >
+        <template v-slot:item="{ item }">
+          {{ item.name }}
+        </template>
+      </v-select>
+      <v-select
+        v-model="month"
+        :items="months"
+        label="Mes a operar"
+        filled
+        rounded
+      />
+    </div>
     <v-btn
+      :disabled="!month || !selectedCity || !selectedClienttype"
       color="primary"
       @click="monthSelect"
     >
@@ -21,6 +60,8 @@ export default {
   data () {
     return {
       month: null,
+      selectedCity: null,
+      selectedClienttype: null,
       months: [
         {
           text: 'Enero',
@@ -73,12 +114,40 @@ export default {
       ]
     }
   },
+  computed: {
+    cities () {
+      return this.$store.state.auth.cities
+    },
+    clienttypes () {
+      return this.$store.state.auth.clienttypes
+    }
+  },
   watch: {
     month () {
       this.setMonth()
     }
   },
+  mounted () {
+    this.setSelectedCity()
+    this.setSelectedClienttype()
+  },
   methods: {
+    setSelectedCity () {
+      if (this.$route.query.city) {
+        this.selectedCity = this.$store.state.auth.cities.find(c => c.name === this.$route.query.city)
+      }
+    },
+    setSelectedClienttype () {
+      if (this.$route.query.clienttype) {
+        this.selectedClienttype = this.$store.state.auth.clienttypes.find(c => c.name === this.$route.query.clienttype)
+      }
+    },
+    changeCity (city) {
+      this.$router.push({ query: { city: city.name, clienttype: this.$route.query.clienttype } })
+    },
+    changeType (clienttype) {
+      this.$router.push({ query: { city: this.$route.query.city, clienttype: clienttype.name } })
+    },
     setMonth () {
       this.$store.commit('cuts/setMonth', this.month)
     },

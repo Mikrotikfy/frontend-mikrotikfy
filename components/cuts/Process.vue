@@ -18,7 +18,18 @@
           :items="cuts"
           :loading="loading"
           :item-class="getcolor"
-        />
+        >
+          <template v-slot:[`item.service_addresses`]="{ item }">
+            <span>
+              {{ item.service_addresses.at(-1).address }}
+            </span>
+          </template>
+          <template v-slot:[`item.service_addresses.neighborhood`]="{ item }">
+            <span>
+              {{ item.service_addresses.at(-1).neighborhood.name }}
+            </span>
+          </template>
+        </v-data-table>
       </v-card-text>
     </v-card>
     <v-card v-if="cutErrors.length > 0">
@@ -47,18 +58,18 @@ export default {
       inprocess: false,
       headers: [
         { text: 'Codigo', value: 'code' },
-        { text: 'Nombre', value: 'name' },
-        { text: 'Direccion', value: 'address' },
-        { text: 'Barrio', value: 'neighborhood.name' },
-        { text: 'Telefono', value: 'phone' },
+        { text: 'Nombre', value: 'normalized_client.name' },
+        { text: 'Direccion', value: 'service_addresses' },
+        { text: 'Barrio', value: 'service_addresses.neighborhood' },
+        { text: 'Telefono', value: 'normalized_client.phone' },
         { text: 'Plan', value: 'plan.name' },
         { text: 'Resultado', value: 'success' }
       ]
     }
   },
   computed: {
-    validClients () {
-      return this.$store.state.cuts.validClients
+    validServices () {
+      return this.$store.state.cuts.validServices
     },
     cuts () {
       return this.$store.state.cuts.cuts
@@ -119,16 +130,16 @@ export default {
       })
     },
     async applyOffers () {
-      for (let i = 0; i < this.validClients.length; i++) {
-        const client = this.validClients[i]
-        if (client.debtmovement.isindebt) {
+      for (let i = 0; i < this.validServices.length; i++) {
+        const service = this.validServices[i]
+        if (service.debtmovement.isindebt) {
           this.$store.commit('cuts/addCutInDebt', {
-            client
+            service
           })
         } else {
           await this.$store.dispatch('offer/setNewOffer', {
             token: this.$store.state.auth.token,
-            client,
+            service,
             city: this.city,
             offer: this.offer,
             details: 'CAMBIO DE TARIFA EN LOTE',
@@ -138,8 +149,8 @@ export default {
             technician: this.$store.state.auth
           }).then(async () => {
             await this.$store.dispatch('client/setPlanFromModal', {
-              clientId: client.id,
-              clientIndex: null,
+              serviceId: service.id,
+              serviceIndex: null,
               isOfferChange: false,
               kick: this.kick,
               isBulkDx: true,
@@ -149,11 +160,11 @@ export default {
             }).then((success) => {
               if (success) {
                 this.$store.commit('cuts/addCut', {
-                  client
+                  service
                 })
               } else {
                 this.$store.commit('cuts/addCutError', {
-                  client
+                  service
                 })
               }
             })
@@ -162,12 +173,12 @@ export default {
       }
     },
     async cutsProcess () {
-      for (let i = 0; i < this.validClients.length; i++) {
-        const client = this.validClients[i]
-        this.$simpleTelegramUpdateDebt({ client, operator: this.$store.state.auth.username, indebt: true, active: true, telegramBots: this.telegramBots })
+      for (let i = 0; i < this.validServices.length; i++) {
+        const service = this.validServices[i]
+        this.$simpleTelegramUpdateDebt({ service, operator: this.$store.state.auth.username, indebt: true, active: true, telegramBots: this.telegramBots })
         await this.$store.dispatch('cuts/updateBillingPeriodAndDebt', {
           token: this.$store.state.auth.token,
-          client,
+          service,
           billingmonth: new Date().getMonth() + 1,
           billingyear: new Date().getFullYear(),
           indebt: true
@@ -178,13 +189,13 @@ export default {
           isindebt: true,
           isretired: false,
           isBulkDx: true,
-          client,
+          service,
           comment: 'CORTE MORA EN LOTE',
           technician: this.$store.state.auth
         })
         await this.$store.dispatch('client/setPlanFromModal', {
-          clientId: client.id,
-          clientIndex: null,
+          serviceId: service.id,
+          serviceIndex: null,
           isOfferChange: false,
           kick: this.kick,
           isBulkDx: true,
@@ -194,11 +205,11 @@ export default {
         }).then((success) => {
           if (success) {
             this.$store.commit('cuts/addCut', {
-              client
+              service
             })
           } else {
             this.$store.commit('cuts/addCutError', {
-              client
+              service
             })
           }
         })

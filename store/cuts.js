@@ -3,8 +3,8 @@ export const state = () => ({
   usePlan: false,
   billingPeriod: null,
   billingPeriodMovements: [],
-  clients: [],
-  clientsByPlan: [],
+  services: [],
+  servicesByPlan: [],
   cutErrors: [],
   cuts: [],
   e1: '1',
@@ -20,7 +20,7 @@ export const state = () => ({
   prepare: false,
   ready: [],
   type: null,
-  validClients: []
+  validServices: []
 })
 export const mutations = {
   clear (state) {
@@ -28,8 +28,8 @@ export const mutations = {
     state.usePlan = false
     state.billingPeriod = null
     state.billingPeriodMovements = []
-    state.clients = []
-    state.clientsByPlan = []
+    state.services = []
+    state.servicesByPlan = []
     state.cutErrors = []
     state.cuts = []
     state.e1 = '1'
@@ -44,7 +44,7 @@ export const mutations = {
     state.prepare = false
     state.ready = []
     state.type = null
-    state.validClients = []
+    state.validServices = []
   },
   e1 (state, e1) {
     state.e1 = e1
@@ -64,29 +64,29 @@ export const mutations = {
   setCodes (state, codes) {
     state.ready = codes
   },
-  addClient (state, clients) {
-    state.clients.push(clients)
+  addService (state, services) {
+    state.services.push(services)
   },
-  addValidClient (state, clients) {
-    state.validClients.push(clients)
+  addValidService (state, services) {
+    state.validServices.push(services)
   },
   addCut (state, cuts) {
-    state.cuts.push({ success: true, ...cuts.client })
+    state.cuts.push({ success: true, ...cuts.service })
   },
-  addCutError (state, erroredClient) {
-    state.cutErrors = erroredClient
+  addCutError (state, erroredService) {
+    state.cutErrors = erroredService
   },
   addCutInDebt (state, cuts) {
-    state.isindebt.push(cuts.client)
+    state.isindebt.push(cuts.service)
   },
   reset (state) {
-    state.clients = []
+    state.services = []
   },
   resetcuts (state) {
     state.cuts = []
   },
   resetvalid (state) {
-    state.validClients = []
+    state.validServices = []
   },
   loading (state, loading) {
     state.loading = loading
@@ -118,12 +118,12 @@ export const mutations = {
   getPlans (state, plans) {
     state.plans = plans
   },
-  getClientsByPlan (state, clients) {
-    state.clientsByPlan = clients
+  getServicesByPlan (state, services) {
+    state.servicesByPlan = services
   }
 }
 export const actions = {
-  getClientsByPlan ({ commit }, payload) {
+  getServicesByPlan ({ commit }, payload) {
     try {
       const qs = require('qs')
       const query = qs.stringify({
@@ -141,7 +141,7 @@ export const actions = {
       {
         encodeValuesOnly: true
       })
-      fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}services?${query}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -149,8 +149,8 @@ export const actions = {
         }
       })
         .then(res => res.json())
-        .then((clients) => {
-          commit('getClientsByPlan', clients.data)
+        .then(({ data: services }) => {
+          commit('getServicesByPlan', services)
         })
     } catch (error) {
       throw new Error(`LAST DEBT HISTORY ACTION ${error}`)
@@ -169,10 +169,10 @@ export const actions = {
         commit('getPlans', plans.data)
       })
   },
-  retireClient ({ commit }, payload) {
+  retireService ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -186,18 +186,18 @@ export const actions = {
           })
         })
           .then(res => res.json())
-          .then((client) => {
-            resolve(client)
+          .then(({ data: service }) => {
+            resolve(service)
           })
       })
     } catch (error) {
-      throw new Error(`RETIRE CLIENT ACTION ${error}`)
+      throw new Error(`RETIRE SERVICE ACTION ${error}`)
     }
   },
   updateBillingPeriodAndDebt ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -217,10 +217,10 @@ export const actions = {
           })
       })
     } catch (error) {
-      throw new Error(`UPDATE BILLING PERIOD ON CLIENT ACTION ${error}`)
+      throw new Error(`UPDATE BILLING PERIOD ON SERVICE ACTION ${error}`)
     }
   },
-  getClientsByBillingPeriod ({ commit }, payload) {
+  getServicesByBillingPeriod ({ commit }, payload) {
     try {
       const qs = require('qs')
       const query = qs.stringify({
@@ -238,8 +238,9 @@ export const actions = {
           pageSize: 500
         },
         populate: [
-          'addresses',
-          'addresses.neighborhood'
+          'normalized_client',
+          'service_addresses',
+          'service_addresses.neighborhood'
         ],
         sort: 'createdAt:desc'
       },
@@ -247,7 +248,7 @@ export const actions = {
         encodeValuesOnly: true
       })
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services?${query}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -255,8 +256,8 @@ export const actions = {
           }
         })
           .then(res => res.json())
-          .then((clients) => {
-            resolve(clients.data)
+          .then(({ data: services }) => {
+            resolve(services)
           })
       })
     } catch (error) {
@@ -306,7 +307,7 @@ export const actions = {
       const query = qs.stringify({
         filters: {
           isindebt: true,
-          client: {
+          service: {
             city: {
               name: payload.city
             }
@@ -315,7 +316,7 @@ export const actions = {
             $gte: payload.billingPeriod.createdAt
           }
         },
-        populate: ['client', 'client.neighborhood', 'client.debtmovements'],
+        populate: ['service', 'service.service_addresses', 'service.service_addresses.neighborhood', 'service.debtmovements'],
         pagination: {
           pageSize: 1000
         },
@@ -336,7 +337,7 @@ export const actions = {
           .then((debtmovements) => {
             const movements = []
             debtmovements.data.map((movement) => {
-              if (movement.client.debtmovements.at(-1).isindebt) {
+              if (movement.service.debtmovements.at(-1).isindebt) {
                 movements.push(movement)
                 return movement
               }
@@ -411,7 +412,7 @@ export const actions = {
       throw new Error(`LAST DEBT HISTORY ACTION ${error}`)
     }
   },
-  prepareClients ({ commit }, payload) {
+  prepareServices ({ commit }, payload) {
     try {
       const qs = require('qs')
       const query = qs.stringify({
@@ -421,14 +422,14 @@ export const actions = {
             name: payload.city
           }
         },
-        populate: ['neighborhood', 'plan', 'offer', 'debtmovements'],
+        populate: ['service_addresses', 'service_addresses.neighborhood', 'normalized_client', 'plan', 'offer', 'debtmovements'],
         sort: 'createdAt:desc'
       },
       {
         encodeValuesOnly: true
       })
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services?${query}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -436,25 +437,25 @@ export const actions = {
           }
         })
           .then(res => res.json())
-          .then((clients) => {
-            clients.valid = true
-            if (clients.data.length === 1) {
-              for (let i = 0; i < clients.data.length; i++) {
-                commit('addClient', { valid: true, ...clients.data[i] })
-                commit('addValidClient', clients.data[i])
-                resolve({ valid: true, ...clients.data[i] })
+          .then(({ data: services }) => {
+            services.valid = true
+            if (services.length === 1) {
+              for (let i = 0; i < services.length; i++) {
+                commit('addService', { valid: true, ...services[i] })
+                commit('addValidService', services[i])
+                resolve({ valid: true, ...services[i] })
               }
-            } else if (clients.data.length > 1) {
-              commit('addClient', { valid: true, ...clients.data[0] })
-              commit('addValidClient', clients.data[0])
-              resolve({ valid: true, ...clients.data[0] })
+            } else if (services.length > 1) {
+              commit('addService', { valid: true, ...services[0] })
+              commit('addValidService', services[0])
+              resolve({ valid: true, ...services[0] })
             } else {
               const notfound = {
                 valid: false,
                 code: payload.ready,
-                name: 'Cliente no encontrado'
+                name: 'Servicio no encontrado'
               }
-              commit('addClient', notfound)
+              commit('addService', notfound)
               commit('adderror')
               resolve(notfound)
             }

@@ -22,7 +22,7 @@
 <script>
 export default {
   props: {
-    clients: {
+    services: {
       type: Array,
       default: () => []
     }
@@ -41,42 +41,42 @@ export default {
   methods: {
     async initComponent () {
       await this.getTechnicians()
-      if (this.clients.length > 0) {
-        const clients = []
+      if (this.services.length > 0) {
+        const services = []
         if (this.$route.query.clienttype === 'INTERNET') {
-          this.clients.map((client) => {
-            clients.push({
-              id: client.id,
-              code: client.code,
-              name: client.name,
-              address: client.address,
-              addresses: client.addresses,
-              phone: client.phone,
-              plan: client.plan,
-              technology: client.technology,
-              stratum: client.stratum
+          this.services.map((service) => {
+            services.push({
+              id: service.id,
+              code: service.code,
+              name: service.normalized_client.name,
+              address: service.service_addresses.at(-1).address,
+              neighborhood: service.service_addresses.at(-1).neighborhood.name,
+              phone: service.normalized_client.phone,
+              plan: service.plan,
+              technology: service.technology,
+              stratum: service.stratum
             })
           })
         } else {
-          this.clients.map((client) => {
-            clients.push({
-              id: client.id,
-              code: client.code,
-              name: client.name,
-              address: client.address,
-              addresses: client.addresses,
-              phone: client.phone
+          this.services.map((service) => {
+            services.push({
+              id: service.id,
+              code: service.code,
+              name: service.normalized_client.name,
+              address: service.service_addresses.at(-1).address,
+              neighborhood: service.service_addresses.at(-1).neighborhood.name,
+              phone: service.normalized_client.phone
             })
           })
         }
-        localStorage.removeItem('clientsDx')
-        localStorage.setItem('clientsDx', JSON.stringify(clients))
-        localStorage.removeItem('clientsDxClienttype')
-        localStorage.setItem('clientsDxClienttype', JSON.stringify(this.$route.query.clienttype))
+        localStorage.removeItem('servicesDx')
+        localStorage.setItem('servicesDx', JSON.stringify(services))
+        localStorage.removeItem('servicesDxClienttype')
+        localStorage.setItem('servicesDxClienttype', JSON.stringify(this.$route.query.clienttype))
         const routeData = this.$router.resolve({ name: 'dxformat' })
         window.open(routeData.href, '_blank')
       } else {
-        this.$toast.error('Selecciona los clientes antes de imprimir', { position: 'bottom-center' })
+        this.$toast.error('Selecciona los servicios antes de imprimir', { position: 'bottom-center' })
       }
     },
     async getTechnicians () {

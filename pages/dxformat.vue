@@ -1,5 +1,5 @@
 <template>
-  <div v-if="clients">
+  <div v-if="services">
     <v-card class="printme">
       <v-card-text>
         <v-container fluid>
@@ -27,7 +27,7 @@
           </v-row>
           <v-row class="mt-5">
             <div
-              v-for="item in clients"
+              v-for="item in services"
               :key="item.id"
               class="parent"
             >
@@ -38,10 +38,10 @@
                 {{ item.name }}
               </span>
               <span>
-                {{ item.addresses.at(-1).address }}
+                {{ item.address }}
               </span>
               <span>
-                {{ item.addresses.at(-1).neighborhood.name }}
+                {{ item.neighborhood }}
               </span>
               <span>
                 {{ item.phone }}
@@ -68,24 +68,24 @@ export default {
       modal: false,
       technician: null,
       technicians: [],
-      clients: [],
+      services: [],
       clienttype: ''
     }
   },
   mounted () {
     this.$vuetify.theme.dark = false
-    this.getClientDx()
-    this.clientsDxClienttype()
+    this.getServicesDx()
+    this.servicesDxClienttype()
   },
   methods: {
-    getClientDx () {
-      if (localStorage.getItem('clientsDx')) {
-        this.clients = JSON.parse(localStorage.getItem('clientsDx'))
+    getServicesDx () {
+      if (localStorage.getItem('servicesDx')) {
+        this.services = JSON.parse(localStorage.getItem('servicesDx'))
       }
     },
-    clientsDxClienttype () {
-      if (localStorage.getItem('clientsDxClienttype')) {
-        this.clienttype = JSON.parse(localStorage.getItem('clientsDxClienttype'))
+    servicesDxClienttype () {
+      if (localStorage.getItem('servicesDxClienttype')) {
+        this.clienttype = JSON.parse(localStorage.getItem('servicesDxClienttype'))
       }
     },
     getDate (date) {
