@@ -518,16 +518,16 @@ export default {
   }),
   computed: {
     currentCity () {
-      return this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
+      return this.$store.state.auth.cities.find(city => city.name === this.service.city.name)
     },
     neighborhoods () {
       return this.$store.state.neighborhoods
     },
     clienttype () {
-      return this.$store.state.clienttypes.find(ct => ct.name === this.$route.query.clienttype)
+      return this.$store.state.clienttypes.find(ct => ct.name === this.service.name)
     },
     telegramBots () {
-      return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
+      return this.$store.state.telegramBots.find(bot => bot.city.name === this.service.city.name)
     },
     tickettypes () {
       return this.$store.state.ticket.tickettypes
@@ -693,10 +693,10 @@ export default {
           this.loading = false
           this.$store.commit('client/refresh')
           if (this.service.name === 'INTERNET') {
-            this.$simpleTelegramCreateTicket({ service: this.service, tickettype: this.ticketPayload.type.name, details: this.ticketPayload.details, neighborhood: this.client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+            this.$simpleTelegramCreateTicket({ client: this.client, service: this.service, tickettype: this.ticketPayload.type.name, details: this.ticketPayload.details, neighborhood: this.client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
             // this.$pushSend({ title: 'TICKET INTERNET', message: `Ticket ${this.ticketPayload.type.name} creado para ${this.client.name}` })
           } else {
-            this.$simpleTelegramCreateTicketTV({ service: this.service, tickettype: this.ticketPayload.type.name, details: this.ticketPayload.details, neighborhood: this.client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+            this.$simpleTelegramCreateTicketTV({ client: this.client, service: this.service, tickettype: this.ticketPayload.type.name, details: this.ticketPayload.details, neighborhood: this.client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
             // this.$pushSend({ title: 'TICKET TELEVISION', message: `Ticket ${this.ticketPayload.type.name} creado para ${this.client.name}` })
           }
         } else {

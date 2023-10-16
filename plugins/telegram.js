@@ -274,15 +274,15 @@ function simpleWhatsappSendToChat ({ tickettype, service, user, token }) {
       return err
     })
 };
-function simpleTelegramCreateTicket ({ client, tickettype, details, operator, telegramBots }) {
+function simpleTelegramCreateTicket ({ client, service, tickettype, details, operator, telegramBots }) {
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.chat
   const line1 = 'ℹ NUEVO TICKET ℹ️'
-  const line2 = client.code
+  const line2 = service.code
   const line3 = client.name
-  const line4 = client.addresses.at(-1).address
-  const line5 = client.addresses.at(-1).neighborhood.name
+  const line4 = service.service_addresses.at(-1).address
+  const line5 = service.service_addresses.at(-1).neighborhood.name
   const line6 = client.phone
   const line7 = tickettype
   const line8 = details
@@ -307,15 +307,15 @@ function simpleTelegramCreateTicket ({ client, tickettype, details, operator, te
       return err
     })
 };
-function simpleTelegramCreateTicketTV ({ client, tickettype, details, operator, telegramBots }) {
+function simpleTelegramCreateTicketTV ({ client, service, tickettype, details, operator, telegramBots }) {
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.tvchat
   const line1 = 'ℹ NUEVO TICKET ℹ️'
-  const line2 = client.code
+  const line2 = service.code
   const line3 = client.name
-  const line4 = client.addresses.at(-1).address
-  const line5 = client.addresses.at(-1).neighborhood.name
+  const line4 = service.service_addresses.at(-1).address
+  const line5 = service.service_addresses.at(-1).neighborhood.name
   const line6 = client.phone
   const line7 = tickettype
   const line8 = details

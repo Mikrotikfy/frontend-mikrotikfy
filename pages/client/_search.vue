@@ -483,6 +483,7 @@ export default {
     },
     '$route.query.service' () {
       this.selectServiceIfQuery()
+      this.getTickettypes()
     },
     searchResult () {
       this.selectServiceIfQuery()
@@ -511,8 +512,8 @@ export default {
     },
     getTickettypes () {
       this.$store.dispatch('ticket/getTickettypes', {
-        city: this.$route.query.city,
-        clienttype: this.$route.query.clienttype,
+        city: this.currentService.city.name,
+        clienttype: this.currentService.name,
         token: this.$store.state.auth.token
       })
     },
