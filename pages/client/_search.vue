@@ -93,7 +93,7 @@
             <v-tooltip top>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                  :to="`/billing/${currentService.id}`"
+                  :to="`/billing/${currentService.id}?city=${$route.query.city}`"
                   rounded
                   class="mr-1 ml-1"
                   :color="$vuetify.theme.dark ? currentService.indebt || !currentService.active ? 'red lighten-1' : 'white black--text' : 'primary'"

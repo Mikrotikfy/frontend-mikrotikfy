@@ -159,7 +159,7 @@ export default {
   methods: {
     text: item => `${item.code} - ${item.dni} - ${item.name} - ${item.phone}`,
     changeCity (city) {
-      this.$router.push({ query: { city: city.name, clienttype: this.$route.query.clienttype, view: this.$route.query.view } })
+      this.$router.push({ query: { city: city.name } })
     },
     setSelectedCity () {
       if (this.$route.query.city) {

@@ -192,12 +192,12 @@ export default {
       if (search) {
         this.loadingDataTable = true
         this.$router.push({
-          path: `/billing/${search.id}`
+          path: `/billing/${search.id}?city=${this.$route.query.city}`
         })
         this.loadingDataTable = false
       } else {
         this.$router.push({
-          path: '/billing'
+          path: `/billing?city=${this.$route.query.city}`
         })
         this.loadingDataTable = false
       }

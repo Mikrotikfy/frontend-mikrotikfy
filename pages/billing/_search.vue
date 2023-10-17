@@ -25,7 +25,7 @@
         <v-card class="rounded-lg">
           <v-card-title class="text-caption">
             <nuxt-link
-              :to="`/client/${currentService.normalized_client.id}?service=${currentService.id}`"
+              :to="`/client/${currentService.normalized_client.id}?service=${currentService.id}&city=${$route.query.city}`"
               class="hideMe rounded-xl text-body-1 white--text text-weight-bold"
             >
               {{ currentService.code }} / {{ currentService.normalized_client.name }} / {{ processAddresses(currentService) }} / {{ processAddressesNeighborhood(currentService) }}
