@@ -32,7 +32,6 @@
           :item-text="text"
           item-value="id"
           clearable
-          cache-items
           hide-details
           auto-select-first
           return-object
@@ -60,7 +59,7 @@
                     class="mr-1"
                     v-bind="attrs"
                     v-on="on"
-                    @click="getClientBySearch(service)"
+                    @click="getClientBySearchFromService(service)"
                   >
                     <v-icon
                       :color="service.active ? service.indebt ? 'red darkne-2' : 'green darken-2' : service.indebt ? 'gray' : 'red darken-4'"
@@ -107,7 +106,7 @@ export default {
     },
     select (resultObject) {
       if (this.search && resultObject.services.length === 1) {
-        this.getClientBySearch(resultObject)
+        this.getClientBySearchFromClient(resultObject)
       }
     }
   },
@@ -183,16 +182,35 @@ export default {
           this.loadingDataTable = false
         })
     },
-    getClientBySearch (search) {
+    getClientBySearchFromService (service) {
       this.$store.commit('billing/resetInvoices')
       this.$store.commit('billing/resetSelected')
       this.$store.commit('billing/resetCurrentClient')
       this.$store.commit('billing/setShowPayedToFalse')
-      this.$store.commit('billing/getClientsBySearch', search)
-      if (search) {
+      this.$store.commit('billing/getClientsBySearch', service)
+      if (service) {
         this.loadingDataTable = true
         this.$router.push({
-          path: `/billing/${search.id}?city=${this.$route.query.city}`
+          path: `/billing/${service.id}?city=${this.$route.query.city}`
+        })
+        this.loadingDataTable = false
+      } else {
+        this.$router.push({
+          path: `/billing?city=${this.$route.query.city}`
+        })
+        this.loadingDataTable = false
+      }
+    },
+    getClientBySearchFromClient (client) {
+      this.$store.commit('billing/resetInvoices')
+      this.$store.commit('billing/resetSelected')
+      this.$store.commit('billing/resetCurrentClient')
+      this.$store.commit('billing/setShowPayedToFalse')
+      this.$store.commit('billing/getClientsBySearch', client)
+      if (client) {
+        this.loadingDataTable = true
+        this.$router.push({
+          path: `/billing/${client.services[0].id}?city=${this.$route.query.city}`
         })
         this.loadingDataTable = false
       } else {
