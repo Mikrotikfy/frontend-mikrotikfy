@@ -90,6 +90,9 @@
               :item="currentService"
             />
             <CreateTicket :client="searchResult" :service="currentService" :assignated="$store.state.auth.id" />
+            <ControlDevices v-if="currentService.name === 'INTERNET'" :service="currentService" :name="currentService.normalized_client.name" />
+            <ControlNap v-if="currentService.name === 'INTERNET'" :isticket="false" :service="currentService" />
+            <ControlTicketHistory :service="currentService" />
             <v-tooltip top>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
@@ -351,7 +354,7 @@
                   />
                 </v-col>
               </v-row>
-              <v-row v-if="currentService.name === 'TELEVISION' && currentService.tvspecs">
+              <v-row v-if="currentService.name === 'TELEVISION' && currentService.tvspec">
                 <v-col>
                   <v-text-field
                     v-model="currentService.tvspec.tvs"

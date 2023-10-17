@@ -1,50 +1,66 @@
 <template>
-  <span v-if="client">
-    <v-card
-      class="rounded-xl"
-    >
-      <v-card-title>
-        <v-icon class="mr-2">
-          mdi-lan
-        </v-icon>
-        Segmento de red
-      </v-card-title>
-      <v-card-text v-if="current.length > 0">
-        Este cliente pertenece a las siguientes NAPS:
-        <v-chip
-          v-for="(item, index) in current"
-          :key="index"
-          color="grey darken-3"
-          class="mr-2"
-          small
-          label
+  <span>
+    <v-tooltip top>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          v-bind="attrs"
+          icon
+          :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
+          v-on="on"
+          @click="initComponent()"
         >
-          {{ item.code }}
-        </v-chip>
-      </v-card-text>
-      <v-card-text>
-        <v-autocomplete
-          ref="autocomplete1"
-          v-model="selected"
-          :items="naps"
-          :disabled="waitingForClientNapData || saving"
-          label="Seleccionar NAP"
-          autocomplete="off"
-          item-text="code"
-          item-value="id"
-          hide-details="auto"
-          return-object
-          outlined
-          @change="save"
-        />
-      </v-card-text>
-      <v-card-text>
-        <NapCreateDialog />
-      </v-card-text>
-    </v-card>
-  </span>
-  <span v-else>
-    No compatible
+          <v-icon>mdi-lan</v-icon>
+        </v-btn>
+      </template>
+      <span>NAP</span>
+    </v-tooltip>
+    <v-dialog
+      v-model="modal"
+      width="900"
+    >
+      <v-card
+        class="rounded-xl"
+      >
+        <v-card-title>
+          <v-icon class="mr-2">
+            mdi-lan
+          </v-icon>
+          Segmento de red
+        </v-card-title>
+        <v-card-text v-if="current.length > 0">
+          Este cliente pertenece a las siguientes NAPS:
+          <v-chip
+            v-for="(item, index) in current"
+            :key="index"
+            color="grey darken-3"
+            class="mr-2"
+            small
+            label
+          >
+            {{ item.code }}
+          </v-chip>
+        </v-card-text>
+        <v-card-text>
+          <v-autocomplete
+            ref="autocomplete1"
+            v-model="selected"
+            :items="naps"
+            :disabled="waitingForClientNapData || saving"
+            label="Seleccionar NAP"
+            autocomplete="off"
+            item-text="code"
+            item-value="id"
+            hide-details="auto"
+            return-object
+            outlined
+            @change="save"
+          />
+        </v-card-text>
+        <v-card-text>
+          <NapCreateDialog />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </span>
 </template>
 
@@ -60,7 +76,7 @@ export default {
       type: Number,
       default: 0
     },
-    client: {
+    service: {
       type: Object,
       required: true
     },
@@ -86,9 +102,6 @@ export default {
       return this.$store.state.nap.clientNapData
     }
   },
-  mounted () {
-    this.initComponent()
-  },
   methods: {
     initComponent () {
       this.modal = true
@@ -99,7 +112,7 @@ export default {
       this.saving = true
       await this.$store.dispatch('nap/saveClientNap', {
         token: this.$store.state.auth.token,
-        client: this.client,
+        service: this.service,
         nap: this.selected,
         current: this.current
       })
@@ -117,7 +130,7 @@ export default {
     async getClientNapData () {
       await this.$store.dispatch('nap/getClientNapData', {
         token: this.$store.state.auth.token,
-        client: this.client
+        service: this.service
       })
       this.current = this.clientNapData.naps
       this.waitingForClientNapData = false

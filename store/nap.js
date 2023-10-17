@@ -134,7 +134,7 @@ export const actions = {
   saveClientNap ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -148,18 +148,18 @@ export const actions = {
         })
           .then(res => res.json())
           .then((naps) => {
-            this.$toast.info(`${payload.client.name} agregado a NAP ${payload.nap.code}`, { duration: 2000 })
+            this.$toast.info(`${payload.service.id} agregado a NAP ${payload.nap.code}`, { duration: 2000 })
             resolve(naps)
           })
       })
     } catch (error) {
-      throw new Error(`NAPS SAVE CLIENT ACTION ${error}`)
+      throw new Error(`NAPS SAVE SERVICE ACTION ${error}`)
     }
   },
   getClientNapData ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}?populate=naps`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}?populate=naps`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -167,9 +167,9 @@ export const actions = {
           }
         })
           .then(res => res.json())
-          .then((clientNapData) => {
-            commit('getClientNapData', clientNapData.data)
-            resolve(clientNapData.data)
+          .then(({ data: clientNapData }) => {
+            commit('getClientNapData', clientNapData)
+            resolve(clientNapData)
           })
       })
     } catch (error) {

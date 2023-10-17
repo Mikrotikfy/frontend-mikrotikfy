@@ -1,49 +1,70 @@
 <template>
-  <v-card
-    :loading="loading"
-    class="rounded-xl"
-  >
-    <v-card-title>
-      <v-icon class="mr-2">
-        mdi-wifi
-      </v-icon>
-      Equipos asociados
-    </v-card-title>
-    <v-card-text>
-      <CreateDevice :clientid="clientid" @createDevice="updateDeviceList($event)" />
-    </v-card-text>
-    <div v-if="!loading">
-      <v-card-text>
-        <client-only>
-          <h3>{{ name }}</h3>
-          <v-data-table
-            :headers="headers"
-            :items="devices"
-            :items-per-page="itemsPerPage"
-            sort-by="createdAt"
-            calculate-widths
-            sort-desc
-            :page.sync="page"
-            no-data-text="No hay equipos para mostrar aun..."
-            loading-text="Cargando información de equipos..."
-            dense
-            hide-default-footer
-            mobile-breakpoint="100"
-            @page-count="pageCount = $event"
-          >
-            <template v-slot:[`item.createdAt`]="{ item }">
-              <span>
-                {{ getDate(item.createdAt) }}
-              </span>
-            </template>
-          </v-data-table>
-        </client-only>
-        <div v-if="pageCount > 1" class="text-center pt-2">
-          <v-pagination v-model="page" :length="pageCount" />
+  <span>
+    <v-tooltip top>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          v-bind="attrs"
+          icon
+          :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
+          v-on="on"
+          @click="initComponent()"
+        >
+          <v-icon>mdi-router-wireless</v-icon>
+        </v-btn>
+      </template>
+      <span>Dispositivos Vinculados</span>
+    </v-tooltip>
+    <v-dialog
+      v-model="modal"
+      width="900"
+    >
+      <v-card
+        :loading="loading"
+        class="rounded-xl"
+      >
+        <v-card-title>
+          <v-icon class="mr-2">
+            mdi-wifi
+          </v-icon>
+          Equipos asociados
+        </v-card-title>
+        <v-card-text>
+          <CreateDevice :serviceid="service.id" @createDevice="updateDeviceList($event)" />
+        </v-card-text>
+        <div v-if="!loading">
+          <v-card-text>
+            <client-only>
+              <h3>{{ name }}</h3>
+              <v-data-table
+                :headers="headers"
+                :items="devices"
+                :items-per-page="itemsPerPage"
+                sort-by="createdAt"
+                calculate-widths
+                sort-desc
+                :page.sync="page"
+                no-data-text="No hay equipos para mostrar aun..."
+                loading-text="Cargando información de equipos..."
+                dense
+                hide-default-footer
+                mobile-breakpoint="100"
+                @page-count="pageCount = $event"
+              >
+                <template v-slot:[`item.createdAt`]="{ item }">
+                  <span>
+                    {{ getDate(item.createdAt) }}
+                  </span>
+                </template>
+              </v-data-table>
+            </client-only>
+            <div v-if="pageCount > 1" class="text-center pt-2">
+              <v-pagination v-model="page" :length="pageCount" />
+            </div>
+          </v-card-text>
         </div>
-      </v-card-text>
-    </div>
-  </v-card>
+      </v-card>
+    </v-dialog>
+  </span>
 </template>
 
 <script>
@@ -54,9 +75,9 @@ export default {
       type: String,
       default: 'Devices'
     },
-    clientid: {
-      type: Number,
-      default: -1
+    service: {
+      type: Object,
+      default: () => {}
     },
     block: {
       type: Boolean,
@@ -77,9 +98,6 @@ export default {
       { text: 'Fecha de Adicion', sortable: true, value: 'createdAt' }
     ]
   }),
-  mounted () {
-    this.initComponent()
-  },
   methods: {
     updateDeviceList (device) {
       this.devices.push({
@@ -96,9 +114,9 @@ export default {
       const qs = require('qs')
       const query = qs.stringify({
         filters: {
-          clients: {
+          services: {
             id: {
-              $eq: this.clientid
+              $eq: this.service.id
             }
           }
         },
@@ -117,8 +135,8 @@ export default {
         }
       })
         .then(res => res.json())
-        .then((devices) => {
-          this.devices = devices.data
+        .then(({ data: devices }) => {
+          this.devices = devices
         })
     },
     getDate (date) {

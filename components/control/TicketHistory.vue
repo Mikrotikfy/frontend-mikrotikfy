@@ -1,56 +1,77 @@
 <template>
-  <v-card
-    :loading="loading"
-    class="rounded-xl"
-  >
-    <v-card-title>
-      <v-icon class="mr-2">
-        mdi-comment-plus-outline
-      </v-icon>
-      Historial de Tickets
-    </v-card-title>
-    <div v-if="!loading">
-      <v-card-text>
-        <client-only>
-          <v-data-table
-            :headers="headers"
-            :items="tickets"
-            :items-per-page="itemsPerPage"
-            sort-by="createdAt"
-            calculate-widths
-            sort-desc
-            :page.sync="page"
-            no-data-text="No hay tickets para mostrar aún..."
-            loading-text="Cargando información de tickets..."
-            dense
-            hide-default-footer
-            mobile-breakpoint="100"
-            @page-count="pageCount = $event"
-          >
-            <template v-slot:[`item.actions`]="props">
-              <TicketAdvanceHistory
-                :ticketid="props.item.id"
-                :name="props.item.client.name"
-              />
-            </template>
-            <template v-slot:[`item.active`]="props">
-              <v-chip small :color="getColor(props.item.active)" class="white--text">
-                {{ getState(props.item.active) }}
-              </v-chip>
-            </template>
-            <template v-slot:[`item.createdAt`]="{ item }">
-              <span>
-                {{ getDate(item.createdAt) }}
-              </span>
-            </template>
-          </v-data-table>
-        </client-only>
-        <div v-if="pageCount > 1" class="text-center pt-2">
-          <v-pagination v-model="page" :length="pageCount" />
+<span>
+    <v-tooltip top>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          v-bind="attrs"
+          icon
+          :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
+          v-on="on"
+          @click="initComponent()"
+        >
+          <v-icon>mdi-history</v-icon>
+        </v-btn>
+      </template>
+      <span>Historial de Tickets</span>
+    </v-tooltip>
+    <v-dialog
+      v-model="modal"
+      width="1200"
+    >
+      <v-card
+        :loading="loading"
+        class="rounded-xl"
+      >
+        <v-card-title>
+          <v-icon class="mr-2">
+            mdi-history
+          </v-icon>
+          Historial de Tickets
+        </v-card-title>
+        <div v-if="!loading">
+          <v-card-text>
+            <client-only>
+              <v-data-table
+                :headers="headers"
+                :items="tickets"
+                :items-per-page="itemsPerPage"
+                sort-by="createdAt"
+                calculate-widths
+                sort-desc
+                :page.sync="page"
+                no-data-text="No hay tickets para mostrar aún..."
+                loading-text="Cargando información de tickets..."
+                dense
+                hide-default-footer
+                mobile-breakpoint="100"
+                @page-count="pageCount = $event"
+              >
+                <template v-slot:[`item.actions`]="props">
+                  <TicketAdvanceHistory
+                    :ticketid="props.item.id"
+                    :name="props.item.service.normalized_client.name"
+                  />
+                </template>
+                <template v-slot:[`item.active`]="props">
+                  <v-chip small :color="getColor(props.item.active)" class="white--text">
+                    {{ getState(props.item.active) }}
+                  </v-chip>
+                </template>
+                <template v-slot:[`item.createdAt`]="{ item }">
+                  <span>
+                    {{ getDate(item.createdAt) }}
+                  </span>
+                </template>
+              </v-data-table>
+            </client-only>
+            <div v-if="pageCount > 1" class="text-center pt-2">
+              <v-pagination v-model="page" :length="pageCount" />
+            </div>
+          </v-card-text>
         </div>
-      </v-card-text>
-    </div>
-  </v-card>
+      </v-card>
+    </v-dialog>
+  </span>
 </template>
 
 <script>
@@ -61,7 +82,7 @@ export default {
     TicketAdvanceHistory
   },
   props: {
-    clientid: {
+    service: {
       type: Number,
       default: -1
     },
@@ -79,11 +100,11 @@ export default {
     loading: true,
     page: 1,
     pageCount: 0,
-    itemsPerPage: 5,
+    itemsPerPage: 30,
     tickets: [],
     headers: [
       { text: 'Estado', sortable: true, value: 'active' },
-      { text: 'Cliente', sortable: true, value: 'client.name' },
+      { text: 'Cliente', sortable: true, value: 'service.normalized_client.name' },
       { text: 'Tipo', sortable: true, value: 'tickettype.name' },
       { text: 'Operador', sortable: false, value: 'assignated.username' },
       { text: 'Detalles', sortable: true, value: 'details' },
@@ -91,9 +112,6 @@ export default {
       { text: 'Acciones', sortable: true, value: 'actions' }
     ]
   }),
-  mounted () {
-    this.initComponent()
-  },
   methods: {
     initComponent () {
       this.modal = true
@@ -101,17 +119,18 @@ export default {
       const qs = require('qs')
       const query = qs.stringify({
         filters: {
-          client: {
+          service: {
             id: {
-              $eq: this.clientid
+              $eq: this.service.id
             }
           },
           clienttype: {
-            name: this.$route.query.clienttype
+            name: this.service.name
           }
         },
         populate: [
-          'client',
+          'service',
+          'service.normalized_client',
           'tickettype',
           'assignated'
         ]
@@ -127,8 +146,8 @@ export default {
         }
       })
         .then(res => res.json())
-        .then((tickets) => {
-          this.tickets = tickets.data
+        .then(({ data: tickets }) => {
+          this.tickets = tickets
         })
     },
     getDate (date) {
