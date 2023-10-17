@@ -469,7 +469,7 @@
                 <v-tooltip v-if="$isAdmin() || $isBiller()" top>
                   <template v-slot:activator="{ on: tooltip }">
                     <nuxt-link
-                      :to="`/billing/${item.service.id}`"
+                      :to="`/billing/${item.service.id}?city=${$route.query.city}`"
                     >
                       <v-btn
                         x-small

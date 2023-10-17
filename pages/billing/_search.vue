@@ -100,7 +100,7 @@ export default {
     '$route' () {
       this.$store.commit('billing/resetInvoices')
       this.$router.push({
-        path: `/billing?city=${this.$route.query.city}&clienttype=${this.$route.query.clienttype}`
+        path: `/billing?city=${this.$route.query.city}`
       })
     }
   },

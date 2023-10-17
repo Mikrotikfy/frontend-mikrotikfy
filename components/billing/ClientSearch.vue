@@ -6,6 +6,24 @@
       <v-row
         class="mx-1 mt-1 mb-1 justify-center d-flex"
       >
+        <v-select
+          v-model="selectedCity"
+          :items="cities"
+          label="Filtrar Ciudad"
+          item-value="id"
+          item-text="name"
+          return-object
+          solo
+          rounded
+          hide-details="auto"
+          class="elevation-0"
+          style="max-width:180px;border-radius: 30px 0 0 30px;height:48px;"
+          @change="changeCity(selectedCity)"
+        >
+          <template v-slot:item="{ item }">
+            {{ item.name }}
+          </template>
+        </v-select>
         <v-autocomplete
           v-model="select"
           :items="searchResults"
@@ -23,11 +41,11 @@
           no-data-text="Realiza una busqueda para iniciar..."
           :loading="loadingDataTable"
           class="white--text"
-          style="width:100px;max-width: 600px;border-radius: 30px 30px 30px 30px;"
+          style="width:100px;max-width: 600px;border-radius: 0 30px 30px 0;"
         >
           <template v-slot:item="{ item }">
             <v-list-item-content>
-              <v-list-item-title class="text-caption" v-text="`${item.dni} / ${item.name} / ${item.phone}`" />
+              <v-list-item-title class="text-caption" v-text="`${item.code} / ${item.dni} / ${item.name} / ${item.phone}`" />
             </v-list-item-content>
             <v-list-item-action class="d-flex flex-row">
               <v-tooltip
@@ -70,13 +88,17 @@ export default {
       search: null,
       searchResults: [],
       select: null,
-      loadingDataTable: false
+      loadingDataTable: false,
+      selectedCity: null
     }
   },
   computed: {
     currentCity () {
       // eslint-disable-next-line eqeqeq
       return this.$store.state.cities ? this.$store.state.cities.find(c => c.name == this.$route.query.city) : ''
+    },
+    cities () {
+      return this.$store.state.auth.cities
     }
   },
   watch: {
@@ -89,25 +111,50 @@ export default {
       }
     }
   },
+  mounted () {
+    this.setSelectedCity()
+  },
   methods: {
-    text: item => `${item.name} - ${item.dni}`,
+    text: item => `${item.code} - ${item.name} - ${item.dni}`,
+    changeCity (city) {
+      this.$router.push({ query: { city: city.name, clienttype: this.$route.query.clienttype, view: this.$route.query.view } })
+    },
+    setSelectedCity () {
+      if (this.$route.query.city) {
+        this.selectedCity = this.$store.state.auth.cities.find(c => c.name === this.$route.query.city)
+      }
+    },
     searchInDatabase (val) {
       if (val.length < 1) { return }
       this.loadingDataTable = true
       const qs = require('qs')
       const query = qs.stringify({
         filters: {
-          $or: [
+          $and: [
             {
-              name: {
-                $contains: val
+              $or: [
+                {
+                  name: {
+                    $contains: val
+                  }
+                },
+                {
+                  phone: val
+                },
+                {
+                  dni: val
+                },
+                {
+                  services: {
+                    code: val
+                  }
+                }
+              ]
+            },
+            {
+              services: {
+                city: this.selectedCity.id
               }
-            },
-            {
-              phone: val
-            },
-            {
-              dni: val
             }
           ]
         },
@@ -125,6 +172,11 @@ export default {
       })
         .then(res => res.clone().json())
         .then(({ data: clients }) => {
+          clients.map((client) => {
+            client.code = client.services.length > 0 ? client.services.filter((service) => {
+              return service.code === val
+            })[0].code : ''
+          })
           this.searchResults = clients
         })
         .finally(() => {

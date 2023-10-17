@@ -16,10 +16,65 @@
       <v-list
         nav
       >
+        <v-list-item class="pl-1">
+          <v-menu offset-y :close-on-content-click="false">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                class="elevation-0"
+                :class="$vuetify.theme.dark ? 'white black--text' : 'grey lighten-2 black--text'"
+                fab
+                x-small
+                v-bind="attrs"
+                v-on="on"
+              >
+                {{ $store.state.auth.username.charAt(0).toUpperCase() + $store.state.auth.username.slice(1) }}
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item>
+                <v-icon
+                  :class="$nuxt.isOffline ? 'red--text darken-4 px-2 py-3 justify-center align-center d-flex' : 'green--text darken-4 px-2 py-3 justify-center align-center d-flex'"
+                >
+                  mdi-account
+                </v-icon>
+                <span>{{ $store.state.auth.username.charAt(0).toUpperCase() + $store.state.auth.username.slice(1) }}</span>
+              </v-list-item>
+              <v-list-item>
+                <v-switch
+                  v-model="light"
+                  :prepend-icon="light ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent'"
+                  class="mt-5"
+                  @change="changeTheme()"
+                />
+              </v-list-item>
+              <v-list-item>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      icon
+                      large
+                      v-bind="attrs"
+                      v-on="on"
+                      @click="logout(false)"
+                    >
+                      <v-icon>mdi-exit-to-app</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Cerrar sesión</span>
+                </v-tooltip>
+              </v-list-item>
+              <v-list-item>
+                <p class="text--secondary text-caption">
+                  Version API: {{ this.$config.API_VERSION }}
+                </p>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-list-item>
         <v-list-item
           v-for="(item, i) in menu"
           :key="i"
-          :to="`${item.url}?referer=layout`"
+          :to="`${item.url}${$route.query.city ? `?city=${$route.query.city}&referer=layout` : '?referer=layout'}`"
           exact
         >
           <v-list-item-action>

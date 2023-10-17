@@ -12,16 +12,24 @@
         <v-row
           class="mx-1 mt-4 justify-center d-flex"
         >
-          <v-btn
-            color="grey lighten-4 black--text elevation-0"
-            dark
-            :loading="loadingDataTable"
-            tile
-            style="border-radius: 30px 0 0 30px;padding:5px;height:48px;"
-            @click="getClientBySearchButton()"
+          <v-select
+            v-model="selectedCity"
+            :items="cities"
+            label="Filtrar Ciudad"
+            item-value="id"
+            item-text="name"
+            return-object
+            solo
+            rounded
+            hide-details="auto"
+            class="elevation-0"
+            style="max-width:180px;border-radius: 30px 0 0 30px;height:48px;"
+            @change="changeCity(selectedCity)"
           >
-            <v-icon>mdi-magnify</v-icon>
-          </v-btn>
+            <template v-slot:item="{ item }">
+              {{ item.name }}
+            </template>
+          </v-select>
           <v-autocomplete
             v-model="select"
             :items="searchResults"
@@ -45,7 +53,7 @@
           >
             <template v-slot:item="{ item }">
               <v-list-item-content>
-                <v-list-item-title class="text-caption" v-text="`${item.dni} / ${item.name} / ${item.phone}`" />
+                <v-list-item-title class="text-caption" v-text="`${item.code} / ${item.dni} / ${item.name} / ${item.phone}`" />
               </v-list-item-content>
               <v-list-item-action class="d-flex flex-row">
                 <v-tooltip
@@ -114,6 +122,7 @@ export default {
     return {
       search: '',
       select: null,
+      selectedCity: null,
       searchResults: null,
       loadingDataTable: false,
       searchByAddress: false
@@ -123,6 +132,9 @@ export default {
     currentCity () {
       // eslint-disable-next-line eqeqeq
       return this.$store.state.cities ? this.$store.state.cities.find(c => c.id == this.$route.query.city) : ''
+    },
+    cities () {
+      return this.$store.state.auth.cities
     }
   },
   watch: {
@@ -140,39 +152,50 @@ export default {
     }
   },
   mounted () {
+    this.setSelectedCity()
     this.searchClientInput = this.$route.params.search
     this.searchByAddress = this.$route.query.fuzzy === 'true'
-    const latestSearch = localStorage.getItem('searchClient')
-    if (latestSearch && this.$route.query.referer === 'layout') {
-      this.searchClientInput = latestSearch
-      this.getClientBySearch()
-    } else {
-      localStorage.setItem('searchClient', this.searchClientInput)
-    }
   },
   methods: {
-    text: item => `${item.dni} - ${item.name} - ${item.phone}`,
+    text: item => `${item.code} - ${item.dni} - ${item.name} - ${item.phone}`,
+    changeCity (city) {
+      this.$router.push({ query: { city: city.name, clienttype: this.$route.query.clienttype, view: this.$route.query.view } })
+    },
+    setSelectedCity () {
+      if (this.$route.query.city) {
+        this.selectedCity = this.$store.state.auth.cities.find(c => c.name === this.$route.query.city)
+      }
+    },
     searchInDatabase (val) {
       if (val.length < 1) { return }
       this.loadingDataTable = true
       const qs = require('qs')
       const query = qs.stringify({
         filters: {
-          $or: [
+          $and: [
             {
-              name: {
-                $contains: val
-              }
-            },
-            {
-              phone: val
-            },
-            {
-              dni: val
+              $or: [
+                {
+                  name: {
+                    $contains: val
+                  }
+                },
+                {
+                  phone: val
+                },
+                {
+                  dni: val
+                },
+                {
+                  services: {
+                    code: val
+                  }
+                }
+              ]
             },
             {
               services: {
-                code: val
+                city: this.selectedCity.id
               }
             }
           ]
@@ -190,20 +213,13 @@ export default {
         }
       })
         .then(res => res.clone().json())
-        .then((clients) => {
-          // group services by service name and count them
-          // clients.data.forEach((client) => {
-          //   const services = client.services
-          //   const groupedServices = services.reduce((r, a) => {
-          //     r[a.name] = [...r[a.name] || [], a]
-          //     return r
-          //   }, {})
-          //   const groupedServicesArray = Object.keys(groupedServices).map((key) => {
-          //     return { name: key, count: groupedServices[key].length }
-          //   })
-          //   client.servicesCount = groupedServicesArray
-          // })
-          this.searchResults = clients.data
+        .then(({ data: clients }) => {
+          clients.map((client) => {
+            client.code = client.services.length > 0 ? client.services.filter((service) => {
+              return service.code === val
+            })[0]?.code ? client.services[0].code : 'N/A' : ''
+          })
+          this.searchResults = clients
         })
         .finally(() => {
           this.loadingDataTable = false
@@ -213,13 +229,13 @@ export default {
       if (this.search) {
         this.loadingDataTable = true
         this.$router.push({
-          path: `/client/${this.search}fuzzy=${this.searchByAddress ? 'true' : 'false'}`
+          path: `/client/${this.search}?city=${this.$route.query.city}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
         })
         this.$emit('search', this.search || this.$route.params.search)
         this.loadingDataTable = false
       } else {
         this.$router.push({
-          path: `/client?fuzzy=${this.searchByAddress ? 'true' : 'false'}`
+          path: `/client?city=${this.$route.query.city}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
         })
         this.$emit('search', '')
         this.loadingDataTable = false
@@ -229,13 +245,13 @@ export default {
       if (selectedResult) {
         this.loadingDataTable = true
         this.$router.push({
-          path: `/client/${selectedResult.id}?service=${this.$route.query.service}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
+          path: `/client/${selectedResult.id}?service=${this.$route.query.service}&city=${this.$route.query.city}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
         })
         this.$emit('search', this.searchClientInput || this.$route.params.search)
         this.loadingDataTable = false
       } else {
         this.$router.push({
-          path: `/client?fuzzy=${this.searchByAddress ? 'true' : 'false'}`
+          path: `/client?city=${this.$route.query.city}&fuzzy=${this.searchByAddress ? 'true' : 'false'}`
         })
         this.$emit('search', '')
         this.loadingDataTable = false

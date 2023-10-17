@@ -7,18 +7,24 @@ export default function ({ route, redirect, store }) {
     userPreferredCity = auth.preferredcity.name
   }
   const newQueryTickets = {
-    city: userPreferredCity || 'MARIQUITA',
+    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
     clienttype: 'INTERNET',
     view: 'TODOS'
   }
   const newQueryNap = {
-    city: userPreferredCity || 'MARIQUITA'
+    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA')
   }
   const newQueryResume = {
-    city: userPreferredCity || 'MARIQUITA'
+    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA')
+  }
+  const newQueryClient = {
+    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA')
+  }
+  const newQueryBilling = {
+    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA')
   }
   const newQueryCuts = {
-    city: userPreferredCity || 'MARIQUITA',
+    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
     clienttype: 'INTERNET',
     view: 'TODOS'
   }
@@ -41,5 +47,11 @@ export default function ({ route, redirect, store }) {
   }
   if ((name === 'cuts') && (!query.city)) {
     redirect({ path, query: newQueryCuts })
+  }
+  if ((name === 'client' || name === 'client-search') && (!query.city)) {
+    redirect({ path, query: newQueryClient })
+  }
+  if ((name === 'billing' || name === 'billing-search') && (!query.city)) {
+    redirect({ path, query: newQueryBilling })
   }
 }
