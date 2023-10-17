@@ -390,6 +390,7 @@
                 </v-col>
                 <v-col>
                   <v-text-field
+                    v-if="currentService.tvspec.tvspectype"
                     v-model="currentService.tvspec.tvspectype.name"
                     disabled
                     label="Calidad de señal"
