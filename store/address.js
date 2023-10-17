@@ -1,10 +1,10 @@
 export const state = () => ({
-  clientAddresses: []
+  serviceAddresses: []
 })
 export const mutations = {
-  getAddresByClientId (state, addressList) {
+  getAddressByServiceId (state, addressList) {
     try {
-      state.clientAddresses = addressList
+      state.serviceAddresses = addressList
     } catch (error) {
       throw new Error(`ADDRESSES MUTATE ${error}`)
     }
@@ -38,17 +38,17 @@ export const actions = {
       throw new Error(`ADDRESSES ACTION ${error}`)
     }
   },
-  getAddresByClientId ({ commit }, payload) {
+  getAddressByServiceId ({ commit }, payload) {
     const qs = require('qs')
     const query = qs.stringify({
       filters: {
-        client: {
-          id: payload.clientId
+        service: {
+          id: payload.serviceId
         }
       },
       populate: ['neighborhood'],
       pagination: {
-        pageSize: 1000
+        pageSize: 100
       }
     },
     {
@@ -56,7 +56,7 @@ export const actions = {
     })
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}addresses?${query}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}service-addresses?${query}`, {
           type: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -64,9 +64,10 @@ export const actions = {
           }
         })
           .then(res => res.json())
-          .then((addresses) => {
-            commit('getAddresByClientId', addresses.data)
-            resolve(addresses.data)
+          .then(({ data: addresses }) => {
+            console.log('addresses', addresses)
+            commit('getAddressByServiceId', addresses)
+            resolve(addresses)
           })
       })
     } catch (error) {

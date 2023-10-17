@@ -19,7 +19,7 @@
     >
       <v-card>
         <v-card-title class="headline">
-          Ingresa la nueva direccion de {{ client.name }}
+          Ingresa la nueva direccion de {{ service.normalized_client.name }}
         </v-card-title>
         <v-card-text>
           <div class="my-5 parent">
@@ -209,7 +209,7 @@
 <script>
 export default {
   props: {
-    client: {
+    service: {
       type: Object,
       default: () => {}
     }
@@ -262,7 +262,7 @@ export default {
     async initComponent () {
       this.modal = true
       await this.$store.dispatch('neighborhood/getAll', {
-        city: this.$route.query.city,
+        city: this.service.city.name,
         token: this.$store.state.auth.token
       })
     },
@@ -283,19 +283,13 @@ export default {
         return
       }
       this.$store.dispatch('address/addAddress', {
-        client: this.client,
+        service: this.service,
         address: this.address,
         neighborhood: this.neighborhood,
         token: this.$store.state.auth.token
       })
-      this.$store.dispatch('client/updateClientAddress', {
-        client: this.client,
-        address: this.address,
-        neighborhood: this.cx.neighborhood,
-        token: this.$store.state.auth.token
-      })
       this.modal = false
-      this.$emit('updateClient')
+      this.$store.commit('client/refresh')
     }
   }
 }

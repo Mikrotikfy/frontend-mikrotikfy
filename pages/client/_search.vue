@@ -236,8 +236,8 @@
                     dense
                     hide-details
                   />
-                  <CreateAddress :client="currentService" @updateClient="emitupdateClient" />
-                  <MiscAddresses v-if="currentService.addresses" :client="currentService" />
+                  <CreateAddress :service="currentService" />
+                  <MiscAddresses v-if="currentService.service_addresses" :service="currentService" />
                 </v-col>
               </v-row>
               <v-row v-if="currentService.name === 'INTERNET'">
@@ -589,7 +589,7 @@ export default {
     async getClientFromSearchParam () {
       const qs = require('qs')
       const query = qs.stringify({
-        populate: ['services', 'services.city', 'services.plan', 'services.service_addresses', 'services.service_addresses.neighborhood', 'services.technology', 'services.clienttype', 'services.offer', 'services.offer.plan', 'services.offermovements.offer', 'services.offermovements', 'services.debtmovements', 'services.debtmovements.technician', 'services.monthlybills', 'services.tvspec', 'services.tvspec.tvspectype']
+        populate: ['services', 'services.normalized_client', 'services.city', 'services.plan', 'services.service_addresses', 'services.service_addresses.neighborhood', 'services.technology', 'services.clienttype', 'services.offer', 'services.offer.plan', 'services.offermovements.offer', 'services.offermovements', 'services.debtmovements', 'services.debtmovements.technician', 'services.monthlybills', 'services.tvspec', 'services.tvspec.tvspectype']
       },
       {
         encodeValuesOnly: true

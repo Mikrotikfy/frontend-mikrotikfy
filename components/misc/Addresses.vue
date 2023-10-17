@@ -29,7 +29,7 @@
                 v-for="(address, index) in addresses"
                 :key="index"
               >
-                {{ address ? address.address : null }} - {{ address && address.neighborhood ? address.neighborhood.name : null }} - {{ getDate(address.createdAt) }}
+                {{address.id}} - {{ address ? address.address : null }} - {{ address && address.neighborhood ? address.neighborhood.name : null }} - {{ getDate(address.createdAt) }}
               </p>
             </v-col>
           </v-row>
@@ -53,7 +53,7 @@
 <script>
 export default {
   props: {
-    client: {
+    service: {
       type: Object,
       default: () => {}
     }
@@ -65,14 +65,14 @@ export default {
   },
   computed: {
     addresses () {
-      return this.$store.state.address.clientAddresses
+      return this.$store.state.address.serviceAddresses
     }
   },
   methods: {
     async initComponent () {
       this.modal = true
-      await this.$store.dispatch('address/getAddresByClientId', {
-        clientId: this.client.id,
+      await this.$store.dispatch('address/getAddressByServiceId', {
+        serviceId: this.service.id,
         token: this.$store.state.auth.token
       })
     },
