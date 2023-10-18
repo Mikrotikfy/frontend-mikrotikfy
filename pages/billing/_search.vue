@@ -148,6 +148,7 @@ export default {
   display: grid;
   grid-auto-rows: 8fr 1fr 1fr 1fr;
   grid-gap: 10px;
+  height: calc(100vh - 81px);
 }
 .parent-list {
   display: grid;

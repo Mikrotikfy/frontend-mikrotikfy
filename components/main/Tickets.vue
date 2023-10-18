@@ -569,7 +569,7 @@
                 <strong>Barrio: </strong>{{ processAddressesNeighborhood(editModalData) }}
               </p>
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
-                <strong>Celular: </strong><a :href="`tel:${editModalData.service ? editModalData.service.phone : ''}`"><strong>{{ editModalData.service ? editModalData.service.phone : '' }}</strong></a>
+                <strong>Celular: </strong><a :href="`tel:${editModalData.service ? editModalData.service.normalized_client.phone : ''}`"><strong>{{ editModalData.service ? editModalData.service.normalized_client.phone : '' }}</strong></a>
               </p>
               <p v-if="$route.query.clienttype === 'INTERNET'" class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
                 <strong>Tecnología: </strong>{{ editModalData.service ? editModalData.service.technology ? editModalData.service.technology.name : 'No Reg.' : '' }}
