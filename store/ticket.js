@@ -12,6 +12,7 @@ export const mutations = {
     state.tickets[payload.ticketindex].client.naps = []
   },
   updateTickettype (state, payload) {
+    console.log(payload)
     state.tickets[payload.index].tickettype = payload.tickettype
   },
   updateAssignated (state, payload) {

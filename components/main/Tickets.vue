@@ -249,7 +249,7 @@
                 cancel-text="Cancelar"
                 save-text="Guardar"
                 class="w-100"
-                @save="saveTickettypeFromModal(props.item.id, props.item.tickettype.id, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+                @save="saveTickettypeFromModal(props.item.id, props.item.tickettype.id, props.index)"
               >
                 <v-chip
                   small
@@ -273,7 +273,7 @@
                     label="Establecer tipo"
                     outlined
                     dense
-                    @change="updateTickettypeFromModal(props.item.id, $event, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+                    @change="updateTickettypeFromModal(props.item.id, $event, props.index)"
                   />
                 </template>
               </v-edit-dialog>
@@ -290,7 +290,7 @@
                 large
                 cancel-text="Cancelar"
                 save-text="Guardar"
-                @save="saveAssignatedFromModal(props.item, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+                @save="saveAssignatedFromModal(props.item, props.index)"
               >
                 <v-chip
                   small
@@ -314,7 +314,7 @@
                     outlined
                     label="Asignar a Tecnico"
                     dense
-                    @change="updateAssignatedFromModal(props.item.id, $event, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
+                    @change="updateAssignatedFromModal(props.item.id, $event, props.index)"
                   />
                 </template>
               </v-edit-dialog>
@@ -322,50 +322,6 @@
                 v-else
                 small
                 color="white black--text"
-              >
-                <h5>
-                  {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
-                </h5>
-              </v-chip>
-            </template>
-            <template v-slot:[`item.time`]="props">
-              <v-edit-dialog
-                v-if="$isAdmin() || $isBiller()"
-                ref="dialogTime"
-                large
-                cancel-text="Cancelar"
-                save-text="Guardar"
-                @save="saveAssignatedFromModal(props.item, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
-              >
-                <v-chip
-                  small
-                  :color="props.item.technician ? props.item.technician.username === 'sistema' ? $vuetify.theme.dark ? 'green darken-2' : 'green darken-2 white--text' : 'primary' : $vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-1 black--text'"
-                >
-                  <h5>
-                    {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
-                  </h5>
-                </v-chip>
-                <template v-slot:input>
-                  <v-autocomplete
-                    v-model="currentTechnician"
-                    :value="props.item.technician"
-                    item-text="username"
-                    item-value="id"
-                    :items="technicians"
-                    auto-select-first
-                    return-object
-                    single-line
-                    outlined
-                    label="Asignar a Tecnico"
-                    dense
-                    @change="updateAssignatedFromModal(props.item.id, $event, ticketList.map(function(x) {return x.id; }).indexOf(props.item.id))"
-                  />
-                </template>
-              </v-edit-dialog>
-              <v-chip
-                v-else
-                small
-                :color="props.item.technician ? props.item.technician.username === 'sistema' ? $vuetify.theme.dark ? 'green darken-2' : 'green darken-2 white--text' : 'primary' : $vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-1 black--text'"
               >
                 <h5>
                   {{ props.item.technician ? ucfirst(props.item.technician.username) : 'No Asignado' }}
@@ -879,9 +835,7 @@ export default {
       this.$store.dispatch('ticket/saveTickettype', { ticketid, tickettypeid, index, token: this.$store.state.auth.token })
     },
     updateAssignatedFromModal (id, technician, index) {
-      if (this.currentTechnician.telegramchatid) {
-        this.$store.commit('ticket/updateAssignated', { id, technician, index })
-      }
+      this.$store.commit('ticket/updateAssignated', { id, technician, index })
     },
     saveAssignatedFromModal (ticket, index) {
       if (this.currentTechnician.telegramchatid && this.currentTechnician.phone) {
