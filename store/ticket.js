@@ -12,11 +12,10 @@ export const mutations = {
     state.tickets[payload.ticketindex].client.naps = []
   },
   updateTickettype (state, payload) {
-    console.log(payload)
-    state.tickets[payload.index].tickettype = payload.tickettype
+    state.tickets.find(ticket => ticket.id === payload.id).tickettype = { ...payload.tickettype }
   },
   updateAssignated (state, payload) {
-    state.tickets[payload.index].technician = { ...payload.technician }
+    state.tickets.find(ticket => ticket.id === payload.id).technician = { ...payload.technician }
   },
   getTicketsFromDatabase (state, ticketList) {
     try {
