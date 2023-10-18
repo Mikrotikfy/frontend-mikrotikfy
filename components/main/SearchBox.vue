@@ -214,14 +214,17 @@ export default {
       })
         .then(res => res.clone().json())
         .then(({ data: clients }) => {
+          if (!Array.isArray(clients)) {
+            throw new TypeError('Invalid data: clients is not an array')
+          }
           clients.map((client) => {
-            client.code = client.services.length > 0 ? client.services.filter((service) => {
-              return service.code === val
-            })[0]?.code ? client.services[0].code : 'N/A' : ''
+            if (!Array.isArray(client.services)) {
+              throw new TypeError(`Invalid data: client ${client.id} has invalid services`)
+            }
+            const service = client.services.find(service => service.code === val)
+            client.code = service ? service.code : 'N/A'
           })
           this.searchResults = clients
-        })
-        .finally(() => {
           this.loadingDataTable = false
         })
     },

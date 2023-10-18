@@ -83,8 +83,8 @@ export default {
   },
   props: {
     service: {
-      type: Number,
-      default: -1
+      type: Object,
+      default: () => ({})
     },
     name: {
       type: String,
