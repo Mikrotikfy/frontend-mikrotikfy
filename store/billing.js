@@ -1,6 +1,6 @@
 export const state = () => ({
   client: null,
-  activeClients: [],
+  activeServices: [],
   currentService: null,
   e1: 1,
   invoices: [],
@@ -134,18 +134,18 @@ export const mutations = {
     state.invoices = data.invoices
     state.legalNotes = data.legalNotes
   },
-  getListOfActiveClients (state, clients) {
+  getListOfActiveServices (state, services) {
     try {
-      state.activeClients = clients
+      state.activeServices = services
     } catch (error) {
-      throw new Error(`GET LIST OF ACTIVE CLIENTS MUTATE ${error}`)
+      throw new Error(`GET LIST OF ACTIVE SERVICES MUTATE ${error}`)
     }
   },
-  resetListOfActiveClients (state, clients) {
+  resetListOfActiveServices (state, clients) {
     try {
-      state.activeClients = []
+      state.activeServices = []
     } catch (error) {
-      throw new Error(`GET LIST OF ACTIVE CLIENTS MUTATE ${error}`)
+      throw new Error(`GET LIST OF ACTIVE SERVICES MUTATE ${error}`)
     }
   }
 }
@@ -686,12 +686,37 @@ export const actions = {
       throw new Error(`GET BILLS BY CLIENT ID ACTION ${error}`)
     }
   },
-  getListOfActiveClients ({ commit }, payload) {
+  updateBillingPeriod ({ commit }, payload) {
+    console.log(payload)
+    try {
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              billingmonth: payload.billingmonth,
+              billingyear: payload.billingyear
+            }
+          })
+        })
+          .then(res => res.json())
+          .then((billingperiod) => {
+            resolve(billingperiod)
+          })
+      })
+    } catch (error) {
+      throw new Error(`UPDATE BILLING PERIOD ON SERVICE ACTION ${error}`)
+    }
+  },
+  getListOfActiveServices ({ commit }, payload) {
     const qs = require('qs')
     const query = qs.stringify({
       filters: {
         active: payload.active,
-        indebt: payload.indebt,
         city: {
           name: payload.city
         },
@@ -702,14 +727,14 @@ export const actions = {
       pagination: {
         pageSize: 5000
       },
-      populate: ['offer', 'addresses']
+      populate: ['offer', 'service_addresses', 'normalized_client']
     },
     {
       encodeValuesOnly: true
     })
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services?${query}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -717,9 +742,9 @@ export const actions = {
           }
         })
           .then(res => res.json())
-          .then(({ data: clients }) => {
-            commit('getListOfActiveClients', clients)
-            resolve(clients)
+          .then(({ data: services }) => {
+            commit('getListOfActiveServices', services)
+            resolve(services)
           })
       })
     } catch (error) {

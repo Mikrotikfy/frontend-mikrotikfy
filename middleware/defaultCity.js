@@ -25,8 +25,11 @@ export default function ({ route, redirect, store }) {
   }
   const newQueryCuts = {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
-    clienttype: 'INTERNET',
-    view: 'TODOS'
+    clienttype: 'INTERNET'
+  }
+  const newQueryGenerate = {
+    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
+    clienttype: 'INTERNET'
   }
 
   if (path === '/') {
@@ -44,6 +47,9 @@ export default function ({ route, redirect, store }) {
   }
   if ((name === 'billing-resume') && (!query.city)) {
     redirect({ path, query: newQueryResume })
+  }
+  if ((name === 'billing-generate') && (!query.city || !query.clienttype)) {
+    redirect({ path, query: newQueryGenerate })
   }
   if ((name === 'cuts') && (!query.city)) {
     redirect({ path, query: newQueryCuts })

@@ -2,14 +2,14 @@
   <div>
     <v-data-table
       :headers="headers"
-      :items="activeClients"
+      :items="activeServices"
       :items-per-page="itemsPerPage"
       :page.sync="page"
       class="elevation-0"
       style="height:45svh;overflow-y:scroll;"
       hide-default-footer
       :loading="loading"
-      :caption="`Clientes activos en ${$route.query.city} a la fecha: ${activeClients.length}`"
+      :caption="`Clientes activos en ${$route.query.city} a la fecha: ${activeServices.length}`"
       @page-count="pageCount = $event"
     >
       <template v-slot:[`item.code`]="props">
@@ -36,22 +36,10 @@
           {{ props.item.active ? 'Activo' : 'Inactivo' }}
         </v-chip>
       </template>
-      <template v-slot:[`item.indebt`]="props">
-        <v-chip>
-          <v-icon
-            :color="props.item.indebt ? 'red' : 'green'"
-            small
-            left
-          >
-            mdi-circle
-          </v-icon>
-          {{ props.item.indebt ? 'En mora' : 'Al día' }}
-        </v-chip>
-      </template>
     </v-data-table>
     <v-pagination v-model="page" :length="pageCount" />
     <v-btn
-      :disabled="!activeClients.length > 0 || !month || !year"
+      :disabled="!activeServices.length > 0 || !month || !year"
       color="primary"
       class="mt-2"
       @click="nextE1"
@@ -75,17 +63,16 @@ export default {
       headers: [
         { text: 'ID', value: 'id', sortable: false },
         { text: 'Codigo', value: 'code', sortable: false },
-        { text: 'Nombre', value: 'name', sortable: false },
+        { text: 'Nombre', value: 'normalized_client.name', sortable: false },
         { text: 'Tarifa', value: 'offer.name', sortable: false },
         { text: 'Saldo', value: 'balance', sortable: false },
-        { text: 'Estado', value: 'active', sortable: false },
-        { text: 'Deudor', value: 'indebt', sortable: false }
+        { text: 'Estado', value: 'active', sortable: false }
       ]
     }
   },
   computed: {
-    activeClients () {
-      return this.$store.state.billing.activeClients
+    activeServices () {
+      return this.$store.state.billing.activeServices
     },
     readyForSend () {
       return this.$store.state.notification.readyForSend

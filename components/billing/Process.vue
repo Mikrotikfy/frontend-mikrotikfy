@@ -7,10 +7,19 @@
           class="rounded-xl"
           block
           :loading="loading"
-          :disabled="loading || clients.length > 0"
+          :disabled="loading || clients.length > 0 || end"
           @click="generateBilling"
         >
           Generar Estados de Cuenta
+        </v-btn>
+        <v-btn
+          v-if="end"
+          color="secondary"
+          class="rounded-xl"
+          block
+          @click="backToE1"
+        >
+          Finalizar y regresar
         </v-btn>
       </v-col>
     </v-row>
@@ -32,6 +41,8 @@
       <v-col>
         <span v-if="sendIndex > 0" class="text-h5">Enviados: <strong>{{ sendIndex }}</strong></span>
         <span v-if="generatedBills > 0" class="text-h5">Cargados: <strong>{{ generatedBills }}</strong></span>
+        <span v-if="omitedBills > 0" class="text-h5">Sin Tarifa: <strong>{{ omitedBills }}</strong></span>
+        <span v-if="alreadyBilled > 0" class="text-h5">Ya generados: <strong>{{ alreadyBilled }}</strong></span>
       </v-col>
     </v-row>
     <v-row>
@@ -66,8 +77,13 @@
 export default {
   data () {
     return {
+      end: false,
       loading: false,
       generatedBills: 0,
+      omitedBills: 0,
+      omitedBillsObejcts: [],
+      alreadyBilled: 0,
+      alreadyBilledObjects: [],
       ended: false,
       headers: [
         { text: 'Codigo', value: 'code', sortable: false },
@@ -78,8 +94,8 @@ export default {
     }
   },
   computed: {
-    activeClients () {
-      return this.$store.state.billing.activeClients
+    activeServices () {
+      return this.$store.state.billing.activeServices
     },
     sendIndex () {
       return this.$store.state.billing.sendIndex
@@ -130,20 +146,36 @@ export default {
     },
     async generateBilling () {
       this.loading = true
-      for (let i = 0; i < this.activeClients.length; i++) {
+      for (let i = 0; i < this.activeServices.length; i++) {
+        if (this.activeServices[i].offer === null) {
+          this.omitedBills++
+          this.omitedBillsObejcts.push(this.activeServices[i])
+          continue
+        }
+        if (this.activeServices[i].billingmonth === this.month.value && this.activeServices[i].billingyear === this.year) {
+          this.alreadyBilled++
+          this.alreadyBilledObjects.push(this.activeServices[i])
+          continue
+        }
+        await this.$store.dispatch('billing/updateBillingPeriod', {
+          token: this.$store.state.auth.token,
+          service: this.activeServices[i],
+          billingmonth: this.month.value,
+          billingyear: this.year
+        })
         await this.$store.dispatch('billing/addMovement', {
-          balance: this.activeClients[i].offer.price,
-          value: this.activeClients[i].offer.price,
+          balance: this.activeServices[i].offer.price,
+          value: this.activeServices[i].offer.price,
           month: this.month.value,
           year: this.year,
           type: 'FACTURA',
-          offer: this.activeClients[i].offer.id,
+          offer: this.activeServices[i].offer.id,
           concept: 'FACTURACION MENSUAL',
           details: this.month.text,
           payed: false,
           partial: false,
           indebt: false,
-          client: this.activeClients[i].id,
+          service: this.activeServices[i].id,
           invoice_type: 1,
           token: this.$store.state.auth.token
         })
@@ -152,8 +184,8 @@ export default {
           clienttype: this.$route.query.clienttype,
           token: this.$store.state.auth.token,
           biller: this.$store.state.auth,
-          client: parseInt(this.activeClients[i].id),
-          debit: this.activeClients[i].offer.price,
+          service: parseInt(this.activeServices[i].id),
+          debit: this.activeServices[i].offer.price,
           credit: 0,
           concept: 'FACTURACION MENSUAL'
         }
@@ -161,6 +193,7 @@ export default {
         this.generatedBills++
       }
       this.loading = false
+      this.end = true
     },
     getMonthNameByNumber () {
       const monthNames = [
