@@ -29,7 +29,7 @@
                 v-for="(address, index) in addresses"
                 :key="index"
               >
-                {{address.id}} - {{ address ? address.address : null }} - {{ address && address.neighborhood ? address.neighborhood.name : null }} - {{ getDate(address.createdAt) }}
+                {{ address.id }} - {{ address ? address.address : null }} - {{ address && address.neighborhood ? address.neighborhood.name : null }} - {{ getDate(address.createdAt) }}
               </p>
             </v-col>
           </v-row>

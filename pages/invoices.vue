@@ -23,7 +23,6 @@ export default {
       token: this.$store.state.auth.token,
       serviceId: this.$route.query.service
     })
-    console.log(this.service)
   },
   head () {
     return {

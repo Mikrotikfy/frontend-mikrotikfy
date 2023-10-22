@@ -7,36 +7,32 @@
           class="rounded-xl"
           block
           :loading="loading"
-          :disabled="loading || clients.length > 0 || end"
+          :disabled="loading || activeServices.length < 1 || end"
           @click="generateBilling"
         >
           Generar Estados de Cuenta
         </v-btn>
-        <v-btn
-          v-if="end"
-          color="secondary"
-          class="rounded-xl"
-          block
-          @click="backToE1"
-        >
-          Finalizar y regresar
-        </v-btn>
       </v-col>
     </v-row>
-    <!-- <v-row>
+    <v-row v-if="end && omitedBills > 0">
+      <v-col class="align-center d-flex">
+        <BillingOfferCorrection :services="omitedBillsObjects" />
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col>
         <v-btn
           class="rounded-xl"
           color="red"
           block
           :loading="loading"
-          :disabled="loading || clients.length < 1 || ended"
+          :disabled="loading || activeServices.length < 1 || !end"
           @click="sendNotifications"
         >
-          Enviar Notificaciones
+          Enviar Notificaciones por WhatsApp
         </v-btn>
       </v-col>
-    </v-row> -->
+    </v-row>
     <v-row>
       <v-col>
         <span v-if="sendIndex > 0" class="text-h5">Enviados: <strong>{{ sendIndex }}</strong></span>
@@ -48,9 +44,9 @@
     <v-row>
       <v-col>
         <v-data-table
-          v-if="clients.length > 0"
+          v-if="activeServices.length > 0 && end && !loading && omitedBills < 1"
           :headers="headers"
-          :items="clients"
+          :items="activeServices"
         >
           <template v-slot:[`item.messageSent`]="{ item }">
             <v-chip
@@ -79,16 +75,16 @@ export default {
     return {
       end: false,
       loading: false,
+      offerCorrectionDialog: false,
       generatedBills: 0,
       omitedBills: 0,
-      omitedBillsObejcts: [],
+      omitedBillsObjects: [],
       alreadyBilled: 0,
       alreadyBilledObjects: [],
-      ended: false,
       headers: [
         { text: 'Codigo', value: 'code', sortable: false },
-        { text: 'Nombre', value: 'name', sortable: false },
-        { text: 'Celular', value: 'phone', sortable: false },
+        { text: 'Nombre', value: 'normalized_client.name', sortable: false },
+        { text: 'Celular', value: 'normalized_client.phone', sortable: false },
         { text: 'Estado del envio', value: 'messageSent', sortable: false }
       ]
     }
@@ -100,9 +96,6 @@ export default {
     sendIndex () {
       return this.$store.state.billing.sendIndex
     },
-    clients () {
-      return this.$store.state.billing.clients || []
-    },
     month () {
       return this.$store.state.billing.month
     },
@@ -111,50 +104,50 @@ export default {
     }
   },
   methods: {
-    sendNotifications () {
+    async sendNotifications () {
       this.loading = true
-      // const clients = this.clients
+      const services = this.activeServices
 
-      // for (let i = 0; i < clients.length; i++) {
-      //   this.$store.commit('notification/setSendIndex', i + 1)
+      for (let i = 0; i < services.length; i++) {
+        this.$store.commit('notification/setSendIndex', i + 1)
 
-      //   await this.$store.dispatch('notification/sendWhatsapp', {
-      //     client: clients[i],
-      //     month: this.month,
-      //     token: this.$store.state.auth.token
-      //   }).then(async (res) => {
-      //     let success = false
-      //     if (
-      //       res &&
-      //       res.contacts &&
-      //       res.contacts[0]
-      //     ) {
-      //       success = true
-      //     }
-      //     await this.$store.dispatch('notification/updateSentStatus', {
-      //       token: this.$store.state.auth.token,
-      //       index: i,
-      //       success,
-      //       city: this.$route.query.city,
-      //       clienttype: this.$route.query.clienttype,
-      //       client: clients[i]
-      //     })
-      //   })
-      // }
+        await this.$store.dispatch('notification/sendWhatsapp', {
+          service: services[i],
+          month: this.month,
+          token: this.$store.state.auth.token
+        }).then(async (res) => {
+          let success = false
+          if (
+            res &&
+            res.contacts &&
+            res.contacts[0]
+          ) {
+            success = true
+          }
+          await this.$store.dispatch('notification/updateSentStatus', {
+            token: this.$store.state.auth.token,
+            index: i,
+            success,
+            city: this.$route.query.city,
+            clienttype: this.$route.query.clienttype,
+            service: services[i]
+          })
+        })
+      }
       this.loading = false
-      this.ended = true
+      this.end = true
     },
     async generateBilling () {
       this.loading = true
       for (let i = 0; i < this.activeServices.length; i++) {
         if (this.activeServices[i].offer === null) {
           this.omitedBills++
-          this.omitedBillsObejcts.push(this.activeServices[i])
+          this.omitedBillsObjects.push({ ...this.activeServices[i] })
           continue
         }
         if (this.activeServices[i].billingmonth === this.month.value && this.activeServices[i].billingyear === this.year) {
           this.alreadyBilled++
-          this.alreadyBilledObjects.push(this.activeServices[i])
+          this.alreadyBilledObjects.push({ ...this.activeServices[i] })
           continue
         }
         await this.$store.dispatch('billing/updateBillingPeriod', {
@@ -211,6 +204,9 @@ export default {
         'DICIEMBRE'
       ]
       return monthNames[this.month - 1]
+    },
+    backToE1 () {
+      this.$store.commit('billing/e1', { e1: 1 })
     }
   }
 }

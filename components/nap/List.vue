@@ -10,7 +10,7 @@
       {{ createdMessage }}
     </v-alert>
     <v-card-title>
-      {{napList.length}} Naps en {{ selectedCity ? selectedCity.name : 'N/A' }}
+      {{ napList.length }} Naps en {{ selectedCity ? selectedCity.name : 'N/A' }}
     </v-card-title>
     <v-card-text class="d-flex">
       <v-text-field

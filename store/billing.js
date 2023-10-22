@@ -687,7 +687,6 @@ export const actions = {
     }
   },
   updateBillingPeriod ({ commit }, payload) {
-    console.log(payload)
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}`, {
@@ -727,7 +726,7 @@ export const actions = {
       pagination: {
         pageSize: 5000
       },
-      populate: ['offer', 'service_addresses', 'normalized_client']
+      populate: ['offer', 'plan', 'service_addresses', 'normalized_client']
     },
     {
       encodeValuesOnly: true

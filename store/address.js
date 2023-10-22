@@ -65,7 +65,6 @@ export const actions = {
         })
           .then(res => res.json())
           .then(({ data: addresses }) => {
-            console.log('addresses', addresses)
             commit('getAddressByServiceId', addresses)
             resolve(addresses)
           })

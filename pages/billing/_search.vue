@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="currentService" fluid  >
+  <v-container v-if="currentService" fluid>
     <BillingClientSearch />
     <v-row class="mt-0">
       <v-col

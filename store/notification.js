@@ -3,7 +3,7 @@ export const state = () => ({
   readyForSend: false,
   bills: [],
   codes: [],
-  clients: [],
+  services: [],
   sendIndex: 0,
   month: null,
   year: null
@@ -18,8 +18,8 @@ export const mutations = {
   setMonth (state, payload) {
     state.month = payload.month
   },
-  setClientSuccess (state, payload) {
-    state.clients[payload.index].messageSent = payload.success
+  setServiceSuccess (state, payload) {
+    state.services[payload.index].messageSent = payload.success
   },
   setSendIndex (state, index) {
     state.sendIndex = index
@@ -30,8 +30,8 @@ export const mutations = {
   setCodes (state, codes) {
     state.codes = codes
   },
-  setClients (state, clients) {
-    state.clients = clients
+  setServices (state, services) {
+    state.services = services
   },
   getListOfBills (state, bills) {
     try {
@@ -53,7 +53,7 @@ export const actions = {
         body: JSON.stringify(
           {
             messaging_product: 'whatsapp',
-            to: `57${payload.client.phone}`,
+            to: `57${payload.service.normalized_client.phone}`,
             type: 'template',
             template: {
               name: this.$config.META_TEMPLATE,
@@ -81,7 +81,7 @@ export const actions = {
                   parameters: [
                     {
                       type: 'text',
-                      text: `${payload.client.dni}`
+                      text: `${payload.service.normalized_client.dni}`
                     }
                   ]
                 }
@@ -100,7 +100,7 @@ export const actions = {
     const qs = require('qs')
     const query = qs.stringify({
       filters: {
-        client: payload.client.id
+        service: payload.service.id
       },
       sort: 'createdAt:desc'
     },
@@ -143,7 +143,7 @@ export const actions = {
               return res.json()
             } else {
               this.$toast.error('No se pudo actualizar movimiento err#131')
-              commit('setClientSuccess', {
+              commit('setServiceSuccess', {
                 index: payload.index,
                 success: payload.success
               })
@@ -155,7 +155,7 @@ export const actions = {
               return false
             }
             this.$toast.info('Exito al actualizar movimiento', { duration: 1000 })
-            commit('setClientSuccess', {
+            commit('setServiceSuccess', {
               index: payload.index,
               success: payload.success
             })
@@ -193,10 +193,10 @@ export const actions = {
           })
       })
     } catch (error) {
-      throw new Error(`GET CLIENTS ACTION ${error}`)
+      throw new Error(`GET SERVICES ACTION ${error}`)
     }
   },
-  getClients ({ commit }, payload) {
+  getServices ({ commit }, payload) {
     const qs = require('qs')
     const query = qs.stringify({
       filters: {
@@ -238,7 +238,7 @@ export const actions = {
     })
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services?${query}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -246,12 +246,12 @@ export const actions = {
           }
         })
           .then(res => res.json())
-          .then((clients) => {
-            resolve(clients.data)
+          .then(({ data: services }) => {
+            resolve(services)
           })
       })
     } catch (error) {
-      throw new Error(`GET CLIENTS ACTION ${error}`)
+      throw new Error(`GET SERVICES ACTION ${error}`)
     }
   },
   async getListOfBills ({ commit }, payload) {

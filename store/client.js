@@ -623,6 +623,28 @@ export const actions = {
       this.$toast.error('Error al actualizar detalles. Verifica tu conexion o reportalo a nico', { position: 'bottom-center' })
     }
   },
+  async updateOfferForService ({ commit }, payload) {
+    try {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            offer: payload.service.offer.id
+          }
+        })
+      })
+        .then(res => res.json())
+        .then((_) => {
+          this.$toast.info('Oferta del servicio actualizados con exito', { duration: 4000, position: 'bottom-center' })
+        })
+    } catch (error) {
+      this.$toast.error('Error al actualizar oferta. Verifica tu conexion o reportalo a nico', { position: 'bottom-center' })
+    }
+  },
   async adminCreate ({ commit }, { client, city, index, token, operator }) {
     await fetch(`${this.$config.API_STRAPI_ENDPOINT}admincreate`, {
       method: 'POST',
