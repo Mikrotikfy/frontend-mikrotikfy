@@ -510,7 +510,7 @@
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
                 <strong>Tipo Ticket: </strong>{{ editModalData.tickettype ? editModalData.tickettype.name : '' }}
               </p>
-              <nuxt-link :to="`/client/${editModalData.service ? editModalData.service.id : ''}`" class="blue--text">
+              <nuxt-link :to="`/client/${editModalData.service ? editModalData.service.normalized_client.id : ''}`" class="blue--text">
                 <strong>
                   <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1"><strong>Código: </strong>{{ editModalData.service ? editModalData.service.code : '' }}</p>
                 </strong>
