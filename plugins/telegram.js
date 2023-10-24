@@ -15,12 +15,12 @@ export default (_, inject) => {
   inject('simpleWhatsappSendToChat', input => simpleWhatsappSendToChat(input))
 }
 
-function simpleTelegramCreate ({ client, operator, telegramBots }) {
+function simpleTelegramCreate ({ client, operator, telegramBots, address, neighborhood }) {
   const fetch = require('node-fetch')
   try {
     const bot = telegramBots.token
     const chatid = telegramBots.log
-    const message = `🔵 CREADO 🔵\n${client.code}\n${client.name}\n${client.dni}\n${client.address}\n${client.neighborhood.name}\n${client.phone}\n${client.wifi_ssid}\n${client.wifi_password}\n${operator}`
+    const message = `🔵 CREADO 🔵\n${client.code}\n${client.name}\n${address}\n${neighborhood.name}\n${client.phone}\n${operator}`
     const req =
       'https://api.telegram.org/bot' +
       bot +

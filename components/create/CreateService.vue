@@ -461,6 +461,9 @@ export default {
     },
     currentClientCode () {
       return this.$store.state.client.currentClientCode
+    },
+    telegramBots () {
+      return this.$store.state.telegramBots.find(bot => bot.city.name === this.selectedCity.name)
     }
   },
   mounted () {
@@ -564,8 +567,8 @@ export default {
               operator: this.$store.state.auth.username
             })
           }
-          this.$simpleTelegramCreate({ client: this.Client, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
-          this.$router.push({ path: `/client/${this.$route.query.client}` })
+          this.$simpleTelegramCreate({ client: this.Client, address: this.address, neighborhood: this.Client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+          // this.$router.push({ path: `/client/${this.$route.query.client}` })
         }).catch((error) => {
           // eslint-disable-next-line no-console
           console.error(error)
