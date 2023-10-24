@@ -512,11 +512,13 @@ export default {
       }
     },
     getTickettypes () {
-      this.$store.dispatch('ticket/getTickettypes', {
-        city: this.currentService.city.name,
-        clienttype: this.currentService.name,
-        token: this.$store.state.auth.token
-      })
+      if (this.currentService) {
+        this.$store.dispatch('ticket/getTickettypes', {
+          city: this.currentService.city.name,
+          clienttype: this.currentService.name,
+          token: this.$store.state.auth.token
+        })
+      }
     },
     testChanges () {
       const service = this.searchResult.services.at(this.indexOfSelectedService)

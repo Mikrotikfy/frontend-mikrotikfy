@@ -61,6 +61,7 @@
           chips
           solo
           rounded
+          :loading="loadingDataTable"
           no-data-text="Realiza una busqueda para iniciar..."
           class="white--text"
           style="width:100px;max-width: 1100px;border-radius: 0;"
@@ -156,7 +157,7 @@ export default {
     search (val) {
       setTimeout(() => {
         val && val !== this.select && this.searchInDatabase(val)
-      }, 300)
+      }, 500)
     },
     select (resultObject) {
       this.getClientBySearch(resultObject)
@@ -206,9 +207,20 @@ export default {
               ]
             },
             {
-              services: {
-                city: this.selectedCity.id
-              }
+              $or: [
+                {
+                  services: {
+                    city: this.selectedCity.id
+                  }
+                },
+                {
+                  services: {
+                    id: {
+                      $null: true
+                    }
+                  }
+                }
+              ]
             }
           ]
         },
