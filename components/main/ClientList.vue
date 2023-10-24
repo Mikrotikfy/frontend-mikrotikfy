@@ -1,6 +1,7 @@
 <template>
   <v-container fluid>
-    <v-row v-if="clients.length < 1 && $route.params.search" class="justify-center">
+    <h1>uwu</h1>
+    <!-- <v-row v-if="clients.length < 1 && $route.params.search" class="justify-center">
       <v-card class="ma-4 rounded-xl" :loading="loadingDataTable">
         <v-card-text class="ma-0 text-center">
           {{ result }}
@@ -117,7 +118,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-    </v-row>
+    </v-row> -->
   </v-container>
 </template>
 
@@ -252,19 +253,19 @@ export default {
     }
   },
   mounted () {
-    if (this.search) {
-      this.searchClientInput = this.search
-      this.getClientBySearch()
-    } else {
-      this.resetsearchfn()
-    }
-    document.onkeydown = function (e) {
-      if (e.key === 'o' && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault()
+    // if (this.search) {
+    //   this.searchClientInput = this.search
+    //   this.getClientBySearch()
+    // } else {
+    //   this.resetsearchfn()
+    // }
+    // document.onkeydown = function (e) {
+    //   if (e.key === 'o' && (e.ctrlKey || e.metaKey)) {
+    //     e.preventDefault()
 
-        this.redirectToBilling()
-      }
-    }.bind(this)
+    //     this.redirectToBilling()
+    //   }
+    // }.bind(this)
   },
   methods: {
     toggleDniType (client, index) {
