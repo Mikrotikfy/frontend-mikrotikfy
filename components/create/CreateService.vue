@@ -568,7 +568,7 @@ export default {
             })
           }
           this.$simpleTelegramCreate({ client: this.Client, address: this.address, neighborhood: this.Client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
-          // this.$router.push({ path: `/client/${this.$route.query.client}` })
+          this.$router.push({ path: `/client/${this.$route.query.client}` })
         }).catch((error) => {
           // eslint-disable-next-line no-console
           console.error(error)
