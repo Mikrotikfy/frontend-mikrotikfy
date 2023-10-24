@@ -364,7 +364,7 @@
               <strong>{{ processAddressesNeighborhood(item) }}</strong>
             </template>
             <template v-slot:[`item.service.code`]="props">
-              <nuxt-link :to="`/client/${props.item.service.normalized_client.id}`" class="blue--text">
+              <nuxt-link :to="`/client/${props.item.service.normalized_client.id}?city=${$route.query.city}&searchByAddress=false&service=${props.item.service.id}`" class="blue--text">
                 <v-chip label outlined small>
                   {{ props.item.service.code }}
                 </v-chip>
