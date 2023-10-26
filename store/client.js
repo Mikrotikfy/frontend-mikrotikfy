@@ -291,7 +291,6 @@ export const actions = {
       })
         .then(res => res.json())
         .then((services) => {
-          console.log(services)
           commit('getServicesFromDatabaseFuzzy', services)
         })
     } catch (error) {
