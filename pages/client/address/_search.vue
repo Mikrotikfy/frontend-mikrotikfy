@@ -1,12 +1,12 @@
 <template>
   <v-container fluid>
     <MainSearchBox />
-    <MainClientItem />
+    <MainClientList />
   </v-container>
 </template>
 <script>
 export default {
-  name: 'ClientSearch',
+  name: 'ClientSearchByAddress',
   data () {
     return {
     }

@@ -451,7 +451,7 @@ export default {
   },
   computed: {
     currentService () {
-      return this.searchResult.services.at(this.indexOfSelectedService) || null
+      return this.searchResult?.services.at(this.indexOfSelectedService) || null
     },
     noPendingChangesServices () {
       return Object.entries(this.searchResult.services.at(this.indexOfSelectedService)).toString() === Object.entries(this.oldClient.services.at(this.indexOfSelectedService)).toString()
@@ -606,6 +606,7 @@ export default {
       })
         .then(res => res.clone().json())
         .then(({ data: clients }) => {
+          if (!clients) { this.searchResult = null; return }
           this.oldClient = JSON.parse(JSON.stringify(clients))
           this.searchResult = clients
           if (this.searchResult.services.length < 2) {

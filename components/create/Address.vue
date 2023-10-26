@@ -288,6 +288,12 @@ export default {
         neighborhood: this.neighborhood,
         token: this.$store.state.auth.token
       })
+      this.$store.dispatch('address/updateAddress', {
+        service: this.service,
+        address: this.address,
+        neighborhood: this.neighborhood,
+        token: this.$store.state.auth.token
+      })
       this.modal = false
       this.$store.commit('client/refresh')
     }

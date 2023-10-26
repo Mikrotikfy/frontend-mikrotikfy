@@ -19,11 +19,9 @@ export default function ({ route, redirect, store }) {
   }
   const newQueryClient = query.service ? {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
-    service: query.service,
-    searchByAddress: 'false'
+    service: query.service
   } : {
-    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
-    searchByAddress: 'false'
+    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA')
   }
   const newQueryBilling = {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA')
@@ -59,7 +57,7 @@ export default function ({ route, redirect, store }) {
   if ((name === 'cuts') && (!query.city)) {
     redirect({ path, query: newQueryCuts })
   }
-  if ((name === 'client' || name === 'client-search') && (!query.city || !query.searchByAddress)) {
+  if ((name === 'client' || name === 'client-search') && (!query.city)) {
     redirect({ path, query: newQueryClient })
   }
   if ((name === 'billing' || name === 'billing-search') && (!query.city)) {

@@ -3,8 +3,6 @@
     <v-col
       cols="12"
       xs="12"
-      sm="8"
-      md="6"
       lg="12"
       xl="12"
     >
@@ -43,6 +41,7 @@
           :loading="loadingDataTable"
           class="white--text"
           style="width:100px;max-width: 1100px;border-radius: 0;"
+          @keyup.enter="searchClients(select)"
         />
         <v-autocomplete
           v-else
@@ -80,9 +79,9 @@
                   <v-chip
                     label
                     outlined
-                    :to="`/client/${item.id}?city=${$route.query.city}&service=${service.id}&searchByAddress=${searchByAddress}`"
                     class="mr-1"
                     v-bind="attrs"
+                    :to="`/client/${item.id}?city=${$route.query.city}&service=${service.id}&searchByAddress=${searchByAddress}`"
                     v-on="on"
                   >
                     <v-icon
@@ -97,51 +96,56 @@
             </v-list-item-action>
           </template>
         </v-autocomplete>
-        <v-menu offset-y>
+        <v-tooltip>
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              :color="searchByAddress ? 'primary white--text elevation-0' : 'grey lighten-4 black--text elevation-0'"
+              v-if="searchByAddress"
+              :color="fuzzySearch ? 'primary white--text elevation-0' : 'grey lighten-4 black--text elevation-0'"
               dark
               :loading="loadingDataTable"
               tile
-              style="border-radius: 0 30px 30px 0;padding:5px;height:48px;"
-              v-bind="searchByAddress ? null : attrs"
-              v-on="searchByAddress ? null : on"
-              @click="searchByAddress ? searchByAddress = false : null"
+              style="border-radius: 0;padding:5px;height:48px;"
+              v-bind="attrs"
+              v-on="on"
+              @click="fuzzySearch = !fuzzySearch"
             >
-              <v-icon>{{ searchByAddress ? 'mdi-close-circle' : 'mdi-filter-outline' }}</v-icon>
+              <v-icon>mdi-filter-outline</v-icon>
             </v-btn>
           </template>
-          <v-list>
-            <v-list-item>
-              <v-list-item-title class="mr-2">
-                Busqueda por direccion
-              </v-list-item-title>
-              <v-switch
-                v-model="searchByAddress"
-                color="primary"
-              />
-            </v-list-item>
-          </v-list>
-        </v-menu>
+          <span>Busqueda por direccion</span>
+        </v-tooltip>
+        <v-btn
+          :color="searchByAddress ? 'primary white--text elevation-0' : 'grey lighten-4 black--text elevation-0'"
+          dark
+          :loading="loadingDataTable"
+          tile
+          style="border-radius: 0 30px 30px 0;padding:5px;height:48px;"
+          @click="searchByAddress ? toGoClient() : toGoClientAddress()"
+        >
+          <v-icon>{{ searchByAddress ? 'mdi-close-circle' : 'mdi-cog-outline' }}</v-icon>
+        </v-btn>
       </v-row>
     </v-col>
   </v-row>
 </template>
 <script>
+import { debounce } from 'lodash'
 export default {
   name: 'SearchBox',
   data () {
     return {
       search: '',
       select: null,
+      fuzzySearch: false,
       selectedCity: null,
       searchResults: null,
-      loadingDataTable: false,
-      searchByAddress: false
+      loadingDataTable: false
     }
   },
   computed: {
+    searchByAddress () {
+      return this.$route.path.includes('address')
+    },
     currentCity () {
       // eslint-disable-next-line eqeqeq
       return this.$store.state.cities ? this.$store.state.cities.find(c => c.id == this.$route.query.city) : ''
@@ -151,36 +155,60 @@ export default {
     }
   },
   watch: {
-    searchByAddress () {
-      this.changeSearchByAddress()
-    },
     search (val) {
-      setTimeout(() => {
-        val && val !== this.select && this.searchInDatabase(val)
-      }, 500)
+      if (!this.$route.path.includes('address')) {
+        val && val !== this.select && this.debounceSearchInDatabase(val)
+      }
     },
     select (resultObject) {
       this.getClientBySearch(resultObject)
+    },
+    fuzzySearch () {
+      this.setFuzzyToStore()
     }
   },
   mounted () {
     this.setSelectedCity()
+    if (this.$route.params.search && this.$route.path.includes('address')) {
+      this.search = this.$route.params.search
+    }
   },
   methods: {
     text: item => `${item.code} - ${item.dni} - ${item.name} - ${item.phone}`,
+    setFuzzyToStore () {
+      this.$store.commit('client/setFuzzySearch', this.fuzzySearch)
+    },
+    toGoClient () {
+      if (this.search && this.search !== '') {
+        this.$router.push({ path: `/client/${this.search}`, query: { city: this.$route.query.city } })
+      } else {
+        this.$router.push({ path: '/client', query: { city: this.$route.query.city } })
+      }
+    },
+    toGoClientAddress () {
+      if (this.search && this.search !== '') {
+        this.$router.push({ path: `/client/address/${this.search}`, query: { city: this.$route.query.city } })
+      } else {
+        this.$router.push({ path: '/client/address', query: { city: this.$route.query.city } })
+      }
+    },
+    searchClients () {
+      this.$router.push({ path: `/client/address/${this.search}`, query: { city: this.$route.query.city, searchByAddress: this.$route.query.searchByAddress } })
+    },
     changeCity (city) {
       this.$router.push({ query: { city: city.name, searchByAddress: this.searchByAddress } })
-    },
-    changeSearchByAddress () {
-      this.$router.push({ query: { city: this.$route.query.city, searchByAddress: this.searchByAddress } })
     },
     setSelectedCity () {
       if (this.$route.query.city) {
         this.selectedCity = this.$store.state.auth.cities.find(c => c.name === this.$route.query.city)
       }
     },
-    searchInDatabase (val) {
-      if (val.length < 1) { return }
+    debounceSearchInDatabase: debounce(function (val) {
+      this.searchInDatabase(val)
+    }, 300),
+    searchInDatabase (valTrim) {
+      if (valTrim.length < 1) { return }
+      const val = valTrim.trim()
       this.loadingDataTable = true
       const qs = require('qs')
       const query = qs.stringify({
@@ -253,16 +281,6 @@ export default {
         })
     },
     getClientBySearch (selectedResult = null) {
-      if (selectedResult) {
-        this.loadingDataTable = true
-        this.$router.push({
-          path: `/client/${selectedResult.id}?service=${this.$route.query.service}&city=${this.$route.query.city}&searchByAddress=${this.searchByAddress}`
-        })
-        this.search = this.$route.query.search
-        this.loadingDataTable = false
-      }
-    },
-    getClientByAddresses (selectedResult = null) {
       if (selectedResult) {
         this.loadingDataTable = true
         this.$router.push({

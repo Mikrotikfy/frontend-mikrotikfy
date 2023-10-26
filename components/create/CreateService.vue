@@ -512,6 +512,12 @@ export default {
         address: this.address,
         neighborhood: this.Client.neighborhood
       })
+      this.$store.dispatch('address/updateAddress', {
+        service,
+        address: this.address,
+        neighborhood: this.Client.neighborhood,
+        token: this.$store.state.auth.token
+      })
     },
     async createClient () {
       if (

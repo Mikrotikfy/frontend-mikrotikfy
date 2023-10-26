@@ -38,6 +38,32 @@ export const actions = {
       throw new Error(`ADDRESSES ACTION ${error}`)
     }
   },
+  updateAddress ({ commit }, payload) {
+    try {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            address: payload.address,
+            neighborhood: payload.neighborhood.name
+          }
+        })
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            this.$toast.success('Direccion actualizada con éxito en servicio', { duration: 4000, position: 'bottom-center' })
+          } else {
+            this.$toast.error('Error al actualizar la direccion', { position: 'bottom-center' })
+          }
+        })
+    } catch (error) {
+      throw new Error(`ADDRESSES ACTION ${error}`)
+    }
+  },
   getAddressByServiceId ({ commit }, payload) {
     const qs = require('qs')
     const query = qs.stringify({

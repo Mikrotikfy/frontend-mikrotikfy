@@ -1,6 +1,6 @@
 {
   "name": "mikrotikfy",
-  "version": "30.24.10",
+  "version": "30.26.10",
   "private": true,
   "scripts": {
     "dev": "nuxt",
@@ -20,6 +20,7 @@
     "dexie": "^3.2.3",
     "ipaddr.js": "^2.0.1",
     "js-cookie": "^2.2.1",
+    "lodash": "^4.17.21",
     "node-fetch": "2.6.1",
     "nuxt": "^2.15.4",
     "quagga": "^0.12.1",

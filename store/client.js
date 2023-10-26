@@ -1,7 +1,8 @@
 export const state = () => ({
-  clients: [],
+  services: [],
   clienttypes: [],
   clientsByDni: [],
+  fuzzySearch: false,
   currentClientCode: null,
   clientForDeviceManipulation: null,
   headers: null,
@@ -13,6 +14,13 @@ export const mutations = {
       state.refresh++
     } catch (error) {
       throw new Error(`MUTATE REFRESH ${error}`)
+    }
+  },
+  setFuzzySearch (state, payload) {
+    try {
+      state.fuzzySearch = payload
+    } catch (error) {
+      throw new Error(`MUTATE FUZZY SEARCH ${error}`)
     }
   },
   updateDniType (state, payload) {
@@ -29,20 +37,19 @@ export const mutations = {
       throw new Error(`MUTATE UPDATE CLIENT PASSWORD ${error}`)
     }
   },
-  clearClientsFromDatatable (state) {
-    state.clients = []
+  clearServicesFromDatatable (state) {
+    state.services = []
   },
-  getUsersFromDatabase (state, clientsList) {
+  getServicesFromDatabase (state, serviceList) {
     try {
-      state.clients = clientsList.data.results
-      state.pagination = clientsList.data.pagination
+      state.services = serviceList
     } catch (error) {
-      throw new Error(`MUTATE SEARCH CLIENT${error}`)
+      throw new Error(`MUTATE SEARCH SERVICES${error}`)
     }
   },
-  getUsersFromDatabaseFuzzy (state, clientsList) {
+  getServicesFromDatabaseFuzzy (state, serviceList) {
     try {
-      state.clients = clientsList.clients
+      state.services = serviceList.services
     } catch (error) {
       throw new Error(`MUTATE SEARCH CLIENT FUZZY${error}`)
     }
@@ -210,23 +217,44 @@ export const actions = {
       throw new Error(`EDIT CLIENT PLAN ACTION ${error}`)
     }
   },
-  async clearClientsFromDatatable ({ commit }) {
+  async clearServicesFromDatatable ({ commit }) {
     try {
-      await commit('clearClientsFromDatatable', true)
+      await commit('clearServicesFromDatatable', true)
     } catch (error) {
       throw new Error(`CLEAR CLIENT ACTION ${error}`)
     }
   },
-  async getUsersFromDatabaseBySearch ({ commit }, payload) {
+  async getServicesFromDatabaseBySearch ({ commit }, payload) {
     const qs = require('qs')
-    const pagination = qs.stringify({
-      pagination: payload.pagination
+    const query = qs.stringify({
+      filters: {
+        $or: [
+          {
+            service_addresses: {
+              address: {
+                $contains: payload.search
+              }
+            }
+          },
+          {
+            service_addresses: {
+              neighborhood: {
+                name: payload.search
+              }
+            }
+          }
+        ]
+      },
+      populate: ['service_addresses', 'service_addresses.neighborhood', 'normalized_client'],
+      pagination: {
+        pageSize: 500
+      }
     },
     {
       encodeValuesOnly: true
     })
     try {
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}searchclient?search=${payload.search}&city=${payload.city}&clienttype=${payload.clienttype}&${pagination}`, {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}services?${query}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -234,22 +262,19 @@ export const actions = {
         }
       })
         .then(res => res.json())
-        .then((clients) => {
-          commit('getUsersFromDatabase', clients)
+        .then(({ data: services }) => {
+          commit('getServicesFromDatabase', services)
         })
     } catch (error) {
       throw new Error(`ACTION ${error}`)
     }
   },
-  async getUsersFromDatabaseByFuzzySearch ({ commit }, payload) {
+  async getServicesFromDatabaseByFuzzySearch ({ commit }, payload) {
     const qs = require('qs')
     const query = qs.stringify({
       filters: {
         city: {
           name: payload.city
-        },
-        clienttype: {
-          name: payload.clienttype
         }
       }
     },
@@ -265,8 +290,9 @@ export const actions = {
         }
       })
         .then(res => res.json())
-        .then((clients) => {
-          commit('getUsersFromDatabaseFuzzy', clients)
+        .then((services) => {
+          console.log(services)
+          commit('getServicesFromDatabaseFuzzy', services)
         })
     } catch (error) {
       throw new Error(`ACTION ${error}`)

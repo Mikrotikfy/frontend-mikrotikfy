@@ -688,6 +688,12 @@ export default {
               neighborhood: this.cx.neighborhood,
               token: this.$store.state.auth.token
             })
+            this.$store.dispatch('address/updateAddress', {
+              service: this.service,
+              address: this.address,
+              neighborhood: this.cx.neighborhood,
+              token: this.$store.state.auth.token
+            })
           }
           this.modal = false
           this.loading = false

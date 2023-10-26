@@ -1,42 +1,46 @@
 <template>
   <v-container fluid>
-    <h1>uwu</h1>
-    <!-- <v-row v-if="clients.length < 1 && $route.params.search" class="justify-center">
+    <v-row v-if="services.length < 1 && $route.params.search" class="justify-center">
       <v-card class="ma-4 rounded-xl" :loading="loadingDataTable">
         <v-card-text class="ma-0 text-center">
           {{ result }}
         </v-card-text>
       </v-card>
     </v-row>
-    <v-row v-if="clients.length > 0" class="mt-0">
+    <v-row v-if="services.length > 0" class="mt-0">
       <v-col class="pt-0">
         <v-card class="elevation-0 rounded-lg">
           <v-card-text>
             <client-only>
               <v-data-table
                 :headers="getHeadersByClienttype"
-                :items="clients"
-                :server-items-length="clientCount()"
+                :items="services"
                 :items-per-page.sync="itemsPerPage"
-                :page.sync="page"
-                :options.sync="options"
                 :loading="loadingDataTable"
+                :search="filter"
                 no-data-text="No hay resultados a la busqueda..."
                 loading-text="Cargando información de clientes..."
+                group-by="name"
+                :group-desc="true"
                 hide-default-footer
                 mobile-breakpoint="100"
                 @page-count="pageCount = $event"
               >
-                <template v-slot:[`item.active`]="props">
-                  <MainClientControl :client="props.item" :index="clients.map(function(x) {return x.id; }).indexOf(props.item.id)" />
-                </template>
-                <template v-slot:[`item.code`]="{ item }">
-                  <span v-if="clienttype.name === 'INTERNET'" :class="item.status === 'green' ? 'online-text' : 'offline-text'">
-                    {{ item.code }}
-                  </span>
-                  <span v-else :class="item.active ? 'online-text' : 'offline-text'">
-                    {{ item.code }}
-                  </span>
+                <template v-slot:top>
+                  <v-text-field
+                    v-model="filter"
+                    append-icon="mdi-magnify"
+                    label="Filtrar por Codigo, Nombre, Direccion, Telefono"
+                    dense
+                    outlined
+                    hide-details
+                  />
+                  <v-checkbox
+                    v-model="fuzzy"
+                    label="Busqueda Avanzada"
+                    hide-details
+                    class="ml-4"
+                  />
                 </template>
                 <template v-slot:[`item.dni`]="{ item, index }">
                   {{ item.dni }}
@@ -49,25 +53,7 @@
                     {{ item.corporate === null ? 'No definido' : item.corporate === false ? 'Plan Hogar' : 'Corporativo' }}
                   </v-chip>
                 </template>
-                <template v-slot:[`item.balance`]="props">
-                  <v-chip
-                    v-if="props.item && props.item.offer && props.item.offer.price"
-                    small
-                    label
-                    :to="`/billing/${props.item.code}?selected=${props.item.id}&city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
-                    :color="props.item.balance >= props.item.offer.price * 2 ? 'yellow darken-4' : 'green'"
-                  >
-                    ${{ Number(props.item.balance).toLocaleString('es') }}
-                  </v-chip>
-                  <v-chip
-                    v-else
-                    small
-                    label
-                  >
-                    {{ 'No definido' }}
-                  </v-chip>
-                </template>
-                <template v-slot:[`item.address`]="{ item }">
+                <template v-slot:[`item.service_addresses.address`]="{ item }">
                   {{ processAddresses(item) }}
                 </template>
                 <template v-slot:[`item.neighborhood.name`]="{ item }">
@@ -78,68 +64,44 @@
                     {{ item.technology ? item.technology.name : 'No Reg.' }}
                   </strong>
                 </template>
-                <template v-slot:[`item.update_password`]="{ item, index }">
-                  <v-checkbox
-                    v-if="clienttype.name === 'INTERNET'"
-                    :input-value="item.update_password"
-                    :disabled="!item.active || item.indebt"
-                    hide-details
-                    class="mt-0"
-                    @click="updatePassword(item, item.update_password, index)"
-                  />
-                </template>
-                <template v-slot:[`item.actions`]="{ item, index }">
-                  <div style="white-space:nowrap">
-                    <CreateTicket
-                      :client="item"
-                      :assignated="$store.state.auth.id"
-                    />
-                    <MainClientStatus
-                      v-if="clienttype.name === 'INTERNET'"
-                      :name="item.name"
-                      :clientid="item.id"
-                      :code="item.code"
-                      :item="item"
-                      :index="clients.indexOf(item)"
-                    />
-                    <ControlCenter
-                      :client="item"
-                      :index="index"
-                      @reloadSearch="getClientBySearch"
-                    />
-                    <BillingAuxBillingList
-                      :client="item"
-                      :index="index"
-                    />
-                  </div>
+                <template v-slot:[`item.actions`]="{ item }">
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        v-bind="attrs"
+                        icon
+                        :color="$vuetify.theme.dark && !block ? 'white' : 'green darken-4 white--text'"
+                        class="rounded-xl"
+                        :to="`/client/${item.normalized_client ? item.normalized_client.id : ''}?city=${$route.query.city}&service=${item.id}`"
+                        v-on="on"
+                      >
+                        <v-icon :class="block ? 'mr-1' : ''">
+                          mdi-account
+                        </v-icon>
+                        <span v-if="block">
+                          Ir al Cliente
+                        </span>
+                      </v-btn>
+                    </template>
+                    <span>Cliente</span>
+                  </v-tooltip>
                 </template>
               </v-data-table>
             </client-only>
           </v-card-text>
         </v-card>
       </v-col>
-    </v-row> -->
+    </v-row>
   </v-container>
 </template>
 
 <script>
 export default {
   name: 'ClientList',
-  props: {
-    search: {
-      type: String,
-      default: ''
-    },
-    resetsearch: {
-      type: Boolean,
-      default: false
-    }
-  },
   data () {
     return {
-      createDialog: false,
       isRx: true,
-      itemsPerPage: 15,
+      itemsPerPage: 500,
       loadingDataTable: false,
       options: {},
       page: 1,
@@ -151,15 +113,19 @@ export default {
       update_password: false,
       refreshLoading: false,
       searchClientInput: '',
-      result: ''
+      result: '',
+      filter: ''
     }
   },
   computed: {
-    clients () {
-      return this.$store.state.client.clients
+    search () {
+      return this.$route.params.search
     },
-    headers () {
-      return this.$store.state.client.headers
+    fuzzySearch () {
+      return this.$store.state.client.fuzzySearch
+    },
+    services () {
+      return this.$store.state.client.services
     },
     currentCity () {
       // eslint-disable-next-line eqeqeq
@@ -174,124 +140,67 @@ export default {
     technologies () {
       return this.$store.state.technologies
     },
-    activeClientsList () {
-      return this.$store.state.activeClientsList
-    },
     telegramBots () {
       return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
     },
-    clienttype () {
-      return this.$store.state.clienttypes ? this.$store.state.clienttypes.find(type => type.name === this.$route.query.clienttype) : ''
-    },
     getHeadersByClienttype () {
-      return this.$route.query.clienttype === 'INTERNET' ? this.$store.state.isDesktop ? this.$isAdmin() ? [
+      return this.$store.state.isDesktop ? [
+        { text: 'Tipo', value: 'name', sortable: false },
         { text: 'Codigo', value: 'code', sortable: false },
-        { text: 'Nombre', value: 'name', sortable: false },
-        { text: 'Cedula', value: 'dni', sortable: false },
+        { text: 'Nombre', value: 'normalized_client.name', sortable: false },
+        { text: 'Cedula', value: 'normalized_client.dni', sortable: false },
         { text: 'Direccion', sortable: false, value: 'address' },
-        { text: 'Barrio', value: 'neighborhood.name', sortable: false },
-        { text: 'Telefono', sortable: false, value: 'phone' },
-        { text: 'Tarifa', value: 'active', sortable: false },
-        { text: 'Saldo', value: 'balance', sortable: false },
-        { text: 'Tecnologia', value: 'technology.name', sortable: false },
-        { text: 'Clave', value: 'update_password', sortable: false },
+        { text: 'Barrio', value: 'neighborhood', sortable: false },
+        { text: 'Telefono', sortable: false, value: 'normalized_client.phone' },
         { text: 'Acciones', value: 'actions', sortable: false }
       ] : [
         { text: 'Codigo', value: 'code', sortable: false },
-        { text: 'Nombre', value: 'name', sortable: false },
-        { text: 'Cedula', value: 'dni', sortable: false },
+        { text: 'Nombre', value: 'normalized_client.name', sortable: false },
+        { text: 'Cedula', value: 'normalized_client.dni', sortable: false },
         { text: 'Direccion', sortable: false, value: 'address' },
-        { text: 'Barrio', value: 'neighborhood.name', sortable: false },
-        { text: 'Telefono', sortable: false, value: 'phone' },
-        { text: 'Tarifa', value: 'active', sortable: false },
-        { text: 'Saldo', value: 'balance', sortable: false },
-        { text: 'Tecnologia', value: 'technology.name', sortable: false },
-        { text: 'Acciones', value: 'actions', sortable: false }
-      ] : [
-        { text: 'Codigo', value: 'code', sortable: false },
-        { text: 'Nombre', value: 'name', sortable: false },
-        { text: 'Direccion', sortable: false, value: 'address' },
-        { text: 'Barrio', value: 'neighborhood.name', sortable: false },
-        { text: 'Telefono', sortable: false, value: 'phone' },
-        { text: 'Tarifa', value: 'active', sortable: false },
-        { text: 'Acciones', value: 'actions', sortable: false }
-      ] : this.$store.state.isDesktop ? [
-        { text: 'Codigo', value: 'code', sortable: false },
-        { text: 'Nombre', value: 'name', sortable: false },
-        { text: 'Cedula', value: 'dni', sortable: false },
-        { text: 'Direccion', sortable: false, value: 'address' },
-        { text: 'Barrio', value: 'neighborhood.name', sortable: false },
-        { text: 'Telefono', sortable: false, value: 'phone' },
-        { text: 'Estado', sortable: false, value: 'active' },
-        { text: 'Saldo', value: 'balance', sortable: false },
-        { text: 'Televisores', sortable: true, value: 'tvspec.tvs' },
-        { text: 'Altos', sortable: true, value: 'tvspec.high' },
-        { text: 'Bajos', sortable: true, value: 'tvspec.down' },
-        { text: 'Calidad', sortable: true, value: 'tvspec.tvspectype.name' },
-        { text: 'Acciones', value: 'actions', sortable: false }
-      ] : [
-        { text: 'Codigo', value: 'code', sortable: false },
-        { text: 'Nombre', value: 'name', sortable: false },
-        { text: 'Cedula', value: 'dni', sortable: false },
-        { text: 'Direccion', sortable: false, value: 'address' },
-        { text: 'Barrio', value: 'neighborhood.name', sortable: false },
-        { text: 'Telefono', sortable: false, value: 'phone' },
-        { text: 'Estado', sortable: false, value: 'active' },
+        { text: 'Barrio', value: 'neighborhood', sortable: false },
+        { text: 'Telefono', sortable: false, value: 'normalized_client.phone' },
         { text: 'Acciones', value: 'actions', sortable: false }
       ]
     }
   },
   watch: {
-    $route () {
+    fuzzySearch () {
       this.getClientBySearch()
-    },
-    'pagination.page': {
-      handler () {
-        this.getClientBySearch()
-      },
-      deep: false
     }
+    // $route () {
+    //   this.getClientBySearch()
+    // },
+    // 'pagination.page': {
+    //   handler () {
+    //     this.getClientBySearch()
+    //   },
+    //   deep: false
+    // }
   },
   mounted () {
-    // if (this.search) {
-    //   this.searchClientInput = this.search
-    //   this.getClientBySearch()
-    // } else {
-    //   this.resetsearchfn()
-    // }
-    // document.onkeydown = function (e) {
-    //   if (e.key === 'o' && (e.ctrlKey || e.metaKey)) {
-    //     e.preventDefault()
-
-    //     this.redirectToBilling()
-    //   }
-    // }.bind(this)
+    if (this.search) {
+      this.getClientBySearch()
+    } else {
+      this.resetsearchfn()
+    }
   },
   methods: {
     toggleDniType (client, index) {
       const dniType = !client.corporate
       this.$store.dispatch('client/updateDniType', { client, corporate: dniType, index, token: this.$store.state.auth.token })
     },
-    updatePassword (client, updatePasswordStatus, index) {
-      const updatePassword = !updatePasswordStatus
-      this.$store.dispatch('client/updatePassword', { client, updatePassword, index, token: this.$store.state.auth.token })
-    },
-    redirectToBilling () {
-      this.$router.push({ path: `/billing/${this.$route.params.search}`, query: { city: this.$route.query.city, clienttype: this.$route.query.clienttype } })
-    },
     async getClientBySearch () {
       this.loadingDataTable = true
-      await this.$store.dispatch('client/clearClientsFromDatatable')
-      const search = this.searchClientInput.trim()
+      await this.$store.dispatch('client/clearServicesFromDatatable')
+      const search = this.search.trim()
       this.setSearchText()
-      if (search && this.$route.query.fuzzy === 'false') {
-        await this.$store.dispatch('client/getUsersFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: this.pagination })
-        this.pagination = { ...this.$store.state.client.pagination }
+      if (!this.fuzzySearch) {
+        await this.$store.dispatch('client/getServicesFromDatabaseBySearch', { search, city: this.$route.query.city, token: this.$store.state.auth.token })
         this.loadingDataTable = false
         this.result = 'No se han encontrado resultados de' + ' ' + search
       } else {
-        await this.$store.dispatch('client/getUsersFromDatabaseByFuzzySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, pagination: this.pagination })
-        this.pagination = { ...this.$store.state.client.pagination }
+        await this.$store.dispatch('client/getServicesFromDatabaseByFuzzySearch', { search, city: this.$route.query.city, token: this.$store.state.auth.token })
         this.loadingDataTable = false
         this.result = 'No se han encontrado resultados de' + ' ' + search
       }
@@ -316,29 +225,18 @@ export default {
       if (client.balance === null) { return '0' }
       return client.balance.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 })
     },
-    processAddresses (client) {
-      if (!client) { return 'Sin Direccion' }
-      const address = client?.address
-      if (!client.addresses) { return address }
-      if (!client || !client.addresses) { return 'Sin Direccion' }
-      const addresses = client?.addresses
-      if (!address && addresses.length < 1) { return 'Sin Dirección' }
-      if (address && addresses.length < 1) { return address }
-      if (address && addresses.length > 0) { return addresses.at(-1).address }
-      if (!address && addresses.length > 0) { return addresses.at(-1).address }
+    processAddresses ({ service }) {
+      if (!service) { return 'Sin Direccion' }
+      const addresses = service?.service_addresses
+      if (!addresses) { return 'Sin Dirección' }
+      if (addresses && addresses.length > 0) { return addresses.at(-1).address }
     },
-    processAddressesNeighborhood (client) {
-      if (!client) { return 'Sin Barrio' }
-      const neighborhood = client.neighborhood
-      if (!client.addresses) { return neighborhood }
-      if (!client || !client.addresses) { return 'Sin Barrio' }
-      const addresses = client.addresses
-      if (!neighborhood && addresses.length < 1) { return 'Sin Barrio' }
-      if (neighborhood && addresses.length < 1) { return neighborhood.name }
-      if (neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
-      if (neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
-      if (!neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
-      if (!neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
+    processAddressesNeighborhood ({ service }) {
+      if (!service) { return 'Sin Barrio' }
+      const addresses = service?.service_addresses
+      if (!addresses) { return 'Sin Barrio' }
+      if (addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
+      if (addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
     }
   }
 }
