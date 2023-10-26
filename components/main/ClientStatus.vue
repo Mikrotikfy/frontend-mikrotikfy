@@ -339,6 +339,7 @@ export default {
         'julio',
         'agosto',
         'septiembre',
+        'octubre',
         'noviembre',
         'diciembre'
       ]
@@ -347,7 +348,7 @@ export default {
       const fechaPartes = partes[0].split('-')
 
       const dia = fechaPartes[2]
-      const mes = meses[parseInt(fechaPartes[1])]
+      const mes = meses[parseInt(fechaPartes[1] - 1)]
       const año = fechaPartes[0]
       const hora = partes[1].split(':')[0]
       const minutos = partes[1].split(':')[1]
