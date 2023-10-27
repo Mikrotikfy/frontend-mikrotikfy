@@ -544,7 +544,22 @@ export default {
           Authorization: `Bearer ${this.$store.state.auth.token}`
         },
         body: JSON.stringify({
-          data: { ...this.Client, active: true, indebt: false, name: this.selectedClienttype.name, normalized_client: parseInt(this.$route.query.client), city: [this.selectedCity.id], clienttype: [this.selectedClienttype.id] }
+          data: {
+            name: this.selectedClienttype.name,
+            code: this.Client.code,
+            clienttype: this.selectedClienttype.id,
+            offer: this.Client.offer.id,
+            technology: this.Client.technology.id || null,
+            city: this.selectedCity.id,
+            stratum: this.Client.stratum,
+            wifi_ssid: this.Client.wifi_ssid,
+            wifi_password: this.Client.wifi_password,
+            newModel: 1,
+            ipmodel: 0,
+            active: true,
+            indebt: false,
+            normalized_client: parseInt(this.$route.query.client)
+          }
         })
       })
         .then(res => res.json())
