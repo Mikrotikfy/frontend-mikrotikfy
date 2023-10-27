@@ -1,5 +1,5 @@
 <template>
-  <span v-if="client">
+  <span v-if="service">
     <v-tooltip top>
       <template v-slot:activator="{ on, attrs }">
         <v-btn
@@ -8,12 +8,12 @@
           :x-small="!block"
           :block="block"
           class="rounded-xl"
-          :color="$vuetify.theme.dark && !block ? 'white' : client.naps.length > 0 ? 'grey darken-2' : 'primary'"
+          :color="$vuetify.theme.dark && !block ? 'white' : service.naps.length > 0 ? 'grey darken-2' : 'primary'"
           v-on="on"
           @click="initComponent()"
         >
           <v-icon>mdi-lan</v-icon>
-          <span v-if="block">{{ client.naps.length > 0 ? 'Actualizar NAP' : 'Agregar NAP' }}</span>
+          <span v-if="block">{{ service.naps.length > 0 ? 'Actualizar NAP' : 'Agregar NAP' }}</span>
         </v-btn>
       </template>
       <span>Gestionar Acceso a Red</span>
@@ -24,7 +24,7 @@
     >
       <v-card>
         <v-card-title>
-          Gestionar Acceso a Red {{ client.name }}
+          Gestionar Acceso a Red {{ service.normalized_client.name }}
         </v-card-title>
         <v-card-text v-if="current.length > 0">
           Este cliente pertenece a las siguientes NAPS:
@@ -43,7 +43,7 @@
           <v-autocomplete
             v-model="selected"
             :items="naps"
-            :disabled="waitingForClientNapData"
+            :disabled="waitingForServiceNapData"
             label="Seleccionar NAP"
             auto-select-first
             item-text="code"
@@ -82,7 +82,7 @@ export default {
       type: Number,
       default: 0
     },
-    client: {
+    service: {
       type: Object,
       required: true
     },
@@ -96,47 +96,47 @@ export default {
       modal: false,
       selected: null,
       current: [],
-      waitingForClientNapData: true
+      waitingForServiceNapData: true
     }
   },
   computed: {
     naps () {
       return this.$store.state.nap.naps
     },
-    clientNapData () {
-      return this.$store.state.nap.clientNapData
+    serviceNapData () {
+      return this.$store.state.nap.serviceNapData
     }
   },
   methods: {
     initComponent () {
       this.modal = true
       this.getNapsByCity()
-      this.getClientNapData()
+      this.getServiceNapData()
     },
     save () {
-      this.$store.dispatch('nap/saveClientNap', {
+      this.$store.dispatch('nap/saveServiceNap', {
         token: this.$store.state.auth.token,
-        client: this.client,
+        service: this.service,
         nap: this.selected,
         current: this.current
       })
       if (this.isticket) {
         this.$store.commit('ticket/addNap', {
           token: this.$store.state.auth.token,
-          ticketindex: this.ticketindex,
+          id: this.ticketindex,
           nap: this.selected
         })
       }
       this.selected = null
       this.modal = false
     },
-    async getClientNapData () {
-      await this.$store.dispatch('nap/getClientNapData', {
+    async getServiceNapData () {
+      await this.$store.dispatch('nap/getServiceNapData', {
         token: this.$store.state.auth.token,
-        client: this.client
+        service: this.service
       })
-      this.current = this.clientNapData.naps
-      this.waitingForClientNapData = false
+      this.current = this.serviceNapData.naps
+      this.waitingForServiceNapData = false
     },
     async getNapsByCity () {
       await this.$store.dispatch('nap/getNaps', {
@@ -144,7 +144,7 @@ export default {
         city: this.$route.query.city
       })
       await this.$store.commit('nap/filterCurrentNaps', {
-        naps: this.clientNapData.naps
+        naps: this.serviceNapData.naps
       })
     }
   }

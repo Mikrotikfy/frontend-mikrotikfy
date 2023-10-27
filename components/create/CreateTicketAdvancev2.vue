@@ -58,19 +58,19 @@
       <v-divider v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo" class="mb-5" />
       <v-card-text v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo">
         <NapActualInfo
-          :client="ticket.service"
+          :service="ticket.service"
         />
         <NapRemoveDialog
           v-if="ticket.service.naps.length > 0 && ticket.tickettype.name === 'TRASLADO'"
-          :ticketindex="ticketindex"
+          :ticketindex="ticket.id"
           :isticket="true"
-          :client="ticket.service"
+          :service="ticket.service"
           :block="true"
         />
         <NapManageClient
           :isticket="true"
-          :ticketindex="ticketindex"
-          :client="ticket.service"
+          :ticketindex="ticket.id"
+          :service="ticket.service"
           :block="true"
         />
       </v-card-text>

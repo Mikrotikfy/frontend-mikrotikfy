@@ -6,7 +6,7 @@ export const state = () => ({
 })
 export const mutations = {
   addNap (state, payload) {
-    state.tickets[payload.ticketindex].service.naps.push(payload.nap)
+    state.tickets.find(ticket => ticket.id === payload.id).service.naps.push(payload.nap)
   },
   removeNap (state, payload) {
     state.tickets[payload.ticketindex].client.naps = []
