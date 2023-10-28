@@ -15,7 +15,8 @@ export default function ({ route, redirect, store }) {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA')
   }
   const newQueryResume = {
-    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA')
+    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
+    clienttype: 'INTERNET'
   }
   const newQueryClient = query.service ? {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
@@ -48,7 +49,7 @@ export default function ({ route, redirect, store }) {
   if ((name === 'nap') && (!query.city)) {
     redirect({ path, query: newQueryNap })
   }
-  if ((name === 'billing-resume') && (!query.city)) {
+  if ((name === 'billing-resume') && (!query.city || !query.clienttype)) {
     redirect({ path, query: newQueryResume })
   }
   if ((name === 'billing-generate') && (!query.city || !query.clienttype)) {

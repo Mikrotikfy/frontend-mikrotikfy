@@ -80,6 +80,7 @@
   </v-row>
 </template>
 <script>
+import { debounce } from 'lodash'
 export default {
   name: 'ClientSearch',
   data () {
@@ -102,7 +103,7 @@ export default {
   },
   watch: {
     search (val) {
-      val && val !== this.select && val !== null && this.searchInDatabase(val)
+      val && val !== this.select && val !== null && this.debounceSearchInDatabase(val)
     },
     select (resultObject) {
       if (this.search && resultObject.services.length === 1) {
@@ -123,6 +124,9 @@ export default {
         this.selectedCity = this.$store.state.auth.cities.find(c => c.name === this.$route.query.city)
       }
     },
+    debounceSearchInDatabase: debounce(function (val) {
+      this.searchInDatabase(val)
+    }, 300),
     searchInDatabase (val) {
       if (val.length < 1) { return }
       this.loadingDataTable = true

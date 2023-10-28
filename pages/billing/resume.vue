@@ -2,115 +2,123 @@
   <v-container fluid>
     <v-row>
       <v-col>
+        <v-card-title class="justify-center">
+          Movimientos de cuenta
+        </v-card-title>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col class="d-flex">
+        <v-select
+          v-model="selectedCity"
+          :items="cities"
+          label="Filtrar Ciudad"
+          item-value="id"
+          item-text="name"
+          return-object
+          rounded
+          dense
+          outlined
+          hide-details="auto"
+          @change="changeCity(selectedCity)"
+        >
+          <template v-slot:item="{ item }">
+            {{ item.name }}
+          </template>
+        </v-select>
+      </v-col>
+      <v-col class="d-flex">
+        <v-select
+          v-model="selectedClienttype"
+          :items="clienttypes"
+          label="Filtrar Tipo"
+          item-value="id"
+          item-text="name"
+          return-object
+          rounded
+          dense
+          outlined
+          hide-details="auto"
+          @change="changeType(selectedClienttype)"
+        >
+          <template v-slot:item="{ item }">
+            {{ item.name }}
+          </template>
+        </v-select>
+      </v-col>
+      <v-col class="d-flex">
+        <v-text-field
+          ref="startDate"
+          v-model="startDate"
+          label="Inicio"
+          type="date"
+          outlined
+          dense
+          :rules="dateRules"
+          class="rounded-xl"
+          hide-details="auto"
+          prepend-icon="mdi-calendar"
+          @keyup.enter="setDateQuery"
+        />
+        <v-text-field
+          v-model="endDate"
+          label="Fin"
+          type="date"
+          outlined
+          dense
+          :rules="dateRules2"
+          class="rounded-xl"
+          hide-details="auto"
+          prepend-icon="mdi-calendar"
+          @keyup.enter="setDateQuery"
+        />
+        <v-btn
+          color="white black--text"
+          class="rounded-xl ml-4"
+          @click="getBillsByDateRange"
+        >
+          <v-icon>
+            mdi-history
+          </v-icon>
+        </v-btn>
+      </v-col>
+      <v-col>
+        <v-btn-toggle
+          v-model="mode"
+          borderless
+          dense
+          color="primary"
+        >
+          <v-btn value="credit">
+            <span class="hidden-sm-and-down">Credito</span>
+
+            <v-icon right>
+              mdi-arrow-down-bold
+            </v-icon>
+          </v-btn>
+
+          <v-btn value="debit">
+            <span class="hidden-sm-and-down">Debito</span>
+
+            <v-icon right>
+              mdi-arrow-up-bold
+            </v-icon>
+          </v-btn>
+          <v-btn value="both">
+            <span class="hidden-sm-and-down">Ambos</span>
+
+            <v-icon right>
+              mdi-circle
+            </v-icon>
+          </v-btn>
+        </v-btn-toggle>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
         <v-card class="rounded-lg" style="width:100%;">
-          <v-card-title class="justify-center">
-            Movimientos de cuenta
-          </v-card-title>
           <v-card-text>
             <v-container fluid>
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="3"
-                >
-                  <v-select
-                    v-model="selectedCity"
-                    :items="cities"
-                    label="Filtrar Ciudad"
-                    item-value="id"
-                    item-text="name"
-                    return-object
-                    rounded
-                    dense
-                    outlined
-                    hide-details="auto"
-                    @change="changeCity(selectedCity)"
-                  >
-                    <template v-slot:item="{ item }">
-                      {{ item.name }}
-                    </template>
-                  </v-select>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="3"
-                >
-                  <v-text-field
-                    ref="startDate"
-                    v-model="startDate"
-                    label="Inicio"
-                    type="date"
-                    outlined
-                    dense
-                    :rules="dateRules"
-                    class="rounded-xl"
-                    hide-details="auto"
-                    prepend-icon="mdi-calendar"
-                    @keyup.enter="setDateQuery"
-                  />
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="3"
-                  class="d-flex align-center"
-                >
-                  <v-text-field
-                    v-model="endDate"
-                    label="Fin"
-                    type="date"
-                    outlined
-                    dense
-                    :rules="dateRules2"
-                    class="rounded-xl"
-                    hide-details="auto"
-                    prepend-icon="mdi-calendar"
-                    @keyup.enter="setDateQuery"
-                  />
-                  <v-btn
-                    color="white black--text"
-                    class="rounded-xl ml-4"
-                    @click="getBillsByDateRange"
-                  >
-                    <v-icon>
-                      mdi-history
-                    </v-icon>
-                  </v-btn>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="3"
-                  class="d-flex align-center"
-                >
-                  <v-btn-toggle
-                    v-model="mode"
-                    borderless
-                    color="primary"
-                  >
-                    <v-btn value="credit">
-                      <span class="hidden-sm-and-down">Credito</span>
-
-                      <v-icon right>
-                        mdi-arrow-down-bold
-                      </v-icon>
-                    </v-btn>
-
-                    <v-btn value="debit">
-                      <span class="hidden-sm-and-down">Debito</span>
-
-                      <v-icon right>
-                        mdi-arrow-up-bold
-                      </v-icon>
-                    </v-btn>
-                    <v-btn value="both">
-                      <span class="hidden-sm-and-down">Ambos</span>
-
-                      <v-icon right>
-                        mdi-circle
-                      </v-icon>
-                    </v-btn>
-                  </v-btn-toggle>
-                </v-col>
-              </v-row>
               <v-row>
                 <v-col>
                   <v-data-table
@@ -165,6 +173,7 @@
 export default {
   data: () => ({
     selectedCity: null,
+    selectedClienttype: null,
     startDate: '',
     endDate: '',
     dateRules: [
@@ -202,6 +211,9 @@ export default {
     },
     cities () {
       return this.$store.state.auth.cities
+    },
+    clienttypes () {
+      return this.$store.state.auth.clienttypes
     }
   },
   watch: {
@@ -229,14 +241,23 @@ export default {
     this.getBillsByDateRange()
     this.setDateQuery()
     this.setQueryCity()
+    this.setSelectedClienttype()
   },
   methods: {
     changeCity (city) {
-      this.$router.push({ query: { city: city.name } })
+      this.$router.push({ query: { city: city.name, clienttype: this.$route.query.city } })
+    },
+    changeType (clienttype) {
+      this.$router.push({ query: { city: this.$route.query.city, clienttype: clienttype.name } })
     },
     setQueryCity () {
       if (this.$route.query.city) {
         this.selectedCity = this.$store.state.auth.cities.find(c => c.name === this.$route.query.city)
+      }
+    },
+    setSelectedClienttype () {
+      if (this.$route.query.clienttype) {
+        this.selectedClienttype = this.$store.state.auth.clienttypes.find(c => c.name === this.$route.query.clienttype)
       }
     },
     setDateQuery () {
@@ -300,10 +321,17 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 input[type="date"]::-webkit-inner-spin-button,
 input[type="date"]::-webkit-calendar-picker-indicator {
     display: none;
     -webkit-appearance: none;
+}
+.parent {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 10px;
+  grid-auto-rows: minmax(100px, auto);
+  padding: 0 12px;
 }
 </style>

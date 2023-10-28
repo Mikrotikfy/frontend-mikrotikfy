@@ -1,5 +1,3 @@
-import path from 'path'
-import fs from 'fs'
 import colors from 'vuetify/es5/util/colors'
 require('dotenv').config()
 
