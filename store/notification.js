@@ -163,7 +163,7 @@ export const actions = {
       })
   },
   createBillAccount ({ commit }, payload) {
-    const path = `fac/${payload.year}/${payload.month.value}/${payload.city.toLowerCase()}/${payload.clienttype.toLowerCase()}/${payload.month.value}${payload.year}_${payload.client.code}.pdf`
+    const path = `fac/${payload.year}/${payload.month.value}/${payload.city.toLowerCase()}/${payload.clienttype.toLowerCase()}/${payload.month.value}${payload.year}_${payload.service.code}.pdf`
     try {
       return new Promise((resolve, reject) => {
         const sentBody = {
@@ -172,7 +172,7 @@ export const actions = {
             year: parseInt(payload.year),
             path,
             success: payload.success,
-            client: payload.client.id,
+            service: payload.service.id,
             type: payload.clienttype.toLowerCase()
           }
         }
@@ -225,10 +225,13 @@ export const actions = {
             }
           ]
         },
-        phone: {
-          $ne: '0'
+        normalized_client: {
+          phone: {
+            $ne: '0'
+          }
         }
       },
+      populate: ['normalized_client'],
       pagination: {
         pageSize: 20000
       }

@@ -6,7 +6,7 @@
           color="primary"
           class="mr-2"
           :loading="loading"
-          :disabled="loading || clients.length > 0"
+          :disabled="loading || services.length > 0"
           @click="generateBilling"
         >
           Generar Estados de Cuenta
@@ -15,7 +15,7 @@
           class="mr-2"
           color="red"
           :loading="loading"
-          :disabled="loading || clients.length < 1 || ended"
+          :disabled="loading || services.length < 1 || ended"
           @click="sendNotifications"
         >
           Enviar Notificaciones
@@ -31,9 +31,9 @@
     <v-row>
       <v-col>
         <v-data-table
-          v-if="clients.length > 0"
+          v-if="services.length > 0"
           :headers="headers"
-          :items="clients"
+          :items="services"
         >
           <template v-slot:[`item.messageSent`]="{ item }">
             <v-chip
@@ -66,7 +66,7 @@ export default {
       headers: [
         { text: 'Codigo', value: 'code', sortable: false },
         { text: 'Nombre', value: 'name', sortable: false },
-        { text: 'Celular', value: 'phone', sortable: false },
+        { text: 'Celular', value: 'normalized_client.phone', sortable: false },
         { text: 'Estado del envio', value: 'messageSent', sortable: false }
       ]
     }
@@ -75,8 +75,8 @@ export default {
     sendIndex () {
       return this.$store.state.notification.sendIndex
     },
-    clients () {
-      return this.$store.state.notification.clients
+    services () {
+      return this.$store.state.notification.services
     },
     month () {
       return this.$store.state.notification.month
@@ -88,13 +88,13 @@ export default {
   methods: {
     async sendNotifications () {
       this.loading = true
-      const clients = this.clients
+      const services = this.services
 
-      for (let i = 0; i < clients.length; i++) {
+      for (let i = 0; i < services.length; i++) {
         this.$store.commit('notification/setSendIndex', i + 1)
 
         await this.$store.dispatch('notification/sendWhatsapp', {
-          client: clients[i],
+          service: services[i],
           month: this.month,
           token: this.$store.state.auth.token
         }).then(async (res) => {
@@ -112,7 +112,7 @@ export default {
             success,
             city: this.$route.query.city,
             clienttype: this.$route.query.clienttype,
-            client: clients[i]
+            service: services[i]
           })
         })
       }
@@ -122,7 +122,7 @@ export default {
     async generateBilling () {
       this.loading = true
       const codes = this.$store.state.notification.codes
-      const clients = await this.$store.dispatch('notification/getClients', {
+      const services = await this.$store.dispatch('notification/getServices', {
         token: this.$store.state.auth.token,
         city: this.$route.query.city,
         clienttype: this.$route.query.clienttype,
@@ -130,9 +130,9 @@ export default {
         year: this.year
       })
       const search = codes.map((code) => {
-        return clients.find((client) => {
-          client.messageSent = null
-          return client.code === code
+        return services.find((service) => {
+          service.messageSent = null
+          return service.code === code
         })
       })
 
@@ -145,13 +145,13 @@ export default {
           token: this.$store.state.auth.token,
           city: this.$route.query.city,
           clienttype: this.$route.query.clienttype,
-          client: filtered[i],
+          service: filtered[i],
           month: this.month,
           year: this.year
         })
         this.generatedBills++
       }
-      this.$store.commit('notification/setClients', filtered)
+      this.$store.commit('notification/setServices', filtered)
       this.$store.commit('notification/readyForSend')
       this.loading = false
     }

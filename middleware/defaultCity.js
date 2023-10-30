@@ -31,6 +31,10 @@ export default function ({ route, redirect, store }) {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
     clienttype: 'INTERNET'
   }
+  const newQueryNotification = {
+    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
+    clienttype: 'INTERNET'
+  }
   const newQueryGenerate = {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
     clienttype: 'INTERNET'
@@ -48,6 +52,9 @@ export default function ({ route, redirect, store }) {
   }
   if ((name === 'nap') && (!query.city)) {
     redirect({ path, query: newQueryNap })
+  }
+  if ((name === 'notification') && (!query.city || !query.clienttype)) {
+    redirect({ path, query: newQueryNotification })
   }
   if ((name === 'billing-resume') && (!query.city || !query.clienttype)) {
     redirect({ path, query: newQueryResume })
