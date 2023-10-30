@@ -6,7 +6,7 @@
           Envío de Estado de Cuenta Mensual
         </h2>
         <NotificationSelectMonth />
-        <v-card v-if="month" class="rounded-xl mx-auto elevation-0" width="800">
+        <v-card v-if="month" class="rounded-xl mx-auto elevation-0">
           <v-card-text>
             <v-stepper v-model="e1" class="transparent elevation-0">
               <v-stepper-header class="elevation-0">
