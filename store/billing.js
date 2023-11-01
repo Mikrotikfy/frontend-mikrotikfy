@@ -7,7 +7,7 @@ export const state = () => ({
   legalNotes: [],
   billsOnDataRange: [],
   sendIndex: 0,
-  billsForCurrentClient: [],
+  billsForCurrentService: [],
   total: 0,
   month: null,
   year: null,
@@ -107,12 +107,12 @@ export const mutations = {
       date: new Date()
     })
   },
-  getBillsByClientId (state, bills) {
+  getBillsByServiceId (state, bills) {
     try {
-      state.billsForCurrentClient = []
-      state.billsForCurrentClient = bills
+      state.billsForCurrentService = []
+      state.billsForCurrentService = bills
     } catch (error) {
-      throw new Error(`BILLING CLIENTS MUTATE ${error}`)
+      throw new Error(`BILLING SERVICE MUTATE ${error}`)
     }
   },
   getClientsBySearch (state, clients) {
@@ -659,7 +659,7 @@ export const actions = {
       throw new Error(`GET BILLS BY DATE RANGE ACTION ${error}`)
     }
   },
-  getBillsByClientId ({ commit }, payload) {
+  getBillsByServiceId ({ commit }, payload) {
     const qs = require('qs')
     const query = qs.stringify({
       populate: ['monthlybills']
@@ -669,7 +669,7 @@ export const actions = {
     })
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients/${payload.client.id}?${query}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}?${query}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -677,13 +677,13 @@ export const actions = {
           }
         })
           .then(res => res.json())
-          .then((res) => {
-            commit('getBillsByClientId', res.data)
-            resolve(res.data)
+          .then(({ data: bills }) => {
+            commit('getBillsByServiceId', bills)
+            resolve(bills)
           })
       })
     } catch (error) {
-      throw new Error(`GET BILLS BY CLIENT ID ACTION ${error}`)
+      throw new Error(`GET BILLS BY SERVICE ID ACTION ${error}`)
     }
   },
   updateBillingPeriod ({ commit }, payload) {
@@ -761,7 +761,7 @@ export const actions = {
         body: JSON.stringify(
           {
             messaging_product: 'whatsapp',
-            to: `57${payload.client.phone}`,
+            to: `57${payload.service.normalized_client.phone}`,
             type: 'template',
             template: {
               name: this.$config.META_TEMPLATE,
@@ -774,11 +774,11 @@ export const actions = {
                   parameters: [
                     {
                       type: 'text',
-                      text: `${payload.bill.month.text}`
+                      text: `${payload.month.text}`
                     },
                     {
                       type: 'text',
-                      text: `15 de ${payload.bill.month.text}`
+                      text: `15 de ${payload.month.text}`
                     }
                   ]
                 },
@@ -789,7 +789,7 @@ export const actions = {
                   parameters: [
                     {
                       type: 'text',
-                      text: `${payload.client.dni}`
+                      text: `${payload.service.normalized_client.dni}`
                     }
                   ]
                 }

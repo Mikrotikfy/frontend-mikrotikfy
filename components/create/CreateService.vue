@@ -558,7 +558,10 @@ export default {
             ipmodel: 0,
             active: true,
             indebt: false,
-            normalized_client: parseInt(this.$route.query.client)
+            normalized_client: parseInt(this.$route.query.client),
+            client_name: this.$route.query.name,
+            dni: this.$route.query.dni,
+            phone: this.$route.query.phone
           }
         })
       })

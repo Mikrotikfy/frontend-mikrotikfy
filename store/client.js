@@ -228,20 +228,27 @@ export const actions = {
     const qs = require('qs')
     const query = qs.stringify({
       filters: {
-        $or: [
+        $and: [
           {
-            service_addresses: {
-              address: {
-                $contains: payload.search
-              }
+            city: {
+              name: payload.city
             }
           },
           {
-            service_addresses: {
-              neighborhood: {
-                name: payload.search
-              }
+            clienttype: {
+              name: payload.clienttype
             }
+          }, {
+            $or: [
+              {
+                address: {
+                  $contains: payload.search
+                }
+              },
+              {
+                neighborhood: payload.search
+              }
+            ]
           }
         ]
       },

@@ -11,7 +11,7 @@
           v-on="on"
           @click="initComponent"
         >
-          <v-icon>mdi-note-plus</v-icon>
+          <v-icon>mdi-send</v-icon>
           <span v-if="block">
             Ver Estados de Cuenta
           </span>
@@ -28,10 +28,10 @@
       >
         <v-card-title>
           <v-icon>mdi-bill</v-icon>
-          Estados de cuenta para {{ client.name }}
+          Estados de cuenta para {{ service.normalized_client.name }}
         </v-card-title>
         <v-divider />
-        <v-card-text v-if="clientData">
+        <v-card-text v-if="serviceData">
           <v-data-table
             :headers="[
               { text: 'Mes', value: 'month',sortable: false },
@@ -42,7 +42,7 @@
               { text: 'Reenviada el', value: 'resend_at', sortable: false },
               { text: 'Acciones', value: 'actions', sortable: false }
             ]"
-            :items="clientData.monthlybills"
+            :items="serviceData.monthlybills"
             :loading="loading"
             :mobile-breakpoint="0"
             :no-data-text="'No hay datos para mostrar'"
@@ -50,7 +50,6 @@
             class="elevation-1"
             hide-default-footer
             item-key="id"
-            show-expand
           >
             <template v-slot:[`item.success`]="{ item }">
               <v-chip
@@ -113,19 +112,15 @@
 
 <script>
 export default {
-  name: 'ClientStatus',
+  name: 'AuxBillingList',
   props: {
-    client: {
+    service: {
       type: Object,
       default: () => {}
     },
     block: {
       type: Boolean,
       default: false
-    },
-    index: {
-      type: Number,
-      default: -1
     }
   },
   data: () => ({
@@ -184,14 +179,14 @@ export default {
     ]
   }),
   computed: {
-    clientData () {
-      return this.$store.state.billing.billsForCurrentClient
+    serviceData () {
+      return this.$store.state.billing.billsForCurrentService
     }
   },
   methods: {
     async initComponent () {
       this.modal = true
-      await this.getBillsByClientId()
+      await this.getBillsByServiceId()
     },
     hasPassed24Hours (date) {
       if (!date) { return false }
@@ -201,24 +196,25 @@ export default {
       const hours = diff / (1000 * 3600)
       return hours > 24
     },
-    async getBillsByClientId () {
-      await this.$store.dispatch('billing/getBillsByClientId', {
-        client: this.client,
+    async getBillsByServiceId () {
+      await this.$store.dispatch('billing/getBillsByServiceId', {
+        service: this.service,
         token: this.$store.state.auth.token
       })
     },
     async sendBill (bill) {
       this.loading = true
-      bill.month = this.months.find(m => m.value === bill.month)
+      const month = this.months.find(m => m.value === bill.month)
       await this.$store.dispatch('billing/sendBill', {
-        client: this.client,
-        bill
+        service: this.service,
+        bill,
+        month
       })
       await this.$store.dispatch('billing/updateResend', {
         token: this.$store.state.auth.token,
         bill
       })
-      await this.getBillsByClientId()
+      await this.getBillsByServiceId()
       this.loading = false
     },
     getHumanDate (date) {

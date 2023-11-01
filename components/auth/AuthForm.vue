@@ -177,7 +177,7 @@ export default {
       this.loginSuccessful = true
       const qs = require('qs')
       const query = qs.stringify({
-        populate: ['role', 'cities', 'cities.mikrotiks', 'clienttypes', 'menus', 'preferredcity']
+        populate: ['role', 'cities', 'cities.mikrotiks', 'clienttypes', 'menus', 'preferredcity', 'preferredclienttype']
       },
       {
         encodeValuesOnly: true
@@ -234,6 +234,7 @@ export default {
               token: response.jwt,
               username: userData.username,
               preferredcity: userData.preferredcity,
+              preferredclienttype: userData.preferredclienttype,
               cities: userCities,
               clienttypes: userClienttypes,
               menu: userMenus.sort((a, b) => a.priority - b.priority),
@@ -250,7 +251,7 @@ export default {
             await this.$store.dispatch('tv/getTvSpecTypes', { token: response.jwt })
             await this.$store.dispatch('billing/getInvoiceTypes', { token: response.jwt })
             await this.$store.dispatch('telegram/getTelegramBotsFromDatabase', { token: response.jwt, city: userCities[0].name })
-            const redirectPath = `/tickets?city=${userData && userData.preferredcity ? userData.preferredcity.name : userCities[0].name}&clienttype=INTERNET&view=TODOS`
+            const redirectPath = `/tickets?city=${userData && userData.preferredcity ? userData.preferredcity.name : userCities[0].name}&clienttype=${userData && userData.preferredclienttype ? userData.preferredclienttype.name : 'INTERNET'}&view=TODOS`
             window.location.href = redirectPath
             this.isLoading = false
           }

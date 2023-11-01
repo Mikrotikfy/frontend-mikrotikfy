@@ -20,8 +20,6 @@
                 :search="filter"
                 no-data-text="No hay resultados a la busqueda..."
                 loading-text="Cargando información de clientes..."
-                group-by="name"
-                :group-desc="true"
                 hide-default-footer
                 mobile-breakpoint="100"
                 @page-count="pageCount = $event"
@@ -145,21 +143,20 @@ export default {
     },
     getHeadersByClienttype () {
       return this.$store.state.isDesktop ? [
-        { text: 'Tipo', value: 'name', sortable: false },
         { text: 'Codigo', value: 'code', sortable: false },
-        { text: 'Nombre', value: 'normalized_client.name', sortable: false },
-        { text: 'Cedula', value: 'normalized_client.dni', sortable: false },
+        { text: 'Nombre', value: 'client_name', sortable: false },
+        { text: 'Cedula', value: 'dni', sortable: false },
         { text: 'Direccion', sortable: false, value: 'address' },
         { text: 'Barrio', value: 'neighborhood', sortable: false },
-        { text: 'Telefono', sortable: false, value: 'normalized_client.phone' },
+        { text: 'Telefono', sortable: false, value: 'phone' },
         { text: 'Acciones', value: 'actions', sortable: false }
       ] : [
         { text: 'Codigo', value: 'code', sortable: false },
-        { text: 'Nombre', value: 'normalized_client.name', sortable: false },
-        { text: 'Cedula', value: 'normalized_client.dni', sortable: false },
+        { text: 'Nombre', value: 'client_name', sortable: false },
+        { text: 'Cedula', value: 'dni', sortable: false },
         { text: 'Direccion', sortable: false, value: 'address' },
         { text: 'Barrio', value: 'neighborhood', sortable: false },
-        { text: 'Telefono', sortable: false, value: 'normalized_client.phone' },
+        { text: 'Telefono', sortable: false, value: 'phone' },
         { text: 'Acciones', value: 'actions', sortable: false }
       ]
     }
@@ -167,10 +164,13 @@ export default {
   watch: {
     fuzzySearch () {
       this.getClientBySearch()
+    },
+    '$route.query.clienttype' () {
+      this.getClientBySearch()
+    },
+    '$route.query.city' () {
+      this.getClientBySearch()
     }
-    // $route () {
-    //   this.getClientBySearch()
-    // },
     // 'pagination.page': {
     //   handler () {
     //     this.getClientBySearch()
@@ -196,11 +196,11 @@ export default {
       const search = this.search.trim()
       this.setSearchText()
       if (!this.fuzzySearch) {
-        await this.$store.dispatch('client/getServicesFromDatabaseBySearch', { search, city: this.$route.query.city, token: this.$store.state.auth.token })
+        await this.$store.dispatch('client/getServicesFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token })
         this.loadingDataTable = false
         this.result = 'No se han encontrado resultados de' + ' ' + search
       } else {
-        await this.$store.dispatch('client/getServicesFromDatabaseByFuzzySearch', { search, city: this.$route.query.city, token: this.$store.state.auth.token })
+        await this.$store.dispatch('client/getServicesFromDatabaseByFuzzySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token })
         this.loadingDataTable = false
         this.result = 'No se han encontrado resultados de' + ' ' + search
       }

@@ -608,7 +608,7 @@
               @refreshTickets="initIntervalAndGetTickets()"
             />
             <MainClientStatus
-              v-if="selectedClienttype.name === 'INTERNET'"
+              v-if="$route.query.clienttype === 'INTERNET'"
               :block="true"
               :name="editModalData.service.name"
               :clientid="editModalData.service.id"
@@ -620,7 +620,7 @@
               :name="editModalData.service.normalized_client.name"
             />
             <MiscTicketHistory
-              :clientid="editModalData.service.id"
+              :service="editModalData.service"
               :name="editModalData.service.name"
               :block="true"
             />

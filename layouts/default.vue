@@ -74,7 +74,7 @@
         <v-list-item
           v-for="(item, i) in menu"
           :key="i"
-          :to="`${item.url}${$route.query.city ? `?city=${$route.query.city}&referer=layout` : '?referer=layout'}`"
+          :to="`${item.url}${$route.query.city ? `?city=${$route.query.city}&clienttype=${$route.query.clienttype}&referer=layout` : '?referer=layout'}`"
           exact
         >
           <v-list-item-action>

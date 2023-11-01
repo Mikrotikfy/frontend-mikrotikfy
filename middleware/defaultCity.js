@@ -2,13 +2,18 @@ export default function ({ route, redirect, store }) {
   const { query, path, name } = route
   const auth = store.state.auth
   const userHasPreferredCity = auth && auth.preferredcity
+  const userHasPreferredClienttype = auth && auth.preferredclienttype
   let userPreferredCity = null
+  let userPreferredClienttype = null
+  if (userHasPreferredClienttype) {
+    userPreferredClienttype = auth.preferredclienttype.name
+  }
   if (userHasPreferredCity) {
     userPreferredCity = auth.preferredcity.name
   }
   const newQueryTickets = {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
-    clienttype: 'INTERNET',
+    clienttype: query.clienttype ? query.clienttype : (userPreferredClienttype || 'INTERNET'),
     view: 'TODOS'
   }
   const newQueryNap = {
@@ -16,28 +21,30 @@ export default function ({ route, redirect, store }) {
   }
   const newQueryResume = {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
-    clienttype: 'INTERNET'
+    clienttype: query.clienttype ? query.clienttype : (userPreferredClienttype || 'INTERNET')
   }
   const newQueryClient = query.service ? {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
+    clienttype: query.clienttype ? query.clienttype : (userPreferredClienttype || 'INTERNET'),
     service: query.service
   } : {
-    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA')
+    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
+    clienttype: query.clienttype ? query.clienttype : (userPreferredClienttype || 'INTERNET')
   }
   const newQueryBilling = {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA')
   }
   const newQueryCuts = {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
-    clienttype: 'INTERNET'
+    clienttype: query.clienttype ? query.clienttype : (userPreferredClienttype || 'INTERNET')
   }
   const newQueryNotification = {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
-    clienttype: 'INTERNET'
+    clienttype: query.clienttype ? query.clienttype : (userPreferredClienttype || 'INTERNET')
   }
   const newQueryGenerate = {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
-    clienttype: 'INTERNET'
+    clienttype: query.clienttype ? query.clienttype : (userPreferredClienttype || 'INTERNET')
   }
 
   if (path === '/') {
@@ -65,7 +72,7 @@ export default function ({ route, redirect, store }) {
   if ((name === 'cuts') && (!query.city)) {
     redirect({ path, query: newQueryCuts })
   }
-  if ((name === 'client' || name === 'client-search') && (!query.city)) {
+  if ((name === 'client' || name === 'client-search') && (!query.city || !query.clienttype)) {
     redirect({ path, query: newQueryClient })
   }
   if ((name === 'billing' || name === 'billing-search') && (!query.city)) {

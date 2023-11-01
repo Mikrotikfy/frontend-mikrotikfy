@@ -66,7 +66,7 @@
           dense
           rounded
           class="mt-3"
-          :to="`/client/create?client=${searchResult.id}&name=${searchResult.name}`"
+          :to="`/client/create?client=${searchResult.id}&name=${searchResult.name}&dni=${searchResult.dni}&phone=${searchResult.phone}`"
         >
           Afiliar Nuevo Servicio
         </v-btn>
@@ -90,6 +90,9 @@
             <ControlDevices v-if="currentService.name === 'INTERNET'" :service="currentService" :name="currentService.normalized_client.name" />
             <ControlNap v-if="currentService.name === 'INTERNET'" :isticket="false" :service="currentService" />
             <ControlTicketHistory :service="currentService" />
+            <BillingAuxBillingList
+              :service="currentService"
+            />
             <v-tooltip top>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
@@ -286,6 +289,7 @@
                     required
                     hide-details
                     @change="updateService"
+                    @blur="updateService"
                   />
                 </v-col>
                 <v-col>
@@ -456,6 +460,12 @@ export default {
     noPendingChangesServices () {
       return Object.entries(this.searchResult.services.at(this.indexOfSelectedService)).toString() === Object.entries(this.oldClient.services.at(this.indexOfSelectedService)).toString()
     },
+    noPendingChangesServiceTechnology () {
+      return Object.entries(this.searchResult.services.at(this.indexOfSelectedService).technology.toString()) === Object.entries(this.oldClient.services.at(this.indexOfSelectedService).technology.toString())
+    },
+    noPendingChangesServiceIdType () {
+      return Object.entries(this.searchResult.services.at(this.indexOfSelectedService).newModel) === Object.entries(this.oldClient.services.at(this.indexOfSelectedService).newModel)
+    },
     noPendingChangesClient () {
       return Object.entries(this.searchResult).toString() === Object.entries(this.oldClient).toString()
     },
@@ -560,7 +570,7 @@ export default {
       this.$refs.saveStatusText.classList.remove('success--text')
       this.saveStatus = 'No hay cambios pendientes...'
       this.$refs.saveStatusText.classList.add('cyan--text')
-      if (this.noPendingChangesServices) { return }
+      if (this.noPendingChangesServices && this.noPendingChangesServiceTechnology && this.noPendingChangesServiceIdType) { return }
       this.loading = true
       const operator = this.$store.state.auth.id
       const service = JSON.parse(JSON.stringify(this.searchResult.services.at(this.indexOfSelectedService)))
