@@ -70,7 +70,7 @@
                         icon
                         :color="$vuetify.theme.dark && !block ? 'white' : 'green darken-4 white--text'"
                         class="rounded-xl"
-                        :to="`/client/${item.normalized_client ? item.normalized_client.id : ''}?city=${$route.query.city}&service=${item.id}`"
+                        :to="`/client?search=${item.normalized_client ? item.normalized_client.id : ''}&city=${$route.query.city}&clienttype=${$route.query.clienttype}&service=${item.id}`"
                         v-on="on"
                       >
                         <v-icon :class="block ? 'mr-1' : ''">

@@ -18,7 +18,7 @@
       @click:row="showBillingInfo"
     >
       <template v-slot:[`item.code`]="props">
-        <nuxt-link :to="`/clients/${props.item.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
+        <nuxt-link :to="`/client?search=${props.item.code}&city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
           <strong>
             <h3>
               {{ props.item.code }}
