@@ -136,7 +136,7 @@
               </v-col>
               <v-col>
                 <v-text-field
-                  v-model="searchResult.name"
+                  :value="searchResult.name ? searchResult.name.toUpperCase() : ''"
                   label="Nombre Completo"
                   autocomplete="off"
                   required
@@ -144,6 +144,7 @@
                   dense
                   hide-details
                   :disabled="!(!$isAdmin() || !$isBiller()) || loading"
+                  @input="searchResult.name = $event.toUpperCase()"
                   @blur="updateClient"
                   @keyup.enter="$event.target.blur()"
                 />
@@ -429,6 +430,11 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-progress-linear
+      v-else
+      indeterminate
+      color="primary"
+    />
   </div>
 </template>
 <script>
@@ -490,6 +496,9 @@ export default {
   },
   watch: {
     '$store.state.client.refresh' () {
+      this.getClientFromSearchParam()
+    },
+    '$route.query.search' () {
       this.getClientFromSearchParam()
     },
     '$route.query.service' () {
@@ -607,7 +616,7 @@ export default {
       {
         encodeValuesOnly: true
       })
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized-clients/${this.$route.params.search}?${query}`, {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized-clients/${this.$route.query.search}?${query}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

@@ -61,7 +61,7 @@
         solo
         rounded
         hide-details="auto"
-        class="elevation-0"
+        class="elevation-0 mr-1"
         style="max-width:180px;border-radius: 30px 0 0 30px;height:48px;"
         @change="changeCity(selectedCity)"
       >
@@ -80,7 +80,7 @@
         solo
         rounded
         hide-details="auto"
-        class="elevation-0"
+        class="elevation-0 mr-1"
         style="max-width:180px;border-radius: 0;height:48px;"
         @change="changeType(selectedClienttype)"
       >
@@ -113,6 +113,8 @@
         :search-input.sync="search"
         :item-text="text"
         item-value="id"
+        prepend-inner-icon="mdi-magnify"
+        placeholder="Buscar por código, cedula, nombre o telefono..."
         persistent-placeholder
         clearable
         divider
@@ -123,14 +125,16 @@
         solo
         rounded
         :loading="loadingDataTable"
-        no-data-text="Realiza una busqueda para iniciar..."
+        :no-data-text="search ? `No hay resultados para '${search}' en ${selectedClienttype.name} de ${selectedCity.name}...` : 'Ingrese un valor para buscar'"
         class="white--text"
         style="width:100px;max-width: 1100px;"
         :style="$store.state.isDesktop ? 'border-radius: 0;' : 'border-radius: 30px 0 0 30px;'"
       >
         <template v-slot:item="{ item }">
           <v-list-item-content>
-            <v-list-item-title class="text-caption" v-text="`${item.code} / ${item.dni} / ${item.name} / ${item.phone}`" />
+            <v-list-item-title class="text-caption">
+              {{ item.name }}
+            </v-list-item-title>
           </v-list-item-content>
           <v-list-item-action class="d-flex flex-row">
             <v-tooltip
@@ -144,14 +148,17 @@
                   outlined
                   class="mr-1"
                   v-bind="attrs"
-                  :to="`/client/${item.id}?city=${$route.query.city}&service=${service.id}&searchByAddress=${searchByAddress}`"
                   v-on="on"
+                  @click="getClientBySearch(item, service, fromChip = true)"
                 >
                   <v-icon
                     :color="service.active ? service.indebt ? 'red darkne-2' : 'green darken-2' : service.indebt ? 'gray' : 'red darken-4'"
                   >
                     {{ service.name === 'INTERNET' ? 'mdi-wifi' : 'mdi-television' }}
                   </v-icon>
+                  <span style="font-size:0.8rem;">
+                    {{ service.code }} {{ service.neighborhood }}
+                  </span>
                 </v-chip>
               </template>
               <span>{{ `${processAddresses(service)} ${processAddressesNeighborhood(service)}` }}</span>
@@ -202,7 +209,8 @@ export default {
       selectedCity: null,
       selectedClienttype: null,
       searchResults: null,
-      loadingDataTable: false
+      loadingDataTable: false,
+      preventWatchRedirect: false
     }
   },
   computed: {
@@ -294,29 +302,14 @@ export default {
               }
             },
             {
-              $or: [
-                {
-                  $and: [
-                    {
-                      services: {
-                        city: this.selectedCity.id
-                      }
-                    },
-                    {
-                      services: {
-                        clienttype: this.selectedClienttype.id
-                      }
-                    }
-                  ]
-                },
-                {
-                  services: {
-                    id: {
-                      $null: true
-                    }
-                  }
-                }
-              ]
+              services: {
+                city: this.selectedCity.id
+              }
+            },
+            {
+              services: {
+                clienttype: this.selectedClienttype.id
+              }
             }
           ]
         }
@@ -376,13 +369,23 @@ export default {
           this.loadingDataTable = false
         })
     },
-    getClientBySearch (selectedResult = null) {
+    getClientBySearch (selectedResult = null, service = null) {
       if (selectedResult) {
         this.loadingDataTable = true
         this.$router.push({
-          path: `/client/${selectedResult.id}?service=${this.$route.query.service}&city=${this.$route.query.city}&searchByAddress=${this.searchByAddress}`
+          query: service ? {
+            search: selectedResult.id,
+            city: this.$route.query.city,
+            clienttype: this.$route.query.clienttype,
+            service: service?.id,
+            searchByAddress: this.searchByAddress
+          } : {
+            search: selectedResult.id,
+            city: this.$route.query.city,
+            clienttype: this.$route.query.clienttype,
+            searchByAddress: this.searchByAddress
+          }
         })
-        this.search = this.$route.query.search
         this.loadingDataTable = false
       }
     },
