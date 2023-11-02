@@ -678,6 +678,9 @@ export const actions = {
         })
           .then(res => res.json())
           .then(({ data: bills }) => {
+            bills.monthlybills.sort((a, b) => {
+              return new Date(b.createdAt) - new Date(a.createdAt)
+            })
             commit('getBillsByServiceId', bills)
             resolve(bills)
           })
