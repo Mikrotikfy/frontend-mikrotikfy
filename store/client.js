@@ -518,11 +518,10 @@ export const actions = {
         dni: payload.dni
       },
       populate: [
-        'monthlybills',
-        'city',
-        'addresses',
-        'addresses.neighborhood',
-        'clienttype'
+        'services',
+        'services.monthlybills',
+        'services.city',
+        'services.clienttype'
       ]
     },
     {
@@ -530,16 +529,16 @@ export const actions = {
     })
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized-clients?${query}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
           }
         })
           .then(res => res.json())
-          .then((client) => {
-            resolve(client.data)
-            commit('getByDni', client.data)
+          .then(({ data: clients }) => {
+            resolve(clients)
+            commit('getByDni', clients)
           })
       })
     } catch (error) {

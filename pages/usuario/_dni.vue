@@ -40,18 +40,32 @@
             Bienvenido, hemos encontrado tu información.
           </v-card-title>
           <v-card-text v-for="client in clients" :key="client.id">
-            <div v-if="client.monthlybills.length > 0">
-              <h3>Factura de {{ client.clienttype.name === 'INTERNET' ? 'INTERNET' : 'TELEVISION' }} en {{ client.city.name }} para {{ client.name }}</h3>
-              <p>{{ client.addresses ? client.addresses.at(-1).address + ' ' + client.addresses.at(-1).neighborhood.name : client.address }}</p>
-              <v-chip
-                class="text-h6 mr-3 primary"
-                :href="`${$config.CDN_STRAPI_ENDPOINT}/${client.monthlybills.at(-1).path}`"
+            <div v-if="client.services">
+              <h3 class="mb-2">
+                Estados de cuenta de {{ client.name }}
+              </h3>
+              <div
+                v-for="service in client.services"
+                :key="service.id"
+                class="mb-6"
               >
-                {{ `MES ${months[client.monthlybills.at(-1).month - 1].text.toUpperCase()}` }}
-              </v-chip>
+                <span>Servicio de {{ service.name }} en {{ service.addres }} {{ service.neighborhood }}, {{ service.city.name }}</span>
+                <v-divider />
+                <v-chip
+                  v-if="service.monthlybills.length > 0"
+                  class="text-h6 mr-3 primary mt-2"
+                  label
+                  :href="`${$config.CDN_STRAPI_ENDPOINT}/${service.monthlybills.at(-1).path}`"
+                >
+                  {{ `MES ${months[service.monthlybills.at(-1).month - 1].text.toUpperCase()}` }}
+                </v-chip>
+                <span v-else>
+                  No hay estados de cuenta para este servicio.
+                </span>
+              </div>
             </div>
             <div v-else>
-              {{ client.city.name }} - {{ client.name }} no tiene estados de cuenta.
+              {{ client.name }} no tiene servicios actualmente o saldos a deuda.
             </div>
             <v-divider class="mt-5" />
           </v-card-text>
