@@ -1,31 +1,30 @@
 <template>
-  <span>
+  <span v-if="service">
     <v-tooltip top>
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           v-bind="attrs"
-          icon
-          :color="$vuetify.theme.dark && !block ? 'white' : 'primary'"
+          :text="!block"
+          :x-small="!block"
+          :block="block"
+          class="rounded-xl"
+          :color="$vuetify.theme.dark && !block ? 'white' : service.naps.length > 0 ? 'grey darken-2' : 'primary'"
           v-on="on"
           @click="initComponent()"
         >
           <v-icon>mdi-lan</v-icon>
+          <span v-if="block">{{ service.naps.length > 0 ? 'Actualizar NAP' : 'Agregar NAP' }}</span>
         </v-btn>
       </template>
-      <span>NAP</span>
+      <span>Gestionar Acceso a Red</span>
     </v-tooltip>
     <v-dialog
       v-model="modal"
-      width="900"
+      max-width="800"
     >
-      <v-card
-        class="rounded-xl"
-      >
+      <v-card>
         <v-card-title>
-          <v-icon class="mr-2">
-            mdi-lan
-          </v-icon>
-          Segmento de red
+          Gestionar Acceso a Red {{ service.normalized_client.name }}
         </v-card-title>
         <v-card-text v-if="current.length > 0">
           Este cliente pertenece a las siguientes NAPS:
@@ -42,25 +41,32 @@
         </v-card-text>
         <v-card-text>
           <v-autocomplete
-            ref="autocomplete1"
             v-model="selected"
             :items="naps"
-            :disabled="waitingForClientNapData || saving"
+            :disabled="waitingForServiceNapData"
             label="Seleccionar NAP"
-            autocomplete="off"
+            auto-select-first
             item-text="code"
             item-value="id"
             hide-details="auto"
             return-object
             outlined
-            @change="save"
           />
         </v-card-text>
         <v-card-text>
+          <v-btn
+            color="primary"
+            @click="save()"
+          >
+            Guardar
+          </v-btn>
           <NapCreateDialog />
         </v-card-text>
       </v-card>
     </v-dialog>
+  </span>
+  <span v-else>
+    No compatible
   </span>
 </template>
 
@@ -89,51 +95,48 @@ export default {
     return {
       modal: false,
       selected: null,
-      saving: false,
       current: [],
-      waitingForClientNapData: true
+      waitingForServiceNapData: true
     }
   },
   computed: {
     naps () {
       return this.$store.state.nap.naps
     },
-    clientNapData () {
-      return this.$store.state.nap.clientNapData
+    serviceNapData () {
+      return this.$store.state.nap.serviceNapData
     }
   },
   methods: {
     initComponent () {
       this.modal = true
       this.getNapsByCity()
-      this.getClientNapData()
+      this.getServiceNapData()
     },
-    async save () {
-      this.saving = true
-      await this.$store.dispatch('nap/saveClientNap', {
+    save () {
+      this.$store.dispatch('nap/saveServiceNap', {
         token: this.$store.state.auth.token,
         service: this.service,
         nap: this.selected,
         current: this.current
       })
       if (this.isticket) {
-        await this.$store.commit('ticket/addNap', {
+        this.$store.commit('ticket/addNap', {
           token: this.$store.state.auth.token,
-          ticketindex: this.ticketindex,
+          id: this.ticketindex,
           nap: this.selected
         })
       }
-      this.saving = false
       this.selected = null
       this.modal = false
     },
-    async getClientNapData () {
-      await this.$store.dispatch('nap/getClientNapData', {
+    async getServiceNapData () {
+      await this.$store.dispatch('nap/getServiceNapData', {
         token: this.$store.state.auth.token,
         service: this.service
       })
-      this.current = this.clientNapData.naps
-      this.waitingForClientNapData = false
+      this.current = this.serviceNapData.naps
+      this.waitingForServiceNapData = false
     },
     async getNapsByCity () {
       await this.$store.dispatch('nap/getNaps', {
@@ -141,7 +144,7 @@ export default {
         city: this.$route.query.city
       })
       await this.$store.commit('nap/filterCurrentNaps', {
-        naps: this.clientNapData.naps
+        naps: this.serviceNapData.naps
       })
     }
   }
