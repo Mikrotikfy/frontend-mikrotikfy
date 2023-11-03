@@ -5,8 +5,8 @@
         <v-btn
           v-bind="attrs"
           :block="block"
-          :text="!block"
-          :x-small="!block"
+          text
+          x-small
           :color="$vuetify.theme.dark && !block ? 'white' : 'white black--text'"
           class="rounded-xl"
           :large="block"
@@ -56,10 +56,17 @@
                 @page-count="pageCount = $event"
               >
                 <template v-slot:[`item.actions`]="props">
-                  <MiscTicketAdvanceHistory
-                    :ticketid="props.item.id"
-                    :name="props.item.service.normalized_client.name"
-                  />
+                  <span class="d-flex">
+                    <CreateTicketAdvancev2
+                      :ticket="props.item"
+                      :ticketindex="-1"
+                      @refreshTickets="initComponent()"
+                    />
+                    <MiscTicketAdvanceHistory
+                      :ticketid="props.item.id"
+                      :name="props.item.service.normalized_client.name"
+                    />
+                  </span>
                 </template>
                 <template v-slot:[`item.active`]="props">
                   <v-chip small :color="getColor(props.item.active)" class="white--text">
@@ -139,7 +146,7 @@ export default {
     tickets: [],
     headers: [
       { text: 'Estado', sortable: true, value: 'active' },
-      { text: 'Cliente', sortable: true, value: 'client.name' },
+      { text: 'Cliente', sortable: true, value: 'service.normalized_client.name' },
       { text: 'Tipo', sortable: true, value: 'tickettype.name' },
       { text: 'Operador', sortable: false, value: 'assignated.username' },
       { text: 'Detalles', sortable: true, value: 'details' },
@@ -150,7 +157,7 @@ export default {
     ],
     headersTV: [
       { text: 'Estado', sortable: true, value: 'active' },
-      { text: 'Cliente', sortable: true, value: 'client.name' },
+      { text: 'Cliente', sortable: true, value: 'service.normalized_client.name' },
       { text: 'Tipo', sortable: true, value: 'tickettype.name' },
       { text: 'Operador', sortable: false, value: 'assignated.username' },
       { text: 'Detalles', sortable: true, value: 'details' },
@@ -181,7 +188,9 @@ export default {
         },
         populate: [
           'service',
+          'service.tvspec',
           'service.normalized_client',
+          'service.naps',
           'tickettype',
           'tvspec',
           'tvspec.tvspectype',

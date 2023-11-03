@@ -89,7 +89,7 @@
             <CreateTicket :client="searchResult" :service="currentService" :assignated="$store.state.auth.id" />
             <ControlDevices v-if="currentService.name === 'INTERNET'" :service="currentService" :name="currentService.normalized_client.name" />
             <ControlNap v-if="currentService.name === 'INTERNET'" :isticket="false" :service="currentService" />
-            <ControlTicketHistory :service="currentService" />
+            <MiscTicketHistory :service="currentService" />
             <BillingAuxBillingList
               :service="currentService"
             />

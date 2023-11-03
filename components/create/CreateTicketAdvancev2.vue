@@ -365,7 +365,7 @@ export default {
               escalated: this.technicianescalated,
               escalatedoffice: this.officeescalated,
               answered: true,
-              opticalpower: this.ticket.service.opticalpower
+              opticalpower: this.opticalpower
             }
           })
         }).then(async (input) => {

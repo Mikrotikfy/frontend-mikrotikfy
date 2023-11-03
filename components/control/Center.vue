@@ -59,7 +59,7 @@
                   />
                 </v-col>
                 <v-col>
-                  <ControlTicketHistory
+                  <MiscTicketHistory
                     :clientid="client.id"
                     :name="client.name"
                   />

@@ -29,7 +29,6 @@
                 <CreateTicketAdvancev2
                   :ticket="props.item"
                   :ticketindex="-1"
-                  :block="true"
                   @refreshTickets="initComponent()"
                 />
                 <TicketAdvanceHistory
@@ -163,6 +162,7 @@ export default {
         populate: [
           'service',
           'service.tvspec',
+          'service.naps',
           'service.normalized_client',
           'tickettype',
           'ticketdetails',
