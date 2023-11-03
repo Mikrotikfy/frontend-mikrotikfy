@@ -629,9 +629,9 @@ export const actions = {
         'biller',
         'invoices',
         'invoice_movements',
-        'client',
-        'client.offer',
-        'client.neighborhood'
+        'service',
+        'service.offer',
+        'service.normalized_client'
       ],
       pagination: {
         pageSize: 5000

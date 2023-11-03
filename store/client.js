@@ -521,7 +521,8 @@ export const actions = {
         'services',
         'services.monthlybills',
         'services.city',
-        'services.clienttype'
+        'services.clienttype',
+        'normalized_client'
       ]
     },
     {

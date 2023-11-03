@@ -134,11 +134,11 @@
                     mobile-breakpoint="100"
                     @page-count="options.pageCount = $event"
                   >
-                    <template v-slot:[`item.client.code`]="props">
-                      <nuxt-link :to="`/billing/${props.item.client && props.item.client.code ? props.item.client.id : 'fallback'}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
+                    <template v-slot:[`item.service.code`]="props">
+                      <nuxt-link :to="`/billing/${props.item.service && props.item.service.code ? props.item.service.id : 'fallback'}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
                         <strong>
                           <h3>
-                            {{ props.item.client && props.item.client.code ? props.item.client.code : 'Sin codigo' }}
+                            {{ props.item.service && props.item.service.code ? props.item.service.code : 'Sin codigo' }}
                           </h3>
                         </strong>
                       </nuxt-link>
@@ -189,8 +189,8 @@ export default {
     headers: [
       { text: '#', value: 'id', align: 'start' },
       { text: 'Fecha', value: 'createdAt', align: 'start' },
-      { text: 'Codigo', value: 'client.code', align: 'start' },
-      { text: 'Nombre', value: 'client.name', align: 'start' },
+      { text: 'Codigo', value: 'service.code', align: 'start' },
+      { text: 'Nombre', value: 'service.normalized_client.name', align: 'start' },
       { text: 'Conceptos', value: 'invoices', sortable: false },
       { text: 'Debito', value: 'debit', sortable: false },
       { text: 'Crédito', value: 'credit', sortable: false },

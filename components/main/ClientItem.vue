@@ -199,7 +199,7 @@
                     dense
                     hide-details
                     :disabled="!(!$isAdmin() || !$isBiller()) || loading"
-                    @blur="updateClient"
+                    @blur="updateService"
                     @keyup.enter="$event.target.blur()"
                   />
                 </v-col>
@@ -467,10 +467,10 @@ export default {
       return Object.entries(this.searchResult.services.at(this.indexOfSelectedService)).toString() === Object.entries(this.oldClient.services.at(this.indexOfSelectedService)).toString()
     },
     noPendingChangesServiceTechnology () {
-      return Object.entries(this.searchResult.services.at(this.indexOfSelectedService).technology.toString()) === Object.entries(this.oldClient.services.at(this.indexOfSelectedService).technology.toString())
+      return Object.entries(this.searchResult.services.at(this.indexOfSelectedService).technology).toString() === Object.entries(this.oldClient.services.at(this.indexOfSelectedService).technology).toString()
     },
     noPendingChangesServiceIdType () {
-      return Object.entries(this.searchResult.services.at(this.indexOfSelectedService).newModel) === Object.entries(this.oldClient.services.at(this.indexOfSelectedService).newModel)
+      return this.searchResult.services.at(this.indexOfSelectedService).newModel === this.oldClient.services.at(this.indexOfSelectedService).newModel
     },
     noPendingChangesClient () {
       return Object.entries(this.searchResult).toString() === Object.entries(this.oldClient).toString()
@@ -550,6 +550,7 @@ export default {
       this.saveStatus = 'No hay cambios pendientes...'
       this.$refs.saveStatusText.classList.add('cyan--text')
       if (this.noPendingChangesClient) { return }
+      this.oldClient = JSON.parse(JSON.stringify(this.searchResult))
       this.loading = true
       const operator = this.$store.state.auth.id
       const client = JSON.parse(JSON.stringify(this.searchResult))
@@ -580,6 +581,7 @@ export default {
       this.saveStatus = 'No hay cambios pendientes...'
       this.$refs.saveStatusText.classList.add('cyan--text')
       if (this.noPendingChangesServices && this.noPendingChangesServiceTechnology && this.noPendingChangesServiceIdType) { return }
+      this.oldClient.services = JSON.parse(JSON.stringify(this.searchResult.services))
       this.loading = true
       const operator = this.$store.state.auth.id
       const service = JSON.parse(JSON.stringify(this.searchResult.services.at(this.indexOfSelectedService)))
