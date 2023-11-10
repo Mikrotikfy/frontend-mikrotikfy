@@ -215,7 +215,6 @@
             :items="ticketList"
             :search="search"
             :items-per-page="itemsPerPage"
-            :page.sync="page"
             :expanded="expanded"
             :loading="initialLoading"
             class="rounded-lg"
@@ -227,7 +226,6 @@
             loading-text="Cargando información de tickets..."
             hide-default-footer
             mobile-breakpoint="100"
-            @page-count="pageCount = $event"
             @click:row="showTicketInfo({ item: $event, index: ticketList.indexOf($event) })"
           >
             <template v-slot:[`item.active`]="props">
@@ -343,25 +341,8 @@
                 <span>{{ item.details }}</span>
               </v-tooltip>
             </template>
-            <template v-slot:[`item.service.wifi_ssid`]="{ item }">
-              <v-tooltip
-                bottom
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <div
-                    v-bind="attrs"
-                    style="max-width:180px;"
-                    class="text-truncate"
-                    v-on="on"
-                  >
-                    {{ processAddresses(item) }}
-                  </div>
-                </template>
-                <span>{{ processAddresses(item) }}</span>
-              </v-tooltip>
-            </template>
-            <template v-slot:[`item.service.wifi_password`]="{ item }">
-              <strong>{{ processAddressesNeighborhood(item) }}</strong>
+            <template v-slot:[`item.service.neighborhood`]="{ item }">
+              <strong>{{ item.service.neighborhood }}</strong>
             </template>
             <template v-slot:[`item.service.code`]="props">
               <nuxt-link :to="`/client?search=${props.item.service.normalized_client.id}&city=${$route.query.city}&clienttype=${$route.query.clienttype}&searchByAddress=false&service=${props.item.service.id}`" class="blue--text">
@@ -391,9 +372,6 @@
             <template v-slot:[`item.assignated.username`]="{ item }">
               <strong style="max-width:50px;"> {{ ucfirst(item.assignated.username) }}</strong>
             </template>
-            <template v-slot:[`item.service.technology.name`]="props">
-              {{ props.item.service.technology !== null ? props.item.service.technology.name : 'No reg.' }}
-            </template>
             <template v-slot:expanded-item="{ item }">
               <td
                 :colspan="$route.query.clienttype === 'INTERNET' ? '14' : '13'"
@@ -422,29 +400,8 @@
             </template>
             <template v-if="$store.state.isDesktop" v-slot:[`item.actions`]="{ item }">
               <div class="d-flex">
-                <v-tooltip v-if="$isAdmin() || $isBiller()" top>
-                  <template v-slot:activator="{ on: tooltip }">
-                    <nuxt-link
-                      :to="`/billing/${item.service.id}?city=${$route.query.city}`"
-                    >
-                      <v-btn
-                        x-small
-                        text
-                        :color="$vuetify.theme.dark ? 'white' : 'primary'"
-                        class="rounded-xl"
-                        v-on="tooltip"
-                      >
-                        <v-icon>mdi-file-document-plus-outline</v-icon>
-                      </v-btn>
-                    </nuxt-link>
-                  </template>
-                  <span>Estado de cuenta</span>
-                </v-tooltip>
                 <CreateTicketAdvancev2
-                  :ticket="item"
-                  :ticketindex="-1"
-                  @updateTicketStatus="updateTicketStatus($event)"
-                  @refreshTickets="initIntervalAndGetTickets()"
+                  :ticketid="item.id"
                 />
                 <MainClientStatus
                   v-if="selectedClienttype.name === 'INTERNET'"
@@ -476,10 +433,15 @@
         </client-only>
       </v-col>
     </v-row>
-    <v-row v-if="pageCount > 1">
+    <v-row v-if="pagination.pageCount > 1">
       <v-col>
         <div class="text-center pt-2">
-          <v-pagination v-model="page" :length="pageCount" />
+          <v-pagination
+            v-model="page"
+            :disabled="initialLoading"
+            :length="pagination.pageCount"
+            @input="initIntervalAndGetTickets"
+          />
         </div>
       </v-col>
     </v-row>
@@ -638,7 +600,6 @@ export default {
     return {
       key: 0,
       page: 1,
-      pageCount: 0,
       itemsPerPage: 10,
       search: '',
       alertBox: false,
@@ -655,7 +616,6 @@ export default {
       selected: [],
       interval: null,
       currentTechnician: null,
-      view: 'TODOS',
       types: ['TODOS', 'RV', 'CX', 'TR', 'DX'],
       selectedType: 'TODOS',
       selectedCity: null,
@@ -674,7 +634,7 @@ export default {
       return this.$store.state.ticket.tickets.filter(t => t.service !== null)
     },
     ticketList () {
-      return this.$store.state.ticket.ticketList.filter(t => t.service !== null)
+      return this.$store.state.ticket.tickets.filter(t => t.service !== null)
     },
     headers () {
       return this.$store.state.ticket.headers
@@ -697,13 +657,17 @@ export default {
     clientWidth () {
       return this.$store.state.clientWidth
     },
+    pagination () {
+      return this.$store.state.ticket.pagination
+    },
     getHeadersByClienttype () {
       return this.$route.query.clienttype === 'INTERNET' ? this.$store.state.isDesktop ? [
+        { text: '#', sortable: false, value: 'id', width: 50 },
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
         { text: 'Asignado', sortable: false, value: 'technician', width: 60 },
-        { text: 'Barrio', sortable: false, value: 'service.wifi_password' },
-        { text: 'Dirección', sortable: false, value: 'service.wifi_ssid', width: 180 },
+        { text: 'Barrio', sortable: false, value: 'service.neighborhood' },
+        { text: 'Dirección', sortable: false, value: 'service.address', width: 180 },
         { text: 'Código', sortable: false, value: 'service.code', width: 50 },
         { text: 'Cliente', sortable: false, value: 'service.normalized_client.name', width: 200 },
         { text: 'Celular', sortable: false, value: 'service.normalized_client.phone', width: 80 },
@@ -714,15 +678,16 @@ export default {
         { text: 'Estado', sortable: false, value: 'active', width: '5%', hide: 'd-none d-lg-table-cell' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 100 },
         { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
-        { text: 'Barrio', sortable: false, value: 'service.wifi_password', width: 150 },
-        { text: 'Dirección', sortable: false, value: 'service.wifi_ssid', width: 180 },
+        { text: 'Barrio', sortable: false, value: 'service.neighborhood', width: 150 },
+        { text: 'Dirección', sortable: false, value: 'service.address', width: 180 },
         { text: 'Cliente', sortable: false, value: 'service.normalized_client.name' }
       ] : this.$store.state.isDesktop ? [
+        { text: '#', sortable: false, value: 'id', width: 50 },
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name', width: 80 },
         { text: 'Asignado', sortable: false, value: 'technician', width: 60 },
-        { text: 'Barrio', sortable: false, value: 'service.wifi_password', width: 150 },
-        { text: 'Dirección', sortable: false, value: 'service.wifi_ssid', width: 150 },
+        { text: 'Barrio', sortable: false, value: 'service.neighborhood', width: 150 },
+        { text: 'Dirección', sortable: false, value: 'service.address', width: 150 },
         { text: 'Codigo', sortable: false, value: 'service.code', width: 60 },
         { text: 'Cliente', sortable: false, value: 'service.normalized_client.name' },
         { text: 'Celular', sortable: false, value: 'service.normalized_client.phone' },
@@ -733,16 +698,20 @@ export default {
         { text: 'Estado', sortable: false, value: 'active', width: '5%' },
         { text: 'Tipo', sortable: false, value: 'tickettype.name' },
         { text: 'Técnico Asignado', sortable: false, value: 'technician', width: 60 },
-        { text: 'Barrio', sortable: false, value: 'service.wifi_password' },
-        { text: 'Dirección', sortable: false, value: 'service.wifi_ssid', width: 180 },
+        { text: 'Barrio', sortable: false, value: 'service.neighborhood' },
+        { text: 'Dirección', sortable: false, value: 'service.address', width: 180 },
         { text: 'Cliente', sortable: false, value: 'service.normalized_client.name' }
       ]
     }
   },
   watch: {
     $route () {
+      this.page = 1
       this.initIntervalAndGetTickets()
       this.getTickettypes()
+    },
+    '$store.state.ticket.refresh' () {
+      this.initIntervalAndGetTickets()
     }
   },
   mounted () {
@@ -769,15 +738,15 @@ export default {
       }
     },
     setGetTicketsInterval () {
-      this.interval = setInterval(async () => {
+      this.interval = setInterval(() => {
         this.resetSelected()
-        await this.refreshTickets()
+        this.refreshTickets()
         this.getViewFromLocalStorage()
       }, 60000)
     },
     async refreshTickets () {
       this.initialLoading = true
-      await this.$store.dispatch('ticket/getTicketsFromDatabase', { city: this.selectedCity.name, clienttype: this.selectedClienttype.name, token: this.$store.state.auth.token, active: this.showClosedValue, retired: this.showRetired })
+      await this.$store.dispatch('ticket/getTicketsFromDatabase', { tickettype: this.selectedType.name, city: this.selectedCity.name, clienttype: this.selectedClienttype.name, token: this.$store.state.auth.token, active: this.showClosedValue, retired: this.showRetired, page: this.page })
       this.initialLoading = false
     },
     setQueryCity () {
@@ -808,6 +777,7 @@ export default {
       window.localStorage.setItem('view', view)
       this.$router.push({ query: { city: this.$route.query.city, clienttype: this.$route.query.clienttype, view } })
       this.$store.commit('ticket/changeView', view)
+      this.selectedType = view
     },
     calculateQuantity (type) {
       switch (type) {

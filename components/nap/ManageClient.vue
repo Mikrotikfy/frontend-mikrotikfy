@@ -24,7 +24,7 @@
     >
       <v-card>
         <v-card-title>
-          Gestionar Acceso a Red {{ service.normalized_client.name }}
+          Gestionar Acceso a Red {{ service.client_name }}
         </v-card-title>
         <v-card-text v-if="current.length > 0">
           Este cliente pertenece a las siguientes NAPS:

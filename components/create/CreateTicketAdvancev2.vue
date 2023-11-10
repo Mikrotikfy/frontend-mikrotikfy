@@ -28,9 +28,8 @@
       </v-tooltip>
     </template>
 
-    <v-card>
+    <v-card v-if="ticket" :loading="!ticket">
       <v-card-title>
-        <span>Crear Avance en Ticket {{ ticket.id }}</span>
         <v-spacer />
         <v-btn icon @click="dialog = false">
           <v-icon>mdi-close</v-icon>
@@ -137,12 +136,10 @@
         <MiscSignature
           :key="ticket.id"
           :ticket="ticket"
-          :ticketindex="ticketindex"
         />
         <MiscPhoto
           :key="ticket.id + 1"
           :ticket="ticket"
-          :ticketindex="ticketindex"
         />
       </v-card-text>
       <v-divider />
@@ -188,13 +185,9 @@
 export default {
   name: 'CreateTicketAdvanceV2',
   props: {
-    ticketindex: {
+    ticketid: {
       type: Number,
-      required: true
-    },
-    ticket: {
-      type: Object,
-      default: () => {}
+      default: null
     },
     block: {
       type: Boolean,
@@ -203,7 +196,7 @@ export default {
   },
   data: () => ({
     dialog: false,
-    stepper: 1,
+    ticket: null,
     details: '',
     opticalpower: null,
     technicianescalated: false,
@@ -228,14 +221,38 @@ export default {
       return this.$store.state.tvspectypes
     }
   },
-  mounted () {
-    this.testTvSpecs()
-    this.setOpticalPower()
-  },
   methods: {
-    initComponent () {
+    async initComponent () {
       this.dialog = true
-      this.stepper = 1
+      const qs = require('qs')
+      const query = qs.stringify({
+        populate: [
+          'service',
+          'service.naps',
+          'service.tvspec',
+          'service.tvspec.tvspectype',
+          'tickettype',
+          'media'
+        ]
+      },
+      {
+        encodeValuesOnly: true
+      })
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticketid}?${query}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.$store.state.auth.token}`
+        }
+      })
+        .then(res => res.json())
+        .then(({ data: ticket }) => {
+          this.ticket = ticket
+          this.testTvSpecs()
+          this.setOpticalPower()
+        })
+        .catch((error) => {
+          throw new Error(`TICKET FETCH ERROR ${error}`)
+        })
     },
     testTvSpecs () {
       const hasSpecs = this.ticket.service.tvspec
@@ -270,10 +287,10 @@ export default {
           line1 = '✴️ AVANCE DE TICKET ✴️'
         }
         const line2 = service.code
-        const line3 = service.normalized_client.name
-        const line4 = service.service_addresses ? service.service_addresses.at(-1) ? service.service_addresses.at(-1).address : 'Sin Direccion' : 'No especificado'
-        const line5 = service.service_addresses ? service.service_addresses.at(-1) ? service.service_addresses.at(-1).neighborhood.name : 'Sin Barrio' : 'No especificado'
-        const line6 = service.normalized_client.phone
+        const line3 = service.client_name
+        const line4 = service.address
+        const line5 = service.neighborhood
+        const line6 = service.phone
         const line7 = ticket.tickettype.name
         const line8 = `Calidad de señal: ${this.specs.tvspectype ? this.specs.tvspectype.name : 'No especificado'}`
         const line10 = `Altos: ${this.specs.high ? this.specs.high : 'No especificado'}`
@@ -298,10 +315,10 @@ export default {
           line1 = '✴️ AVANCE DE TICKET ✴️'
         }
         const line2 = service.code
-        const line3 = service.normalized_client.name
-        const line4 = service.service_addresses.at(-1).address
-        const line5 = service.service_addresses.at(-1).neighborhood.name
-        const line6 = service.normalized_client.phone
+        const line3 = service.client_name
+        const line4 = service.address
+        const line5 = service.neighborhood
+        const line6 = service.phone
         const line7 = `Potencia Optica: ${this.opticalpower ? this.opticalpower : 'No especificado'}${this.opticalpower ? 'dBm' : ''}`
         const line8 = ticket.tickettype.name
         const line9 = this.details
@@ -408,7 +425,7 @@ export default {
             })
               .then(async (res) => {
                 await this.setNewSpecs(res.data)
-                this.$emit('refreshTickets')
+                this.$store.commit('ticket/refresh')
                 this.$toast.success('Ticket Actualizado con Exito', { duration: 4000, position: 'bottom-center' })
                 this.loading = false
                 if (this.ticket.service.name === 'INTERNET') {

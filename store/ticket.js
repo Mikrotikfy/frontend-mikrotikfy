@@ -2,9 +2,19 @@ export const state = () => ({
   tickets: [],
   ticketList: [],
   tickettypes: [],
-  headers: []
+  pagination: {
+    page: 1,
+    pageSize: 10,
+    pageCount: 0,
+    total: 0
+  },
+  headers: [],
+  refresh: 0
 })
 export const mutations = {
+  refresh (state) {
+    state.refresh++
+  },
   addNap (state, payload) {
     state.tickets.find(ticket => ticket.id === payload.id).service.naps.push(payload.nap)
   },
@@ -17,9 +27,10 @@ export const mutations = {
   updateAssignated (state, payload) {
     state.tickets.find(ticket => ticket.id === payload.id).technician = { ...payload.technician }
   },
-  getTicketsFromDatabase (state, ticketList) {
+  getTicketsFromDatabase (state, data) {
     try {
-      state.tickets = ticketList
+      state.tickets = data.ticketList
+      state.pagination = data.meta.pagination
     } catch (error) {
       throw new Error(`TICKET MUTATE ${error}`)
     }
@@ -85,111 +96,70 @@ export const actions = {
         })
     })
   },
-  async getTicketsFromDatabase ({ dispatch, commit }, { city, clienttype, token, active, retired }) {
-    const isConnected = await this.$checkInternetConnection()
-    if (isConnected) {
-      try {
-        let filters = null
-        if (retired) {
-          filters = {
-            city: {
-              name: {
-                $eq: city
-              }
-            },
-            active: {
-              $eq: !active
-            },
-            tickettype: {
-              name: {
-                $eq: 'RETIRO'
-              }
-            },
-            clienttype: {
-              name: {
-                $eq: clienttype
-              }
+  async getTicketsFromDatabase ({ commit }, { city, clienttype, tickettype, token, active, page }) {
+    try {
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          active: {
+            $eq: !active
+          },
+          city: {
+            name: {
+              $eq: city
             }
-          }
-        } else {
-          filters = {
-            city: {
-              name: {
-                $eq: city
-              }
-            },
-            active: {
-              $eq: !active
-            },
-            tickettype: {
-              name: {
-                $ne: 'RETIRO'
-              }
-            },
-            clienttype: {
-              name: {
-                $eq: clienttype
-              }
+          },
+          clienttype: {
+            name: {
+              $eq: clienttype
             }
-          }
-        }
-        const qs = require('qs')
-        const query = qs.stringify({
-          filters,
-          populate: [
-            'service',
-            'service.normalized_client',
-            'service.service_addresses',
-            'service.service_addresses.neighborhood',
-            'service.technology',
-            'service.plan',
-            'service.offer',
-            'service.naps',
-            'service.debtmovements',
-            'service.tvspec',
-            'service.tvspec.tvspectype',
-            'city',
-            'media',
-            'tickettype',
-            'clienttype',
-            'assignated',
-            'technician',
-            'ticketdetails',
-            'ticketdetails.operator'
-          ],
-          sort: ['createdAt:desc'],
-          pagination: {
-            pageSize: 100
+          },
+          tickettype: {
+            name: tickettype
           }
         },
-        {
-          encodeValuesOnly: true
-        })
-        await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets?${query}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        })
-          .then(res => res.json())
-          .then((tickets) => {
-            const ticketList = tickets.data.map((ticket) => {
-              if (ticket.ticketdetails.length > 0) {
-                ticket.details = ticket.ticketdetails.slice(-1)[0].operator.username + ': ' + ticket.ticketdetails.slice(-1)[0].details
-              }
-              return ticket
-            })
-            commit('ticket/getTicketsFromDatabase', ticketList, { root: true }) // get tickets from database
-            dispatch('offline/ticketloc/saveTicketsToIndexedDB', ticketList, { root: true }) // save tickets to indexedDB
+        populate: [
+          'service',
+          'service.normalized_client',
+          'city',
+          'media',
+          'tickettype',
+          'clienttype',
+          'assignated',
+          'technician',
+          'ticketdetails',
+          'ticketdetails.operator'
+        ],
+        sort: ['createdAt:desc'],
+        pagination: {
+          pageSize: 10,
+          page
+        }
+      },
+      {
+        encodeValuesOnly: true
+      })
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets?${query}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then(({ data: tickets, meta }) => {
+          const ticketList = tickets.map((ticket) => {
+            if (ticket.ticketdetails.length > 0) {
+              ticket.details = ticket.ticketdetails.slice(-1)[0].operator.username + ': ' + ticket.ticketdetails.slice(-1)[0].details
+            }
+            return ticket
           })
-          .catch((error) => {
-            throw new Error(`TICKET ACTION ${error}`)
-          })
-      } catch (error) {
-        throw new Error(`TICKET ACTION ${error}`)
-      }
-    } else { // if not connected to internet
-      dispatch('offline/ticketloc/getTicketsFromIndexedDB', isConnected, { root: true })
+          commit('getTicketsFromDatabase', { ticketList, meta }) // get tickets from database
+        })
+        .catch((error) => {
+          throw new Error(`TICKET ACTION ${error}`)
+        })
+    } catch (error) {
+      throw new Error(`TICKET ACTION ${error}`)
     }
   },
   async getTickettypes ({ commit }, payload) {
