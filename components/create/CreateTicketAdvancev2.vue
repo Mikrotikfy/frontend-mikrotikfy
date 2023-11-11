@@ -218,8 +218,12 @@ export default {
       return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
     },
     tvSpecTypes () {
-      return this.$store.state.tvspectypes
+      return this.$store.state.tv.spectypes
     }
+  },
+  async mounted () {
+    await this.$store.dispatch('telegram/getTelegramBotsFromDatabase', { token: this.$store.state.auth.token })
+    await this.$store.dispatch('tv/getTvSpecTypes', { token: this.$store.state.auth.token })
   },
   methods: {
     async initComponent () {

@@ -143,13 +143,12 @@ export default {
       billtype: {
         id: 1,
         name: 'FACTURACION MENSUAL'
-      }
+      },
+      billtypes: []
     }
   },
-  computed: {
-    billtypes () {
-      return this.$store.state.invoicetypes
-    }
+  async mounted () {
+    this.billtypes = await this.$store.dispatch('billing/getInvoiceTypes', { token: this.$store.state.auth.token })
   },
   methods: {
     async addAmount () {

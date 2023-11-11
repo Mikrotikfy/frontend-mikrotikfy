@@ -147,20 +147,14 @@ export default {
   },
   computed: {
     cities () {
-      return this.$store.state.cities
-    },
-    plans () {
-      return this.$store.state.plans
-    },
-    neighborhoods () {
-      return this.$store.state.neighborhoods
-    },
-    technologies () {
-      return this.$store.state.technologies
+      return this.$store.state.auth.cities
     },
     devicebrands () {
       return this.$store.state.devicebrands
     }
+  },
+  async mounted () {
+    await this.$store.dispatch('device/getDeviceBrandsFromDatabase')
   },
   methods: {
     detectedMac (mac) {

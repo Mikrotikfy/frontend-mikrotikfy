@@ -48,10 +48,7 @@ export default function ({ route, redirect, store }) {
   }
 
   if (path === '/') {
-    if (!store.state.redirected) {
-      store.commit('setRedirected', true)
-      redirect({ path: '/tickets' })
-    }
+    redirect({ path: '/tickets', query: newQueryTickets })
   }
 
   if ((name === 'tickets') && (!query.clienttype || !query.city || !query.view)) {

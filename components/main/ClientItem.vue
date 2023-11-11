@@ -476,19 +476,16 @@ export default {
       return Object.entries(this.searchResult).toString() === Object.entries(this.oldClient).toString()
     },
     cities () {
-      return this.$store.state.cities
+      return this.$store.state.auth.cities
     },
     neighborhoods () {
       return this.$store.state.neighborhoods
     },
     technologies () {
-      return this.$store.state.technologies
-    },
-    devicebrands () {
-      return this.$store.state.devicebrands
+      return this.$store.state.technology.technologies
     },
     clienttype () {
-      return this.$store.state.clienttypes.find(ct => ct.name === this.$route.query.clienttype)
+      return this.$store.state.auth.clienttypes.find(ct => ct.name === this.$route.query.clienttype)
     },
     telegramBots () {
       return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
@@ -520,6 +517,8 @@ export default {
     }
   },
   async mounted () {
+    await this.$store.dispatch('telegram/getTelegramBotsFromDatabase', { token: this.$store.state.auth.token })
+    await this.$store.dispatch('technology/getTechnologiesFromDatabase')
     await this.getClientFromSearchParam()
     this.getTickettypes()
   },

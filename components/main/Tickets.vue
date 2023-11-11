@@ -625,7 +625,7 @@ export default {
   computed: {
     currentCity () {
       // eslint-disable-next-line eqeqeq
-      return this.$store.state.cities ? this.$store.state.cities.find(c => c.id == this.$route.query.city) : ''
+      return this.$store.state.auth.cities ? this.$store.state.auth.cities.find(c => c.id == this.$route.query.city) : ''
     },
     tickets () {
       return this.$store.state.ticket.tickets.filter(t => t.service !== null)
@@ -647,9 +647,6 @@ export default {
     },
     tickettypes () {
       return this.$store.state.ticket.tickettypes
-    },
-    telegramBots () {
-      return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
     },
     technicians () {
       return this.$store.state.operator.operators

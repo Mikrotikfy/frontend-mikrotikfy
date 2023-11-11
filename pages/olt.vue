@@ -133,7 +133,6 @@ export default {
   // },
   components: {
   },
-  middleware: ['defaultCity', 'authenticated'],
   data () {
     return {
       e1: 1,
@@ -170,9 +169,6 @@ export default {
     },
     clients () {
       return this.$store.state.client.clientsForOlt
-    },
-    devicebrands () {
-      return this.$store.state.devicebrands
     },
     currentCityMikrotiks () {
       return this.$store.state.currentCityMikrotiks

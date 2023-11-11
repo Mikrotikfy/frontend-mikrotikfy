@@ -3,9 +3,7 @@
 </template>
 
 <script>
-export default {
-  middleware: ['defaultCity', 'authenticated']
-}
+
 </script>
 
 <style>

@@ -439,10 +439,7 @@ export default {
   },
   computed: {
     cities () {
-      return this.$store.state.cities
-    },
-    plans () {
-      return this.$store.state.plans
+      return this.$store.state.auth.cities
     },
     address () {
       return `${this.dir1} ${this.dir2}${this.dir3} ${this.dir4} ${this.dir5}${this.dir6} ${this.dir7 !== '' ? '-' : ''} ${this.dir7} ${this.dir8}`
@@ -454,7 +451,7 @@ export default {
       return this.$store.state.neighborhoods
     },
     technologies () {
-      return this.$store.state.technologies
+      return this.$store.state.technology.technologies
     },
     clienttypes () {
       return this.$store.state.auth.clienttypes
@@ -467,6 +464,9 @@ export default {
     }
   },
   mounted () {
+    this.$store.dispatch('telegram/getTelegramBotsFromDatabase', { token: this.$store.state.auth.token })
+    this.$store.dispatch('neighborhood/getNeighborhoodsFromDatabase')
+    this.$store.dispatch('technology/getTechnologiesFromDatabase')
     this.Client.phone = this.clientnumber
     this.Client.name = this.$route.query.name
   },

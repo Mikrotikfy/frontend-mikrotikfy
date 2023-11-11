@@ -96,6 +96,9 @@ export default {
       return this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
     }
   },
+  mounted () {
+    this.$store.dispatch('telegram/getTelegramBotsFromDatabase', { token: this.$store.state.auth.token })
+  },
   methods: {
     buttonHandler (operation) {
       this.$toast.info(operation, { duration: 1000 })

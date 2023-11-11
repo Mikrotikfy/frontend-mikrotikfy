@@ -64,7 +64,7 @@ export default {
       return this.$store.state.inventory.materials
     },
     currentCity () {
-      return this.$store.state.cities.find(city => city.name === this.$route.query.city)
+      return this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
     }
   },
   methods: {

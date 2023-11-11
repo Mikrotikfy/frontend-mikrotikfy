@@ -19,7 +19,7 @@ export default {
     },
     currentCity () {
       // eslint-disable-next-line eqeqeq
-      return this.$store.state.cities ? this.$store.state.cities.find(c => c.name == this.$route.query.city) : 'ARNOP'
+      return this.$store.state.auth.cities ? this.$store.state.auth.cities.find(c => c.name == this.$route.query.city) : 'ARNOP'
     }
   },
   methods: {

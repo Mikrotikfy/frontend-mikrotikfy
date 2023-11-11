@@ -127,19 +127,7 @@ export default {
     },
     currentCity () {
       // eslint-disable-next-line eqeqeq
-      return this.$store.state.cities ? this.$store.state.cities.find(c => c.name == this.$route.query.city) : ''
-    },
-    plans () {
-      return this.$store.state.plans
-    },
-    neighborhoods () {
-      return this.$store.state.neighborhoods
-    },
-    technologies () {
-      return this.$store.state.technologies
-    },
-    telegramBots () {
-      return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
+      return this.$store.state.auth.cities ? this.$store.state.auth.cities.find(c => c.name == this.$route.query.city) : ''
     },
     getHeadersByClienttype () {
       return this.$store.state.isDesktop ? [

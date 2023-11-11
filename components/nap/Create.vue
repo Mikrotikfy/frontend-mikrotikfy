@@ -112,13 +112,13 @@ export default {
   }),
   computed: {
     cities () {
-      return this.$store.state.cities
+      return this.$store.state.auth.cities
     },
     neighborhoods () {
       return this.$store.state.neighborhoods
     },
     technologies () {
-      return this.$store.state.technologies
+      return this.$store.state.technology.technologies
     }
   },
   watch: {
@@ -127,6 +127,8 @@ export default {
     }
   },
   mounted () {
+    this.$store.dispatch('neighborhood/getNeighborhoodsFromDatabase')
+    this.$store.dispatch('technology/getTechnologiesFromDatabase')
     this.setCity()
     this.getNapTypes()
   },

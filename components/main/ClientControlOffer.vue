@@ -75,6 +75,7 @@ export default {
     }
   },
   async mounted () {
+    await this.$store.dispatch('telegram/getTelegramBotsFromDatabase', { token: this.$store.state.auth.token })
     await this.getOffers()
     await this.getLastOfferMovement()
   },

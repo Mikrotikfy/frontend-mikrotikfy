@@ -96,7 +96,9 @@ export default {
       return this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)
     }
   },
-  watch: {},
+  mounted () {
+    this.$store.dispatch('telegram/getTelegramBotsFromDatabase', { token: this.$store.state.auth.token })
+  },
   methods: {
     getMonthName () {
       const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',

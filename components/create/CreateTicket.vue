@@ -524,7 +524,7 @@ export default {
       return this.$store.state.neighborhoods
     },
     clienttype () {
-      return this.$store.state.clienttypes.find(ct => ct.name === this.service.name)
+      return this.$store.state.auth.clienttypes.find(ct => ct.name === this.service.name)
     },
     telegramBots () {
       return this.$store.state.telegramBots.find(bot => bot.city.name === this.service.city.name)
@@ -538,6 +538,10 @@ export default {
     numbers () {
       return Array.from({ length: 1200 }, (_, i) => i + 1)
     }
+  },
+  mounted () {
+    this.$store.dispatch('telegram/getTelegramBotsFromDatabase', { token: this.$store.state.auth.token })
+    this.$store.dispatch('neighborhood/getNeighborhoodsFromDatabase')
   },
   methods: {
     async lastTicketIsOpenAndSameType () {

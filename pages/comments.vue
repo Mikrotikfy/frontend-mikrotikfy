@@ -114,7 +114,6 @@ export default {
   name: 'CommentGenerator',
   components: {
   },
-  middleware: 'authenticated',
   data () {
     return {
       key: 0,
