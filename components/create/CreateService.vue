@@ -205,7 +205,7 @@
               label="#"
               placeholder="5, 10, etc..."
               autocomplete="off"
-              :items="numbers"
+              :items="numbersPad"
               outlined
               dense
               hide-details
@@ -446,6 +446,9 @@ export default {
     },
     numbers () {
       return Array.from({ length: 1200 }, (_, i) => i + 1)
+    },
+    numbersPad () {
+      return Array.from({ length: 1200 }, (_, i) => (i + 1).toString().padStart(2, '0'))
     },
     neighborhoods () {
       return this.$store.state.neighborhoods
