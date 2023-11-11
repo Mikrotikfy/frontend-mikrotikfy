@@ -12,60 +12,66 @@
             v-if="$store.state.isDesktop"
             class="pa-1 d-flex align-center"
           >
-            <v-select
-              v-model="selectedCity"
-              :items="cities"
-              label="Filtrar Ciudad"
-              item-value="id"
-              item-text="name"
-              return-object
-              dense
-              solo
-              rounded
-              hide-details="auto"
-              class="mr-2 elevation-0"
-              style="width:180px;"
-              @change="changeCity(selectedCity)"
-            >
-              <template v-slot:item="{ item }">
-                {{ item.name }}
-              </template>
-            </v-select>
-            <v-select
-              v-model="selectedClienttype"
-              :items="clienttypes"
-              label="Filtrar Servicio"
-              item-value="id"
-              item-text="name"
-              return-object
-              dense
-              solo
-              rounded
-              hide-details="auto"
-              class="mr-2 elevation-0"
-              style="width:180px;"
-              @change="changeType(selectedClienttype)"
-            >
-              <template v-slot:item="{ item }">
-                {{ item.name }}
-              </template>
-            </v-select>
-            <v-select
-              v-model="selectedType"
-              :items="types"
-              label="Filtrar por Tickets"
-              dense
-              solo
-              rounded
-              hide-details="auto"
-              class="mr-2 elevation-0"
-              style="width:200px;"
-              @change="changeView(selectedType)"
-            >
-              <template v-slot:item="{ item }">
-                {{ calculateQuantity(item) }} {{ item }}
-              </template>
-            </v-select>
+            <v-col cols="auto" class="pa-0">
+              <v-select
+                v-model="selectedCity"
+                :items="cities"
+                label="Filtrar Ciudad"
+                item-value="id"
+                item-text="name"
+                return-object
+                dense
+                solo
+                rounded
+                hide-details="auto"
+                class="mr-2 elevation-0"
+                style="width:180px;"
+                @change="changeCity(selectedCity)"
+              >
+                <template v-slot:item="{ item }">
+                  {{ item.name }}
+                </template>
+              </v-select>
+            </v-col>
+            <v-col cols="auto" class="pa-0">
+              <v-select
+                v-model="selectedClienttype"
+                :items="clienttypes"
+                label="Filtrar Servicio"
+                item-value="id"
+                item-text="name"
+                return-object
+                dense
+                solo
+                rounded
+                hide-details="auto"
+                class="mr-2 elevation-0"
+                style="width:180px;"
+                @change="changeType(selectedClienttype)"
+              >
+                <template v-slot:item="{ item }">
+                  {{ item.name }}
+                </template>
+              </v-select>
+            </v-col>
+            <v-col cols="auto" class="pa-0">
+              <v-select
+                v-model="selectedType"
+                :items="types"
+                label="Filtrar por Tickets"
+                dense
+                solo
+                rounded
+                hide-details="auto"
+                class="mr-2 elevation-0"
+                style="width:200px;"
+                @change="changeView(selectedType)"
+              >
+                <template v-slot:item="{ item }">
+                  {{ calculateQuantity(item) }} {{ item }}
+                </template>
+              </v-select>
+            </v-col>
             <v-spacer />
             <v-btn
               dark
@@ -138,68 +144,67 @@
             <MiscCloseBulkTickets v-if="$store.state.isDesktop && selected.length > 0" :selected="selected" @endProcess="initIntervalAndGetTickets" />
           </v-card-text>
           <v-card-text v-else class="pa-0">
-            <v-slide-group>
-              <v-slide-item>
-                <v-select
-                  v-model="selectedCity"
-                  :items="cities"
-                  label="Filtrar Ciudad"
-                  item-value="id"
-                  item-text="name"
-                  return-object
-                  dense
-                  solo
-                  rounded
-                  hide-details="auto"
-                  class="mr-2 elevation-0"
-                  style="width:180px;"
-                  @change="changeCity(selectedCity)"
-                >
-                  <template v-slot:item="{ item }">
-                    {{ item.name }}
-                  </template>
-                </v-select>
-              </v-slide-item>
-              <v-slide-item>
-                <v-select
-                  v-model="selectedClienttype"
-                  :items="clienttypes"
-                  label="Filtrar Servicio"
-                  item-value="id"
-                  item-text="name"
-                  return-object
-                  dense
-                  solo
-                  rounded
-                  hide-details="auto"
-                  class="mr-2 elevation-0"
-                  style="width:180px;"
-                  @change="changeType(selectedClienttype)"
-                >
-                  <template v-slot:item="{ item }">
-                    {{ item.name }}
-                  </template>
-                </v-select>
-              </v-slide-item>
-              <v-slide-item>
-                <v-select
-                  v-model="selectedType"
-                  :items="types"
-                  label="Filtrar por Tickets"
-                  dense
-                  solo
-                  rounded
-                  hide-details="auto"
-                  class="mr-2 elevation-0"
-                  style="width:200px;"
-                  @change="changeView(selectedType)"
-                >
-                  <template v-slot:item="{ item }">
-                    {{ calculateQuantity(item) }} {{ item }}
-                  </template>
-                </v-select>
-              </v-slide-item>
-            </v-slide-group>
+            <v-container>
+              <v-row>
+                <v-col cols="6" class="pa-0">
+                  <v-select
+                    v-model="selectedCity"
+                    :items="cities"
+                    label="Filtrar Ciudad"
+                    item-value="id"
+                    item-text="name"
+                    return-object
+                    dense
+                    solo
+                    rounded
+                    hide-details="auto"
+                    class="mr-2 elevation-0"
+                    @change="changeCity(selectedCity)"
+                  >
+                    <template v-slot:item="{ item }">
+                      {{ item.name }}
+                    </template>
+                  </v-select>
+                </v-col>
+                <v-col cols="6" class="pa-0">
+                  <v-select
+                    v-model="selectedClienttype"
+                    :items="clienttypes"
+                    label="Filtrar Servicio"
+                    item-value="id"
+                    item-text="name"
+                    return-object
+                    dense
+                    solo
+                    rounded
+                    hide-details="auto"
+                    class="elevation-0"
+                    @change="changeType(selectedClienttype)"
+                  >
+                    <template v-slot:item="{ item }">
+                      {{ item.name }}
+                    </template>
+                  </v-select>
+                </v-col>
+              </v-row>
+              <v-row class="mt-6 justify-center">
+                <v-slide-group>
+                  <v-slide-item
+                    v-for="type in types"
+                    :key="type"
+                  >
+                    <v-btn
+                      class="black--text rounded-xl mr-2 elevation-0"
+                      :class="type === $route.query.view ? 'white black--text' : $vuetify.theme.dark ? 'grey darken-1' : 'grey lighten-2'"
+                      small
+                      @click="changeView(type)"
+                    >
+                      {{ calculateQuantity(type) }} {{ type }}
+                    </v-btn>
+                  </v-slide-item>
+                </v-slide-group>
+              </v-row>
+            </v-container>
           </v-card-text>
         </v-card>
       </v-col>
@@ -634,7 +639,7 @@ export default {
       return this.$store.state.ticket.tickets.filter(t => t.service !== null)
     },
     ticketList () {
-      return this.$store.state.ticket.tickets.filter(t => t.service !== null)
+      return this.$store.state.ticket.ticketList.filter(t => t.service !== null)
     },
     headers () {
       return this.$store.state.ticket.headers
@@ -702,6 +707,9 @@ export default {
     }
   },
   watch: {
+    page () {
+      this.changeView('TODOS')
+    },
     $route () {
       this.page = 1
       this.initIntervalAndGetTickets()
