@@ -148,6 +148,7 @@ export default {
     async login () {
       this.isLoading = true
       this.loginFailed = false
+      this.clearSessionData()
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}auth/local`, {
         method: 'POST',
         headers: {
@@ -190,7 +191,7 @@ export default {
         }
       })
         .then(res => res.json())
-        .then(async (userResponse) => {
+        .then((userResponse) => {
           const userData = userResponse
           const userCities = userResponse.cities.map((city) => {
             return {
@@ -231,7 +232,6 @@ export default {
           } else {
             const auth = {
               id: userData.id,
-              token: response.jwt,
               username: userData.username,
               preferredcity: userData.preferredcity,
               preferredclienttype: userData.preferredclienttype,
@@ -241,16 +241,12 @@ export default {
               role: userData.role,
               telegramchatid: userData.telegramchatid
             }
-            Cookie.set('auth', auth, { expires: 7, path: '/' })
-            await this.$store.dispatch('plan/getPlansFromDatabase')
-            await this.$store.dispatch('technology/getTechnologiesFromDatabase')
-            await this.$store.dispatch('device/getDeviceBrandsFromDatabase')
-            await this.$store.dispatch('city/getCitiesFromDatabase')
-            await this.$store.dispatch('client/getClientTypesFromDatabase', response.jwt)
-            await this.$store.dispatch('neighborhood/getNeighborhoodsFromDatabase')
-            await this.$store.dispatch('tv/getTvSpecTypes', { token: response.jwt })
-            await this.$store.dispatch('billing/getInvoiceTypes', { token: response.jwt })
-            await this.$store.dispatch('telegram/getTelegramBotsFromDatabase', { token: response.jwt, city: userCities[0].name })
+            const authCookie = {
+              token: response.jwt
+            }
+            Cookie.set('auth', authCookie, { expires: 7, path: '/' })
+            Cookie.set('authStandalone', authCookie, { expires: 7, path: '/standalone' })
+            localStorage.setItem('auth', JSON.stringify(auth))
             const redirectPath = `/tickets?city=${userData && userData.preferredcity ? userData.preferredcity.name : userCities[0].name}&clienttype=${userData && userData.preferredclienttype ? userData.preferredclienttype.name : 'INTERNET'}&view=TODOS`
             window.location.href = redirectPath
             this.isLoading = false
@@ -261,6 +257,15 @@ export default {
           this.loginSuccessful = false
           this.isLoading = false
         })
+    },
+    clearSessionData () {
+      Cookie.remove('auth')
+      Cookie.remove('token')
+      localStorage.clear()
+      sessionStorage.clear()
+      this.$store.commit('setAuth', null)
+      caches.delete(`arnop-api-precache-${this.$config.API_VERSION}`)
+      caches.delete(`arnop-api-runtime-cache-${this.$config.API_VERSION}`)
     }
   }
 }

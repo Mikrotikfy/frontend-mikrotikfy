@@ -1,5 +1,6 @@
 <template>
   <v-app
+    v-if="$store.state.localStorageLoaded"
     class="text-body-2"
     :style="this.$vuetify.theme.dark ? 'background-color:rgb(20 20 20 / 68%);' : 'background-color:#fafafa;'"
   >
@@ -202,43 +203,17 @@ export default {
     window.removeEventListener('resize', this.isDesktopScreen)
   },
   mounted () {
-    navigator.connection.addEventListener('change', this.updateConnectionType())
     window.addEventListener('resize', this.isDesktopScreen)
     this.testAuthToken()
     this.getLocalStorage()
-    this.comprobeDateToSetChristmasTheme()
     this.loadThemeFromVuetifyThemeManager()
     this.isDesktopScreen()
     this.getMenu()
-    this.updateConnectionType()
     setInterval(() => {
       this.getMenu()
     }, 1000 * 60)
   },
   methods: {
-    updateConnectionType () {
-      switch (navigator.connection.effectiveType) {
-        case 'slow-2g':
-          this.connectionType = '...'
-          this.connectionTypeColor = 'red'
-          break
-        case '2g':
-          this.connectionType = 'H'
-          this.connectionTypeColor = 'red'
-          break
-        case '3g':
-          this.connectionType = '3G'
-          this.connectionTypeColor = 'orange'
-          break
-        case '4g':
-          this.connectionType = '4G'
-          this.connectionTypeColor = 'green'
-          break
-        default:
-          this.connectionType = 'Desconocida'
-          break
-      }
-    },
     async getMenu () {
       await this.$store.dispatch('menu/getMenuFromDatabase', {
         token: this.$store.state.auth.token,
@@ -285,13 +260,6 @@ export default {
       await this.$strapi.update('users', this.$store.state.auth.id, {
         resetSession: false
       })
-    },
-    comprobeDateToSetChristmasTheme () {
-      const date = new Date()
-      const month = date.getMonth()
-      if (month === 11) {
-        this.bg = 'cbg.jpg'
-      }
     },
     isDesktopScreen () {
       const width = document.body.clientWidth

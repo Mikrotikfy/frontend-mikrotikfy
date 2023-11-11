@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <MainSearchBox />
-    <MainClientItem v-if="$route.query.search"/>
+    <MainClientItem v-if="$route.query.search" />
   </v-container>
 </template>
 <script>

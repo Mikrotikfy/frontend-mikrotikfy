@@ -2,15 +2,8 @@
 const cookieparser = process.server ? require('cookieparser') : undefined
 export const state = () => {
   return {
-    auth: {},
-    cities: null,
-    clienttypes: null,
-    telegramBots: null,
-    tvspectypes: null,
-    plans: null,
-    technologies: null,
-    devicebrands: null,
-    neighborhoods: null,
+    auth: null,
+    localStorageLoaded: false,
     isDesktop: null,
     clientWidth: null,
     clientHeight: null,
@@ -34,16 +27,9 @@ export const mutations = {
   setAuth (state, auth) {
     state.auth = auth
   },
-  setLocalStorage (state, { cities, plans, technologies, neighborhoods, deviceBrands, clienttypes, telegramBots, tvspectypes, invoicetypes }) {
-    state.cities = JSON.parse(cities)
-    state.plans = JSON.parse(plans)
-    state.technologies = JSON.parse(technologies)
-    state.neighborhoods = JSON.parse(neighborhoods)
-    state.devicebrands = JSON.parse(deviceBrands)
-    state.clienttypes = JSON.parse(clienttypes)
-    state.telegramBots = JSON.parse(telegramBots)
-    state.tvspectypes = JSON.parse(tvspectypes)
-    state.invoicetypes = JSON.parse(invoicetypes)
+  setLocalStorage (state, authLocal) {
+    state.auth = { ...state.auth, ...JSON.parse(authLocal) }
+    state.localStorageLoaded = true
   },
   setTicketsFromLocalStorage (state, tickets) {
     state.tickets = JSON.parse(tickets)
@@ -73,19 +59,7 @@ export const actions = {
     commit('setAuth', auth)
   },
   loadLocalStorage ({ commit }) {
-    const plans = localStorage.getItem('plans')
-    const cities = localStorage.getItem('cities')
-    const technologies = localStorage.getItem('technologies')
-    const deviceBrands = localStorage.getItem('devicebrands')
-    const neighborhoods = localStorage.getItem('neighborhoods')
-    const telegramBots = localStorage.getItem('telegramBots')
-    const clienttypes = localStorage.getItem('clienttypes')
-    const tvspectypes = localStorage.getItem('tvspectypes')
-    const invoicetypes = localStorage.getItem('invoiceTypes')
-    commit('setLocalStorage', { cities, plans, technologies, neighborhoods, deviceBrands, clienttypes, telegramBots, tvspectypes, invoicetypes })
-  },
-  getTicketsFromLocalStorage ({ commit }) {
-    const tickets = localStorage.getItem('tickets')
-    commit('setTicketsFromLocalStorage', tickets)
+    const authLocal = localStorage.getItem('auth')
+    commit('setLocalStorage', authLocal)
   }
 }
