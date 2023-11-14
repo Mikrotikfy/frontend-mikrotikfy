@@ -121,6 +121,7 @@ export const actions = {
         populate: [
           'service',
           'service.normalized_client',
+          'service.naps',
           'city',
           'media',
           'tickettype',
