@@ -48,7 +48,7 @@
           <v-card-text v-if="clientData && clientData.error === null">
             <div class="d-flex mb-2 align-center">
               <v-icon class="mr-2">{{ clientData && !clientData.online && clientData.exists ? 'mdi-close-circle-outline' : 'mdi-check-circle-outline' }}</v-icon>
-              <v-chip outlined label class="mr-2" :to="`/client?search=${clientid}&city=${$route.query.city}&clienttype=${$route.query.clienttype}`">{{ name }}</v-chip>
+              <v-chip outlined label class="mr-2" :to="`/client/${clientid}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`">{{ name }}</v-chip>
               <h3> Se encuentra <strong>{{ clientData && !clientData.online && clientData.exists ? 'fuera de linea' : clientData.address.includes('172.') ? 'en linea pero NO ESTA NAVEGANDO (SIGUE CORTADO) REPORTAR A NICO' : 'en linea ' }}</strong>
               </h3>
             </div>
