@@ -107,19 +107,19 @@
       <v-tooltip>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
-            :color="fuzzySearch ? 'primary white--text elevation-0' : 'grey lighten-4 black--text elevation-0'"
+            color="grey lighten-4 black--text elevation-0"
             dark
             :loading="loadingDataTable"
             tile
             style="border-radius: 0;padding:5px;border-radius: 0 30px 30px 0;height:48px;"
             v-bind="attrs"
             v-on="on"
-            @click="fuzzySearch = !fuzzySearch"
+            @click="searchServices"
           >
-            <v-icon>mdi-filter-outline</v-icon>
+            <v-icon>mdi-magnify</v-icon>
           </v-btn>
         </template>
-        <span>Busqueda por direccion</span>
+        <span>Busqueda</span>
       </v-tooltip>
     </div>
   </v-container>
@@ -130,7 +130,6 @@ export default {
   data () {
     return {
       search: '',
-      fuzzySearch: false,
       selectedCity: null,
       selectedClienttype: null,
       searchResults: null,
@@ -150,11 +149,6 @@ export default {
       return this.$store.state.auth.clienttypes
     }
   },
-  watch: {
-    fuzzySearch () {
-      this.setFuzzyToStore()
-    }
-  },
   mounted () {
     this.setSelectedCity()
     this.setSelectedClienttype()
@@ -165,9 +159,6 @@ export default {
   },
   methods: {
     text: item => `${item.code} - ${item.dni} - ${item.name} - ${item.phone}`,
-    setFuzzyToStore () {
-      this.$store.commit('client/setFuzzySearch', this.fuzzySearch)
-    },
     searchServices () {
       this.$router.push({ path: '/client', query: { search: this.search, city: this.$route.query.city, clienttype: this.$route.query.clienttype } })
     },

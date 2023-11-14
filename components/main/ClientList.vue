@@ -1,13 +1,6 @@
 <template>
   <v-container fluid>
-    <v-row v-if="services.length < 1 && $route.query.search" class="justify-center">
-      <v-card class="ma-4 rounded-xl" :loading="loadingDataTable">
-        <v-card-text class="ma-0 text-center">
-          {{ result }}
-        </v-card-text>
-      </v-card>
-    </v-row>
-    <v-row v-if="services.length > 0" class="mt-0">
+    <v-row class="mt-0">
       <v-col class="pt-0">
         <v-card class="elevation-0 rounded-lg">
           <v-card-text>
@@ -24,6 +17,12 @@
                 mobile-breakpoint="100"
               >
                 <template v-slot:top>
+                  <v-checkbox
+                    v-model="fuzzy"
+                    label="Busqueda Avanzada por Direccion"
+                    hide-details
+                    class="mb-4"
+                  />
                   <v-text-field
                     v-model="filter"
                     append-icon="mdi-magnify"
@@ -96,6 +95,7 @@ export default {
   data () {
     return {
       isRx: true,
+      fuzzy: false,
       loadingDataTable: false,
       options: {},
       page: 1,
@@ -110,9 +110,6 @@ export default {
   computed: {
     search () {
       return this.$route.query.search
-    },
-    fuzzySearch () {
-      return this.$store.state.client.fuzzySearch
     },
     services () {
       return this.$store.state.client.services
@@ -148,7 +145,7 @@ export default {
       this.page = 1
       this.getClientBySearch()
     },
-    fuzzySearch () {
+    fuzzy () {
       this.getClientBySearch()
     },
     '$route.query.clienttype' () {
@@ -177,7 +174,7 @@ export default {
       await this.$store.dispatch('client/clearServicesFromDatatable')
       const search = this.search.trim()
       this.setSearchText()
-      if (!this.fuzzySearch) {
+      if (!this.fuzzy) {
         await this.$store.dispatch('client/getServicesFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, page: this.page })
         this.loadingDataTable = false
         this.result = `No se han encontrado resultados de ${search} en ${this.$route.query.city}`
