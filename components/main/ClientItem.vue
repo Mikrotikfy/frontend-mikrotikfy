@@ -61,6 +61,7 @@
           </v-card-text>
         </v-card>
         <v-btn
+          v-if="$isAdmin() || $isBiller()"
           color="primary"
           block
           dense
@@ -86,14 +87,28 @@
               :code="currentService.code"
               :item="currentService"
             />
-            <CreateTicket :client="searchResult" :service="currentService" :assignated="$store.state.auth.id" />
-            <ControlDevices v-if="currentService.name === 'INTERNET'" :service="currentService" :name="currentService.normalized_client.name" />
-            <ControlNap v-if="currentService.name === 'INTERNET'" :isticket="false" :service="currentService" />
-            <MiscTicketHistory :service="currentService" />
-            <BillingAuxBillingList
+            <CreateTicket
+              v-if="$isAdmin() || $isBiller()"
+              :client="searchResult"
+              :service="currentService"
+              :assignated="$store.state.auth.id"
+            />
+            <ControlDevices
+              v-if="currentService.name === 'INTERNET' && ($isAdmin() || $isBiller())"
+              :service="currentService"
+              :name="currentService.normalized_client.name"
+            />
+            <ControlNap
+              v-if="currentService.name === 'INTERNET' && ($isAdmin() || $isBiller())"
+              :isticket="false"
               :service="currentService"
             />
-            <v-tooltip top>
+            <MiscTicketHistory :service="currentService" />
+            <BillingAuxBillingList
+              v-if="$isAdmin() || $isBiller()"
+              :service="currentService"
+            />
+            <v-tooltip v-if="$isAdmin() || $isBiller()" top>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   :to="`/billing/${currentService.id}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
@@ -109,7 +124,7 @@
               </template>
               <span>Estados de cuenta</span>
             </v-tooltip>
-            <MainClientControl :service="currentService" @refresh="getClientFromSearchParam()" />
+            <MainClientControl v-if="$isAdmin() || $isBiller()" :service="currentService" @refresh="getClientFromSearchParam()" />
           </v-card-text>
         </v-card>
         <v-card v-if="indexOfSelectedService !== null && currentService" class="rounded-xl">
@@ -617,7 +632,7 @@ export default {
       {
         encodeValuesOnly: true
       })
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized-clients/${this.$route.query.search}?${query}`, {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized-clients/${this.$route.params.client}?${query}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

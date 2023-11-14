@@ -1,8 +1,8 @@
 <template>
-  <v-container fluid>
+  <span>
     <MainSearchBox />
-    <MainClientItem v-if="$route.query.search" />
-  </v-container>
+    <MainClientList v-if="$route.query.search" />
+  </span>
 </template>
 <script>
 export default {

@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-row v-if="services.length < 1 && $route.params.search" class="justify-center">
+    <v-row v-if="services.length < 1 && $route.query.search" class="justify-center">
       <v-card class="ma-4 rounded-xl" :loading="loadingDataTable">
         <v-card-text class="ma-0 text-center">
           {{ result }}
@@ -28,20 +28,13 @@
                   <v-text-field
                     v-model="filter"
                     append-icon="mdi-magnify"
-                    label="Filtrar por Codigo, Nombre, Direccion, Telefono"
+                    label="Filtrar resultados por Codigo, Nombre, Direccion, Telefono"
                     dense
                     outlined
                     hide-details
                   />
-                  <v-checkbox
-                    v-model="fuzzy"
-                    label="Busqueda Avanzada"
-                    hide-details
-                    class="ml-4"
-                  />
                 </template>
                 <template v-slot:[`item.dni`]="{ item, index }">
-                  {{ item.dni }}
                   <v-chip
                     v-if="$store.state.isDesktop && ($isAdmin() || $isBiller())"
                     x-small
@@ -50,17 +43,13 @@
                   >
                     {{ item.corporate === null ? 'No definido' : item.corporate === false ? 'Plan Hogar' : 'Corporativo' }}
                   </v-chip>
-                </template>
-                <template v-slot:[`item.service_addresses.address`]="{ item }">
-                  {{ processAddresses(item) }}
-                </template>
-                <template v-slot:[`item.neighborhood.name`]="{ item }">
-                  {{ processAddressesNeighborhood(item) }}
-                </template>
-                <template v-slot:[`item.technology.name`]="{ item }">
-                  <strong>
-                    {{ item.technology ? item.technology.name : 'No Reg.' }}
-                  </strong>
+                  <v-chip
+                    v-else
+                    x-small
+                    :color="item.corporate === null ? 'grey darken-3' : item.corporate === false ? 'blue darken-3' : 'green darken-4'"
+                  >
+                    {{ item.corporate === null ? 'No definido' : item.corporate === false ? 'Plan Hogar' : 'Corporativo' }}
+                  </v-chip>
                 </template>
                 <template v-slot:[`item.actions`]="{ item }">
                   <v-tooltip top>
@@ -68,17 +57,14 @@
                       <v-btn
                         v-bind="attrs"
                         icon
-                        :color="$vuetify.theme.dark && !block ? 'white' : 'green darken-4 white--text'"
+                        :color="$vuetify.theme.dark ? 'white' : 'green darken-4 white--text'"
                         class="rounded-xl"
-                        :to="`/client?search=${item.normalized_client ? item.normalized_client.id : ''}&city=${$route.query.city}&clienttype=${$route.query.clienttype}&service=${item.id}`"
+                        :to="`/client/${item.normalized_client ? item.normalized_client.id : ''}?city=${$route.query.city}&clienttype=${$route.query.clienttype}&service=${item.id}`"
                         v-on="on"
                       >
-                        <v-icon :class="block ? 'mr-1' : ''">
+                        <v-icon>
                           mdi-account
                         </v-icon>
-                        <span v-if="block">
-                          Ir al Cliente
-                        </span>
                       </v-btn>
                     </template>
                     <span>Cliente</span>
@@ -117,7 +103,7 @@ export default {
   },
   computed: {
     search () {
-      return this.$route.params.search
+      return this.$route.query.search
     },
     fuzzySearch () {
       return this.$store.state.client.fuzzySearch
@@ -141,7 +127,6 @@ export default {
       ] : [
         { text: 'Codigo', value: 'code', sortable: false },
         { text: 'Nombre', value: 'client_name', sortable: false },
-        { text: 'Cedula', value: 'dni', sortable: false },
         { text: 'Direccion', sortable: false, value: 'address' },
         { text: 'Barrio', value: 'neighborhood', sortable: false },
         { text: 'Telefono', sortable: false, value: 'phone' },
@@ -150,6 +135,9 @@ export default {
     }
   },
   watch: {
+    search () {
+      this.getClientBySearch()
+    },
     fuzzySearch () {
       this.getClientBySearch()
     },
@@ -186,11 +174,11 @@ export default {
       if (!this.fuzzySearch) {
         await this.$store.dispatch('client/getServicesFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token })
         this.loadingDataTable = false
-        this.result = 'No se han encontrado resultados de' + ' ' + search
+        this.result = `No se han encontrado resultados de ${search} en ${this.$route.query.city}`
       } else {
         await this.$store.dispatch('client/getServicesFromDatabaseByFuzzySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token })
         this.loadingDataTable = false
-        this.result = 'No se han encontrado resultados de' + ' ' + search
+        this.result = `No se han encontrado resultados de ${search} en ${this.$route.query.city}`
       }
     },
     async resetsearchfn () {
@@ -212,19 +200,6 @@ export default {
     formatCurrency (client) {
       if (client.balance === null) { return '0' }
       return client.balance.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 })
-    },
-    processAddresses ({ service }) {
-      if (!service) { return 'Sin Direccion' }
-      const addresses = service?.service_addresses
-      if (!addresses) { return 'Sin Dirección' }
-      if (addresses && addresses.length > 0) { return addresses.at(-1).address }
-    },
-    processAddressesNeighborhood ({ service }) {
-      if (!service) { return 'Sin Barrio' }
-      const addresses = service?.service_addresses
-      if (!addresses) { return 'Sin Barrio' }
-      if (addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
-      if (addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
     }
   }
 }

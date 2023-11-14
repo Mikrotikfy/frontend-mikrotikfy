@@ -241,6 +241,22 @@ export const actions = {
           }, {
             $or: [
               {
+                code: payload.search
+              },
+              {
+                dni: payload.search
+              },
+              {
+                phone: {
+                  $contains: payload.search
+                }
+              },
+              {
+                client_name: {
+                  $contains: payload.search
+                }
+              },
+              {
                 address: {
                   $contains: payload.search
                 }
@@ -252,10 +268,7 @@ export const actions = {
           }
         ]
       },
-      populate: ['service_addresses', 'service_addresses.neighborhood', 'normalized_client'],
-      pagination: {
-        pageSize: 500
-      }
+      populate: ['normalized_client']
     },
     {
       encodeValuesOnly: true
