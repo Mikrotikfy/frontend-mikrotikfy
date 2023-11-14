@@ -364,7 +364,6 @@ function simpleTelegramCreateTicketAdvance (payload) {
     })
 }
 function simpleTelegramCreateTicketAdvanceTv (payload) {
-  console.log(payload)
   const fetch = require('node-fetch')
   const bot = payload.telegramBots.token
   const chatid = payload.telegramBots.tvchat
