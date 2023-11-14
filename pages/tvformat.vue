@@ -36,7 +36,7 @@
                 DIRECCION:
               </td>
               <td style="border-bottom: 1px solid black; grid-column: span 6">
-                {{ clientInfo.addresses.at(-1).address }}
+                {{ clientInfo.address }}
               </td>
             </tr>
             <tr>
@@ -44,7 +44,7 @@
                 BARRIO:
               </td>
               <td style="border-bottom: 1px solid black; grid-column: span 6">
-                {{ clientInfo.addresses.at(-1).neighborhood.name }}
+                {{ clientInfo.neighborhood }}
               </td>
             </tr>
             <tr>
