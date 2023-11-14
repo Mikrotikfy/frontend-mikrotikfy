@@ -215,7 +215,7 @@ export default {
   }),
   computed: {
     telegramBots () {
-      return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
+      return this.$store.state.telegram.telegramBots.find(bot => bot.city.name === this.$route.query.city)
     },
     tvSpecTypes () {
       return this.$store.state.tv.spectypes
@@ -439,9 +439,11 @@ export default {
                     this.$toast.error('No se pudo enviar el mensaje a Telegram', { duration: 3000 })
                   }
                 } else {
+                  console.log('componente')
                   try {
                     this.$simpleTelegramCreateTicketAdvanceTv({ message, telegramBots: this.telegramBots })
                   } catch (error) {
+                    console.log(error)
                     this.$toast.error('No se pudo enviar el mensaje a Telegram', { duration: 3000 })
                   }
                 }

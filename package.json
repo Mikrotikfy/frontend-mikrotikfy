@@ -1,6 +1,6 @@
 {
   "name": "mikrotikfy",
-  "version": "36.14.11",
+  "version": "37.14.11",
   "private": true,
   "scripts": {
     "dev": "nuxt",
@@ -17,10 +17,8 @@
     "@nuxtjs/toast": "^3.3.1",
     "cookieparser": "^0.1.0",
     "cross-env": "^5.2.0",
-    "dexie": "^3.2.3",
     "ipaddr.js": "^2.0.1",
     "js-cookie": "^2.2.1",
-    "lodash": "^4.17.21",
     "node-fetch": "2.6.1",
     "nuxt": "^2.15.4",
     "quagga": "^0.12.1",

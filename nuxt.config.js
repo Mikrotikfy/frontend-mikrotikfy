@@ -49,8 +49,7 @@ export default {
     '~/plugins/role',
     '~/plugins/telegram',
     '~/plugins/push',
-    '~/plugins/check-internet-connection.js',
-    { src: '~/plugins/db.js', mode: 'client' }
+    '~/plugins/check-internet-connection.js'
   ],
   /*
   ** Auto import components

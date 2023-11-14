@@ -1,5 +1,11 @@
 export const state = () => ({
   services: [],
+  pagination: {
+    page: 1,
+    pageSize: 10,
+    pageCount: 0,
+    total: 0
+  },
   clienttypes: [],
   clientsByDni: [],
   fuzzySearch: false,
@@ -40,9 +46,10 @@ export const mutations = {
   clearServicesFromDatatable (state) {
     state.services = []
   },
-  getServicesFromDatabase (state, serviceList) {
+  getServicesFromDatabase (state, data) {
     try {
-      state.services = serviceList
+      state.services = data.services
+      state.pagination = data.meta.pagination
     } catch (error) {
       throw new Error(`MUTATE SEARCH SERVICES${error}`)
     }
@@ -268,6 +275,9 @@ export const actions = {
           }
         ]
       },
+      pagination: {
+        page: payload.page
+      },
       populate: ['normalized_client']
     },
     {
@@ -282,8 +292,8 @@ export const actions = {
         }
       })
         .then(res => res.json())
-        .then(({ data: services }) => {
-          commit('getServicesFromDatabase', services)
+        .then(({ data: services, meta }) => {
+          commit('getServicesFromDatabase', { services, meta })
         })
     } catch (error) {
       throw new Error(`ACTION ${error}`)

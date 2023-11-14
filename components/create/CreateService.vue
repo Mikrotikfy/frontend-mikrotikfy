@@ -463,7 +463,7 @@ export default {
       return this.$store.state.client.currentClientCode
     },
     telegramBots () {
-      return this.$store.state.telegramBots.find(bot => bot.city.name === this.selectedCity.name)
+      return this.$store.state.telegram.telegramBots.find(bot => bot.city.name === this.selectedCity.name)
     }
   },
   mounted () {

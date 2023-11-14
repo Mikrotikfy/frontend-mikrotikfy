@@ -527,7 +527,7 @@ export default {
       return this.$store.state.auth.clienttypes.find(ct => ct.name === this.service.name)
     },
     telegramBots () {
-      return this.$store.state.telegramBots.find(bot => bot.city.name === this.service.city.name)
+      return this.$store.state.telegram.telegramBots.find(bot => bot.city.name === this.service.city.name)
     },
     tickettypes () {
       return this.$store.state.ticket.tickettypes

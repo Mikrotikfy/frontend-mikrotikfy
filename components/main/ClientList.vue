@@ -15,14 +15,13 @@
               <v-data-table
                 :headers="getHeadersByClienttype"
                 :items="services"
-                :items-per-page.sync="itemsPerPage"
+                :items-per-page="itemsPerPage"
                 :loading="loadingDataTable"
                 :search="filter"
                 no-data-text="No hay resultados a la busqueda..."
                 loading-text="Cargando información de clientes..."
                 hide-default-footer
                 mobile-breakpoint="100"
-                @page-count="pageCount = $event"
               >
                 <template v-slot:top>
                   <v-text-field
@@ -72,6 +71,18 @@
                 </template>
               </v-data-table>
             </client-only>
+            <v-row v-if="pagination.pageCount > 1">
+              <v-col>
+                <div class="text-center pt-2">
+                  <v-pagination
+                    v-model="page"
+                    :disabled="loadingDataTable"
+                    :length="pagination.pageCount"
+                    @input="getClientBySearch"
+                  />
+                </div>
+              </v-col>
+            </v-row>
           </v-card-text>
         </v-card>
       </v-col>
@@ -85,15 +96,10 @@ export default {
   data () {
     return {
       isRx: true,
-      itemsPerPage: 500,
       loadingDataTable: false,
       options: {},
       page: 1,
-      pageCount: 0,
-      pagination: {
-        page: 1,
-        pageSize: 500
-      },
+      itemsPerPage: 25,
       update_password: false,
       refreshLoading: false,
       searchClientInput: '',
@@ -114,6 +120,9 @@ export default {
     currentCity () {
       // eslint-disable-next-line eqeqeq
       return this.$store.state.auth.cities ? this.$store.state.auth.cities.find(c => c.name == this.$route.query.city) : ''
+    },
+    pagination () {
+      return this.$store.state.client.pagination
     },
     getHeadersByClienttype () {
       return this.$store.state.isDesktop ? [
@@ -136,23 +145,20 @@ export default {
   },
   watch: {
     search () {
+      this.page = 1
       this.getClientBySearch()
     },
     fuzzySearch () {
       this.getClientBySearch()
     },
     '$route.query.clienttype' () {
+      this.page = 1
       this.getClientBySearch()
     },
     '$route.query.city' () {
+      this.page = 1
       this.getClientBySearch()
     }
-    // 'pagination.page': {
-    //   handler () {
-    //     this.getClientBySearch()
-    //   },
-    //   deep: false
-    // }
   },
   mounted () {
     if (this.search) {
@@ -172,7 +178,7 @@ export default {
       const search = this.search.trim()
       this.setSearchText()
       if (!this.fuzzySearch) {
-        await this.$store.dispatch('client/getServicesFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token })
+        await this.$store.dispatch('client/getServicesFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, page: this.page })
         this.loadingDataTable = false
         this.result = `No se han encontrado resultados de ${search} en ${this.$route.query.city}`
       } else {

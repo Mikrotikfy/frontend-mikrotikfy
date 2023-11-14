@@ -90,7 +90,7 @@ export default {
   },
   computed: {
     telegramBots () {
-      return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
+      return this.$store.state.telegram.telegramBots.find(bot => bot.city.name === this.$route.query.city)
     },
     city () {
       return this.$store.state.auth.cities.find(city => city.name === this.$route.query.city)

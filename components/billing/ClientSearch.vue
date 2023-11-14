@@ -80,7 +80,6 @@
   </v-row>
 </template>
 <script>
-import { debounce } from 'lodash'
 export default {
   name: 'ClientSearch',
   data () {
@@ -123,68 +122,6 @@ export default {
       if (this.$route.query.city) {
         this.selectedCity = this.$store.state.auth.cities.find(c => c.name === this.$route.query.city)
       }
-    },
-    debounceSearchInDatabase: debounce(function (val) {
-      this.searchInDatabase(val)
-    }, 300),
-    searchInDatabase (val) {
-      if (val.length < 1) { return }
-      this.loadingDataTable = true
-      const qs = require('qs')
-      const query = qs.stringify({
-        filters: {
-          $and: [
-            {
-              $or: [
-                {
-                  name: {
-                    $contains: val
-                  }
-                },
-                {
-                  phone: val
-                },
-                {
-                  dni: val
-                },
-                {
-                  services: {
-                    code: val
-                  }
-                }
-              ]
-            },
-            {
-              services: {
-                city: this.selectedCity.id
-              }
-            }
-          ]
-        },
-        populate: ['services', 'services.service_addresses', 'services.service_addresses.neighborhood', 'services.plan', 'services.offer', 'services.offer.plan', 'services.offermovements.offer', 'services.offermovements', 'services.debtmovements', 'services.debtmovements.technician']
-      },
-      {
-        encodeValuesOnly: true
-      })
-      fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized-clients?${query}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.$store.state.auth.token}`
-        }
-      })
-        .then(res => res.clone().json())
-        .then(({ data: clients }) => {
-          clients.map((client) => {
-            client.code = client.services.length > 0 ? client.services.filter((service) => {
-              return service.code === val
-            })[0].code : ''
-          })
-          this.searchResults = clients
-        })
-        .finally(() => {
-          this.loadingDataTable = false
-        })
     },
     getClientBySearchFromService (service) {
       this.$store.commit('billing/resetInvoices')

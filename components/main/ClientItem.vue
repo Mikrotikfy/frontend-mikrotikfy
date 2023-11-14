@@ -503,7 +503,7 @@ export default {
       return this.$store.state.auth.clienttypes.find(ct => ct.name === this.$route.query.clienttype)
     },
     telegramBots () {
-      return this.$store.state.telegramBots.find(bot => bot.city.name === this.$route.query.city)
+      return this.$store.state.telegram.telegramBots.find(bot => bot.city.name === this.$route.query.city)
     }
   },
   watch: {
