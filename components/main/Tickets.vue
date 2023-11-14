@@ -568,11 +568,8 @@
             class="mt-2"
           >
             <CreateTicketAdvancev2
-              :ticket="editModalData"
-              :ticketindex="editModalData.editindex"
+              :ticketid="editModalData.id"
               :block="true"
-              @updateTicketStatus="updateTicketStatus($event)"
-              @refreshTickets="initIntervalAndGetTickets()"
             />
             <MainClientStatus
               v-if="$route.query.clienttype === 'INTERNET'"
