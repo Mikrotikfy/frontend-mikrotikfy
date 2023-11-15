@@ -32,7 +32,8 @@ export default function ({ route, redirect, store }) {
     clienttype: query.clienttype ? query.clienttype : (userPreferredClienttype || 'INTERNET')
   }
   const newQueryBilling = {
-    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA')
+    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
+    clienttype: query.clienttype ? query.clienttype : (userPreferredClienttype || 'INTERNET')
   }
   const newQueryCuts = {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),

@@ -1,187 +1,205 @@
 <template>
-  <v-row class="justify-center w-100">
-    <v-col
-      cols="12"
+  <v-container fluid class="pb-0">
+    <div
+      v-if="!$store.state.isDesktop"
+      class="d-flex"
     >
-      <v-row
-        class="mx-1 mt-1 mb-1 justify-center d-flex"
-      >
+      <div>
         <v-select
           v-model="selectedCity"
           :items="cities"
-          label="Filtrar Ciudad"
+          label="Ciudad"
           item-value="id"
           item-text="name"
           return-object
-          solo
+          filled
+          dense
           rounded
           hide-details="auto"
           class="elevation-0"
-          style="max-width:180px;border-radius: 30px 0 0 30px;height:48px;"
+          style="border-radius: 30px 0 0 30px;height:48px;"
           @change="changeCity(selectedCity)"
         >
-          <template v-slot:item="{ item }">
+          <template v-slot:selection="{ item }">
             {{ item.name }}
           </template>
         </v-select>
-        <v-autocomplete
-          v-model="select"
-          :items="searchResults"
-          :label="loadingDataTable ? 'Cargando... Por favor espere.' : 'Buscar por código, nombre, barrio o dirección'"
-          :search-input.sync="search"
-          :item-text="text"
+      </div>
+      <div>
+        <v-select
+          v-model="selectedClienttype"
+          :items="clienttypes"
+          label="Tipo"
           item-value="id"
-          clearable
-          hide-details
-          auto-select-first
+          item-text="name"
           return-object
-          solo
+          filled
+          dense
           rounded
-          no-data-text="Realiza una busqueda para iniciar..."
-          :loading="loadingDataTable"
-          class="white--text"
-          style="width:100px;max-width: 600px;border-radius: 0 30px 30px 0;"
+          hide-details="auto"
+          class="elevation-0"
+          style="border-radius: 0 30px 30px 0;height:48px;"
+          @change="changeType(selectedClienttype)"
         >
-          <template v-slot:item="{ item }">
-            <v-list-item-content>
-              <v-list-item-title class="text-caption" v-text="`${item.code} / ${item.dni} / ${item.name} / ${item.phone}`" />
-            </v-list-item-content>
-            <v-list-item-action class="d-flex flex-row">
-              <v-tooltip
-                v-for="service in item.services"
-                :key="service.id"
-                left
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-chip
-                    label
-                    outlined
-                    class="mr-1"
-                    v-bind="attrs"
-                    v-on="on"
-                    @click="getClientBySearchFromService(service)"
-                  >
-                    <v-icon
-                      :color="service.active ? service.indebt ? 'red darkne-2' : 'green darken-2' : service.indebt ? 'gray' : 'red darken-4'"
-                      class="mr-1"
-                    >
-                      {{ service.name === 'INTERNET' ? 'mdi-wifi' : 'mdi-television' }}
-                    </v-icon>
-                    {{ service.code }} {{ service.balance ? `$${service.balance}` : 'Al Dia' }}
-                  </v-chip>
-                </template>
-                <span>{{ `${processAddresses(service)} ${processAddressesNeighborhood(service)}` }}</span>
-              </v-tooltip>
-            </v-list-item-action>
+          <template v-slot:selection="{ item }">
+            {{ item.name }}
           </template>
-        </v-autocomplete>
-      </v-row>
-    </v-col>
-  </v-row>
+        </v-select>
+      </div>
+    </div>
+    <div
+      :class="$store.state.isDesktop ? 'mt-0' : 'mt-4'"
+      class="justify-center d-flex"
+    >
+      <v-select
+        v-if="$store.state.isDesktop"
+        v-model="selectedCity"
+        :items="cities"
+        label="Ciudad"
+        item-value="id"
+        item-text="name"
+        return-object
+        solo
+        rounded
+        hide-details="auto"
+        class="elevation-0 mr-1"
+        style="max-width:180px;border-radius: 30px 0 0 30px;height:48px;"
+        @change="changeCity(selectedCity)"
+      >
+        <template v-slot:selection="{ item }">
+          {{ item.name }}
+        </template>
+      </v-select>
+      <v-select
+        v-if="$store.state.isDesktop"
+        v-model="selectedClienttype"
+        :items="clienttypes"
+        label="Tipo"
+        item-value="id"
+        item-text="name"
+        return-object
+        solo
+        rounded
+        hide-details="auto"
+        class="elevation-0 mr-1"
+        style="max-width:180px;border-radius: 0;height:48px;"
+        @change="changeType(selectedClienttype)"
+      >
+        <template v-slot:selection="{ item }">
+          {{ item.name }}
+        </template>
+      </v-select>
+      <v-text-field
+        v-model="search"
+        :label="loadingDataTable ? 'Cargando... Por favor espere.' : 'Buscar codigo, cedula, nombre, telefono o direccion'"
+        :loading="loadingDataTable"
+        :disabled="loadingDataTable"
+        hide-details
+        return-object
+        chips
+        solo
+        rounded
+        class="white--text"
+        style="width:100px;max-width: 1100px;"
+        :style="$store.state.isDesktop ? 'border-radius: 0;' : 'border-radius: 30px 0 0 30px;'"
+        @keyup.enter="searchServices"
+      />
+      <v-tooltip>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="grey lighten-4 black--text elevation-0"
+            dark
+            :loading="loadingDataTable"
+            tile
+            style="border-radius: 0;padding:5px;border-radius: 0 30px 30px 0;height:48px;"
+            v-bind="attrs"
+            v-on="on"
+            @click="searchServices"
+          >
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </template>
+        <span>Busqueda</span>
+      </v-tooltip>
+    </div>
+  </v-container>
 </template>
 <script>
 export default {
-  name: 'ClientSearch',
+  name: 'BillingSearchBox',
   data () {
     return {
-      search: null,
-      searchResults: [],
-      select: null,
+      search: '',
+      selectedCity: null,
+      selectedClienttype: null,
+      searchResults: null,
       loadingDataTable: false,
-      selectedCity: null
+      preventWatchRedirect: false
     }
   },
   computed: {
     currentCity () {
       // eslint-disable-next-line eqeqeq
-      return this.$store.state.auth.cities ? this.$store.state.auth.cities.find(c => c.name == this.$route.query.city) : ''
+      return this.$store.state.auth.cities ? this.$store.state.auth.cities.find(c => c.id == this.$route.query.city) : ''
     },
     cities () {
       return this.$store.state.auth.cities
-    }
-  },
-  watch: {
-    search (val) {
-      val && val !== this.select && val !== null && this.debounceSearchInDatabase(val)
     },
-    select (resultObject) {
-      if (this.search && resultObject.services.length === 1) {
-        this.getClientBySearchFromClient(resultObject)
-      }
+    clienttypes () {
+      return this.$store.state.auth.clienttypes
     }
   },
   mounted () {
     this.setSelectedCity()
+    this.setSelectedClienttype()
+    this.setSearch()
+    if (this.$route.params.search && this.$route.path.includes('address')) {
+      this.search = this.$route.params.search
+    }
   },
   methods: {
-    text: item => `${item.code} - ${item.name} - ${item.dni}`,
+    text: item => `${item.code} - ${item.dni} - ${item.name} - ${item.phone}`,
+    searchServices () {
+      this.$router.push({ path: '/billing', query: { search: this.search, city: this.$route.query.city, clienttype: this.$route.query.clienttype } })
+    },
     changeCity (city) {
-      this.$router.push({ query: { city: city.name, clienttype: this.$route.query.clienttype, view: this.$route.query.view } })
+      this.$router.push({
+        query: this.search ? {
+          search: this.search,
+          city: city.name,
+          clienttype: this.$route.query.clienttype
+        } : {
+          city: city.name,
+          clienttype: this.$route.query.clienttype
+        }
+      })
+    },
+    changeType (clienttype) {
+      this.$router.push({
+        query: this.search ? {
+          search: this.search,
+          city: this.$route.query.city,
+          clienttype: clienttype.name
+        } : {
+          city: this.$route.query.city,
+          clienttype: clienttype.name
+        }
+      })
     },
     setSelectedCity () {
       if (this.$route.query.city) {
         this.selectedCity = this.$store.state.auth.cities.find(c => c.name === this.$route.query.city)
       }
     },
-    getClientBySearchFromService (service) {
-      this.$store.commit('billing/resetInvoices')
-      this.$store.commit('billing/resetSelected')
-      this.$store.commit('billing/resetCurrentClient')
-      this.$store.commit('billing/setShowPayedToFalse')
-      this.$store.commit('billing/getClientsBySearch', service)
-      if (service) {
-        this.loadingDataTable = true
-        this.$router.push({
-          path: `/billing/${service.id}?city=${this.$route.query.city}`
-        })
-        this.loadingDataTable = false
-      } else {
-        this.$router.push({
-          path: `/billing?city=${this.$route.query.city}`
-        })
-        this.loadingDataTable = false
+    setSelectedClienttype () {
+      if (this.$route.query.clienttype) {
+        this.selectedClienttype = this.$store.state.auth.clienttypes.find(c => c.name === this.$route.query.clienttype)
       }
     },
-    getClientBySearchFromClient (client) {
-      this.$store.commit('billing/resetInvoices')
-      this.$store.commit('billing/resetSelected')
-      this.$store.commit('billing/resetCurrentClient')
-      this.$store.commit('billing/setShowPayedToFalse')
-      this.$store.commit('billing/getClientsBySearch', client)
-      if (client) {
-        this.loadingDataTable = true
-        this.$router.push({
-          path: `/billing/${client.services[0].id}?city=${this.$route.query.city}`
-        })
-        this.loadingDataTable = false
-      } else {
-        this.$router.push({
-          path: `/billing?city=${this.$route.query.city}`
-        })
-        this.loadingDataTable = false
+    setSearch () {
+      if (this.$route.query.search) {
+        this.search = this.$route.query.search
       }
-    },
-    processAddresses (service) {
-      if (!service) { return 'Sin Direccion' }
-      const address = service?.address
-      const serviceAddresses = service?.service_addresses
-      if (address && !serviceAddresses) { return address }
-      if (address && serviceAddresses.length === 0) { return address }
-      if (!address && serviceAddresses.length < 1) { return 'Sin Dirección' }
-      if (address && serviceAddresses.length > 0) { return serviceAddresses.at(-1).address }
-      if (!address && serviceAddresses.length > 0) { return serviceAddresses.at(-1).address }
-    },
-    processAddressesNeighborhood (service) {
-      if (!service) { return 'Sin Barrio' }
-      const addresses = service.service_addresses
-      const neighborhood = service.neighborhood
-      if (neighborhood && !addresses) { return neighborhood.name }
-      if (neighborhood && addresses.length === 0) { return neighborhood.name }
-      if (!neighborhood && addresses.length < 1) { return 'Sin Barrio' }
-      if (neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
-      if (neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
-      if (!neighborhood && addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
-      if (!neighborhood && addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
     }
   }
 }

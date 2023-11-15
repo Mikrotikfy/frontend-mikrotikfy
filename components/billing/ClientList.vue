@@ -1,148 +1,247 @@
 <template>
-  <div>
-    <v-data-table
-      v-if="headers"
-      :headers="headers"
-      :items.sync="clients"
-      :items-per-page.sync="itemsPerPage"
-      :page.sync="page"
-      :options.sync="options"
-      :loading="loadingDataTable"
-      no-data-text="Realiza una busqueda para iniciar..."
-      loading-text="Cargando información de clientes..."
-      caption="Clientes"
-      dense
-      hide-default-footer
-      mobile-breakpoint="600"
-      @page-count="pageCount = $event"
-      @click:row="showBillingInfo"
-    >
-      <template v-slot:[`item.code`]="props">
-        <nuxt-link :to="`/client/${props.item.code}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`" class="blue--text">
-          <strong>
-            <h3>
-              {{ props.item.code }}
-            </h3>
-          </strong>
-        </nuxt-link>
-      </template>
-      <template v-slot:[`item.balance`]="props">
-        <v-chip
-          v-if="props.item && props.item.offer && props.item.offer.price"
-          small
-          label
-          :to="`/billing/${props.item.code}?selected=${props.item.id}&city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
-          :color="props.item.balance >= props.item.offer.price * 2 ? 'yellow darken-4' : 'green'"
-        >
-          ${{ Number(props.item.balance).toLocaleString('es') }}
-        </v-chip>
-        <v-chip
-          v-else
-          small
-          label
-        >
-          {{ 'No definido' }}
-        </v-chip>
-      </template>
-      <template v-slot:[`item.active`]="props">
-        <MainClientControl :client="props.item" :index="clients.map(function(x) {return x.id; }).indexOf(props.item.id)" />
-      </template>
-    </v-data-table>
-    <v-pagination v-model="page" :length="pageCount" />
-  </div>
+  <v-container fluid>
+    <v-row class="mt-0">
+      <v-col class="pt-0">
+        <v-card class="elevation-0 rounded-lg">
+          <v-card-text>
+            <client-only>
+              <v-data-table
+                :headers="getHeadersByClienttype"
+                :items="newclient && !fuzzy ? clients : services"
+                :items-per-page="itemsPerPage"
+                :loading="loadingDataTable"
+                :search="filter"
+                no-data-text="No hay resultados a la busqueda..."
+                loading-text="Cargando información de clientes..."
+                hide-default-footer
+                mobile-breakpoint="100"
+              >
+                <template v-slot:top>
+                  <div class="d-flex">
+                    <v-checkbox
+                      v-model="fuzzy"
+                      label="Busqueda Avanzada por Direccion"
+                      hide-details
+                      class="mb-4 mr-4"
+                    />
+                    <v-checkbox
+                      v-model="newclient"
+                      label="Busqueda de clientes nuevos"
+                      hide-details
+                      class="mb-4"
+                    />
+                  </div>
+                </template>
+                <template v-slot:[`item.active`]="{ item }">
+                  <v-chip
+                    x-small
+                    :color="item.active ? item.indebt ? 'red darkne-2' : 'green darken-2' : item.indebt ? 'gray' : 'red darken-4'"
+                  >
+                    {{ item.active ? item.indebt ? 'C' : 'A' : item.indebt ? 'D' : 'D' }}
+                  </v-chip>
+                </template>
+                <template v-slot:[`item.dni`]="{ item, index }">
+                  <v-chip
+                    v-if="$store.state.isDesktop && ($isAdmin() || $isBiller())"
+                    x-small
+                    :color="item.corporate === null ? 'grey darken-3' : item.corporate === false ? 'blue darken-3' : 'green darken-4'"
+                    @click="toggleDniType(item, index)"
+                  >
+                    {{ item.corporate === null ? 'No definido' : item.corporate === false ? 'Plan Hogar' : 'Corporativo' }}
+                  </v-chip>
+                  <v-chip
+                    v-else
+                    x-small
+                    :color="item.corporate === null ? 'grey darken-3' : item.corporate === false ? 'blue darken-3' : 'green darken-4'"
+                  >
+                    {{ item.corporate === null ? 'No definido' : item.corporate === false ? 'Plan Hogar' : 'Corporativo' }}
+                  </v-chip>
+                </template>
+                <template v-slot:[`item.actions`]="{ item }">
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        v-bind="attrs"
+                        icon
+                        :color="$vuetify.theme.dark ? 'white' : 'green darken-4 white--text'"
+                        class="rounded-xl"
+                        :to="newclient
+                          ? `/billing/${item.id}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`
+                          : `/billing/${item.normalized_client ? item.normalized_client.id : ''}?city=${$route.query.city}&clienttype=${$route.query.clienttype}&service=${item.id}`"
+                        v-on="on"
+                      >
+                        <v-icon>
+                          mdi-account
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Cliente</span>
+                  </v-tooltip>
+                </template>
+              </v-data-table>
+            </client-only>
+            <v-row v-if="pagination.pageCount > 1">
+              <v-col>
+                <div class="text-center pt-2">
+                  <v-pagination
+                    v-model="page"
+                    :disabled="loadingDataTable"
+                    :length="pagination.pageCount"
+                    @input="getClientBySearch"
+                  />
+                </div>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
+
 <script>
 export default {
+  name: 'ClientList',
   data () {
     return {
-      itemsPerPage: 25,
-      page: 1,
-      pageCount: 0,
-      options: {},
+      isRx: true,
+      fuzzy: false,
+      newclient: false,
       loadingDataTable: false,
-      selected: []
+      options: {},
+      page: 1,
+      itemsPerPage: 25,
+      update_password: false,
+      refreshLoading: false,
+      searchClientInput: '',
+      result: '',
+      filter: ''
     }
   },
   computed: {
-    clients () {
-      return this.$store.state.billing.clients
-    },
-    headers () {
-      return this.$store.state.billing.headers
-    },
     search () {
-      return this.$route.params.search
+      return this.$route.query.search
     },
-    showPayed () {
-      return this.$store.state.billing.showPayed
+    services () {
+      return this.$store.state.client.services
+    },
+    clients () {
+      return this.$store.state.client.clients
+    },
+    currentCity () {
+      // eslint-disable-next-line eqeqeq
+      return this.$store.state.auth.cities ? this.$store.state.auth.cities.find(c => c.name == this.$route.query.city) : ''
+    },
+    pagination () {
+      return this.$store.state.client.pagination
+    },
+    getHeadersByClienttype () {
+      return this.$store.state.isDesktop ? this.newclient ? [
+        { text: 'Nombre', value: 'name', sortable: false },
+        { text: 'Cedula', value: 'dni', sortable: false },
+        { text: 'Telefono', sortable: false, value: 'phone' },
+        { text: 'Acciones', value: 'actions', sortable: false }
+      ] : [
+        { text: 'Estado', value: 'active', sortable: false },
+        { text: 'Codigo', value: 'code', sortable: false },
+        { text: 'Nombre', value: 'client_name', sortable: false },
+        { text: 'Direccion', sortable: false, value: 'address' },
+        { text: 'Barrio', value: 'neighborhood', sortable: false },
+        { text: 'Telefono', sortable: false, value: 'phone' },
+        { text: 'Acciones', value: 'actions', sortable: false }
+      ] : [
+        { text: 'Estado', value: 'active', sortable: false },
+        { text: 'Codigo', value: 'code', sortable: false },
+        { text: 'Nombre', value: 'client_name', sortable: false },
+        { text: 'Direccion', sortable: false, value: 'address' },
+        { text: 'Barrio', value: 'neighborhood', sortable: false },
+        { text: 'Telefono', sortable: false, value: 'phone' },
+        { text: 'Acciones', value: 'actions', sortable: false }
+      ]
     }
   },
   watch: {
-    '$store.state.billing.showPayed' () {
-      this.getBillingInfoByClientId()
+    search () {
+      this.page = 1
+      this.getClientBySearch()
     },
-    '$store.state.billing.refresh' () {
-      this.getClientsBySearch()
+    fuzzy () {
+      this.getClientBySearch()
     },
-    '$route' () {
-      this.$router.push({
-        path: '/billing'
-      })
+    '$route.query.clienttype' () {
+      this.page = 1
+      this.getClientBySearch()
+    },
+    '$route.query.city' () {
+      this.page = 1
+      this.getClientBySearch()
     }
   },
   mounted () {
-    this.loadingDataTable = true
-    this.page = 1
-    this.getHeadersByClientType()
-    // this.getClientsBySearch()
-    this.getBillingInfoByClientId()
-    this.loadingDataTable = false
+    if (this.search) {
+      this.getClientBySearch()
+    } else {
+      this.resetsearchfn()
+    }
   },
   methods: {
-    async testForSingleClient () {
-      if (this.$store.state.billing.clients.length === 1) {
-        await this.showBillingInfo(this.$store.state.billing.clients[0])
-      } else {
-        this.$store.commit('billing/setBillingInfo', {})
-      }
+    toggleDniType (client, index) {
+      const dniType = !client.corporate
+      this.$store.dispatch('client/updateDniType', { client, corporate: dniType, index, token: this.$store.state.auth.token })
     },
-    getHeadersByClientType () {
+    async getClientBySearch () {
       this.loadingDataTable = true
-      this.$store.dispatch('billing/getHeadersByClientType', { clienttype: this.$route.query.clienttype }).then(() => {
+      await this.$store.dispatch('client/clearServicesFromDatatable')
+      const search = this.search.trim()
+      this.setSearchText()
+      if (!this.fuzzy && !this.newclient) {
+        await this.$store.dispatch('client/getServicesFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, page: this.page })
         this.loadingDataTable = false
-      })
-    },
-    async getClientsBySearch () {
-      if (this.search || this.$route.params.search) {
-        await this.$store.dispatch('billing/getClientsBySearch', {
-          search: this.search,
-          city: this.$route.query.city,
-          clienttype: this.$route.query.clienttype,
-          token: this.$store.state.auth.token
-        })
-        await this.testForSingleClient()
+        this.result = `No se han encontrado resultados de ${search} en ${this.$route.query.city}`
+      } else if (!this.fuzzy && this.newclient) {
+        await this.$store.dispatch('client/getClientsFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token })
+        this.loadingDataTable = false
+        this.result = `No se han encontrado resultados de ${search} en ${this.$route.query.city}`
+      } else if (this.fuzzy && !this.newclient) {
+        await this.$store.dispatch('client/getServicesFromDatabaseByFuzzySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token })
+        this.loadingDataTable = false
+        this.result = `No se han encontrado resultados de ${search} en ${this.$route.query.city}`
       }
     },
-    async getBillingInfoByClientId (cliendId = null) {
-      if (this.$store.state.billing.clients.length > 0) {
-        await this.$store.dispatch('billing/getBillingInfoByClientId', {
-          clientId: cliendId || this.$route.query.selected,
-          showPayed: this.showPayed,
-          token: this.$store.state.auth.token
-        })
-      }
+    async resetsearchfn () {
+      await this.$store.dispatch('client/clearClientsFromDatatable')
+      this.loadingDataTable = false
     },
-    async showBillingInfo (item) {
-      if (item.id === parseInt(this.$route.query.selected)) {
-        await this.getBillingInfoByClientId(item.id)
-      } else {
-        this.$router.push({
-          path: this.$route.path,
-          params: { search: this.search },
-          query: { selected: item.id, clienttype: this.$route.query.clienttype, city: this.$route.query.city }
-        })
-      }
+    setSearchText () {
+      this.result = 'Buscando...'
+    },
+    clientCount () {
+      return parseInt(localStorage.getItem('clientCount'))
+    },
+    createClientDialog (value) {
+      this.createDialog = false
+    },
+    createClientSnack (value) {
+      this.$toast.success('Cliente creado con exito', { duration: 4000, position: 'bottom-center' })
+    },
+    formatCurrency (client) {
+      if (client.balance === null) { return '0' }
+      return client.balance.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 })
     }
   }
 }
 </script>
+
+<style>
+.done {
+  text-decoration: line-through;
+}
+.offline-text {
+  font-weight: bold;
+  font-size:1rem;
+}
+.online-text {
+  font-weight: bold;
+  font-size:1rem;
+}
+</style>

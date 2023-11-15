@@ -1,5 +1,6 @@
 export const state = () => ({
   services: [],
+  clients: [],
   pagination: {
     page: 1,
     pageSize: 10,
@@ -52,6 +53,14 @@ export const mutations = {
       state.pagination = data.meta.pagination
     } catch (error) {
       throw new Error(`MUTATE SEARCH SERVICES${error}`)
+    }
+  },
+  getClientsFromDatabase (state, data) {
+    try {
+      state.clients = data.clients
+      state.pagination = data.meta.pagination
+    } catch (error) {
+      throw new Error(`MUTATE SEARCH CLIENTS${error}`)
     }
   },
   getServicesFromDatabaseFuzzy (state, serviceList) {
@@ -294,6 +303,50 @@ export const actions = {
         .then(res => res.json())
         .then(({ data: services, meta }) => {
           commit('getServicesFromDatabase', { services, meta })
+        })
+    } catch (error) {
+      throw new Error(`ACTION ${error}`)
+    }
+  },
+  async getClientsFromDatabaseBySearch ({ commit }, payload) {
+    const qs = require('qs')
+    const query = qs.stringify({
+      filters: {
+        $or: [
+          {
+            dni: {
+              $eq: payload.search
+            }
+          },
+          {
+            name: {
+              $contains: payload.search
+            }
+          },
+          {
+            phone: payload.search
+          }
+        ]
+      },
+      pagination: {
+        page: payload.page
+      }
+    },
+    {
+      encodeValuesOnly: true
+    })
+    try {
+      await fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized-clients?${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        }
+      })
+        .then(res => res.json())
+        .then(({ data: clients, meta }) => {
+          console.log(clients)
+          commit('getClientsFromDatabase', { clients, meta })
         })
     } catch (error) {
       throw new Error(`ACTION ${error}`)

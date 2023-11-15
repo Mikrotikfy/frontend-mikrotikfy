@@ -7,7 +7,7 @@
             <client-only>
               <v-data-table
                 :headers="getHeadersByClienttype"
-                :items="services"
+                :items="newclient && !fuzzy ? clients : services"
                 :items-per-page="itemsPerPage"
                 :loading="loadingDataTable"
                 :search="filter"
@@ -17,12 +17,20 @@
                 mobile-breakpoint="100"
               >
                 <template v-slot:top>
-                  <v-checkbox
-                    v-model="fuzzy"
-                    label="Busqueda Avanzada por Direccion"
-                    hide-details
-                    class="mb-4"
-                  />
+                  <div class="d-flex">
+                    <v-checkbox
+                      v-model="fuzzy"
+                      label="Busqueda Avanzada por Direccion"
+                      hide-details
+                      class="mb-4 mr-4"
+                    />
+                    <v-checkbox
+                      v-model="newclient"
+                      label="Busqueda de clientes nuevos"
+                      hide-details
+                      class="mb-4"
+                    />
+                  </div>
                   <v-text-field
                     v-model="filter"
                     append-icon="mdi-magnify"
@@ -57,7 +65,9 @@
                         icon
                         :color="$vuetify.theme.dark ? 'white' : 'green darken-4 white--text'"
                         class="rounded-xl"
-                        :to="`/client/${item.normalized_client ? item.normalized_client.id : ''}?city=${$route.query.city}&clienttype=${$route.query.clienttype}&service=${item.id}`"
+                        :to="newclient
+                          ? `/client/${item.id}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`
+                          : `/client/${item.normalized_client ? item.normalized_client.id : ''}?city=${$route.query.city}&clienttype=${$route.query.clienttype}&service=${item.id}`"
                         v-on="on"
                       >
                         <v-icon>
@@ -96,6 +106,7 @@ export default {
     return {
       isRx: true,
       fuzzy: false,
+      newclient: false,
       loadingDataTable: false,
       options: {},
       page: 1,
@@ -114,6 +125,9 @@ export default {
     services () {
       return this.$store.state.client.services
     },
+    clients () {
+      return this.$store.state.client.clients
+    },
     currentCity () {
       // eslint-disable-next-line eqeqeq
       return this.$store.state.auth.cities ? this.$store.state.auth.cities.find(c => c.name == this.$route.query.city) : ''
@@ -122,10 +136,14 @@ export default {
       return this.$store.state.client.pagination
     },
     getHeadersByClienttype () {
-      return this.$store.state.isDesktop ? [
+      return this.$store.state.isDesktop ? this.newclient ? [
+        { text: 'Nombre', value: 'name', sortable: false },
+        { text: 'Cedula', value: 'dni', sortable: false },
+        { text: 'Telefono', sortable: false, value: 'phone' },
+        { text: 'Acciones', value: 'actions', sortable: false }
+      ] : [
         { text: 'Codigo', value: 'code', sortable: false },
         { text: 'Nombre', value: 'client_name', sortable: false },
-        { text: 'Cedula', value: 'dni', sortable: false },
         { text: 'Direccion', sortable: false, value: 'address' },
         { text: 'Barrio', value: 'neighborhood', sortable: false },
         { text: 'Telefono', sortable: false, value: 'phone' },
@@ -146,6 +164,9 @@ export default {
       this.getClientBySearch()
     },
     fuzzy () {
+      this.getClientBySearch()
+    },
+    newclient () {
       this.getClientBySearch()
     },
     '$route.query.clienttype' () {
@@ -174,11 +195,15 @@ export default {
       await this.$store.dispatch('client/clearServicesFromDatatable')
       const search = this.search.trim()
       this.setSearchText()
-      if (!this.fuzzy) {
+      if (!this.fuzzy && !this.newclient) {
         await this.$store.dispatch('client/getServicesFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token, page: this.page })
         this.loadingDataTable = false
         this.result = `No se han encontrado resultados de ${search} en ${this.$route.query.city}`
-      } else {
+      } else if (!this.fuzzy && this.newclient) {
+        await this.$store.dispatch('client/getClientsFromDatabaseBySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token })
+        this.loadingDataTable = false
+        this.result = `No se han encontrado resultados de ${search} en ${this.$route.query.city}`
+      } else if (this.fuzzy && !this.newclient) {
         await this.$store.dispatch('client/getServicesFromDatabaseByFuzzySearch', { search, city: this.$route.query.city, clienttype: this.$route.query.clienttype, token: this.$store.state.auth.token })
         this.loadingDataTable = false
         this.result = `No se han encontrado resultados de ${search} en ${this.$route.query.city}`
