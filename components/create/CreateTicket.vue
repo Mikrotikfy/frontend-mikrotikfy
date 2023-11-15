@@ -68,8 +68,8 @@
                   <v-row class="mb-2">
                     <v-col cols="6">
                       <v-text-field
-                        :value="processAddresses(service)"
-                        label="#"
+                        :value="service.address"
+                        label="Direccion"
                         outlined
                         dense
                         hide-details
@@ -77,18 +77,13 @@
                       />
                     </v-col>
                     <v-col cols="6">
-                      <v-autocomplete
-                        :value="processAddressesNeighborhood(service)"
-                        item-text="name"
-                        item-value="id"
-                        :items="neighborhoods"
+                      <v-text-field
+                        :value="service.neighborhood"
                         label="Barrio"
-                        auto-select-first
                         outlined
                         dense
-                        disabled
                         hide-details
-                        return-object
+                        disabled
                       />
                     </v-col>
                   </v-row>
@@ -521,7 +516,7 @@ export default {
       return this.$store.state.auth.cities.find(city => city.name === this.service.city.name)
     },
     neighborhoods () {
-      return this.$store.state.neighborhoods
+      return this.$store.state.neighborhood.neighborhoods
     },
     clienttype () {
       return this.$store.state.auth.clienttypes.find(ct => ct.name === this.service.name)

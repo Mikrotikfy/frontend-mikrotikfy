@@ -115,7 +115,7 @@ export default {
       return this.$store.state.auth.cities
     },
     neighborhoods () {
-      return this.$store.state.neighborhoods
+      return this.$store.state.neighborhood.neighborhoods
     },
     technologies () {
       return this.$store.state.technology.technologies

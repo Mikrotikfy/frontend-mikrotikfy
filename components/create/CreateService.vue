@@ -451,7 +451,7 @@ export default {
       return Array.from({ length: 1200 }, (_, i) => (i + 1).toString().padStart(2, '0'))
     },
     neighborhoods () {
-      return this.$store.state.neighborhoods
+      return this.$store.state.neighborhood.neighborhoods
     },
     technologies () {
       return this.$store.state.technology.technologies
