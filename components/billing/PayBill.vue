@@ -1,23 +1,29 @@
 <template>
   <div>
-    <v-btn
-      x-small
-      color="green darken-4"
-      elevation="0"
-      @click="init"
-    >
-      Pagar
-      <v-icon>mdi-cash-plus</v-icon>
-    </v-btn>
+    <v-tooltip top>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          v-bind="attrs"
+          x-small
+          color="green darken-4"
+          elevation="0"
+          v-on="on"
+          @click="init"
+        >
+          <v-icon>mdi-cash-plus</v-icon>
+        </v-btn>
+      </template>
+      <span>Abono Dirigido</span>
+    </v-tooltip>
     <v-dialog
       v-model="dialog"
       width="550"
     >
-      <v-card class="pt-4">
+      <v-card :loading="loading" class="pt-4">
         <v-card-text>
           <v-text-field
             v-model.number="billingInfo.payBill.amount"
-            :disabled="billingInfo.payBill.isComplete"
+            :disabled="loading"
             type="number"
             label="Abono parcial"
             prepend-inner-icon="mdi-currency-usd"
@@ -27,6 +33,7 @@
           />
           <v-text-field
             v-model="billingInfo.payBill.details"
+            :disabled="loading"
             label="Observaciones (OPCIONAL)"
             prepend-inner-icon="mdi-comment-text-outline"
             outlined
@@ -37,6 +44,7 @@
           <v-btn
             ref="cbtn"
             block
+            :disabled="loading"
             class="rounded-xl mb-4"
             :color="billingInfo.payBill.amount > 0 ? 'yellow darken-4' : 'primary' "
             @click.enter="createInvoiceMovement"

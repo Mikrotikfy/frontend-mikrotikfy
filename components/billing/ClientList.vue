@@ -66,8 +66,8 @@
                         :color="$vuetify.theme.dark ? 'white' : 'green darken-4 white--text'"
                         class="rounded-xl"
                         :to="newclient
-                          ? `/billing/${item.id}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`
-                          : `/billing/${item.normalized_client ? item.normalized_client.id : ''}?city=${$route.query.city}&clienttype=${$route.query.clienttype}&service=${item.id}`"
+                          ? `/client/${item.id}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`
+                          : `/billing/${item.id}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
                         v-on="on"
                       >
                         <v-icon>
@@ -166,6 +166,9 @@ export default {
       this.getClientBySearch()
     },
     fuzzy () {
+      this.getClientBySearch()
+    },
+    newclient () {
       this.getClientBySearch()
     },
     '$route.query.clienttype' () {

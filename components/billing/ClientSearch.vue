@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="pb-0">
+  <v-container fluid class="pb-0 pt-0">
     <div
       v-if="!$store.state.isDesktop"
       class="d-flex"

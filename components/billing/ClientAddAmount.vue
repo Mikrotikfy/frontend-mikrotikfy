@@ -18,7 +18,7 @@
         <span>Generar Cobro</span>
       </v-tooltip>
     </template>
-    <v-card class="mt-2 rounded-lg">
+    <v-card :loading="loading" class="mt-2 rounded-lg">
       <v-card-title class="d-flex justify-center">
         Generar Cobro por Conceptos
       </v-card-title>
@@ -26,7 +26,7 @@
         <v-form v-model="valid" action="" class="d-lg-flex mt-2 mt-lg-0">
           <v-btn
             v-if="amount"
-            :disabled="!valid"
+            :disabled="!valid || loading"
             :block="!$store.state.isDesktop"
             color="primary"
             class="mr-0 mr-lg-2 mt-2 mt-lg-0"
@@ -40,6 +40,7 @@
             type="number"
             label="Generar Cobro $0.00"
             :rules="canNotBeNullNorContainCommasOrDots"
+            :disabled="loading"
             single-line
             dense
             filled
@@ -54,6 +55,7 @@
           <v-autocomplete
             v-model="billtype"
             :items="billtypes"
+            :disabled="loading"
             item-text="name"
             item-value="id"
             label="Tipo de cobro"
@@ -73,6 +75,7 @@
             label="Mes"
             class="mr-0 mr-lg-2 mt-2 mt-lg-0"
             :rules="maxNumberEqualsCurrentMonth"
+            :disabled="loading"
             single-line
             hide-details="auto"
             filled
@@ -86,6 +89,7 @@
             label="Año"
             class="mr-0 mr-lg-2 mt-2 mt-lg-0"
             :rules="maxNumberEqualsCurrentYear"
+            :disabled="loading"
             single-line
             hide-details="auto"
             filled
@@ -97,6 +101,7 @@
             v-model="details"
             label="Observaciones (OPCIONAL)"
             class="mr-0 mr-lg-2 mt-2 mt-lg-0 d-lg-flex"
+            :disabled="loading"
             single-line
             hide-details
             filled
@@ -125,6 +130,7 @@ export default {
       dialog: false,
       amount: null,
       details: null,
+      loading: false,
       month: this.getCurrentMonth(),
       monthName: this.getCurrentMonthName(),
       year: this.getCurrentYear(),
@@ -153,6 +159,7 @@ export default {
   methods: {
     async addAmount () {
       if (this.valid) {
+        this.loading = true
         await this.$store.dispatch('billing/addMovement', {
           balance: this.amount,
           value: this.amount,
@@ -180,6 +187,7 @@ export default {
           concept: this.billtype.name
         }
         await this.$store.dispatch('billing/createLegalNote', legalNote)
+        this.loading = false
         this.amount = null
         this.details = null
         this.$store.commit('billing/refresh')
@@ -187,6 +195,7 @@ export default {
         this.$toast.error('No se puede crear la factura. Verifique los datos.', { duration: 5000 })
         this.amount = null
         this.details = null
+        this.loading = false
         this.$store.commit('billing/refresh')
       }
     },

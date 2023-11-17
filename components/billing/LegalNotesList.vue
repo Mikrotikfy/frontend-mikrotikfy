@@ -22,7 +22,7 @@
         <strong> ${{ Number(props.item.credit).toLocaleString('es') }} </strong>
       </template>
       <template v-slot:[`item.invoices`]="props">
-        <strong> {{ formatConcepts(props.item.invoice_movements, props.item) }} </strong>
+        <strong :class="props.item.cancelled ? 'red lighten-2' : ''"> {{ formatConcepts(props.item.invoice_movements, props.item) }} </strong>
       </template>
       <template v-slot:[`item.createdAt`]="props">
         <strong> {{ getDate(props.item.createdAt) }} </strong>

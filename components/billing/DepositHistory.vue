@@ -1,14 +1,20 @@
 <template>
   <div>
-    <v-btn
-      x-small
-      color="blue darken-4"
-      elevation="0"
-      @click="dialog = true"
-    >
-      Historial
-      <v-icon>mdi-history</v-icon>
-    </v-btn>
+    <v-tooltip top>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          v-bind="attrs"
+          x-small
+          color="blue darken-4"
+          elevation="0"
+          v-on="on"
+          @click="dialog = true"
+        >
+          <v-icon>mdi-history</v-icon>
+        </v-btn>
+      </template>
+      <span>Historial de movimientos</span>
+    </v-tooltip>
     <v-dialog
       v-model="dialog"
       width="auto"

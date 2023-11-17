@@ -206,6 +206,32 @@ export const actions = {
       throw new Error(`GET BILLING INFO BY CLIENT ID ACTION ${error}`)
     }
   },
+  cancelBill (_, payload) {
+    try {
+      return new Promise((resolve) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}invoices/${payload.bill.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          },
+          body: JSON.stringify({
+            data: {
+              cancelled: true,
+              cancelreason: payload.reason,
+              payed: payload.payed
+            }
+          })
+        })
+          .then(res => res.json())
+          .then((invoice) => {
+            resolve(invoice)
+          })
+      })
+    } catch (error) {
+      throw new Error(`GET BILLING INFO BY CLIENT ID ACTION ${error}`)
+    }
+  },
   updateInvoice ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {
@@ -295,7 +321,7 @@ export const actions = {
       throw new Error(`UPDATE SERVICE BALANCE ACTION ${error}`)
     }
   },
-  createLegalNote ({ commit }, { token, invoices, debit, city, clienttype, credit, service, biller, concept, connect = false }) {
+  createLegalNote ({ commit }, { token, invoices, debit, city, clienttype, credit, service, biller, concept, cancelled, connect = false }) {
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}legal-notes`, {
@@ -315,6 +341,7 @@ export const actions = {
               city,
               clienttype,
               concept,
+              cancelled,
               biller: biller.id
             }
           })

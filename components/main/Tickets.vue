@@ -486,10 +486,10 @@
                 <strong>Cliente: </strong>{{ editModalData.service ? editModalData.service.normalized_client.name : '' }}
               </p>
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
-                <strong>Direccion: </strong>{{ processAddresses(editModalData) }}
+                <strong>Direccion: </strong>{{ editModalData.service ? editModalData.service.address : '' }}
               </p>
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
-                <strong>Barrio: </strong>{{ processAddressesNeighborhood(editModalData) }}
+                <strong>Barrio: </strong>{{ editModalData.service ? editModalData.service.neighborhood : '' }}
               </p>
               <p class="pb-0 mb-0 text-subtitle-1 font-weigth-bold mb-1">
                 <strong>Celular: </strong><a :href="`tel:${editModalData.service ? editModalData.service.normalized_client.phone : ''}`"><strong>{{ editModalData.service ? editModalData.service.normalized_client.phone : '' }}</strong></a>
@@ -885,19 +885,6 @@ export default {
       } else {
         return 'primary'
       }
-    },
-    processAddresses ({ service }) {
-      if (!service) { return 'Sin Direccion' }
-      const addresses = service?.service_addresses
-      if (!addresses) { return 'Sin Dirección' }
-      if (addresses && addresses.length > 0) { return addresses.at(-1).address }
-    },
-    processAddressesNeighborhood ({ service }) {
-      if (!service) { return 'Sin Barrio' }
-      const addresses = service?.service_addresses
-      if (!addresses) { return 'Sin Barrio' }
-      if (addresses.length > 0 && addresses.at(-1).neighborhood) { return addresses.at(-1).neighborhood.name }
-      if (addresses.length > 0 && !addresses.at(-1).neighborhood) { return 'Sin barrio' }
     },
     getColor (state, answered, escalated, escalatedoffice) {
       if (state && !answered) {

@@ -11,6 +11,8 @@
         rounded
         autofocus
         placeholder="Recaudar a mensualidad $0.00"
+        :disabled="loading"
+        :loading="loading"
         :error="error"
         prepend-icon="mdi-account-cash-outline"
         color="green"
@@ -32,7 +34,8 @@ export default {
   data () {
     return {
       amount: null,
-      error: false
+      error: false,
+      loading: false
     }
   },
   computed: {
@@ -45,13 +48,16 @@ export default {
   },
   methods: {
     async addDiscountMovement () {
+      this.loading = true
       if (this.amount > this.total) {
         this.$toast.error('El valor a recaudar no puede ser mayor al saldo total', { duration: 2000 })
         this.error = true
+        this.loading = false
         return
       }
       if (!this.amount || this.amount === 0) {
         this.$toast.error('Debe ingresar un valor', { duration: 2000 })
+        this.loading = false
         return
       }
       await this.payInvoicesFromOlderToNewer(this.invoices, this.amount)
@@ -129,6 +135,7 @@ export default {
       }
       this.$store.commit('billing/resetSelected')
       this.$store.commit('billing/refresh')
+      this.loading = false
       window.open(`/bill?id=${legalNote.id}`)
     },
     async saveLegalNoteToDb (invoices, amount) {

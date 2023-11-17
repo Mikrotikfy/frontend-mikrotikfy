@@ -22,7 +22,7 @@
       >
         <template v-slot:[`item.invoice_type.name`]="props">
           <v-chip
-            :color="props.item.balance > 0 ? 'orange' : 'green'"
+            :color="props.item.balance > 0 ? props.item.cancelled ? 'red' : 'orange' : 'green'"
             text
             small
             label
@@ -42,6 +42,7 @@
         <template v-slot:[`item.actions`]="props">
           <span class=" d-xl-flex justify-end" :data-index="props.index">
             <BillingPayBill
+              v-if="!showPayed"
               :service="currentService"
               :invoice="props.item"
               :index="props.index"
@@ -50,6 +51,11 @@
               @updateInvoiceList="updateInvoiceList()"
             />
             <BillingDepositHistory :bill="props.item" class="mr-2" />
+            <BillingCancelBill
+              v-if="!showPayed"
+              :bill="props.item"
+              class="mr-2"
+            />
             <v-btn
               class="white black--text"
               x-small
@@ -78,6 +84,7 @@ export default {
         { text: 'Detalles', value: 'details', sortable: false },
         { text: 'Valor Inicial', value: 'value', sortable: false },
         { text: 'Saldo Pendiente', sortable: false, value: 'debt' },
+        { text: 'Anulada', sortable: false, value: 'cancelreason' },
         { text: 'Acciones', value: 'actions', sortable: false, class: 'text-right' }
       ]
     }
