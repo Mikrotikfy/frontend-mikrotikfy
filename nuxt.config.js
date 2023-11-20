@@ -102,7 +102,6 @@ export default {
   ** Nuxt.js modules
   */
   modules: [
-    // '@nuxtjs/onesignal',
     '@nuxtjs/toast',
     'vue-web-cam/nuxt'
   ],
