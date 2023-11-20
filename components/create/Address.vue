@@ -232,7 +232,19 @@ export default {
         'CARRERA',
         'CALLE',
         'MANZANA',
-        'DIAGONAL'
+        'DIAGONAL',
+        'RUTA',
+        'CALLEJON',
+        'CALLEJA',
+        'AVENIDA',
+        'CASA',
+        'HOTEL',
+        'EDIFICIO',
+        'TORRE',
+        'INTERIOR',
+        'OFICINA',
+        'LOCAL',
+        'PISO'
       ],
       dirFragment2: [
         'No.',
