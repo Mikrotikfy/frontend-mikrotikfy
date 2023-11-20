@@ -4,11 +4,52 @@
       <v-col
         cols="12"
       >
-        <v-card>
+        <v-card :loading="loading">
           <v-card-title
             :style="`color:${cityColor};`"
           >
-            <span class="mr-4">Actualizar comentarios en Mikrotik</span>
+            <v-col cols="auto" class="pa-0">
+              <v-select
+                v-model="selectedCity"
+                :items="cities"
+                label="Filtrar Ciudad"
+                item-value="id"
+                item-text="name"
+                return-object
+                dense
+                solo
+                rounded
+                hide-details="auto"
+                class="mr-2 elevation-0"
+                style="width:180px;"
+                @change="changeCity(selectedCity)"
+              >
+                <template v-slot:item="{ item }">
+                  {{ item.name }}
+                </template>
+              </v-select>
+            </v-col>
+            <v-col cols="auto" class="pa-0">
+              <v-select
+                v-model="selectedClienttype"
+                :items="clienttypes"
+                label="Filtrar Servicio"
+                item-value="id"
+                item-text="name"
+                return-object
+                dense
+                solo
+                rounded
+                hide-details="auto"
+                class="mr-2 elevation-0"
+                style="width:180px;"
+                @change="changeType(selectedClienttype)"
+              >
+                <template v-slot:item="{ item }">
+                  {{ item.name }}
+                </template>
+              </v-select>
+            </v-col>
             <v-btn
               color="blue darken-4"
               dark
@@ -25,14 +66,14 @@
               small
               class="mr-4"
             >
-              Clientes en API: {{ clients ? clients.length : '' }}
+              Servicios en API: {{ services ? services.length : '' }}
             </v-chip>
             <v-chip
               color="blue darken-4 white--text"
               small
               class="mr-4"
             >
-              Clientes en Mikrotik: {{ MikrotikClient ? MikrotikClient.length : '' }}
+              Servicios en Mikrotik: {{ MikrotikClient ? MikrotikClient.length : '' }}
             </v-chip>
             <v-chip
               color="cyan darken-4 white--text"
@@ -63,7 +104,7 @@
             <v-data-table
               :key="key"
               :headers="headers"
-              :items="clients"
+              :items="services"
               :search="search"
               :items-per-page="itemsPerPage"
               :page.sync="page"
@@ -72,7 +113,7 @@
               calculate-widths
               sort-desc
               no-data-text="No hay informacion para mostrar aun..."
-              loading-text="Cargando información de clientes..."
+              loading-text="Cargando información de servicios..."
               dense
               hide-default-footer
               mobile-breakpoint="100"
@@ -88,7 +129,7 @@
                         v-bind="attrs"
                         color="yellow darken-4"
                         v-on="on"
-                        @click="removeItem(clients.map(function(x) {return x._id; }).indexOf(item._id))"
+                        @click="removeItem(services.map(function(x) {return x._id; }).indexOf(item._id))"
                       >
                         mdi-close
                       </v-icon>
@@ -120,7 +161,7 @@ export default {
       page: 1,
       pageCount: 0,
       itemsPerPage: 50,
-      clients: [],
+      services: [],
       MikrotikClient: [],
       search: '',
       currentCity: 'Mariquita',
@@ -134,7 +175,8 @@ export default {
       dialogEdit: false,
       initialLoading: false,
       headers: [
-        { text: 'Nombre', sortable: true, value: 'name' },
+        { text: 'Codigo', sortable: true, value: 'code' },
+        { text: 'Nombre', sortable: true, value: 'client_name' },
         { text: 'Modelo', sortable: true, value: 'newModel' },
         { text: 'Comentario', sortable: true, value: 'comment' },
         { text: 'Acciones', sortable: false, value: 'actions' }
@@ -143,44 +185,78 @@ export default {
       States: [{ name: 'Abierto', value: false }, { name: 'Cerrado', value: true }],
       snack: false,
       snackColor: '',
-      snackText: ''
+      snackText: '',
+      selectedCity: null,
+      selectedClienttype: null
+    }
+  },
+  computed: {
+    clienttypes () {
+      return this.$store.state.auth.clienttypes
+    },
+    cities () {
+      return this.$store.state.auth.cities
+    }
+  },
+  watch: {
+    $route () {
+      this.populateServices()
+      this.populateMikrotikServices()
     }
   },
   mounted () {
-    this.populateClients()
-    this.populateMikrotikClient()
+    this.populateServices()
+    this.populateMikrotikServices()
+    this.setQueryCity()
+    this.setSelectedClienttype()
   },
   methods: {
+    setQueryCity () {
+      if (this.$route.query.city) {
+        this.selectedCity = this.$store.state.auth.cities.find(c => c.name === this.$route.query.city)
+      }
+    },
+    setSelectedClienttype () {
+      if (this.$route.query.clienttype) {
+        this.selectedClienttype = this.$store.state.auth.clienttypes.find(c => c.name === this.$route.query.clienttype)
+      }
+    },
+    changeCity (city) {
+      this.$router.push({ query: { city: city.name, clienttype: this.$route.query.clienttype, view: this.$route.query.view } })
+    },
+    changeType (clienttype) {
+      this.$router.push({ query: { city: this.$route.query.city, clienttype: clienttype.name, view: this.$route.query.view } })
+    },
     generateComment (index) {
-      const client = this.clients
-      const newComment = `${client[index].code} 
-      ${client[index].technology.name} 
-      ${client[index].addresses && client[index].addresses.length > 0 ? client[index].addresses.at(-1).neighborhood.name : client.neighborhood.name} 
-      ${client[index].addresses && client[index].addresses.length > 0 ? client[index].addresses.at(-1).address : client[index].address} 
-      ${client[index].name} 
-      ${client[index].dni} 
-      ${client[index].phone} 
-      ${client[index].offer?.name} 
-      ${client[index].wifi_ssid} 
-      ${client[index].wifi_password}`
+      const services = this.services
+      const newComment = `${services[index].code} 
+      ${services[index].technology ? services[index].technology.name : 'No Def.'} 
+      ${services[index].neighborhood} 
+      ${services[index].address} 
+      ${services[index].client_name} 
+      ${services[index].dni} 
+      ${services[index].phone} 
+      ${services[index].offer?.name} 
+      ${services[index].wifi_ssid} 
+      ${services[index].wifi_password}`
       return newComment
     },
     async generateComments () {
       this.loading = true
-      const length = this.clients.length
+      const length = this.services.length
       for (let i = 0; i < length; i++) {
         this.successChanges++
-        this.$set(this.clients[i], 'comment', await this.generateComment(i))
+        this.$set(this.services[i], 'comment', await this.generateComment(i))
         if (length - 1 === i) {
           this.loading = false
         }
       }
     },
     async applyComments () {
-      const newClientInfo = this.clients
-      for (let i = 0; i < newClientInfo.length; i++) {
-        await this.$store.dispatch('client/updateClientCommentOnMikrotik', {
-          client: newClientInfo[i],
+      const newServiceInfo = this.services
+      for (let i = 0; i < newServiceInfo.length; i++) {
+        await this.$store.dispatch('client/updateServiceCommentOnMikrotik', {
+          service: newServiceInfo[i],
           token: this.$store.state.auth.token
         }).then((input) => {
           this.successChanges++
@@ -190,7 +266,7 @@ export default {
         })
       }
     },
-    async populateClients () {
+    async populateServices () {
       const qs = require('qs')
       const query = qs.stringify({
         filters: {
@@ -202,15 +278,15 @@ export default {
           }
         },
         pagination: {
-          pageSize: 5000
+          pageSize: 2500
         },
-        populate: ['technology', 'neighborhood', 'plan', 'clienttype', 'city', 'offer', 'addresses', 'addresses.neighborhood']
+        populate: ['technology', 'plan', 'clienttype', 'city', 'offer']
       },
       {
         encodeValuesOnly: true
       })
       try {
-        await fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+        await fetch(`${this.$config.API_STRAPI_ENDPOINT}services?${query}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -218,16 +294,16 @@ export default {
           }
         })
           .then(res => res.json())
-          .then((clients) => {
-            this.clients = clients.data
+          .then(({ data: services }) => {
+            this.services = services
           })
       } catch (error) {
         throw new Error(`ACTION ${error}`)
       }
     },
-    async populateMikrotikClient () {
+    async populateMikrotikServices () {
       try {
-        await fetch(`${this.$config.API_STRAPI_ENDPOINT}secrets?mikrotikHost=181.78.67.167:11160`, {
+        await fetch(`${this.$config.API_STRAPI_ENDPOINT}secrets?mikrotikHost=181.78.67.167:8087`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

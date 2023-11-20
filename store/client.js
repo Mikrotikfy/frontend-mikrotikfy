@@ -903,7 +903,7 @@ export const actions = {
       })
     })
   },
-  updateClientCommentOnMikrotik (_, { client, token }) {
+  updateServiceCommentOnMikrotik (_, { service, token }) {
     return new Promise((resolve, reject) => {
       fetch(`${this.$config.API_STRAPI_ENDPOINT}clientcomment`, {
         method: 'POST',
@@ -912,7 +912,7 @@ export const actions = {
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          data: client
+          data: service
         })
       }).then((input) => {
         if (input.status === 200) {

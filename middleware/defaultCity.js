@@ -39,6 +39,10 @@ export default function ({ route, redirect, store }) {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
     clienttype: query.clienttype ? query.clienttype : (userPreferredClienttype || 'INTERNET')
   }
+  const newQueryComments = {
+    city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
+    clienttype: query.clienttype ? query.clienttype : (userPreferredClienttype || 'INTERNET')
+  }
   const newQueryNotification = {
     city: query.city ? query.city : (userPreferredCity || 'MARIQUITA'),
     clienttype: query.clienttype ? query.clienttype : (userPreferredClienttype || 'INTERNET')
@@ -57,6 +61,9 @@ export default function ({ route, redirect, store }) {
   }
   if ((name === 'nap') && (!query.city)) {
     redirect({ path, query: newQueryNap })
+  }
+  if ((name === 'comments') && (!query.city || !query.clienttype)) {
+    redirect({ path, query: newQueryComments })
   }
   if ((name === 'notification') && (!query.city || !query.clienttype)) {
     redirect({ path, query: newQueryNotification })
