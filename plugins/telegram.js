@@ -44,11 +44,11 @@ function simpleTelegramCreate ({ client, operator, telegramBots, address, neighb
   }
 };
 
-function simpleTelegramUpdate ({ client, operator, telegramBots }) {
+function simpleTelegramUpdate ({ service, operator, telegramBots }) {
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.log
-  const message = `✏️ ACTUALIZADO ✏️\n${client.code}\n${client.name}\n${client.dni}\n${client.addresses.at(-1).address}\n${client.addresses.at(-1).neighborhood.name}\n${client.phone}\n${client.city.name}\n${client.plan ? client.plan.name : client.offer.plan.name}\n${client.wifi_ssid}\n${client.wifi_password}\n${client.technology.name}\n${operator}\n${client.createdAt}`
+  const message = `✏️ ACTUALIZADO ✏️\n${service.code}\n${service.name}\n${service.dni}\n${service.address}\n${service.neighborhood}\n${service.phone}\n${service.city.name}\n${service.plan ? service.plan.name : service.offer.plan.name}\n${service.wifi_ssid}\n${service.wifi_password}\n${service.technology ? service.technology.name : 'No Def.'}\n${operator}\n${service.createdAt}`
   const req =
     'https://api.telegram.org/bot' +
     bot +
@@ -69,11 +69,11 @@ function simpleTelegramUpdate ({ client, operator, telegramBots }) {
     })
 };
 
-function simpleTelegramUpdateTV ({ client, operator, telegramBots }) {
+function simpleTelegramUpdateTV ({ service, operator, telegramBots }) {
   const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.log
-  const message = `✏️ TELEVISION ACTUALIZADO ✏️\n${client.code}\n${client.name}\n${client.dni}\n${client.addresses.at(-1).address}\n${client.addresses.at(-1).neighborhood.name}\n${client.phone}\n${client.city.name}\n\n${client.createdAt}\n${operator}`
+  const message = `✏️ TELEVISION ACTUALIZADO ✏️\n${service.code}\n${service.name}\n${service.dni}\n${service.address}\n${service.neighborhood}\n${service.phone}\n${service.city.name}\n\n${service.createdAt}\n${operator}`
   const req =
     'https://api.telegram.org/bot' +
     bot +

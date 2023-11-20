@@ -827,7 +827,12 @@ export const actions = {
         Authorization: `Bearer ${payload.token}`
       },
       body: JSON.stringify({
-        data: payload.service
+        data: {
+          ...payload.service,
+          client_name: payload.client.name,
+          dni: payload.client.dni,
+          phone: payload.client.phone
+        }
       })
     }).then((input) => {
       if (input.status === 200) {

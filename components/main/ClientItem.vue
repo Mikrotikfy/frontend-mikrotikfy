@@ -572,6 +572,9 @@ export default {
       this.saveStatus = 'Guardando...'
 
       await this.$store.dispatch('client/updateClient', { client, index: this.index, operator, token: this.$store.state.auth.token })
+      for (const serviceClient of client.services) {
+        await this.$store.dispatch('client/updateService', { service: serviceClient, client: this.searchResult, index: this.index, operator, token: this.$store.state.auth.token })
+      }
       if (this.$route.query.clienttype === 'INTERNET') {
         // this.$store.dispatch('client/updateClientCommentOnMikrotik', { service, token: this.$store.state.auth.token })
         // this.$simpleTelegramUpdate({ service, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
@@ -602,12 +605,12 @@ export default {
 
       this.saveStatus = 'Guardando...'
 
-      await this.$store.dispatch('client/updateService', { service, index: this.index, operator, token: this.$store.state.auth.token })
+      await this.$store.dispatch('client/updateService', { service, client: this.searchResult, index: this.index, operator, token: this.$store.state.auth.token })
       if (this.$route.query.clienttype === 'INTERNET') {
-        // this.$store.dispatch('client/updateClientCommentOnMikrotik', { service, token: this.$store.state.auth.token })
-        // this.$simpleTelegramUpdate({ service, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+        this.$store.dispatch('client/updateServiceCommentOnMikrotik', { service, token: this.$store.state.auth.token })
+        this.$simpleTelegramUpdate({ service, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
       } else {
-        // this.$simpleTelegramUpdateTV({ service, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
+        this.$simpleTelegramUpdateTV({ service, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
       }
 
       this.$refs.saveStatusText.classList.remove('cyan--text')
