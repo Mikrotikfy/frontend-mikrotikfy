@@ -21,7 +21,7 @@ export const actions = {
         body: JSON.stringify({
           data: {
             active: true,
-            client: payload.selected.id,
+            service: payload.selected.id,
             city: payload.selected.city.id,
             tickettype: 6,
             clienttype: 1,
@@ -46,19 +46,16 @@ export const actions = {
     const qs = require('qs')
     const query = qs.stringify({
       filters: {
-        dni: payload.dni,
-        clienttype: {
-          name: 'INTERNET'
-        }
+        dni: payload.dni
       },
-      populate: ['city', 'addresses', 'tickets', 'tickets.tickettype']
+      populate: ['services', 'services.city', 'services.service_addresses', 'services.tickets', 'services.tickets.tickettype']
     },
     {
       encodeValuesOnly: true
     })
     try {
       return new Promise((resolve, reject) => {
-        fetch(`${this.$config.API_STRAPI_ENDPOINT}clients?${query}`, {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized-clients?${query}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'

@@ -63,26 +63,30 @@
                   </v-btn>
                 </v-stepper-content>
 
-                <v-stepper-content step="2">
-                  <v-card v-if="foundClient.length > 0" class="my-3">
+                <v-stepper-content v-if="foundClient.length > 0" step="2">
+                  <v-card
+                    v-for="client in foundClient"
+                    :key="client.id"
+                    class="my-3"
+                  >
                     <v-card-title>
-                      Lineas encontradas: ({{ foundClient.length }}) <span class="text-subtitle-1 ml-2 green darken-3 rounded-xl px-2">(Selecciona una linea para cambiar la clave)</span>
+                      Servicios encontrados: ({{ client.services.length }}) <span class="text-subtitle-1 ml-2 green darken-3 rounded-xl px-2">(Selecciona una linea para cambiar la clave)</span>
                     </v-card-title>
                     <v-card-text
-                      v-for="client in foundClient"
-                      :key="client.id"
+                      v-for="service in client.services"
+                      :key="service.id"
                     >
                       <div class="parent">
-                        <span>{{ client.name }}</span>
-                        <span>{{ client.addresses ? client.addresses.langth > 0 ? client.addresses.at(-1).address + ' ' + client.addresses.at(-1).neighborhood.name : client.address : client.address }}</span>
-                        <span class="rounded-xl px-2 text-h6 text-weigth-bold">{{ client.city.name }}</span>
+                        <span>{{ service.client_name }}</span>
+                        <span>{{ service.address + ' ' + service.neighborhood }}</span>
+                        <span>{{ service.city.name }}</span>
                         <span>
                           <v-btn
-                            v-if="!client.hasPendingPasswordChange"
+                            v-if="!service.hasPendingPasswordChange"
                             color="primary"
                             class="rounded-xl elevation-0"
-                            :disabled="client.hasPendingPasswordChange"
-                            @click="processSelect(client)"
+                            :disabled="service.hasPendingPasswordChange"
+                            @click="processSelect(service)"
                           >
                             ¡Quiero cambiar esta!
                           </v-btn>
@@ -104,7 +108,7 @@
                 <v-stepper-content step="3">
                   <v-card v-if="e1 === '3'" class="my-4">
                     <v-card-title>
-                      Se ha seleccionado la linea de {{ selected.city.name }} en la dirección {{ selected.addresses ? selected.addresses.length > 0 ? selected.addresses.at(-1).address + ' ' + selected.addresses.at(-1).neighborhood.name : selected.address : selected.address }}
+                      Se ha seleccionado la linea de {{ selected.city.name }} en la dirección {{ selected.address + ' ' + selected.neighborhood }}
                     </v-card-title>
                     <v-card-text>
                       <v-form v-model="valid" lazy-validation>
@@ -267,29 +271,32 @@ export default {
       this.e1 = e1
       this.selected = null
     },
-    processSelect (client) {
-      this.selected = client
+    processSelect (service) {
+      this.selected = service
       this.e1 = '3'
     },
-    processDni () {
+    async processDni () {
       if (this.dni === null || this.dni === '') {
         this.$toast.error('Debe especificar la cedula o Nit para continuar.', { duration: 5000, position: 'bottom-center' })
       }
-      this.$store.dispatch('password/searchClientByDni', {
+      await this.$store.dispatch('password/searchClientByDni', {
         dni: this.dni
       }).then((res) => {
         if (res.length > 0) {
-          for (let i = 0; i < res.length; i++) {
-            res[i].tickets.map((ticket) => {
-              if (ticket.tickettype?.name === 'CAMBIO DE CONTRASEÑA' && ticket.active) {
-                res[i].hasPendingPasswordChange = true
-                return ticket
-              } else {
-                res[i].hasPendingPasswordChange = false
-                return ticket
-              }
-            })
-            this.e1 = 2
+          for (let c = 0; c < res.length; c++) {
+            if (!res[c].services) { return }
+            for (let i = 0; i < res[c].services.length; i++) {
+              res[c].services[i].tickets.map((ticket) => {
+                if (ticket.tickettype?.name === 'CAMBIO DE CONTRASEÑA' && ticket.active) {
+                  res[c].services[i].hasPendingPasswordChange = true
+                  return ticket
+                } else {
+                  res[c].services[i].hasPendingPasswordChange = false
+                  return ticket
+                }
+              })
+              this.e1 = 2
+            }
           }
         } else {
           this.$toast.error('No se ha encontrado ningun usuario con esta informacion. Comunicate al 310 343 25 99 en Mariquita y al 350 810 59 49 en Fresno', { position: 'bottom-center' })
