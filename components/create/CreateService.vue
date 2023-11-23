@@ -535,6 +535,7 @@ export default {
       })
     },
     async createClient () {
+      this.isSubmitting = true
       if (
         (
           this.selectedClienttype.name === 'INTERNET' &&
@@ -550,6 +551,7 @@ export default {
         )
       ) {
         this.$toast.error('Por favor, complete todos los campos.')
+        this.isSubmitting = false
         return
       }
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}services`, {
@@ -608,9 +610,10 @@ export default {
           }
           this.$simpleTelegramCreate({ client: this.Client, address: this.address, neighborhood: this.Client.neighborhood, operator: this.$store.state.auth.username, telegramBots: this.telegramBots })
           this.$router.push({ path: `/client/${this.$route.query.client}?city=${this.selectedCity.name}&clienttype=${this.selectedClienttype.name}` })
+          this.isSubmitting = false
         }).catch((error) => {
-          // eslint-disable-next-line no-console
-          console.error(error)
+          this.$toast.error(`Ha ocurrido un error creando el servicio ${error}`, { duration: 5000 })
+          this.isSubmitting = false
         })
     },
     genAddress () {

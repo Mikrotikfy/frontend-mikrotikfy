@@ -77,7 +77,7 @@ export default function ({ route, redirect, store }) {
   if ((name === 'cuts') && (!query.city)) {
     redirect({ path, query: newQueryCuts })
   }
-  if ((name === 'client' || name === 'client-search') && (!query.city || !query.clienttype)) {
+  if ((name === 'client' || name === 'client-client') && (!query.city || !query.clienttype)) {
     redirect({ path, query: newQueryClient })
   }
   if ((name === 'billing' || name === 'billing-search') && (!query.city)) {

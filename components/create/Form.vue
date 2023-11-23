@@ -38,12 +38,13 @@
         <v-row>
           <v-col>
             <v-text-field
-              v-model="Client.name"
+              :value="Client.name ? Client.name.toUpperCase() : ''"
               label="Nombre Completo"
               required
               outlined
               dense
               hide-details
+              @input="Client.name = $event.toUpperCase()"
             />
           </v-col>
         </v-row>
@@ -165,14 +166,17 @@ export default {
       })
     },
     async createClient () {
+      this.isSubmitting = true
       if (await this.duplicateDni(this.Client.dni)) {
         this.$toast.error('Ya existe un cliente con esta cedula.', { duration: 5000 })
+        this.isSubmitting = false
         return
       }
       if (
         this.Client.name === '' || this.Client.dni === '' || this.Client.phone === '' || this.Client.email === null
       ) {
         this.$toast.error('Por favor, complete todos los campos.')
+        this.isSubmitting = false
         return
       }
       await fetch(`${this.$config.API_STRAPI_ENDPOINT}normalized-clients`, {
@@ -187,11 +191,12 @@ export default {
       })
         .then(res => res.json())
         .then(({ data: client }) => {
+          this.isSubmitting = false
           this.$router.push({ path: `/client/${client.id}` })
           this.$store.commit('create/sete1', 1)
         }).catch((error) => {
-          // eslint-disable-next-line no-console
-          console.error(error)
+          this.$toast.error(`Ha ocurrido un error ${error}`, { duration: 5000 })
+          this.isSubmitting = false
         })
     }
   }
