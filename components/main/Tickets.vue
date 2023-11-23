@@ -289,6 +289,7 @@
             <template v-slot:[`item.technician`]="props">
               <v-edit-dialog
                 v-if="$isAdmin() || $isBiller()"
+                :id="props.index"
                 ref="dialog"
                 large
                 cancel-text="Cancelar"

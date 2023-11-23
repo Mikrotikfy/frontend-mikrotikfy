@@ -24,9 +24,9 @@
           hide-default-footer
           @page-count="pageCount = $event"
         >
-          <template v-slot:[`item.service_addresses.address`]="{ item }">
+          <template v-slot:[`item.address`]="{ item }">
             <span>
-              {{ item.service_addresses.at(-1).address }}
+              {{ item.address }}
             </span>
           </template>
           <template v-slot:[`item.active`]="{ item }">
@@ -76,14 +76,14 @@
             hide-default-footer
             @page-count="pageCount2 = $event"
           >
-            <template v-slot:[`item.service_addresses.address`]="{ item }">
+            <template v-slot:[`item.address`]="{ item }">
               <span>
-                {{ item.service_addresses.at(-1).address }}
+                {{ item.address }}
               </span>
             </template>
-            <template v-slot:[`item.service_addresses.neighborhood.name`]="{ item }">
+            <template v-slot:[`item.neighborhood`]="{ item }">
               <span>
-                {{ item.service_addresses.at(-1).neighborhood.name }}
+                {{ item.neighborhood }}
               </span>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
@@ -130,15 +130,15 @@ export default {
         { text: 'Codigo', value: 'code' },
         { text: 'Cedula', value: 'normalized_client.dni' },
         { text: 'Nombre', value: 'normalized_client.name' },
-        { text: 'Direccion', value: 'service_addresses.address' },
+        { text: 'Direccion', value: 'address' },
         { text: 'Estado', value: 'active' },
         { text: 'Acciones', value: 'actions' }
       ],
       headersServiceList: [
         { text: 'Codigo', value: 'code' },
         { text: 'Nombre', value: 'normalized_client.name' },
-        { text: 'Barrio', value: 'service_addresses.neighborhood.name' },
-        { text: 'Direccion', value: 'service_addresses.address' },
+        { text: 'Barrio', value: 'neighborhood' },
+        { text: 'Direccion', value: 'address' },
         { text: 'Acciones', value: 'actions' }
       ],
       createdMessage: '',

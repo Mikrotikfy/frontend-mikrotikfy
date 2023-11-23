@@ -24,7 +24,7 @@
       <div class="client-parent">
         <div class="client-parent-sub">
           <h5>USUARIO: {{ invoice.service.normalized_client.name }}</h5>
-          <h5>DIRECCION: {{ invoice.service.service_addresses.at(-1).address }} {{ invoice.service.service_addresses.at(-1).neighborhood.name }}</h5>
+          <h5>DIRECCION: {{ invoice.service.address }} {{ invoice.service.neighborhood }}</h5>
           <h5>SERVICIO: {{ invoice.service.name === 'INTERNET' ? 'INTERNET HOG. ILIMITADO' : 'TELEVISION HOGAR' }}</h5>
           <h5>OFERTA: {{ invoice.service.offer.name }}</h5>
         </div>
@@ -97,7 +97,7 @@
     <v-container class="parent-sub-info">
       <div class="client-parent-sub2 pa-2">
         <h4>USUARIO: {{ invoice.service.normalized_client.name }}</h4>
-        <h4>DIRECCION: {{ invoice.service.service_addresses.at(-1).address }} {{ invoice.service.service_addresses.at(-1).neighborhood.name }}</h4>
+        <h4>DIRECCION: {{ invoice.service.address }} {{ invoice.service.neighborhood }}</h4>
         <h4>SERVICIO: {{ invoice.service.name === 'INTERNET' ? 'INTERNET HOG. ILIMITADO' : 'TELEVISION HOGAR' }}</h4>
         <h4>OFERTA: {{ invoice.service.offer.name }}</h4>
       </div>

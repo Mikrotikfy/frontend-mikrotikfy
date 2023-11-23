@@ -49,8 +49,8 @@ export default {
               id: service.id,
               code: service.code,
               name: service.normalized_client.name,
-              address: service.service_addresses.at(-1).address,
-              neighborhood: service.service_addresses.at(-1).neighborhood.name,
+              address: service.address,
+              neighborhood: service.neighborhood,
               phone: service.normalized_client.phone,
               plan: service.plan,
               technology: service.technology,
@@ -63,8 +63,8 @@ export default {
               id: service.id,
               code: service.code,
               name: service.normalized_client.name,
-              address: service.service_addresses.at(-1).address,
-              neighborhood: service.service_addresses.at(-1).neighborhood.name,
+              address: service.address,
+              neighborhood: service.neighborhood,
               phone: service.normalized_client.phone
             })
           })

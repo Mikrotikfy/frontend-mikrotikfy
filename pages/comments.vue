@@ -303,7 +303,7 @@ export default {
     },
     async populateMikrotikServices () {
       try {
-        await fetch(`${this.$config.API_STRAPI_ENDPOINT}secrets?mikrotikHost=181.78.67.167:8087`, {
+        await fetch(`${this.$config.API_STRAPI_ENDPOINT}secrets?mikrotikHost=177.93.39.23:8087`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

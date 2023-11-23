@@ -32,8 +32,8 @@
           :key="billingperiod.id"
           @click="getServices(billingperiod)"
         >
-          <v-expansion-panel-header class="justify-center">
-            {{ months[billingperiod.month - 1].name }}
+          <v-expansion-panel-header v-if="billingperiods.length > 0" class="justify-center">
+            {{ billingperiod.month ? months[billingperiod.month - 1].name : 'No Definido' }}
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-text-field
@@ -53,14 +53,14 @@
               :search="search"
               show-select
             >
-              <template v-slot:[`item.service_addresses.address`]="{ item }">
+              <template v-slot:[`item.address`]="{ item }">
                 <span>
-                  {{ item.service_addresses.at(-1).address }}
+                  {{ item.address }}
                 </span>
               </template>
-              <template v-slot:[`item.service_addresses.neighborhood.name`]="{ item }">
+              <template v-slot:[`item.neighborhood`]="{ item }">
                 <span>
-                  {{ item.service_addresses.at(-1).neighborhood.name }}
+                  {{ item.neighborhood }}
                 </span>
               </template>
               <template v-slot:[`item.id`]="{ item }">
@@ -94,8 +94,8 @@ export default {
       headers: [
         { text: 'Codigo', value: 'code', sortable: false },
         { text: 'Nombre', value: 'normalized_client.name', sortable: false },
-        { text: 'Direccion', value: 'service_addresses.address', sortable: false },
-        { text: 'Barrio', value: 'service_addresses.neighborhood.name', sortable: false },
+        { text: 'Direccion', value: 'address', sortable: false },
+        { text: 'Barrio', value: 'neighborhood', sortable: false },
         { text: 'Telefono', value: 'normalized_client.phone', sortable: false },
         { text: 'Acciones', value: 'id', sortable: false }
       ],

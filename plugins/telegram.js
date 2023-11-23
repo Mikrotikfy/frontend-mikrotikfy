@@ -233,8 +233,8 @@ function simpleWhatsappSendToChat ({ tickettype, service, user, token }) {
   const line1 = tickettype
   const line2 = service.code
   const line3 = service.normalized_client.name
-  const line4 = service.service_addresses.at(-1).address
-  const line5 = service.service_addresses.at(-1).neighborhood.name
+  const line4 = service.address
+  const line5 = service.neighborhood
   const line6 = service.normalized_client.phone
   const message = `${line1} - ${line2} - ${line3} - ${line4} - ${line5} - ${line6}`
   const options = {
@@ -281,8 +281,8 @@ function simpleTelegramCreateTicket ({ client, service, tickettype, details, ope
   const line1 = 'ℹ NUEVO TICKET ℹ️'
   const line2 = service.code
   const line3 = client.name
-  const line4 = service.service_addresses.at(-1).address
-  const line5 = service.service_addresses.at(-1).neighborhood.name
+  const line4 = service.address
+  const line5 = service.neighborhood
   const line6 = client.phone
   const line7 = tickettype
   const line8 = details
@@ -314,8 +314,8 @@ function simpleTelegramCreateTicketTV ({ client, service, tickettype, details, o
   const line1 = 'ℹ NUEVO TICKET ℹ️'
   const line2 = service.code
   const line3 = client.name
-  const line4 = service.service_addresses.at(-1).address
-  const line5 = service.service_addresses.at(-1).neighborhood.name
+  const line4 = service.address
+  const line5 = service.neighborhood
   const line6 = client.phone
   const line7 = tickettype
   const line8 = details

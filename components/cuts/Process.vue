@@ -19,14 +19,14 @@
           :loading="loading"
           :item-class="getcolor"
         >
-          <template v-slot:[`item.service_addresses`]="{ item }">
+          <template v-slot:[`item.address`]="{ item }">
             <span>
-              {{ item.service_addresses.at(-1).address }}
+              {{ item.address }}
             </span>
           </template>
-          <template v-slot:[`item.service_addresses.neighborhood`]="{ item }">
+          <template v-slot:[`item.neighborhood`]="{ item }">
             <span>
-              {{ item.service_addresses.at(-1).neighborhood.name }}
+              {{ item.neighborhood }}
             </span>
           </template>
         </v-data-table>
@@ -59,8 +59,8 @@ export default {
       headers: [
         { text: 'Codigo', value: 'code' },
         { text: 'Nombre', value: 'normalized_client.name' },
-        { text: 'Direccion', value: 'service_addresses' },
-        { text: 'Barrio', value: 'service_addresses.neighborhood' },
+        { text: 'Direccion', value: 'address' },
+        { text: 'Barrio', value: 'neighborhood' },
         { text: 'Telefono', value: 'normalized_client.phone' },
         { text: 'Plan', value: 'plan.name' },
         { text: 'Resultado', value: 'success' }
