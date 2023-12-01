@@ -24,6 +24,7 @@
     </v-row>
     <v-row>
       <v-col>
+        <span v-if="omitedIndex > 0" class="text-h5">Omitidos: <strong>{{ omitedIndex }}</strong></span>
         <span v-if="sendIndex > 0" class="text-h5">Enviados: <strong>{{ sendIndex }}</strong></span>
         <span v-if="generatedBills > 0" class="text-h5">Cargados: <strong>{{ generatedBills }}</strong></span>
       </v-col>
@@ -75,6 +76,9 @@ export default {
     sendIndex () {
       return this.$store.state.notification.sendIndex
     },
+    omitedIndex () {
+      return this.$store.state.notification.omitedIndex
+    },
     services () {
       return this.$store.state.notification.services
     },
@@ -91,8 +95,15 @@ export default {
       const services = this.services
 
       for (let i = 0; i < services.length; i++) {
-        this.$store.commit('notification/setSendIndex', i + 1)
+        const currentmonthbill = services[i].monthlybills.filter((monthlybill) => {
+          return monthlybill.month === this.month.value && monthlybill.success
+        })
+        if (currentmonthbill.length > 0) {
+          this.$store.commit('notification/setOmitedIndex', i + 1)
+          continue
+        }
 
+        this.$store.commit('notification/setSendIndex', i + 1)
         await this.$store.dispatch('notification/sendWhatsapp', {
           service: services[i],
           month: this.month,
@@ -141,6 +152,12 @@ export default {
       })
 
       for (let i = 0; i < filtered.length; i++) {
+        const currentmonthbill = filtered[i].monthlybills.filter((monthlybill) => {
+          return monthlybill.month === this.month.value
+        })
+        if (currentmonthbill.length > 0) {
+          continue
+        }
         await this.$store.dispatch('notification/createBillAccount', {
           token: this.$store.state.auth.token,
           city: this.$route.query.city,

@@ -5,6 +5,7 @@ export const state = () => ({
   codes: [],
   services: [],
   sendIndex: 0,
+  omitedIndex: 0,
   month: null,
   year: null
 })
@@ -23,6 +24,9 @@ export const mutations = {
   },
   setSendIndex (state, index) {
     state.sendIndex = index
+  },
+  setOmitedIndex (state, index) {
+    state.omitedIndex = index
   },
   readyForSend (state) {
     state.readyForSend = true
@@ -206,32 +210,13 @@ export const actions = {
         clienttype: {
           name: payload.clienttype
         },
-        monthlybills: {
-          $or: [
-            {
-              month: {
-                $ne: parseInt(payload.month.value)
-              }
-            },
-            {
-              year: {
-                $ne: parseInt(payload.year)
-              }
-            },
-            {
-              path: {
-                $null: true
-              }
-            }
-          ]
-        },
         normalized_client: {
           phone: {
             $ne: '0'
           }
         }
       },
-      populate: ['normalized_client'],
+      populate: ['normalized_client', 'monthlybills'],
       pagination: {
         pageSize: 20000
       }
