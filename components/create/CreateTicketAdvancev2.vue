@@ -27,8 +27,12 @@
         <span>Crear Avance</span>
       </v-tooltip>
     </template>
-
-    <v-card v-if="ticket" :loading="!ticket">
+    <v-progress-linear
+      v-if="!ticket"
+      indeterminate
+      color="primary"
+    />
+    <v-card v-else :loading="loading">
       <v-card-title>
         <v-spacer />
         <v-btn icon @click="dialog = false">
@@ -226,8 +230,12 @@ export default {
     await this.$store.dispatch('tv/getTvSpecTypes', { token: this.$store.state.auth.token })
   },
   methods: {
-    async initComponent () {
+    initComponent () {
       this.dialog = true
+      this.loading = true
+      this.getTicketInfo()
+    },
+    getTicketInfo () {
       const qs = require('qs')
       const query = qs.stringify({
         populate: [
@@ -242,7 +250,7 @@ export default {
       {
         encodeValuesOnly: true
       })
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticketid}?${query}`, {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticketid}?${query}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.$store.state.auth.token}`
@@ -250,11 +258,13 @@ export default {
       })
         .then(res => res.json())
         .then(({ data: ticket }) => {
+          this.loading = false
           this.ticket = ticket
           this.testTvSpecs()
           this.setOpticalPower()
         })
         .catch((error) => {
+          this.loading = false
           throw new Error(`TICKET FETCH ERROR ${error}`)
         })
     },

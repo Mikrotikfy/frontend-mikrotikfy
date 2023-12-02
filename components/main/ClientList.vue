@@ -10,7 +10,6 @@
                 :items="newclient && !fuzzy ? clients : services"
                 :items-per-page="itemsPerPage"
                 :loading="loadingDataTable"
-                :search="filter"
                 no-data-text="No hay resultados a la busqueda..."
                 loading-text="Cargando información de clientes..."
                 hide-default-footer
@@ -31,14 +30,6 @@
                       class="mb-4"
                     />
                   </div>
-                  <v-text-field
-                    v-model="filter"
-                    append-icon="mdi-magnify"
-                    label="Filtrar resultados por Codigo, Nombre, Direccion, Telefono"
-                    dense
-                    outlined
-                    hide-details
-                  />
                 </template>
                 <template v-slot:[`item.dni`]="{ item, index }">
                   <v-chip
@@ -114,8 +105,7 @@ export default {
       update_password: false,
       refreshLoading: false,
       searchClientInput: '',
-      result: '',
-      filter: ''
+      result: ''
     }
   },
   computed: {
@@ -137,10 +127,10 @@ export default {
     },
     getHeadersByClienttype () {
       return this.$store.state.isDesktop ? this.newclient ? [
+        { text: 'Acciones', value: 'actions', sortable: false },
         { text: 'Nombre', value: 'name', sortable: false },
         { text: 'Cedula', value: 'dni', sortable: false },
-        { text: 'Telefono', sortable: false, value: 'phone' },
-        { text: 'Acciones', value: 'actions', sortable: false }
+        { text: 'Telefono', sortable: false, value: 'phone' }
       ] : [
         { text: 'Codigo', value: 'code', sortable: false },
         { text: 'Nombre', value: 'client_name', sortable: false },
@@ -149,12 +139,12 @@ export default {
         { text: 'Telefono', sortable: false, value: 'phone' },
         { text: 'Acciones', value: 'actions', sortable: false }
       ] : [
+        { text: 'Acciones', value: 'actions', sortable: false },
         { text: 'Codigo', value: 'code', sortable: false },
         { text: 'Nombre', value: 'client_name', sortable: false },
         { text: 'Direccion', sortable: false, value: 'address' },
         { text: 'Barrio', value: 'neighborhood', sortable: false },
-        { text: 'Telefono', sortable: false, value: 'phone' },
-        { text: 'Acciones', value: 'actions', sortable: false }
+        { text: 'Telefono', sortable: false, value: 'phone' }
       ]
     }
   },

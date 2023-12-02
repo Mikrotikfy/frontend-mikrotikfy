@@ -4,6 +4,7 @@
       v-if="searchResult"
     >
       <v-col
+        v-if="$store.state.isDesktop"
         cols="12"
         md="4"
         lg="3"
@@ -124,7 +125,7 @@
               </template>
               <span>Estados de cuenta</span>
             </v-tooltip>
-            <MainClientControl v-if="$isAdmin() || $isBiller()" :service="currentService" @refresh="getClientFromSearchParam()" />
+            <MainClientControl :service="currentService" @refresh="getClientFromSearchParam()" />
           </v-card-text>
         </v-card>
         <v-card v-if="indexOfSelectedService !== null && currentService" class="rounded-xl">

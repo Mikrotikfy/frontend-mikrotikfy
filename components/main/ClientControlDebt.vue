@@ -12,7 +12,8 @@
         El Cliente esta {{ !service.active ? 'RETIRADO' : service.indebt ? 'EN MORA' : 'AL DIA' }} | Saldo: {{ service.balance }}
       </v-alert>
       <v-btn
-        :disabled="!($isAdmin() || $isBiller())"
+        :disabled="!($isAdmin() || $isBiller()) || loading"
+        :loading="loading"
         :color="!service.active ? 'green darken-4' : service.indebt ? 'blue darken-4' : 'red'"
         x-large
         rounded
@@ -25,7 +26,8 @@
     </div>
     <div v-if="service.indebt && !!service.active" class="mb-5" style="display:grid;place-items:center;">
       <v-btn
-        :disabled="!($isAdmin() || $isBiller())"
+        :disabled="!($isAdmin() || $isBiller()) || loading"
+        :loading="loading"
         color="yellow darken-4"
         x-large
         rounded
@@ -85,7 +87,8 @@ export default {
     return {
       offers: [],
       reason: '',
-      reasonDialog: false
+      reasonDialog: false,
+      loading: false
     }
   },
   computed: {
@@ -134,6 +137,17 @@ export default {
       }
     },
     async editClientStatus (payload) {
+      this.loading = true
+      if (this.service.name === 'INTERNET') {
+        await this.$store.dispatch('client/setPlanFromModal', {
+          serviceId: this.service.id,
+          isOfferChange: false,
+          kick: true,
+          newPlan: this.calculateServiceNewPlan(payload.indebt, payload.active, this.service),
+          operator: this.$store.state.auth.id,
+          token: this.$store.state.auth.token
+        })
+      }
       await this.$store.dispatch('client/editClientStatus', {
         token: this.$store.state.auth.token,
         service: this.service,
@@ -149,25 +163,16 @@ export default {
         isretired: !payload.active,
         comment: payload.comment
       })
-      // this.$simpleTelegramUpdateDebt({
-      //   service: this.service,
-      //   operator: this.$store.state.auth.username,
-      //   indebt: payload.indebt,
-      //   active: payload.active,
-      //   telegramBots: this.telegramBots
-      // })
-      if (this.service.name === 'INTERNET') {
-        this.$store.dispatch('client/setPlanFromModal', {
-          serviceId: this.service.id,
-          isOfferChange: false,
-          kick: true,
-          newPlan: this.calculateServiceNewPlan(payload.indebt, payload.active, this.service),
-          operator: this.$store.state.auth.id,
-          token: this.$store.state.auth.token
-        })
-      }
+      this.$simpleTelegramUpdateDebt({
+        service: this.service,
+        operator: this.$store.state.auth.username,
+        indebt: payload.indebt,
+        active: payload.active,
+        telegramBots: this.telegramBots
+      })
       this.$store.commit('client/refresh') // this one refreshes the service when in billing interface
       this.$store.commit('billing/refresh') // this one refreshes the client when in billing interface
+      this.loading = false
     },
     calculateServiceNewPlan (indebt, active, service) {
       if (indebt && active) { return { id: 7 } }

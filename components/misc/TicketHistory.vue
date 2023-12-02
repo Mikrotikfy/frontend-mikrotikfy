@@ -31,6 +31,12 @@
       >
         <v-card-title>
           Historial de Tickets
+          <v-btn
+            icon
+            :to="`/journal?service=${service.id}&type=tickethistory`"
+          >
+            <v-icon>mdi-printer</v-icon>
+          </v-btn>
           <v-spacer />
           <v-btn icon @click="modal = false">
             <v-icon>mdi-close</v-icon>

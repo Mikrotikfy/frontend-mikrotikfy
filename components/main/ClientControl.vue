@@ -10,7 +10,7 @@
           @click="initComponent()"
         >
           <span v-if="service.name === 'INTERNET'">
-            {{ !service.active ? 'RETIRADO' : service.indebt ? 'EN MORA' : `${service.offer ? service.offer.plan.name : 'NO DEF.'}` }}
+            {{ !service.active ? 'RETIRADO' : service.indebt ? 'EN MORA' : ($isAdmin() || $isBiller()) ? `${service.offer ? service.offer.plan.name : 'NO DEF.'}` : 'AL DIA' }}
           </span>
           <span v-else>
             {{ !service.active ? 'RETIRADO' : service.indebt ? 'EN MORA' : `${service.offer ? 'AL DIA' : 'NO DEF.'}` }}
@@ -72,7 +72,9 @@ export default {
   },
   methods: {
     initComponent () {
-      this.modal = true
+      if (this.$isAdmin() || this.$isBiller()) {
+        this.modal = true
+      }
     }
   }
 }
