@@ -46,6 +46,7 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
+    '~/plugins/fetchtimeout',
     '~/plugins/role',
     '~/plugins/telegram',
     '~/plugins/push',

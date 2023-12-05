@@ -8,7 +8,7 @@
           :x-small="!block"
           :block="block"
           class="rounded-xl"
-          :color="$vuetify.theme.dark && !block ? 'white' : service.naps.length > 0 ? 'grey darken-2' : 'primary'"
+          :color="$vuetify.theme.dark && !block ? 'white' : service.naps ? service.naps.length > 0 ? 'grey darken-2' : 'primary' : 'primary'"
           v-on="on"
           @click="initComponent()"
         >

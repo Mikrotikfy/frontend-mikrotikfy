@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-3">
     <v-row
       v-if="searchResult"
     >
@@ -8,18 +8,17 @@
         cols="12"
         md="4"
         lg="3"
+        class="pr-0"
       >
-        <v-card-title><strong>{{ searchResult.name }}</strong></v-card-title>
         <v-card
-          class="rounded-xl"
+          class="rounded-lg"
         >
           <v-list-item two-line>
             <v-list-item-content>
+              <v-list-item-subtitle><strong>{{ searchResult.name }}</strong></v-list-item-subtitle>
               <v-list-item-subtitle>Documento de Identidad: <strong>{{ searchResult.dni }}</strong></v-list-item-subtitle>
               <v-list-item-subtitle>Celular / Telefono: <strong>{{ searchResult.phone }}</strong></v-list-item-subtitle>
               <v-list-item-subtitle>Correo Electrónico: <strong>{{ searchResult.email }}</strong></v-list-item-subtitle>
-              <v-list-item-subtitle>Fecha de creación: <strong>{{ getDate(searchResult.createdAt) }}</strong></v-list-item-subtitle>
-              <v-list-item-subtitle>Última modificación: <strong>{{ getDate(searchResult.updatedAt) }}</strong></v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-card>
@@ -28,14 +27,20 @@
         cols="12"
         md="4"
         lg="3"
+        class="pr-0"
       >
-        <v-card-title>Servicios del Usuario</v-card-title>
-        <v-card class="rounded-xl">
+        <v-card class="rounded-lg">
+          <v-card-title>
+            <v-icon class="mr-2">
+              mdi-account-outline
+            </v-icon>Servicios del Usuario
+          </v-card-title>
+          <v-divider />
           <v-card-text>
             <h4 v-if="searchResult.services.length === 0">
               No hay servicios aún...
             </h4>
-            <v-list v-else rounded>
+            <v-list v-else nav class="pa-0">
               <v-list-item-group
                 v-model="indexOfSelectedService"
                 color="primary"
@@ -44,16 +49,17 @@
                   v-for="(service, i) in searchResult.services"
                   :key="i"
                 >
-                  <v-list-item-icon>
+                  <v-list-item-icon class="mr-3">
                     <v-icon
                       :color="service.active ? service.indebt ? 'red darkne-2' : 'green darken-2' : service.indebt ? 'gray' : 'red darken-4'"
+                      class="pl-2"
                     >
                       {{ service.name === 'INTERNET' ? 'mdi-wifi' : 'mdi-television' }}
                     </v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title class="text-caption">
-                      {{ `${service.city.name} - ${processAddresses(service)} - ${processAddressesNeighborhood(service)}` }}
+                      {{ `${service.code} ${service.city.name} ${processAddresses(service)} ${processAddressesNeighborhood(service)}` }}
                     </v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
@@ -66,11 +72,12 @@
           color="primary"
           block
           dense
-          rounded
-          class="mt-3"
+          class="mt-3 rounded-lg"
           :to="`/client/create?client=${searchResult.id}&name=${searchResult.name}&dni=${searchResult.dni}&phone=${searchResult.phone}`"
         >
-          Afiliar Nuevo Servicio
+          <v-icon class="mr-2">
+            mdi-plus
+          </v-icon> Afiliar Nuevo Servicio
         </v-btn>
       </v-col>
       <v-col
@@ -78,8 +85,13 @@
         md="4"
         lg="6"
       >
-        <v-card-title>Gestión De Información y Controles</v-card-title>
-        <v-card v-if="indexOfSelectedService !== null && currentService" class="rounded-xl mb-3">
+        <v-card v-if="indexOfSelectedService !== null && currentService" class="rounded-lg mb-3">
+          <v-card-title>
+            <v-icon class="mr-2">
+              mdi-information-outline
+            </v-icon>
+            Gestión De Información y Controles
+          </v-card-title>
           <v-card-text>
             <MainClientStatus
               v-if="currentService.name === 'INTERNET'"
@@ -128,7 +140,7 @@
             <MainClientControl :service="currentService" @refresh="getClientFromSearchParam()" />
           </v-card-text>
         </v-card>
-        <v-card v-if="indexOfSelectedService !== null && currentService" class="rounded-xl">
+        <v-card v-if="indexOfSelectedService !== null && currentService" class="rounded-lg">
           <v-subheader>
             Información del Cliente {{ searchResult ? searchResult.id : "N/A" }}
           </v-subheader>
@@ -433,7 +445,7 @@
             </div>
           </v-card-text>
         </v-card>
-        <v-card v-else class="rounded-xl">
+        <v-card v-else class="rounded-lg">
           <v-card-text>
             <v-alert
               type="info"

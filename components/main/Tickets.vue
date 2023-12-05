@@ -804,8 +804,9 @@ export default {
     updateTickettypeFromModal (id, tickettype, index) {
       this.$store.commit('ticket/updateTickettype', { id, tickettype, index })
     },
-    saveTickettypeFromModal (ticketid, tickettypeid, index) {
-      this.$store.dispatch('ticket/saveTickettype', { ticketid, tickettypeid, index, token: this.$store.state.auth.token })
+    async saveTickettypeFromModal (ticketid, tickettypeid, index) {
+      await this.$store.dispatch('ticket/saveTickettype', { ticketid, tickettypeid, index, token: this.$store.state.auth.token })
+      this.$store.commit('ticket/refresh')
     },
     updateAssignatedFromModal (id, technician, index) {
       this.$store.commit('ticket/updateAssignated', { id, technician, index })
@@ -824,7 +825,8 @@ export default {
           user: this.currentTechnician,
           token: this.$config.META_TOKEN
         })
-        this.currentTechnician = {}
+        this.currentTechnician = null
+        this.$store.commit('ticket/refresh')
       } else {
         this.$toast.error('El técnico no tiene un chat de telegram asociado o un numero de telefono de whatsapp valido', { duration: 5000 })
       }

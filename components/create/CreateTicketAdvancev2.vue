@@ -384,7 +384,7 @@ export default {
       this.loading = true
       const message = this.generateMessage()
       try {
-        await this.fetchWithTimeout(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticket.id}`, {
+        await this.$fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticket.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -449,11 +449,9 @@ export default {
                     this.$toast.error('No se pudo enviar el mensaje a Telegram', { duration: 3000 })
                   }
                 } else {
-                  console.log('componente')
                   try {
                     this.$simpleTelegramCreateTicketAdvanceTv({ message, telegramBots: this.telegramBots })
                   } catch (error) {
-                    console.log(error)
                     this.$toast.error('No se pudo enviar el mensaje a Telegram', { duration: 3000 })
                   }
                 }
@@ -468,20 +466,6 @@ export default {
         }
         this.loading = false
       }
-    },
-    async fetchWithTimeout (resource, options = {}) {
-      const { timeout = 6000 } = options
-
-      const controller = new AbortController()
-      const id = setTimeout(() => controller.abort(), timeout)
-
-      const response = await fetch(resource, {
-        ...options,
-        signal: controller.signal
-      })
-      clearTimeout(id)
-
-      return response
     }
   }
 }
