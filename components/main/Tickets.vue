@@ -826,7 +826,9 @@ export default {
           token: this.$config.META_TOKEN
         })
         this.currentTechnician = null
-        this.$store.commit('ticket/refresh')
+        setTimeout(() => {
+          this.$store.commit('ticket/refresh')
+        }, 500)
       } else {
         this.$toast.error('El técnico no tiene un chat de telegram asociado o un numero de telefono de whatsapp valido', { duration: 5000 })
       }

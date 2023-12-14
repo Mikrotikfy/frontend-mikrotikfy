@@ -90,7 +90,7 @@ export default {
       name: 'ARNOProducciones API',
       lang: 'es',
       short_name: 'ARNOP API',
-      start_url: '/tickets',
+      start_url: '/',
       display: 'standalone'
     },
     icon: {
