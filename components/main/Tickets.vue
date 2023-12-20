@@ -211,7 +211,21 @@
     </v-row>
     <v-row class="mt-0 pt-0">
       <v-col>
-        <client-only>
+        <div v-if="errors > 0" class="d-flex justify-center align-center">
+          <p class="mt-5">
+            Error al cargar los tickets. Intenta de nuevo.
+          </p>
+          <v-btn
+            dark
+            icon
+            :disabled="initialLoading"
+            :loading="initialLoading"
+            @click="initIntervalAndGetTickets()"
+          >
+            <v-icon>mdi-reload</v-icon>
+          </v-btn>
+        </div>
+        <client-only v-else>
           <v-data-table
             :key="key"
             v-model="selected"
@@ -629,6 +643,9 @@ export default {
     currentCity () {
       // eslint-disable-next-line eqeqeq
       return this.$store.state.auth.cities ? this.$store.state.auth.cities.find(c => c.id == this.$route.query.city) : ''
+    },
+    errors () {
+      return this.$store.state.ticket.errors
     },
     tickets () {
       return this.$store.state.ticket.tickets.filter(t => t.service !== null)

@@ -1,5 +1,6 @@
 export const state = () => ({
   tickets: [],
+  errors: 0,
   ticketList: [],
   tickettypes: [],
   pagination: {
@@ -14,6 +15,12 @@ export const state = () => ({
 export const mutations = {
   refresh (state) {
     state.refresh++
+  },
+  addError (state) {
+    state.errors++
+  },
+  resetErrors (state) {
+    state.errors = 0
   },
   addNap (state, payload) {
     state.tickets.find(ticket => ticket.id === payload.id).service.naps.push(payload.nap)
@@ -98,6 +105,7 @@ export const actions = {
   },
   async getTicketsFromDatabase ({ commit }, { city, clienttype, tickettype, token, active, page }) {
     try {
+      commit('resetErrors')
       const qs = require('qs')
       const query = qs.stringify({
         filters: {
@@ -143,7 +151,7 @@ export const actions = {
       {
         encodeValuesOnly: true
       })
-      await fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets?${query}`, {
+      await this.$fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets?${query}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
@@ -160,7 +168,9 @@ export const actions = {
           commit('getTicketsFromDatabase', { ticketList, meta }) // get tickets from database
         })
         .catch((error) => {
-          throw new Error(`TICKET ACTION ${error}`)
+          commit('addError')
+          this.$toast.error('Calidad de red insuficiente. Porfavor intenta de nuevo', { duration: 4000, position: 'bottom-center' })
+          console.log(error)
         })
     } catch (error) {
       throw new Error(`TICKET ACTION ${error}`)

@@ -27,160 +27,166 @@
         <span>Crear Avance</span>
       </v-tooltip>
     </template>
-    <v-progress-linear
-      v-if="!ticket"
-      indeterminate
-      color="primary"
-    />
-    <v-card v-else :loading="loading">
+    <v-card>
       <v-card-title>
         <v-spacer />
         <v-btn icon @click="dialog = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
-      <v-card-text>
-        <v-textarea
-          v-model="details"
-          outlined
-          class="mt-4"
-          hide-details="auto"
-          label="Observaciones detalladas"
+      <div v-if="!ticket">
+        <v-subheader class="text-center">
+          Cargando... por favor espere.
+        </v-subheader>
+        <v-progress-linear
+          indeterminate
+          color="primary"
         />
-        <v-text-field
-          v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo"
-          v-model.number="opticalpower"
-          label="Potencia Óptica en dBm"
-          prepend-inner-icon="mdi-lan"
-          class="mt-5"
-          hide-details="auto"
-          outlined
-          type="number"
-        />
-      </v-card-text>
-      <v-divider v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo" class="mb-5" />
-      <v-card-text v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo">
-        <NapActualInfo
-          :service="ticket.service"
-        />
-        <NapRemoveDialog
-          v-if="ticket.service.naps.length > 0 && ticket.tickettype.name === 'TRASLADO'"
-          :ticketindex="ticket.id"
-          :isticket="true"
-          :service="ticket.service"
-          :block="true"
-        />
-        <NapManageClient
-          :isticket="true"
-          :ticketindex="ticket.id"
-          :service="ticket.service"
-          :block="true"
-        />
-      </v-card-text>
-      <v-divider v-if="$route.query.clienttype === 'TELEVISION' && ticket.tickettype.requiresextrainfo" class="mb-5" />
-      <v-card-text v-if="$route.query.clienttype === 'TELEVISION'">
-        <v-select
-          v-model="specs.tvspectype"
-          :items="tvSpecTypes"
-          item-text="name"
-          item-value="id"
-          label="Calidad de señal"
-          prepend-icon="mdi-signal"
-          dense
-          return-object
-          class="mb-5"
-          outlined
-          hide-details
-        />
-        <v-row align="center" class="pa-3">
+      </div>
+      <div v-else>
+        <v-card-text>
+          <v-textarea
+            v-model="details"
+            outlined
+            class="mt-4"
+            hide-details="auto"
+            label="Observaciones detalladas"
+          />
           <v-text-field
-            v-model.number="specs.tvs"
-            label="Televisores"
-            prepend-icon="mdi-television"
+            v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo"
+            v-model.number="opticalpower"
+            label="Potencia Óptica en dBm"
+            prepend-inner-icon="mdi-lan"
+            class="mt-5"
+            hide-details="auto"
+            outlined
+            type="number"
+          />
+        </v-card-text>
+        <v-divider v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo" class="mb-5" />
+        <v-card-text v-if="$route.query.clienttype === 'INTERNET' && ticket.tickettype.requiresextrainfo">
+          <NapActualInfo
+            :service="ticket.service"
+          />
+          <NapRemoveDialog
+            v-if="ticket.service.naps.length > 0 && ticket.tickettype.name === 'TRASLADO'"
+            :ticketindex="ticket.id"
+            :isticket="true"
+            :service="ticket.service"
+            :block="true"
+          />
+          <NapManageClient
+            :isticket="true"
+            :ticketindex="ticket.id"
+            :service="ticket.service"
+            :block="true"
+          />
+        </v-card-text>
+        <v-divider v-if="$route.query.clienttype === 'TELEVISION' && ticket.tickettype.requiresextrainfo" class="mb-5" />
+        <v-card-text v-if="$route.query.clienttype === 'TELEVISION'">
+          <v-select
+            v-model="specs.tvspectype"
+            :items="tvSpecTypes"
+            item-text="name"
+            item-value="id"
+            label="Calidad de señal"
+            prepend-icon="mdi-signal"
+            dense
+            return-object
+            class="mb-5"
+            outlined
+            hide-details
+          />
+          <v-row align="center" class="pa-3">
+            <v-text-field
+              v-model.number="specs.tvs"
+              label="Televisores"
+              prepend-icon="mdi-television"
+              class="mb-5"
+              type="number"
+              :disabled="specs.notvs"
+              outlined
+              dense
+              required
+              hide-details="auto"
+            />
+            <v-checkbox
+              v-model.number="specs.notvs"
+              label="No se puede verificar"
+              class="mb-5 ml-2 shrink mt-0"
+              small
+              required
+              hide-details="auto"
+            />
+          </v-row>
+          <v-text-field
+            v-model.number="specs.high"
+            label="Altos"
+            prepend-icon="mdi-arrow-up-bold-box"
             class="mb-5"
             type="number"
-            :disabled="specs.notvs"
             outlined
             dense
-            required
             hide-details="auto"
+          />
+          <v-text-field
+            v-model.number="specs.down"
+            label="Bajos"
+            prepend-icon="mdi-arrow-down-bold-box"
+            class="mb-5"
+            type="number"
+            dense
+            outlined
+            hide-details="auto"
+          />
+        </v-card-text>
+        <v-divider />
+        <v-card-text>
+          <MiscSignature
+            :key="ticket.id"
+            :ticket="ticket"
+          />
+          <MiscPhoto
+            :key="ticket.id + 1"
+            :ticket="ticket"
+          />
+        </v-card-text>
+        <v-divider />
+        <v-card-text>
+          <v-checkbox
+            v-if="$isAdmin()"
+            v-model="technicianescalated"
+            color="red"
+            label="Escalar a tecnico?"
+            class="ml-2"
           />
           <v-checkbox
-            v-model.number="specs.notvs"
-            label="No se puede verificar"
-            class="mb-5 ml-2 shrink mt-0"
-            small
-            required
-            hide-details="auto"
+            v-if="$isAdmin()"
+            v-model="officeescalated"
+            color="red"
+            label="Escalar a oficina?"
+            class="ml-2"
           />
-        </v-row>
-        <v-text-field
-          v-model.number="specs.high"
-          label="Altos"
-          prepend-icon="mdi-arrow-up-bold-box"
-          class="mb-5"
-          type="number"
-          outlined
-          dense
-          hide-details="auto"
-        />
-        <v-text-field
-          v-model.number="specs.down"
-          label="Bajos"
-          prepend-icon="mdi-arrow-down-bold-box"
-          class="mb-5"
-          type="number"
-          dense
-          outlined
-          hide-details="auto"
-        />
-      </v-card-text>
-      <v-divider />
-      <v-card-text>
-        <MiscSignature
-          :key="ticket.id"
-          :ticket="ticket"
-        />
-        <MiscPhoto
-          :key="ticket.id + 1"
-          :ticket="ticket"
-        />
-      </v-card-text>
-      <v-divider />
-      <v-card-text>
-        <v-checkbox
-          v-if="$isAdmin()"
-          v-model="technicianescalated"
-          color="red"
-          label="Escalar a tecnico?"
-          class="ml-2"
-        />
-        <v-checkbox
-          v-if="$isAdmin()"
-          v-model="officeescalated"
-          color="red"
-          label="Escalar a oficina?"
-          class="ml-2"
-        />
-        <v-checkbox
-          v-model="closeticket"
-          color="red"
-          label="Cerrar Ticket?"
-          class="ml-2"
-        />
-        <v-btn
-          :color="closeticket ? 'red darken-4' : 'primary'"
-          block
-          :loading="loading"
-          :diabled="loading"
-          class="rounded-xl"
-          large
-          @click="createAdvance"
-        >
-          <v-icon>{{ closeticket ? 'mdi-check' : 'mdi-plus' }}</v-icon>
-          {{ closeticket ? technicianescalated ? 'Cerrar Ticket' : 'Cerrar Ticket' : technicianescalated || officeescalated ? 'Escalar caso' : 'Crear Avance' }}
-        </v-btn>
-      </v-card-text>
+          <v-checkbox
+            v-model="closeticket"
+            color="red"
+            label="Cerrar Ticket?"
+            class="ml-2"
+          />
+          <v-btn
+            :color="closeticket ? 'red darken-4' : 'primary'"
+            block
+            :loading="loading"
+            :diabled="loading"
+            class="rounded-xl"
+            large
+            @click="createAdvance"
+          >
+            <v-icon>{{ closeticket ? 'mdi-check' : 'mdi-plus' }}</v-icon>
+            {{ closeticket ? technicianescalated ? 'Cerrar Ticket' : 'Cerrar Ticket' : technicianescalated || officeescalated ? 'Escalar caso' : 'Crear Avance' }}
+          </v-btn>
+        </v-card-text>
+      </div>
     </v-card>
   </v-dialog>
 </template>
@@ -250,7 +256,7 @@ export default {
       {
         encodeValuesOnly: true
       })
-      fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticketid}?${query}`, {
+      this.$fetch(`${this.$config.API_STRAPI_ENDPOINT}tickets/${this.ticketid}?${query}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.$store.state.auth.token}`
@@ -265,6 +271,8 @@ export default {
         })
         .catch((error) => {
           this.loading = false
+          this.dialog = false
+          this.$toast.error('La calidad de red es insuficiente. Intentalo de nuevo.', { duration: 6000 })
           throw new Error(`TICKET FETCH ERROR ${error}`)
         })
     },
