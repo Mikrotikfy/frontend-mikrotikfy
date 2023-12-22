@@ -63,8 +63,7 @@ export default {
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     '@nuxtjs/vuetify',
-    '@nuxtjs/pwa',
-    'nuxt-webpack-optimisations'
+    '@nuxtjs/pwa'
   ],
   pwa: {
     meta: {
@@ -83,14 +82,6 @@ export default {
     icon: {
       fileName: 'icon.png',
       sizes: [16, 120, 144, 152, 192, 384, 512]
-    }
-  },
-
-  webpackOptimisations: {
-    features: {
-      // enable risky optimisations in dev only
-      hardSourcePlugin: process.env.NODE_ENV !== 'production',
-      parallelPlugin: process.env.NODE_ENV !== 'production'
     }
   },
   /*
