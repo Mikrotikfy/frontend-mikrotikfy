@@ -441,9 +441,20 @@ export const actions = {
             services.valid = true
             if (services.length === 1) {
               for (let i = 0; i < services.length; i++) {
-                commit('addService', { valid: true, ...services[i] })
-                commit('addValidService', services[i])
-                resolve({ valid: true, ...services[i] })
+                if (services[i].normalized_client) {
+                  commit('addService', { valid: true, ...services[i] })
+                  commit('addValidService', services[i])
+                  resolve({ valid: true, ...services[i] })
+                } else {
+                  const notfound = {
+                    valid: false,
+                    code: payload.ready,
+                    name: 'Servicio no encontrado'
+                  }
+                  commit('addService', notfound)
+                  commit('adderror')
+                  resolve(notfound)
+                }
               }
             } else if (services.length > 1) {
               commit('addService', { valid: true, ...services[0] })
@@ -459,6 +470,40 @@ export const actions = {
               commit('adderror')
               resolve(notfound)
             }
+          })
+      })
+    } catch (error) {
+      throw new Error(`LAST DEBT HISTORY ACTION ${error}`)
+    }
+  },
+  getLastBillingPeriod ({ commit }, payload) {
+    try {
+      const qs = require('qs')
+      const query = qs.stringify({
+        filters: {
+          city: {
+            name: payload.city.name
+          }
+        },
+        pagination: {
+          pageSize: 1
+        },
+        sort: 'createdAt:desc'
+      },
+      {
+        encodeValuesOnly: true
+      })
+      return new Promise((resolve, reject) => {
+        fetch(`${this.$config.API_STRAPI_ENDPOINT}billingperiods?${query}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${payload.token}`
+          }
+        })
+          .then(res => res.json())
+          .then(({ data: lastBillingPeriod }) => {
+            resolve(lastBillingPeriod)
           })
       })
     } catch (error) {

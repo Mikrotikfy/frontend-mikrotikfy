@@ -32,12 +32,19 @@
       </v-card-text>
     </v-card>
     <v-btn
-      v-if="(services.length > 0 || servicesByPlan.length > 0) && !loading"
+      v-if="(services.length > 0 || servicesByPlan.length > 0) && !loading && validServices.length > 0"
       color="primary"
       class="mt-5"
       @click="process"
     >
       Continuar
+    </v-btn>
+    <v-btn
+      v-if="(services.length > 0 || servicesByPlan.length > 0) && !loading"
+      class="mt-5"
+      @click="$store.commit('cuts/e1', '1')"
+    >
+      Cancelar
     </v-btn>
   </div>
 </template>
@@ -67,6 +74,9 @@ export default {
     },
     ready () {
       return this.$store.state.cuts.ready
+    },
+    validServices () {
+      return this.$store.state.cuts.validServices
     },
     applyOffer () {
       return this.$store.state.cuts.applyOffer

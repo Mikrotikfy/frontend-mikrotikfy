@@ -16,7 +16,6 @@
               <v-stepper-step
                 :complete="e1 > 1"
                 step="1"
-                editable
               >
                 Seleccion de Mes
               </v-stepper-step>
@@ -25,7 +24,6 @@
               <v-stepper-step
                 :complete="e1 > 2"
                 step="2"
-                editable
               >
                 Ingresar Codigos
               </v-stepper-step>
@@ -35,7 +33,6 @@
               <v-stepper-step
                 :complete="e1 > 3"
                 step="3"
-                editable
               >
                 Seleccionar Operación
               </v-stepper-step>

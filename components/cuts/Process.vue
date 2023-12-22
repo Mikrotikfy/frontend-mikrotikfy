@@ -2,7 +2,8 @@
   <div>
     <span style="display:grid;place-items:center;">
       <v-btn
-        color="red darken-4 mx-auto justify-self-center"
+        v-if="!end"
+        color="red darken-4"
         class="mb-5"
         x-large
         :loading="loading"
@@ -10,6 +11,16 @@
       >
         {{ $store.state.cuts.applyOffer ? 'Iniciar proceso de cambio de tarifas' : 'Iniciar proceso de cortes' }}
       </v-btn>
+      <div v-else>
+        <p>Proceso finalizado</p>
+        <v-btn
+          class="mb-5"
+          x-large
+          @click="$store.commit('cuts/e1', '1')"
+        >
+          Salir
+        </v-btn>
+      </div>
     </span>
     <v-card v-if="inprocess">
       <v-card-text>
@@ -64,7 +75,8 @@ export default {
         { text: 'Telefono', value: 'normalized_client.phone' },
         { text: 'Plan', value: 'plan.name' },
         { text: 'Resultado', value: 'success' }
-      ]
+      ],
+      end: false
     }
   },
   computed: {
@@ -121,8 +133,18 @@ export default {
         await this.cutsProcess()
         this.$store.commit('cuts/loading', false)
       }
+      this.end = true
     },
     async addBillingPeriod () {
+      const lastbillingperiod = await this.$store.dispatch('cuts/getLastBillingPeriod', {
+        city: this.city,
+        token: this.$store.state.auth.token
+      })
+      if (lastbillingperiod) {
+        if (lastbillingperiod[0].month === new Date().getMonth() + 1 && lastbillingperiod[0].year === new Date().getFullYear()) {
+          return
+        }
+      }
       await this.$store.dispatch('cuts/addBillingPeriod', {
         city: this.city,
         token: this.$store.state.auth.token,

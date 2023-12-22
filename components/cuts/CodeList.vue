@@ -19,7 +19,6 @@
       class="mt-2"
       label="Ingrese los Codigos, Uno por Linea"
       rows="10"
-      @keyup.enter="confirmCodes"
     />
     <v-btn
       color="primary"
@@ -27,6 +26,11 @@
       @click="confirmCodes"
     >
       Continuar
+    </v-btn>
+    <v-btn
+      @click="$store.commit('cuts/e1', '1')"
+    >
+      Cancelar
     </v-btn>
   </div>
 </template>
