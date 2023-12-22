@@ -368,21 +368,6 @@
                     @change="updateService"
                   />
                 </v-col>
-                <v-col>
-                  <v-select
-                    v-model="currentService.ipmodel"
-                    :disabled="!$isAdmin() || loading"
-                    :items="ipmodelItems"
-                    item-text="name"
-                    item-value="id"
-                    mandatory
-                    label="Tipo de IP para cliente"
-                    outlined
-                    dense
-                    hide-details
-                    @change="updateService"
-                  />
-                </v-col>
               </v-row>
               <v-row v-if="currentService.name === 'TELEVISION' && currentService.tvspec">
                 <v-col>
@@ -479,10 +464,6 @@ export default {
       idwith: [
         { id: 0, name: 'Cedula' },
         { id: 1, name: 'Codigo' }
-      ],
-      ipmodelItems: [
-        { id: 0, name: 'PPPoE' },
-        { id: 1, name: 'IP ESTATICA' }
       ],
       valid: false
     }

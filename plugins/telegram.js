@@ -16,7 +16,6 @@ export default (_, inject) => {
 }
 
 function simpleTelegramCreate ({ client, operator, telegramBots, address, neighborhood }) {
-  const fetch = require('node-fetch')
   try {
     const bot = telegramBots.token
     const chatid = telegramBots.log
@@ -45,7 +44,6 @@ function simpleTelegramCreate ({ client, operator, telegramBots, address, neighb
 };
 
 function simpleTelegramUpdate ({ service, operator, telegramBots }) {
-  const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.log
   const message = `✏️ ACTUALIZADO ✏️\n${service.code}\n${service.name}\n${service.dni}\n${service.address}\n${service.neighborhood}\n${service.phone}\n${service.city.name}\n${service.plan ? service.plan.name : service.offer.plan.name}\n${service.wifi_ssid}\n${service.wifi_password}\n${service.technology ? service.technology.name : 'No Def.'}\n${operator}\n${service.createdAt}`
@@ -70,7 +68,6 @@ function simpleTelegramUpdate ({ service, operator, telegramBots }) {
 };
 
 function simpleTelegramUpdateTV ({ service, operator, telegramBots }) {
-  const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.log
   const message = `✏️ TELEVISION ACTUALIZADO ✏️\n${service.code}\n${service.name}\n${service.dni}\n${service.address}\n${service.neighborhood}\n${service.phone}\n${service.city.name}\n\n${service.createdAt}\n${operator}`
@@ -95,7 +92,6 @@ function simpleTelegramUpdateTV ({ service, operator, telegramBots }) {
 };
 
 function simpleTelegramUpdatePlan ({ client, operator, isRx, telegramBots }) {
-  const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.binnacle
   let line1 = ''
@@ -130,7 +126,6 @@ function simpleTelegramUpdatePlan ({ client, operator, isRx, telegramBots }) {
 };
 
 function simpleTelegramUpdateOffer ({ client, operator, offer, telegramBots }) {
-  const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.binnacle
   const line0 = '📝 CAMBIO DE TARIFA 📝'
@@ -160,7 +155,6 @@ function simpleTelegramUpdateOffer ({ client, operator, offer, telegramBots }) {
 };
 
 function simpleTelegramUpdateDebt ({ service, operator, indebt, active, telegramBots }) {
-  const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.binnacle
   let line1 = ''
@@ -196,7 +190,6 @@ function simpleTelegramUpdateDebt ({ service, operator, indebt, active, telegram
 };
 
 function simpleTelegramSendToChat ({ client, tickettype, details, operator, user, telegramBots }) {
-  const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = user.telegramchatid
   const line1 = 'ℹ NUEVO TICKET ℹ️'
@@ -229,7 +222,6 @@ function simpleTelegramSendToChat ({ client, tickettype, details, operator, user
     })
 };
 function simpleWhatsappSendToChat ({ tickettype, service, user, token }) {
-  const fetch = require('node-fetch')
   const line1 = tickettype
   const line2 = service.code
   const line3 = service.normalized_client.name
@@ -275,7 +267,6 @@ function simpleWhatsappSendToChat ({ tickettype, service, user, token }) {
     })
 };
 function simpleTelegramCreateTicket ({ client, service, tickettype, details, operator, telegramBots }) {
-  const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.chat
   const line1 = 'ℹ NUEVO TICKET ℹ️'
@@ -308,7 +299,6 @@ function simpleTelegramCreateTicket ({ client, service, tickettype, details, ope
     })
 };
 function simpleTelegramCreateTicketTV ({ client, service, tickettype, details, operator, telegramBots }) {
-  const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.tvchat
   const line1 = 'ℹ NUEVO TICKET ℹ️'
@@ -341,7 +331,6 @@ function simpleTelegramCreateTicketTV ({ client, service, tickettype, details, o
     })
 };
 function simpleTelegramCreateTicketAdvance (payload) {
-  const fetch = require('node-fetch')
   const bot = payload.telegramBots.token
   const chatid = payload.telegramBots.chat
   const req =
@@ -364,7 +353,6 @@ function simpleTelegramCreateTicketAdvance (payload) {
     })
 }
 function simpleTelegramCreateTicketAdvanceTv (payload) {
-  const fetch = require('node-fetch')
   const bot = payload.telegramBots.token
   const chatid = payload.telegramBots.tvchat
   const req =
@@ -388,7 +376,6 @@ function simpleTelegramCreateTicketAdvanceTv (payload) {
 }
 
 function simpleTelegramCreateRequest ({ client, telegramBots, operator }) {
-  const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.binnacle
   const message = `SOLICITUD DE ACTIVACION\n${client.code}\n${client.name}\n${client.dni}\n${client.addresses.at(-1).address}\n${client.addresses.at(-1).neighborhood.name}\n${client.phone}\n\n${operator}\n${client.createdAt}`
@@ -413,7 +400,6 @@ function simpleTelegramCreateRequest ({ client, telegramBots, operator }) {
 }
 
 function simpleTelegramAdminCreate ({ client, telegramBots, operator }) {
-  const fetch = require('node-fetch')
   const bot = telegramBots.token
   const chatid = telegramBots.binnacle
   const message = `APROBADO\n${client.code}\n${client.name}\n${client.dni}\n${client.address}\n${client.neighborhood.name}\n${client.phone}\n\n${operator}\n${client.createdAt}`
