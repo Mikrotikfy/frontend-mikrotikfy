@@ -1,6 +1,6 @@
 {
   "name": "mikrotikfy",
-  "version": "43.20.12",
+  "version": "3.1.0",
   "private": true,
   "scripts": {
     "dev": "nuxt",
@@ -29,6 +29,7 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^7.25.0",
     "eslint-plugin-nuxt": "^1.0.0",
-    "nuxt-webpack-optimisations": "^2.2.8"
+    "nuxt-webpack-optimisations": "^2.2.8",
+    "qs": "^6.11.2"
   }
 }
