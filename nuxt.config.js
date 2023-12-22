@@ -63,7 +63,8 @@ export default {
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     '@nuxtjs/vuetify',
-    '@nuxtjs/pwa'
+    '@nuxtjs/pwa',
+    'nuxt-webpack-optimisations'
   ],
   pwa: {
     meta: {
@@ -85,6 +86,13 @@ export default {
     }
   },
 
+  webpackOptimisations: {
+    features: {
+      // enable risky optimisations in dev only
+      hardSourcePlugin: process.env.NODE_ENV !== 'production',
+      parallelPlugin: process.env.NODE_ENV !== 'production',
+    }
+  },
   /*
   ** Nuxt.js modules
   */
