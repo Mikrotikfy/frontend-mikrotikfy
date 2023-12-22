@@ -49,7 +49,6 @@ export default {
     '~/plugins/fetchtimeout',
     '~/plugins/role',
     '~/plugins/telegram',
-    '~/plugins/push',
     '~/plugins/check-internet-connection.js'
   ],
   /*
@@ -67,19 +66,6 @@ export default {
     '@nuxtjs/pwa'
   ],
   pwa: {
-    workbox: {
-      config: {
-        debug: true
-      },
-      offlineStrategy: 'StaleWhileRevalidate',
-      offlineAssets: ['/favicon.ico', '/icon.png', '/star-bg.svg'],
-      cacheNames: {
-        prefix: 'arnop-api',
-        suffix: process.env.npm_package_version,
-        precache: 'precache',
-        runtime: 'runtime-cache'
-      }
-    },
     meta: {
       name: 'ARNOProducciones API',
       viewport: 'width=device-width, initial-scale=1',

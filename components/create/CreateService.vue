@@ -325,19 +325,6 @@
                 hide-details
               />
             </v-col>
-            <v-col>
-              <v-select
-                v-model="Client.ipmodel"
-                :items="ipmodelItems"
-                item-text="name"
-                item-value="id"
-                mandatory
-                label="Tipo de IP para cliente"
-                outlined
-                dense
-                hide-details
-              />
-            </v-col>
           </v-row>
           <v-btn
             class="mr-4 mt-4"
@@ -384,7 +371,6 @@ export default {
         wifi_password: '',
         technology: { id: 2, name: 'FTTH' },
         newModel: 1,
-        ipmodel: 0,
         stratum: 0
       },
       dir1: '',
@@ -437,10 +423,6 @@ export default {
       idwith: [
         { id: 0, name: 'Cedula' },
         { id: 1, name: 'Codigo' }
-      ],
-      ipmodelItems: [
-        { id: 0, name: 'PPPoE' },
-        { id: 1, name: 'IP ESTATICA' }
       ],
       codeError: false,
       hideHint: true,
