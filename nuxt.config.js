@@ -90,7 +90,7 @@ export default {
     features: {
       // enable risky optimisations in dev only
       hardSourcePlugin: process.env.NODE_ENV !== 'production',
-      parallelPlugin: process.env.NODE_ENV !== 'production',
+      parallelPlugin: process.env.NODE_ENV !== 'production'
     }
   },
   /*
