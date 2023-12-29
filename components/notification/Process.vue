@@ -96,7 +96,7 @@ export default {
 
       for (let i = 0; i < services.length; i++) {
         const currentmonthbill = services[i].monthlybills.filter((monthlybill) => {
-          return monthlybill.month === this.month.value && monthlybill.success
+          return monthlybill.month === this.month.value && monthlybill.year === this.year && monthlybill.success
         })
         if (currentmonthbill.length > 0) {
           this.$store.commit('notification/setOmitedIndex', i + 1)
