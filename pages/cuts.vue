@@ -53,14 +53,12 @@
               </v-stepper-content>
 
               <v-stepper-content step="3">
-                <CutsControls v-if="processType === 'normal'" />
-                <CutsClientPreparation v-if="processType === 'normal'" :e1="e1" />
-                <CutsPlanPreparation v-if="processType === 'plan'" />
+                <CutsControls />
+                <CutsClientPreparation :e1="e1" />
               </v-stepper-content>
 
               <v-stepper-content step="4">
-                <CutsProcess v-if="processType === 'normal'" />
-                <CutsPlanOperation v-if="processType === 'plan'" />
+                <CutsProcess />
               </v-stepper-content>
             </v-stepper-items>
           </v-stepper>
@@ -92,6 +90,24 @@ export default {
     },
     processType () {
       return this.$store.state.cuts.type
+    }
+  },
+  watch: {
+    e1 (oldVal, newVal) {
+      if (newVal === '1') {
+        this.$store.commit('cuts/reset')
+        this.$store.commit('cuts/reseterror')
+        this.$store.commit('cuts/resetcuts')
+        this.$store.commit('cuts/resetvalid')
+        this.$store.commit('cuts/prepare', false)
+      }
+    },
+    $route () {
+      this.$store.commit('cuts/reset')
+      this.$store.commit('cuts/reseterror')
+      this.$store.commit('cuts/resetcuts')
+      this.$store.commit('cuts/resetvalid')
+      this.$store.commit('cuts/prepare', false)
     }
   },
   mounted () {

@@ -92,12 +92,6 @@ export default {
     kick () {
       return this.$store.state.cuts.kick
     },
-    applyOffer () {
-      return this.$store.state.cuts.applyOffer
-    },
-    offer () {
-      return this.$store.state.cuts.offer
-    },
     loading () {
       return this.$store.state.cuts.loading
     },

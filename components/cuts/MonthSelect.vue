@@ -125,6 +125,7 @@ export default {
   watch: {
     month () {
       this.setMonth()
+      this.addBillingPeriod()
     }
   },
   mounted () {
@@ -132,6 +133,35 @@ export default {
     this.setSelectedClienttype()
   },
   methods: {
+    async addBillingPeriod () {
+      const lastbillingperiod = await this.$store.dispatch('cuts/getLastBillingPeriod', {
+        city: this.selectedCity,
+        token: this.$store.state.auth.token
+      })
+      if (lastbillingperiod) {
+        this.$store.commit('cuts/currentBillingPeriod', lastbillingperiod[0].id)
+        if (lastbillingperiod[0].month === new Date().getMonth() + 1 && lastbillingperiod[0].year === new Date().getFullYear()) {
+          return
+        }
+      }
+      const billingperiod = await this.$store.dispatch('cuts/addBillingPeriod', {
+        city: this.selectedCity,
+        token: this.$store.state.auth.token,
+        name: this.getMonthName(),
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear()
+      })
+      this.$store.commit('cuts/currentBillingPeriod', billingperiod.id)
+      this.$toast.info('Periodo de facturacion agregado')
+    },
+    getMonthName () {
+      const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+      ]
+
+      const d = new Date()
+      return monthNames[d.getMonth()]
+    },
     setSelectedCity () {
       if (this.$route.query.city) {
         this.selectedCity = this.$store.state.auth.cities.find(c => c.name === this.$route.query.city)

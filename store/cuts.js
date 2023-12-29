@@ -1,6 +1,5 @@
 export const state = () => ({
   applyOffer: false,
-  usePlan: false,
   billingPeriod: null,
   billingPeriodMovements: [],
   services: [],
@@ -20,9 +19,13 @@ export const state = () => ({
   prepare: false,
   ready: [],
   type: null,
-  validServices: []
+  validServices: [],
+  currentBillingPeriod: null
 })
 export const mutations = {
+  currentBillingPeriod (state, currentBillingPeriod) {
+    state.currentBillingPeriod = currentBillingPeriod
+  },
   clear (state) {
     state.applyOffer = false
     state.usePlan = false
@@ -123,6 +126,33 @@ export const mutations = {
   }
 }
 export const actions = {
+  beginServerSideProcess ({ commit }, payload) {
+    try {
+      fetch(`${this.$config.API_STRAPI_ENDPOINT}serversidecuts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${payload.token}`
+        },
+        body: JSON.stringify({
+          data: {
+            city: payload.city,
+            kick: payload.kick,
+            services: payload.services,
+            currentBillingPeriod: payload.currentBillingPeriod
+          }
+        })
+      })
+        .then(res => res.json())
+        .then((response) => {
+          if (response.status === 'ok') {
+            this.$toast.info('Proceso iniciado.', { duration: 4000, position: 'bottom-center' })
+          }
+        })
+    } catch (error) {
+      throw new Error(`SERVER SIDE CUTS INITIATOR ${error}`)
+    }
+  },
   getServicesByPlan ({ commit }, payload) {
     try {
       const qs = require('qs')
@@ -369,7 +399,7 @@ export const actions = {
           })
         })
           .then(res => res.json())
-          .then((billingperiod) => {
+          .then(({ data: billingperiod }) => {
             this.$toast.info('Periodo de corte actualizado.', { duration: 4000, position: 'bottom-center' })
             resolve(billingperiod)
           })
