@@ -153,7 +153,7 @@ export default {
 
       for (let i = 0; i < filtered.length; i++) {
         const currentmonthbill = filtered[i].monthlybills.filter((monthlybill) => {
-          return monthlybill.month === this.month.value
+          return monthlybill.month === this.month.value && monthlybill.year === this.year
         })
         if (currentmonthbill.length > 0) {
           continue
