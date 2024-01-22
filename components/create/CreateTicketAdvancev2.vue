@@ -268,6 +268,7 @@ export default {
           this.ticket = ticket
           this.testTvSpecs()
           this.setOpticalPower()
+          this.getServiceNapsList()
         })
         .catch((error) => {
           this.loading = false
@@ -286,6 +287,12 @@ export default {
     },
     setOpticalPower () {
       this.opticalpower = this.ticket.service.opticalpower
+    },
+    async getServiceNapsList () {
+      await this.$store.dispatch('nap/getServiceNapsList', {
+        token: this.$store.state.auth.token,
+        service: this.ticket.service
+      })
     },
     async setNewSpecs (ticketdetail) {
       if (this.specsString !== JSON.stringify(this.specs) && this.ticket.service.name === 'TELEVISION') {

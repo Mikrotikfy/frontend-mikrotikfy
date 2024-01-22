@@ -26,10 +26,10 @@
         <v-card-title>
           Gestionar Acceso a Red {{ service.client_name }}
         </v-card-title>
-        <v-card-text v-if="current.length > 0">
+        <v-card-text v-if="serviceNapsList.length > 0">
           Este cliente pertenece a las siguientes NAPS:
           <v-chip
-            v-for="(item, index) in current"
+            v-for="(item, index) in serviceNapsList"
             :key="index"
             color="grey darken-3"
             class="mr-2"
@@ -103,40 +103,33 @@ export default {
     naps () {
       return this.$store.state.nap.naps
     },
-    serviceNapData () {
-      return this.$store.state.nap.serviceNapData
+    serviceNapsList () {
+      return this.$store.state.nap.serviceNapsList
     }
   },
   methods: {
     initComponent () {
       this.modal = true
       this.getNapsByCity()
-      this.getServiceNapData()
     },
-    save () {
-      this.$store.dispatch('nap/saveServiceNap', {
+    async save () {
+      await this.$store.dispatch('nap/saveServiceNap', {
         token: this.$store.state.auth.token,
         service: this.service,
         nap: this.selected,
-        current: this.current
+        current: this.serviceNapsList
       })
       if (this.isticket) {
-        this.$store.commit('ticket/addNap', {
-          token: this.$store.state.auth.token,
-          id: this.ticketindex,
-          nap: this.selected
-        })
+        await this.getServiceNapsList()
       }
       this.selected = null
       this.modal = false
     },
-    async getServiceNapData () {
-      await this.$store.dispatch('nap/getServiceNapData', {
+    async getServiceNapsList () {
+      await this.$store.dispatch('nap/getServiceNapsList', {
         token: this.$store.state.auth.token,
         service: this.service
       })
-      this.current = this.serviceNapData.naps
-      this.waitingForServiceNapData = false
     },
     async getNapsByCity () {
       await this.$store.dispatch('nap/getNaps', {
@@ -144,8 +137,9 @@ export default {
         city: this.$route.query.city
       })
       await this.$store.commit('nap/filterCurrentNaps', {
-        naps: this.serviceNapData.naps
+        naps: this.serviceNapsList
       })
+      this.waitingForServiceNapData = false
     }
   }
 }

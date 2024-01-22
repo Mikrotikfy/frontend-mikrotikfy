@@ -1,6 +1,6 @@
 export const state = () => ({
   naps: [],
-  serviceNapData: []
+  serviceNapsList: []
 })
 export const mutations = {
   napList (state, napPayload) {
@@ -26,9 +26,10 @@ export const mutations = {
       throw new Error(`CURRENTNAPS MUTATE ${error}`)
     }
   },
-  getServiceNapData (state, serviceNapData) {
+  getServiceNapsList (state, serviceNapsList) {
     try {
-      state.serviceNapData = serviceNapData
+      state.serviceNapsList = []
+      state.serviceNapsList = serviceNapsList
     } catch (error) {
       throw new Error(`CLIENTNAPDATA MUTATE ${error}`)
     }
@@ -142,7 +143,7 @@ export const actions = {
           },
           body: JSON.stringify({
             data: {
-              naps: [payload.nap.id, ...payload.current.map(nap => nap.id)]
+              naps: [payload.nap.id, ...payload.current?.map(nap => nap.id)]
             }
           })
         })
@@ -156,7 +157,7 @@ export const actions = {
       throw new Error(`NAPS SAVE SERVICE ACTION ${error}`)
     }
   },
-  getServiceNapData ({ commit }, payload) {
+  getServiceNapsList ({ commit }, payload) {
     try {
       return new Promise((resolve, reject) => {
         fetch(`${this.$config.API_STRAPI_ENDPOINT}services/${payload.service.id}?populate=naps`, {
@@ -168,7 +169,8 @@ export const actions = {
         })
           .then(res => res.json())
           .then(({ data: clientNapData }) => {
-            commit('getServiceNapData', clientNapData)
+            console.log(clientNapData)
+            commit('getServiceNapsList', clientNapData ? clientNapData.naps ? clientNapData.naps : [] : [])
             resolve(clientNapData)
           })
       })

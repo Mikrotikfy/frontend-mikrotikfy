@@ -1,10 +1,10 @@
 <template>
   <v-alert
-    :color="service.naps.length > 0 ? 'success' : 'error'"
+    :color="serviceNapsList.length > 0 ? 'success' : 'error'"
     dense
     outlined
   >
-    {{ service.naps.length > 0 ? `El cliente actualmente pertenece a la NAP: ${service.naps[0].code}.` : 'El cliente no pertenece a ninguna NAP. En necesario agregarla' }}
+    {{ serviceNapsList.length > 0 ? `El cliente actualmente pertenece a la NAP: ${serviceNapsList[0].code}.` : 'El cliente no pertenece a ninguna NAP. Es necesario agregarla' }}
   </v-alert>
 </template>
 <script>
@@ -19,6 +19,11 @@ export default {
     return {
       naps: null,
       color: ''
+    }
+  },
+  computed: {
+    serviceNapsList () {
+      return this.$store.state.nap.serviceNapsList
     }
   }
 }

@@ -22,9 +22,6 @@ export const mutations = {
   resetErrors (state) {
     state.errors = 0
   },
-  addNap (state, payload) {
-    state.tickets.find(ticket => ticket.id === payload.id).service.naps.push(payload.nap)
-  },
   removeNap (state, payload) {
     state.tickets[payload.ticketindex].client.naps = []
   },
