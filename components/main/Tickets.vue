@@ -739,7 +739,11 @@ export default {
     this.setSelectedClienttype()
     this.getTickettypes()
     this.getTechnicians()
-    this.initIntervalAndGetTickets()
+    if (this.$store.state.isDesktop) {
+      this.initIntervalAndGetTickets()
+    } else {
+      this.getTicketsWithoutInterval()
+    }
   },
   destroyed () {
     this.removeOldIntervalIfExists()
@@ -748,6 +752,12 @@ export default {
     async initIntervalAndGetTickets () {
       this.removeOldIntervalIfExists()
       this.setGetTicketsInterval()
+      this.resetSelected()
+      await this.refreshTickets()
+      this.getViewFromLocalStorage()
+    },
+    async getTicketsWithoutInterval () {
+      this.removeOldIntervalIfExists()
       this.resetSelected()
       await this.refreshTickets()
       this.getViewFromLocalStorage()
@@ -788,10 +798,10 @@ export default {
       }
     },
     changeCity (city) {
-      this.$router.push({ query: { city: city.name, clienttype: this.$route.query.clienttype, view: this.$route.query.view } })
+      this.$router.replace({ query: { city: city.name, clienttype: this.$route.query.clienttype, view: this.$route.query.view } })
     },
     changeType (clienttype) {
-      this.$router.push({ query: { city: this.$route.query.city, clienttype: clienttype.name, view: this.$route.query.view } })
+      this.$router.replace({ query: { city: this.$route.query.city, clienttype: clienttype.name, view: this.$route.query.view } })
     },
     changeView (view) {
       window.localStorage.setItem('view', view)
