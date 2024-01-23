@@ -117,26 +117,6 @@
               :service="currentService"
             />
             <MiscTicketHistory :service="currentService" />
-            <BillingAuxBillingList
-              v-if="$isAdmin() || $isBiller()"
-              :service="currentService"
-            />
-            <v-tooltip v-if="$isAdmin() || $isBiller()" top>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  :to="`/billing/${currentService.id}?city=${$route.query.city}&clienttype=${$route.query.clienttype}`"
-                  rounded
-                  class="mr-1 ml-1"
-                  :color="$vuetify.theme.dark ? currentService.indebt || !currentService.active ? 'red lighten-1' : 'white black--text' : 'primary'"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-icon>mdi-currency-usd</v-icon>
-                  {{ Number(currentService.balance).toLocaleString('es') }}
-                </v-btn>
-              </template>
-              <span>Estados de cuenta</span>
-            </v-tooltip>
             <MainClientControl :service="currentService" @refresh="getClientFromSearchParam()" />
           </v-card-text>
         </v-card>

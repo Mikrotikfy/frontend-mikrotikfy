@@ -8,7 +8,7 @@
 export default {
   head () {
     return {
-      title: 'Tickets API ARNOP'
+      title: 'Tickets ' + this.$route.query.clienttype + ' ' + this.$route.query.city
     }
   }
 }
