@@ -8,6 +8,23 @@
       <v-tooltip top>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
+            color="white black--text"
+            class="rounded-xl"
+            v-bind="attrs"
+            :loading="loading"
+            :disabled="loading"
+            v-on="on"
+            @click="getBillingPeriods"
+          >
+            <v-icon>mdi-reload</v-icon>
+          </v-btn>
+        </template>
+        <span>Refrescar Estado</span>
+      </v-tooltip>
+      <v-spacer />
+      <v-tooltip top>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
             color="red darken-4"
             class="rounded-xl"
             v-bind="attrs"
@@ -33,7 +50,34 @@
           @click="getServices(billingperiod)"
         >
           <v-expansion-panel-header v-if="billingperiods.length > 0" class="justify-center">
-            {{ billingperiod.month ? months[billingperiod.month - 1].name : 'No Definido' }}
+            {{ billingperiod.month ? months[billingperiod.month - 1].name + ' ' + billingperiod.year : 'No Definido' }}
+            <div v-if="billingperiod.finished === false" class="ml-4">
+              <v-chip
+                color="green darken-3"
+                x-small
+              >
+                Correctos: {{ billingperiod.successes }}
+              </v-chip>
+              <v-chip
+                color="red darken-3"
+                x-small
+              >
+                Errores: {{ billingperiod.errors }}
+              </v-chip>
+              <v-progress-linear
+                class="mt-2"
+                indeterminate
+              />
+            </div>
+            <div v-else>
+              <v-chip
+                color="primary"
+                class="ml-4"
+                x-small
+              >
+                Finalizado
+              </v-chip>
+            </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-text-field

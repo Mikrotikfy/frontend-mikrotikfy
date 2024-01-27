@@ -30,6 +30,13 @@
           </template>
         </v-data-table>
       </v-card-text>
+      <v-card-text>
+        <v-btn
+          @click="$store.commit('cuts/e1', '1')"
+        >
+          Cancelar
+        </v-btn>
+      </v-card-text>
     </v-card>
   </div>
 </template>
@@ -65,6 +72,12 @@ export default {
     },
     currentBillingPeriod () {
       return this.$store.state.cuts.currentBillingPeriod
+    },
+    billingmonth () {
+      return this.$store.state.cuts.month
+    },
+    billingyear () {
+      return this.$store.state.cuts.year
     }
   },
   methods: {
@@ -84,7 +97,9 @@ export default {
         city: this.$route.query.city,
         kick: this.$store.state.cuts.kick,
         services: this.ready,
-        currentBillingPeriod: this.currentBillingPeriod
+        currentBillingPeriod: this.currentBillingPeriod,
+        billingmonth: this.billingmonth,
+        billingyear: this.billingyear
       })
     },
     getcolor (item) {
@@ -97,8 +112,3 @@ export default {
   }
 }
 </script>
-<style>
-.ready-list {
-  background-color:red;
-}
-</style>

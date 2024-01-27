@@ -13,6 +13,7 @@ export const state = () => ({
   kick: false,
   loading: false,
   month: null,
+  year: null,
   offer: null,
   offerForBulkProcess: null,
   plans: [],
@@ -57,6 +58,9 @@ export const mutations = {
   },
   setMonth (state, month) {
     state.month = month
+  },
+  setYear (state, year) {
+    state.year = year
   },
   setOfferForBulkProcess (state, offer) {
     state.offerForBulkProcess = offer

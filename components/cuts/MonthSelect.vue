@@ -41,12 +41,21 @@
         v-model="month"
         :items="months"
         label="Mes a operar"
+        class="mr-2 elevation-0"
+        filled
+        rounded
+      />
+      <v-text-field
+        v-model.number="year"
+        type="Number"
+        label="Año a operar"
+        max="9999"
         filled
         rounded
       />
     </div>
     <v-btn
-      :disabled="!month || !selectedCity || !selectedClienttype"
+      :disabled="!month || !(year && year.length !== 4) || !selectedCity || !selectedClienttype"
       color="primary"
       @click="monthSelect"
     >
@@ -60,6 +69,7 @@ export default {
   data () {
     return {
       month: null,
+      year: null,
       selectedCity: null,
       selectedClienttype: null,
       months: [
@@ -124,8 +134,16 @@ export default {
   },
   watch: {
     month () {
-      this.setMonth()
-      this.addBillingPeriod()
+      if (this.year && this.year.length > 3 && this.month) {
+        this.addBillingPeriod()
+        this.setMonth()
+      }
+    },
+    year () {
+      if (this.year && this.year.length > 3 && this.month) {
+        this.addBillingPeriod()
+        this.setYear()
+      }
     }
   },
   mounted () {
@@ -134,33 +152,29 @@ export default {
   },
   methods: {
     async addBillingPeriod () {
+      if (!this.month || !this.year) {
+        return
+      }
       const lastbillingperiod = await this.$store.dispatch('cuts/getLastBillingPeriod', {
         city: this.selectedCity,
         token: this.$store.state.auth.token
       })
       if (lastbillingperiod) {
         this.$store.commit('cuts/currentBillingPeriod', lastbillingperiod[0].id)
-        if (lastbillingperiod[0].month === new Date().getMonth() + 1 && lastbillingperiod[0].year === new Date().getFullYear()) {
+        console.log(lastbillingperiod[0].month, parseInt(this.month))
+        if (lastbillingperiod[0].month === parseInt(this.month) && lastbillingperiod[0].year === this.year) {
           return
         }
       }
       const billingperiod = await this.$store.dispatch('cuts/addBillingPeriod', {
         city: this.selectedCity,
         token: this.$store.state.auth.token,
-        name: this.getMonthName(),
-        month: new Date().getMonth() + 1,
-        year: new Date().getFullYear()
+        name: this.months.find(m => m.value === this.month).text,
+        month: parseInt(this.month),
+        year: this.year
       })
       this.$store.commit('cuts/currentBillingPeriod', billingperiod.id)
-      this.$toast.info('Periodo de facturacion agregado')
-    },
-    getMonthName () {
-      const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-      ]
-
-      const d = new Date()
-      return monthNames[d.getMonth()]
+      this.$toast.info('Periodo de facturacion agregado', { duration: 4000 })
     },
     setSelectedCity () {
       if (this.$route.query.city) {
@@ -180,6 +194,9 @@ export default {
     },
     setMonth () {
       this.$store.commit('cuts/setMonth', this.month)
+    },
+    setYear () {
+      this.$store.commit('cuts/setYear', this.year)
     },
     monthSelect () {
       if (!this.$store.state.cuts.month) {
