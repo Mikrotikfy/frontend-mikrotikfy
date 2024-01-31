@@ -12,25 +12,15 @@
         </v-btn>
       </v-card-text>
       <v-card-text v-else>
-        <v-data-table
-          :headers="headers"
-          :items="services"
-          :loading="loading"
-          :item-class="getcolor"
+        <h4>Proceso iniciado correctamente. Ya puedes salir de la pagina (El proceso seguira en segundo plano)</h4>
+        <v-btn
+          color="primary"
+          @click="$store.commit('cuts/e1', '1')"
         >
-          <template v-slot:[`item.address`]="{ item }">
-            <span>
-              {{ item.address }}
-            </span>
-          </template>
-          <template v-slot:[`item.neighborhood`]="{ item }">
-            <span>
-              {{ item.neighborhood }}
-            </span>
-          </template>
-        </v-data-table>
+          Ver progreso
+        </v-btn>
       </v-card-text>
-      <v-card-text>
+      <v-card-text v-if="!prepare">
         <v-btn
           @click="$store.commit('cuts/e1', '1')"
         >
@@ -99,7 +89,8 @@ export default {
         services: this.ready,
         currentBillingPeriod: this.currentBillingPeriod,
         billingmonth: this.billingmonth,
-        billingyear: this.billingyear
+        billingyear: this.billingyear,
+        operator: this.$store.state.auth.id
       })
     },
     getcolor (item) {

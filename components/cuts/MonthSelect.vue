@@ -55,9 +55,9 @@
       />
     </div>
     <v-btn
-      :disabled="!month || !(year && year.length !== 4) || !selectedCity || !selectedClienttype"
+      :disabled="!selectedCity || !selectedClienttype"
       color="primary"
-      @click="monthSelect"
+      @click="addBillingPeriod"
     >
       Continuar
     </v-btn>
@@ -134,16 +134,10 @@ export default {
   },
   watch: {
     month () {
-      if (this.year && this.year.length > 3 && this.month) {
-        this.addBillingPeriod()
-        this.setMonth()
-      }
+      this.setMonth()
     },
     year () {
-      if (this.year && this.year.length > 3 && this.month) {
-        this.addBillingPeriod()
-        this.setYear()
-      }
+      this.setYear()
     }
   },
   mounted () {
@@ -152,7 +146,11 @@ export default {
   },
   methods: {
     async addBillingPeriod () {
-      if (!this.month || !this.year) {
+      if (this.month && this.year) {
+        this.setMonth()
+        this.setYear()
+      } else {
+        this.$toast.error('Debe seleccionar un mes y un año', { duration: 4000 })
         return
       }
       const lastbillingperiod = await this.$store.dispatch('cuts/getLastBillingPeriod', {
@@ -161,8 +159,8 @@ export default {
       })
       if (lastbillingperiod) {
         this.$store.commit('cuts/currentBillingPeriod', lastbillingperiod[0].id)
-        console.log(lastbillingperiod[0].month, parseInt(this.month))
         if (lastbillingperiod[0].month === parseInt(this.month) && lastbillingperiod[0].year === this.year) {
+          this.$store.commit('cuts/e1', '2')
           return
         }
       }
@@ -175,6 +173,7 @@ export default {
       })
       this.$store.commit('cuts/currentBillingPeriod', billingperiod.id)
       this.$toast.info('Periodo de facturacion agregado', { duration: 4000 })
+      this.$store.commit('cuts/e1', '2')
     },
     setSelectedCity () {
       if (this.$route.query.city) {
@@ -197,13 +196,6 @@ export default {
     },
     setYear () {
       this.$store.commit('cuts/setYear', this.year)
-    },
-    monthSelect () {
-      if (!this.$store.state.cuts.month) {
-        this.$toast.error('Selecciona un mes antes de continuar')
-        return
-      }
-      this.$store.commit('cuts/e1', '2')
     }
   }
 }

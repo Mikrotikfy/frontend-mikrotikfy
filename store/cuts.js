@@ -143,7 +143,10 @@ export const actions = {
             city: payload.city,
             kick: payload.kick,
             services: payload.services,
-            currentBillingPeriod: payload.currentBillingPeriod
+            currentBillingPeriod: payload.currentBillingPeriod,
+            billingmonth: payload.billingmonth,
+            billingyear: payload.billingyear,
+            operator: payload.operator
           }
         })
       })
