@@ -62,9 +62,12 @@ export const actions = {
           }
         })
           .then(res => res.json())
-          .then((clients) => {
-            commit('searchClientByDni', clients.data)
-            resolve(clients.data)
+          .then(({ data: clients }) => {
+            clients.map((client) => {
+              client.services = client.services.filter(service => service.name === 'INTERNET')
+            })
+            commit('searchClientByDni', clients)
+            resolve(clients)
           })
       })
     } catch (error) {
