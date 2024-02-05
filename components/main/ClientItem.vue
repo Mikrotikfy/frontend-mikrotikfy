@@ -117,6 +117,10 @@
               :service="currentService"
             />
             <MiscTicketHistory :service="currentService" />
+            <MiscAuxBillingList
+              v-if="$isAdmin() || $isBiller()"
+              :service="currentService"
+            />
             <MainClientControl :service="currentService" @refresh="getClientFromSearchParam()" />
           </v-card-text>
         </v-card>
