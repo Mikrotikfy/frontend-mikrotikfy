@@ -45,7 +45,8 @@ export default {
             technology: ticket.service.technology,
             stratum: ticket.service.stratum,
             tickettype: ticket.tickettype.name,
-            createdAt: ticket.createdAt
+            createdAt: ticket.createdAt,
+            details: ticket.details
           })
         })
       } else {
@@ -58,7 +59,8 @@ export default {
             phone: ticket.service.normalized_client.phone,
             stratum: ticket.service.stratum,
             tickettype: ticket.tickettype.name,
-            createdAt: ticket.createdAt
+            createdAt: ticket.createdAt,
+            details: ticket.details
           })
         })
       }

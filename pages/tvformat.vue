@@ -80,10 +80,10 @@
               </td>
               <td style="border-right: 1px solid black;border-bottom: 1px solid black;grid-column: span 2;"></td>
               <td></td>
-              <td style="border-left: 1px solid black;grid-column: span 2;">
+              <td style="border-left: 1px solid black;font-size:14px;">
                 {{ clientInfo.tickettype }}
               </td>
-              <td style="border-left: 1px solid black;"></td>
+              <td style="border-left: 1px solid black;grid-column: span 2;">{{ clientInfo.tickettype === 'TRASLADO' ? `DX: ${clientInfo.details.split('CX:')[0].split('DX:')[1]}` : '' }}</td>
               <td></td>
               <td></td>
             </tr>
